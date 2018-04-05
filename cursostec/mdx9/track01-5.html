@@ -1,0 +1,614 @@
+﻿<html>
+<head>
+<title>mdx9_fase1-5</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 1-5</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track01-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">1.5 Adicionando uma luz na cena</h3><pre>
+
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_Luz.png>
+</div>
+Na computação gráfica de forma geral  o processo de aplicação de luz
+necessita de um ponto de apoio que indique o local de entrada da luz
+na superfície  a  ser  iluminada.   Esse ponto de apoio é chamado de
+<b>normal</b>  e  matematicamente  é  representado por um vetor, geralmente 
+desenhado como um <b>raio perpendicular</b> entrando ou saindo da superfície.
+
+<u>Formato de vértice</u>
+<div class=prg-code>
+<img src=images\normal_diagrama.png></div>
+Vamos  utilizar  na  aplicação  de  exemplo o formato de vértice que 
+permite inserir a posição da normal para cada vértice. Na ilustração
+acima todos os pontos <b>p1, p2, p3</b>  recebem  o  ponto   <b>p4_normal</b>  que 
+indica  a  posição da normal utilizada na iluminação do triângulo. A
+posição   <b>p4_normal</b>   está   localizada  em  um  ponto  paralelo  ou 
+perpendicular ao ponto central da face triângulo.
+
+Geralmente as aplicações de modelagem 3d já  exportam  junto  com  a
+geometria  do  modelo  as  coordenadas das normais dos vértices, mas
+na  ausência dessa informação o DirectX tem funções para calculá-las.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<img src=images\diagrama_prj_Luz.png>
+A aplicação traz a função <b>ConfigurarLuz()</b> que adiciona  uma  luz  na 
+cena. Essa função é chamada em <b class=prg>onPaint()</b> logicamente antes da função
+<b class=prg>Renderizar()</b>.
+
+A variável <b>triangulo</b> é do tipo <b class=prg>CustomVertex.PositiondNormalColored</b>
+para o vértice suportar cor, luz e transformações. Necessariamente
+a função  <b>montar_triangulo()</b> e a  função  <b>Renderizar()</b>  acompanham 
+esta seleção do formato de vértice.
+
+O triângulo mostrado é branco  mas mostra-se  como amarelo por conta
+da influência da luz amarela adicionada à cena. Ainda,  o amarelo da
+superfície é totalmente uniforme sem aquele efeito  interessante  do 
+degradê que deixa os objetos mais  realistas.  Esse  efeito  degradê
+vai  ser  visto  quando aprendermos a lidar com  os tipos de shading. 
+
+<b><u>2.1 Definindo o recipiente para o triângulo</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Para criação do dispositivo gráfico</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+
+<span class="sc2">// Verde escuro como cor de fundo da janela</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkGreen</span><span class="sc10">.</span><span class="sc11">ToArgb</span><span class="sc10">();</span>
+<b>
+<span class="sc2">// Recipiente para os vértices do triângulo</span>
+<span class="sc2">// Esse formato de vértice,  além de cor e posição,  aceita um </span>
+<span class="sc2">// objeto Vector3 estabelecendo a posição da normal que indica</span>
+<span class="sc2">// a entrada de luz no objeto</span>    
+<span class="sc5">private CustomVertex.PositionNormalColored</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span>
+</b>
+<span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação</span>
+<span class="sc2">// do triângulo</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span>
+
+<b class=sc2>// (...)</b>
+
+<b class=prg>}</b><span class=sc2> // fim da classe</span>
+</div>
+<span class="sc5">private CustomVertex.PositionNormalColored</span><span class="sc10">[]</span><span class="sc0"> </span><b>triangulo</b><span class="sc10">;</span>
+A variável <b>triangulo</b> é a array recipiente para os vértices que  vamos
+configurar mais adiante.  Além das propriedades  <span class=prg>.Color</span>  e  do método
+<span class=prg>SetPosition()</span> que já conhecemos cada elemento desse formato apresenta
+o  método  <b class=prg>SetNormal()</b> que aceita um objeto <b class=prg>Vector3</b> com a posição 3d
+da <b>normal</b>.
+
+<b><u>2.2 Montando o triângulo</b></u>
+Acompanhe  os  <b class=sc2>comentários</b>  embutidos  na função para compreender as 
+particularidades da função <b>montar_trinagulo()</b> deste tópico.
+
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulo</span><span class="sc10">()</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Cores para os vértices</span>
+<span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span>
+ <b>
+<span class="sc2">// É necessário 3 vértices para compor o triângulo</span>
+<span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionNormalColored</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">];</span>
+
+<span class="sc2">// Vetores para guardar a posição (x,y,z) dos vértices</span>       
+<span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">p1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p4_normal</span><span class="sc10">;</span>
+</b>
+<span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade</span>
+<span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span>
+
+<span class="sc2">// Define a cor dos vértices</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span>
+
+<span class="sc2">// Posições para os 3 vértices do triangulo</span>
+<span class="sc11">p1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p3</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+
+<b><span class="sc2">// Posição da normal dos vértices</span>
+<span class="sc11">p4_normal</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">);</span>
+</b> 
+<span class="sc2">// Posição do primeiro vértice</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p1</span><span class="sc10">);</span>
+
+<span class="sc2">// Posição do primeiro vértice</span>      
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p2</span><span class="sc10">);</span>
+
+<span class="sc2">// Posição do primeiro vértice</span>     
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p3</span><span class="sc10">);</span>
+<b>
+<span class="sc2">// Configura a normal dos vértices</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span>
+</b>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulo().fim 
+</span></div>
+<span class=prg>
+<span class=sc2>// É necessário 3 vértices para compor o triângulo</span>
+triangulo = <b>new CustomVertex.PositionNormalColored[3];</b>
+<span class=sc2>// Vetores para guardar a posição (x,y,z) dos vértices</span>
+<b>Vector3</b> p1, p2, p3, <b>p4_normal</b>;
+<span class=sc2>// Posição da normal dos vértices</span>
+<b>p4_normal = new Vector3(0.0f, 0.0f, -1.0f);</b>
+
+<span class=sc2>// Configura a normal dos vértices</span>
+triangulo[0]<b>.SetNormal(p4_normal);</b>
+triangulo[1].SetNormal(p4_normal);
+triangulo[2].SetNormal(p4_normal); </span>
+
+Por fim a normal é apenas mais um ponto 3d que deve ser colocado acima
+da face da superfície formada pelos três vértices.
+
+<b><u>2.3 Configurando a luz</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ConfigurarLuz</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+<b>
+<span class="sc2">// Utiliza iluminação configurada manualmente</span> 
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Lighting</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span>
+
+<span class="sc2">// .Type define o tipo de luz</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Type</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">LightType</span><span class="sc10">.</span><span class="sc11">Point</span><span class="sc10">;</span>
+  
+<span class="sc2">// Posição da luz: (0, 0, 0)</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Position</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc10">();</span>
+  
+<span class="sc2">// Diffuse estabelece a cor da luz: amarela</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Diffuse</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">.</span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">Yellow</span><span class="sc10">;</span>
+  
+<span class="sc2">// Atenuação; regula a intensidade da luz</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Attenuation0</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.2f</span><span class="sc10">;</span>
+  
+<span class="sc2">// Estabelece a distância de alcance da luz</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Range</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">10000.0f</span><span class="sc10">;</span>
+  
+<span class="sc2">// Executa configuração</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Commit</span><span class="sc10">();</span>
+  
+<span class="sc2">// Habilita a luz</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Enabled</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span>
+</b>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ConfigurarLuz().fim
+</span></div>
+Dizemos que 'adicionamos' uma luz na cena  mas isso não  é  verdade, 
+pois o DirectX tem uma coleção pronta  de seis  luzes  guardadas  na
+array acessada por <b class=prg>device.Lights[]</b>.  A  quantidade  exata  de  luzes
+permitidas deve ser verificada através da propriedade <span class=prg>Length</span> da array.
+
+Configuramos e habilitamos a primeira luz  acessada  via  <b class=prg>Lights[0]</b>.
+Depois  de  qualquer  alteração  a  nova  configuração  é  efetivada
+depois da execução do método <b class=prg>Commit()</b>:
+<span class=prg>device.Lights[0].Commit(); </span>
+
+O passo final consiste  em  ligá-la  ou  desligá-la  configurando  a 
+propriedade  <b class=prg>Enabled</b>  com  <span class=prg>true</span>  ou  <span class=prg>false</span>.  Em caso de problemas de  
+renderização  da luz  desligue-a  antes  de  fazer  a reconfiguração, 
+aplique um <b class=prg>Commit()</b> e ligue-a novamente.
+
+<b><u>2.4 onPaint()</b></u>
+<div class=niceview>
+<span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Trate outros processos padrões</span>
+<span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span>
+<b>
+<span class="sc2">// Renderize a cena</span>
+<span class="sc11">ConfigurarLuz</span><span class="sc10">();</span>
+<span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span>
+</b>
+<span class="sc2">// Invalide para chamar novamente onPaint()</span>
+<span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span></div>
+A função <span class=prg>onPaint()</span> que é chamada continuamente chama <b>ConfigurarLuz()</b> 
+antes de renderizar a cena.
+
+<b><u>2.5 Renderizando o triângulo</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Limpa os dispositivos e os buffers de apoio</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span>
+
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span>
+<span class="sc2">// (...) Todo o código de desenhar vai aqui</span>   
+<b>
+<span class="sc2">// Configura formato do vértice</span>
+<span class="prg">device.VertexFormat</span><span class="sc0"> </span><span class="sc10">= <span class="prg">CustomVertex.PositionNormalColored.Format</span><span class="sc10">;</span>
+</b>
+<span class="sc2">// Monta o triângulo</span>
+<span class="sc11">montar_triangulo</span><span class="sc10">();</span>
+
+<span class="sc2">// Atualiza a câmera</span>
+<span class="sc11">AtualizarCamera</span><span class="sc10">();</span>
+
+<span class="sc2">// Renderiza o triângulo</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawUserPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">);</span>
+
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span>
+
+<span class="sc2">// Apresenta a cena renderizada na tela</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span>
+
+<span class="sc2">// Libera a janela para processar outros eventos</span>
+<span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span></div>
+<b class=prg>device.VertexFormat = CustomVertex.PositionNormalColored.Format;</b>
+Na função <b>Renderizar()</b> haver o cuidado de selecionar  o  formato  de
+vértice adequado ao objeto que vai ser renderizado.
+
+<b><u>3. Código fonte do arquivo do principal: prj_Luz - Tela.cs</u></b>
+Os arquivos Program.cs  e Tela.Designer.cs serão suprimidos quando
+não   tiverem   modificações  relevantes  mas  naturalmente  estão 
+completos no código fonte dos projetos que acompanham este curso.
+
+<div class=prg-code>
+<img src=images\prj_Luz.png>
+
+<span class="sc2">// Prj_Luz - Arquivo: Tela.cs
+// Esse projeto ilustra como adicionar  uma luz na cena
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Luz</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">     
+
+    </span><span class="sc2">// Verde escuro como cor de fundo da janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkGreen</span><span class="sc10">.</span><span class="sc11">ToArgb</span><span class="sc10">();</span><span class="sc0"> 
+
+    </span><span class="sc2">// Recipiente para os vértices do triângulo
+</span><span class="sc0">    </span><span class="sc2">// Esse formato de vértice,  além de cor e posição,  aceita um 
+</span><span class="sc0">    </span><span class="sc2">// objeto Vector3 estabelecendo a posição da normal que indica
+</span><span class="sc0">    </span><span class="sc2">// a entrada de luz no objeto    
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionNormalColored</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação
+</span><span class="sc0">    </span><span class="sc2">// do triângulo
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Inicialização dos componentes 
+</span><span class="sc0">      </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Toda renderização deverá ocorrer dentro do evento onPaint()
+</span><span class="sc0">      </span><span class="sc2">// Isso evita interferência estrangeira de processamento default
+</span><span class="sc0">      </span><span class="sc2">// do sistema Windows
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc0">      </span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice no
+</span><span class="sc0">      </span><span class="sc2">// software, janela (this), parâmetros de apresentação (pps)
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">AtualizarCamera</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Dados para a configuração da matriz de projeção
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza angulo para dar movivento
+</span><span class="sc0">      </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">0.1f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Mostra a parte interna do polígono
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário      
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">CullMode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Cull</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">;</span><span class="sc0">     
+
+      </span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0">
+          </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Cálculo de rotação dos eixos
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xcam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">angulo_final</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">xcam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">ycam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc4">4.0f</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">zcam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc4">6.0f</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">angulo_final</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Estabelece um vetor de rotação nos eixos (x, y, z)
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc11">xcam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Rotaciona o triangulo indiretamente através da rotação dos
+</span><span class="sc0">      </span><span class="sc2">// eixos da matriz mundial.
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">World</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationAxis</span><span class="sc10">(</span><span class="sc11">cam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">angulo_final</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Dados para a configuração da matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Posição da camera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Alvo da câmera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Orientação da câmera          
+</span><span class="sc0">
+      </span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// AtualizarCamera()
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Limpa os dispositivos e os buffers de apoio
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc2">// (...) Todo o código de desenhar vai aqui   
+</span><span class="sc0">
+      </span><span class="sc2">// Configura formato do vértice
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">VertexFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionNormalColored</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Monta o triângulo
+</span><span class="sc0">      </span><span class="sc11">montar_triangulo</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza a câmera
+</span><span class="sc0">      </span><span class="sc11">AtualizarCamera</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Renderiza o triângulo
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawUserPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Apresenta a cena renderizada na tela
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Libera a janela para processar outros eventos
+</span><span class="sc0">      </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span><span class="sc0">
+    </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Trate outros processos padrões
+</span><span class="sc0">      </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Renderize a cena
+</span><span class="sc0">      </span><span class="sc11">ConfigurarLuz</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Invalide para chamar novamente onPaint()
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulo</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Cores para os vértices
+</span><span class="sc0">      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// É necessário 3 vértices para compor o triângulo
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionNormalColored</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc2">// Vetores para guardar a posição (x,y,z) dos vértices        
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">p1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p4_normal</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Define a cor dos vértices
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">branco</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Posições para os 3 vértices do triangulo
+</span><span class="sc0">      </span><span class="sc11">p1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p3</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p4_normal</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">);</span><span class="sc0">
+     
+      </span><span class="sc2">// Posição do primeiro vértice
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p1</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Posição do primeiro vértice      
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p2</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Posição do primeiro vértice      
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p3</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a normal dos vértices
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetNormal</span><span class="sc10">(</span><span class="sc11">p4_normal</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulo().fim 
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ConfigurarLuz</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+          
+      </span><span class="sc2">// Utiliza iluminação 
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Lighting</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Luz de ponto
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Type</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">LightType</span><span class="sc10">.</span><span class="sc11">Point</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Posição da luz: (0, 0, 0)
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Position</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc10">();</span><span class="sc0">
+      
+      </span><span class="sc2">// Cor amarela
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Diffuse</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">.</span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">Yellow</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Atenuação
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Attenuation0</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.2f</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Alcance
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Range</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">10000.0f</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Executa configuração
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Commit</span><span class="sc10">();</span><span class="sc0">
+      
+      </span><span class="sc2">// Habilita a luz
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Enabled</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ConfigurarLuz().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track01-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,452 @@
+﻿<html>
+<head>
+<title>C_Sharp_13-2</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 13-2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track13-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track13-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track13"></a>
+<h3 style="background-color:#ead5ff">13-2 Melhorando a aplicação multitarefa</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+Nesse tópico vamos conhecer algumas propriedades e métodos importantes do
+objeto thread  para produzir uma versão mais madura da primeira aplicação
+multitarefa.  Porém,  antes  é  importante  conhecer  um  pouco  mais  os 
+bastidores do uso dos threads. 
+
+A possibilidade de usar threads ou linhas de execução adveio de um grande
+esforço de engenharia na construção do sistema operacional  Windows.  E o
+uso  de  threads  exige  nos  bastidores  o  gerenciamento de um contexto 
+complicado  para que diversas linhas de execução co-habitem pacificamente
+no  mesmo  sistema  operacional  sem derrubar o sistema e sem derrubar as 
+demais aplicações que  estão rodando  simultaneamente  na mesma sessão do
+Windows.
+
+Vamos  citar  três  complicações  do  uso  de  threads  que  ocorrem  nos 
+bastidores do sistema Windows:
+
+- Consumo  de recursos:  cada  linha de execução exige necessariamente um 
+espaço de trabalho para manter suas variáveis de  trabalho;  para  manter 
+sua trilha de execução quando a linha entra e sai de cena. 
+
+- Troca de contexto:  a  execução  de  cada  linha  tem  o  seu  contexto 
+particular  que  deve  ser montado e desmontado no processo de seleção da
+linha  ativa que vai rodar no processador. Essa troca de contexto consome
+tempo. Não é de fato grande coisa esse tempo considerado isoladamente mas
+quando  há  dezenas  de aplicações usando dezenas de linhas de execução a 
+soma geral do tempo da troca de contexto pode reduzir a performance geral
+do sistema e das aplicações rodando.
+
+- Concorrência: quanto mais linhas o processador  têm  para  dar  atenção, 
+menos  atenção  ele  dá  para  cada  linha. Entra aqui ainda a questão de 
+seleção  da  linha  ativa de acordo com a prioridade da mesma que implica 
+que as linhas são rodadas  em  proporções  diferentes. Algumas  têm  mais
+tempo de processador do que outras.
+
+Dessas observações decorre que o uso de linhas de execução deve ser feito 
+com  moderação  para  não  afetar  negativamente  a  performance geral do 
+computador e  ainda  porque  o uso de threads traz uma complexidade maior
+para o desenvolvimento da aplicação.
+
+<b><u>1.2 Contexto da aplicação de exemplo: prj_Threads02</u></b>
+<div class=prg-code>
+<img src=images\prj_Threads02.png>
+</div>
+
+- Em nossa aplicação vamos executar duas linhas de execução  ao  mesmo
+tempo. Em uma linha a variável inteira <b>xcol</b> será incrementada (xcol++),
+em outra linha a variável inteira <b>ylin</b> será reduzida  (ylin--).
+
+O usuário verá um menu com 3 opções que lhe permitirá fazer o seguinte
+pressionando as seguintes teclas:
+
+- A tecla Escape roda o código que aciona o método <b class=prg>.Abort()</b> das linhas
+que  tratará  a exceção <b class=prg>ThreadAbortException</b> para sair de cena tomando
+qualquer cuidado que porventura seja necessário realizar.
+
+- A tecla ENTER pressionada duas vezes fecha a aplicação não importando
+se existem linhas de execução em processo.
+
+- A tecla J roda o código que apresenta o método  <b class=prg>.Join()</b> das linhas de 
+execução que vai garantir que as linhas completarão sua tarefa antes da
+aplicação ser finalizada.
+
+<b><u>2. Linha de execução de primeiro plano</u></b>
+<div class=niceview><span class=prg>
+linha01.IsBackground = true;
+linha01.IsBackground = true;
+</span></div>
+
+A  propriedade  <b class=prg>IsBackground</b>  define  se  a linha vai ser de frente ou de
+fundo.  Configurada  como  <b class=prg>true</b>,  quando <b class=prg>Main()</b>  ou  a linha que a chamou 
+encerra sua atividade essa linha de fundo  é  encerrada  simultaneamente.
+Em nossa aplicação de exemplo,  nessa configuração,  se você pressionar a 
+tecla enter, a aplicação encerra-se  sem os métodos terem  completado sua 
+tarefa.
+
+Configurada como <b class=prg>false</b> assinala que a linha é de frente e  a aplicação só
+será finalizada quando essa linha completar sua tarefa.  Outra  forma  de 
+conseguir essa situação é utilizar o método <b class=prg>.Join()</b> da linha. Esse método
+trava  a  execução do método <b class=prg>Main()</b> ou do método que chamou a linha até 
+que linha em questão complete sua tarefa.
+
+É importante garantir  que linhas  que  estejam  realizando  um  trabalho 
+delicado  como  salvar  dados  em arquivos completem sua tarefa, feche os
+arquivos abertos entre outras  que podem ser altamente necessárias para a
+aplicação não deixar problemas para trás.  Somando-se  a  esse  cuidado a 
+linha pode tratar a exceção <b class=prg>ThreadAbortException</b>  que é sinalizada quando
+em algum ponto da aplicação é utilizado o método <b class=prg>.Abort()</b> da linha.
+
+Para tarefas que não são muito importantes, como é o caso do nosso método
+<b>subindo()</b>  de  exemplo  não  haveria  nenhum dano se ele for encerrado de 
+imediato ou se ele for  configurado  como  uma  linha  de  fundo.  Certos
+trabalhos  computacionais  podem  ser recomeçados ou continuados quando a
+aplicação é iniciada,  por exemplo,  recálculos de uma planilha, correção
+ortográfica de um texto, etc.
+
+<b><u>3. Passando o controle</u></b>
+<span class=prg>Thread.Sleep(0);</span>
+O método  <b class=prg>.Sleep()</b>  produz uma pausa na linha de execução. Essa pausa faz
+com que o controle seja passado  para outras linhas na fila precisando de 
+tempo de processador.  Configurado com <b>zero(0)</b> apenas passa amigavelmente
+o controle para a próxima linha da fila que naturalmente pode não ser uma
+linha da sua própria aplicação.
+
+<b><u>4. Tratando exceções</u></b>
+O contexto de threads tem várias exceções que  podem ser convenientemente
+tratadas para garantir um aplicativo com um comportamento suave:
+<div class=niceview>
+<span class="sc2">// Aumenta o valor de xcol
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">subindo</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">  
+  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+   </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">1000</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+   </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">xcol</span><span class="sc10">++;</span><span class="sc0">
+    </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" +++ subindo(): "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">  
+     
+   </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+  </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> 
+                    </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//subindo()
+</span></div>
+
+<b class=prg>Thread.CurrentThread.Name</b>: este código retorna o nome da linha corrente
+que foi configurado pela propriedade <b class=prg>.Name</b> do objeto <b class=prg>Thread</b> criado:
+<div class=niceview><span class=prg>
+linha01.Name = "subindo()";
+linha02.Name = "caindo()"; 
+</span></div>
+
+<b><u>5. Código fonte da aplicação: prj_Threads02</u></b>
+<div class=prg-code>
+<img src=images\prj_Threads02.png>
+
+<span class="sc2">// Projeto prj_Threads02 - Arquivo: Program.cs
+// Este programa mostra como criar uma aplicação multi-tarefa
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Threads02</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1000</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Linhas paraleas de execução
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc0"> </span><span class="sc11">linha01</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// xcol++
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc0"> </span><span class="sc11">linha02</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// ylin--
+</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Threads01"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">        
+
+      </span><span class="sc2">// Assinala as funções às linhas de execução
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">ThreadStart</span><span class="sc10">(</span><span class="sc11">subindo</span><span class="sc10">));</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">ThreadStart</span><span class="sc10">(</span><span class="sc11">caindo</span><span class="sc10">));</span><span class="sc0">      
+
+      </span><span class="sc2">// As linhas começa o trabalho em paralelo com Start()
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">  </span><span class="sc2">// xcol++
+</span><span class="sc0">      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">  </span><span class="sc2">// ylin--   
+</span><span class="sc0">
+      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">IsBackground</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">IsBackground</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">   
+
+      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"subindo()"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"caindo()"</span><span class="sc10">;</span><span class="sc0">   
+   
+      </span><span class="sc11">ConsoleKeyInfo</span><span class="sc0"> </span><span class="sc11">tecla</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">tecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ConsoleKeyInfo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ReadKey</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">J</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// A linha Main() trava e aguarda o final do processamento das linhas.
+</span><span class="sc0">        </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Join</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Join</span><span class="sc10">();</span><span class="sc0">   
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">Escape</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Abort</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Abort</span><span class="sc10">();</span><span class="sc0">       
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\n Pressione ENTER novamente para encerrar"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+
+    </span><span class="sc2">// Aumenta o valor de xcol
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">subindo</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+       </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">1000</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+       </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">xcol</span><span class="sc10">++;</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" +++ subindo(): "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">  
+         
+       </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// 
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//subindo()
+</span><span class="sc0">
+
+    </span><span class="sc2">// Decresce o valor de ylin
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">caindo</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">1000</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+          </span><span class="sc11">ylin</span><span class="sc10">--;</span><span class="sc0">
+          </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" --- caindo()  :"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//
+</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// caindo()
+</span><span class="sc0">    
+    </span><span class="sc2">// Mostra opções acionadas via teclado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorTop</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">11</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorLeft</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Escape - aborta a execução das linhas"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> 
+        </span><span class="sc6">" com tratamento de exceção"</span><span class="sc10">);</span><span class="sc0">
+     
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" j - Main() trava e aguarda o final do"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> 
+        </span><span class="sc6">" processamento das linhas de execução"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" ENTER - Main() encerra suas atividades"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0">
+        </span><span class="sc6">" encerrando as linhas de background"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorTop</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorLeft</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// menu().fim
+</span><span class="sc0">   
+
+    </span><span class="sc2">// Mostra um texto na posição (linha, coluna)
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Define posições fixas para exibir mensagens
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorTop</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">CursorLeft</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"{0} ( {1},{2} ) \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Reduz velocidade de execução das coisas
+</span><span class="sc0">       </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar()
+</span><span class="sc0">    
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Threads01</span>
+</div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track13-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track13-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

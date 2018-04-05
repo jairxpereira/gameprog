@@ -1,0 +1,423 @@
+﻿<html>
+<head>
+<title>C_Sharp_12-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track11-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track12-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track11"></a>
+<h3 style="background-color:#ead5ff">12-1 Exceções: tratamento de erros</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_Exception.png>
+</div>
+Exceções são objetos que trazem  informações de  condições  anormais
+ocorridas durante a execução do aplicativo. Estas condições anormais
+podem ser  geradas  pelo  uso incorreto da sua  aplicação tal como o 
+usuário  digitar  letras  aonde  se  espera  números,  um arquivo de
+trabalho não encontrado, falta de memória do sistema, etc.
+
+Quando   uma   condição  anormal  ocorre  dizemos  que uma exceção é 
+<b>levantada</b>, e se não for <b>interceptada</b> e <b>tratada</b> o seu aplicativo pára
+de ser executado e exibe aquela janela de mensagens sem sentido para
+o usuário comum.  O mínimo  ideal é  prever  a  ocorrência de certas
+exceções  e  encerrar  a  aplicação com uma mensagem amigável para o 
+usuário.
+
+Você pode criar o seu tipo particular de exceção e levantá-la diante
+de certas condições que se formarem.
+
+Todas  as  exceções  devem ser derivadas da classe <b class=prg>System.Exception</b>. 
+Geralmente as  exceções previstas pela biblioteca .net tem o nome da
+sua   respectiva  classe   finalizada   com   <b>-Exception</b>  tal   como 
+<b class=prg>OverflowException</b>  que  ocorre  quando  algo estoura os limites; é o 
+padrão recomendado a seguir na nomeação desse tipo de classe.
+
+O contexto de levantamento, interceptação e tratamento da exceção é
+realizado pelas instruções <b class=prg>throw, try, catch</b> e <b class=prg>finally</b> da linguagem
+C#.
+
+<b><u>1.1 Contexto da aplicação de exemplo</b></u>
+Nosso programa de exemplo  ilustra como sinalizar,  pegar e tratar
+uma divisão por zero e utiliza <b class=prg>System.IO.File.Copy()</b> para gerar um
+erro por referir-se a um arquivo inexistente e como contornar esse
+erro gerado sem derrubar a aplicação. 
+
+<b><u>2.1 Pisando com cuidado</u></b>
+Geralmente o tratamento de exceções é utilizado em blocos de código
+sujeito a problemas. Por exemplo, abertura de arquivos, operação de
+divisão etc.
+
+Geralmente é produzido três blocos: O bloco <b class=prg>try{}</b> cerca o código que
+necessita atenção especial;  o bloco <b class=prg>catch{}</b> é o código que deve ser
+executado quando uma exceção ocorrer e o bloco <b class=prg>finally{}</b> que garante
+a  execução do seu bloco de código  em qualquer condição, geralmente
+utilizado  para  fechar  arquivos  e  fazer  um mínimo de limpeza no 
+ambiente antes da finalização antecipada da aplicação.
+
+A instrução <b class=prg>throw</b> levanta ou sinaliza uma exceção que  se  não  for 
+tratada interrompe a aplicação.
+
+<b><u>2.2 Sinalizando, pegando e tratando a exceção</u></b>
+<div class=niceview>
+<span class="sc2">// Levantando uma exceção por conta própria
+</span><span class="sc5">try</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">      
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">throw</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">DivideByZeroException</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">resultado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" resultado = {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">resultado</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+</span><span class="sc2">// Pega e trata a correção
+</span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">DivideByZeroException</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Tentativa de divisão por zero"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Geralmente o problema é tratado dentro de catch(){}"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+</span><span class="sc5">finally</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" finally{} faz ajustes finais em qualquer situação!:"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Valores da operação: x:{0}  y:{1}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc10">);</span><span class="sc0">        
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//end finally
+// **********************************************************************</span>
+</div>
+
+<span class=prg>if (y == 0) throw new DivideByZeroException();</span>
+Nesse primeiro caso  sinalizamos  uma  exceção por conta própria.
+A divisão pode zero não gera uma exceção que derruba a aplicação.
+Isso é ruim porque a confiabilidade da aplicação pode ser perdida
+com um erro desses.  Então, no bloco <b>try{}</b> verificamos os valores
+e  levantamos  uma  exceção divisão por zero expressa pela classe
+<b class=prg>DivideByZeroException()</b> caso o denominador <b>y</b> seja zero.
+Na sinalização da exceção com <b class=prg>throw,</b> no construtor da classe pode
+ser passado uma string com uma mensagem que pode  ser  recuperada
+no  bloco  <b class=prg>catch{}</b>  através  da  propriedade  <b>Message</b> do  objeto.
+ 
+<span class=prg>catch (DivideByZeroException){}</span>
+O bloco  código  <b class=prg>catch{}</b>  é o local aonde deve ocorrer as medidas 
+corretivas do problema ocorrido. Em nosso caso apenas notificamos
+o usuário do problema  mas um código efetivo corrige as condições
+anormais  encontradas  ou no mínimo notifica e arquiva o problema
+para análise.O bloco <b class=prg>catch{}</b> pode ser utilizado de forma genérica
+para  pegar qualquer exceção porém isso pode levar ao  engano  de 
+aplicar  uma  medida  corretiva  que  não  condiz  com o problema. 
+Portanto, é recomendável especificar a exceção que o bloco <b class=prg>catch{}</b>
+trata conforme exemplo acima.
+
+Exemplo de <b class=prg>catch{}</b> usado de forma genérica:
+<div class=niceview>
+<span class="sc2">// catch(){} pode ser usado sem argumentos
+</span><span class="sc5">try</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// using namespace System.IO
+</span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+</span><span class="sc5">catch</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Ocorreu um problema na operação de cópia de arquivo!"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch</span>
+</div>
+
+<span class=prg>finally{};</span>
+Esse bloco roda em qualquer situação.  É  útil  para  garantir  a 
+gravação de dados  ou  fechamento de arquivos que estavam abertos
+antes da ocorrência da exceção. O uso de <b class=prg>finally{}</b> é opcional.
+
+<b><u>2.3 Verificando a propriedade dos objetos</u></b>
+Veja nos exemplos abaixo como montar o contexto para verificar
+as propriedades dos objetos recebidos:  <b class=prg>Message</b> representa uma
+identificação básica do problema; <b class=prg>StackTrace</b> mostra a situação
+da pilha até a ocorrência da exceção. 
+
+Exemplo do bloco  <b class=prg>catch(){}</b> utilizando a propriedade  <b class=prg>Message</b>  do 
+objeto específico recebido. Esta propriedade pode ser configurada
+no construtor chamado por <b class=prg>throw</b>:
+<div class=niceview>
+<span class="sc2">// catch() pode pegar uma exceção específica
+</span><span class="sc0">  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+  </span><span class="sc5">catch ( FileNotFoundException</span><span class="sc0"> </span><span class="sc11">erro</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">Message</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span></div>
+
+Exemplo do bloco <b class=prg>catch(){}</b> utilizando a propriedade <b class=prg>StackTrace</b> do
+objeto geral recebido:
+<div class=niceview>
+</span><span class="sc2">// catch() pode pegar uma exceção geral
+</span><span class="sc0">  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//endtry
+</span><span class="sc0">
+  </span><span class="sc5">catch (SystemException</span><span class="sc0"> </span><span class="sc11">erro</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">Message</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">StackTrace</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch</span>
+  </div>
+    
+<b><u>3. Código fonte do projeto de exemplo: prj_Exception</u></b>
+
+<div class=prg-code>
+<img src=images\prj_Exception.png>
+
+<span class="sc2">// Projeto prj_Exception - Arquivo: Program.cs
+// Este programa ilustra o uso de exceções
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Exception</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Exception"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">      </span><span class="sc16">double</span><span class="sc0"> </span><span class="sc11">resultado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">double</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Vamos forçar um divisão por zero
+</span><span class="sc0">      </span><span class="sc16">double</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Levantando uma exceção por conta própria
+</span><span class="sc0">      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">      
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">throw</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">DivideByZeroException</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">resultado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" resultado = {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">resultado</span><span class="sc10">);</span><span class="sc0"> 
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc2">// Pega e trata a correção
+</span><span class="sc0">      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">DivideByZeroException</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Tentativa de divisão por zero"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Geralmente o problema é tratado dentro de catch(){}"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+      </span><span class="sc5">finally</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" finally{} faz ajustes finais em qualquer situação!:"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Valores da operação: x:{0}  y:{1}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc10">);</span><span class="sc0">        
+     </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//end finally
+</span><span class="sc0">      </span><span class="sc2">// **********************************************************************
+</span><span class="sc0">
+    
+      </span><span class="sc2">// Descomente a linha abaixo para derrubar esta aplicação!
+</span><span class="sc0">      </span><span class="sc2">// File.Copy("zzz.txt", "yyy.txt");
+</span><span class="sc0">      
+      </span><span class="sc2">// catch(){} pode ser usado sem argumentos
+</span><span class="sc0">      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">      
+      </span><span class="sc5">catch</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Ocorreu um problema na operação de cópia de arquivo!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">      </span><span class="sc2">// **********************************************************************
+</span><span class="sc0">
+    
+      </span><span class="sc2">// catch() pode pegar uma exceção específica
+</span><span class="sc0">      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">FileNotFoundException</span><span class="sc0"> </span><span class="sc11">erro</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">Message</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+      </span><span class="sc2">// **********************************************************************
+</span><span class="sc0">
+      </span><span class="sc2">// catch() pode pegar uma exceção geral
+</span><span class="sc0">      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Copy</span><span class="sc10">(</span><span class="sc6">"zzz.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"yyy.txt"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">SystemException</span><span class="sc0"> </span><span class="sc11">erro</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">Message</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\t Rastro da pilha (StackTrace):"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" *****************************************"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">erro</span><span class="sc10">.</span><span class="sc11">StackTrace</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0">  </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">""</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Exception
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track11-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track12-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

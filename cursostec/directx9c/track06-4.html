@@ -1,0 +1,1194 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase06-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 06-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track06-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track07-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>06.4 Produção de partículas</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                 -  Inicialização do motor gráfico (Direct3D)</a>
+<a href=#2.4>2.4 inicializar_Pointsprite() - Inicialização das partículas</a>
+<a href=#2.5>2.5 renderizar_Pointsprite()  - Renderização das partículas</a>
+<a href=#2.6>2.6 Renderizar()              - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Pointsprite</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Pointsprite.png></div>
+A aplicação desse exemplo mostra como utilizar o suporte que o directx
+dá na construção de um sistema  de  partículas.   A base do sistema de
+partículas reside em um recurso chamado  <b>pointsprite</b>  que  transforma
+cada vértice no centro de um  quad  texturizável. Geralmente o quad é
+texturizado  com  uma  pequena  imagem  que  quando  combinada com os
+efeitos  de  alpha  blending  dá  origem  aos  efeitos  especiais  de
+partículas. A partir desse momento vamos utilizar o termo <b>pontosprite</b>
+ocasionalmente  para  nos referirmos também ao recurso de <b>pointsprite.</b>
+
+Não há uma interface dedicada para utilizar o pontosprite e  assim  a
+implementação de um sistema de partículas é baseado numa configuração
+particular do formato de vértice, do vertexbuffer e  da  configuração
+de certos estados de renderização.
+
+<u>A partícula</u>
+<img src=images\particula.png>
+Através do uso interno de alpha blending essa partícula ganhará a cor
+do vértice. Visto que o fundo da imagem é preto,  a cor de limpeza do
+backbuffer é preto para ocorrer a mistura adequada  da  partícula  na
+cena.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+
+<div class=niceview style="border-style:dashed;"><b class=sc16>
+<u>inicializar_Pointsprite()</u>
+	Habilita o uso de pointsprites e configura os estados pertinentes
+
+	Configura os fatores de escala  que  contribuem  na  definição do
+	tamanho final da partícula
+
+	Habilita a iluminação automática.  Desliga  o  uso  do  buffer de
+	profundidade.
+
+	Configura os estados do recurso de alpha blending.
+
+	Configura formato de vértice com <b class=prg>
+		g_device-&gt;SetFVF( CustomVertex_PointSprite_Format ) </b>
+
+	Elabora e configura o vertexbuffer
+
+	Carrega a textura da partícula
+
+
+<u>renderizar_Pointsprite()</u>
+	Configura matriz mundo do sistema  de  partículas  com  posição e
+	rotação.
+
+	Declara a textura e o vertexbuffer ao dispositivo renderizador.
+
+	Renderiza as partículas com <b class=prg>
+		g_device-&gt;DrawPrimitive(D3DPT_POINTLIST, 0, 4)</b>
+
+	Atualiza ângulo de rotação das partículas
+</b>
+inicializar_Camera()
+	Faz a preparação inicial da câmera
+	Obtém as dimensões reais da área desenhável para produzir aspecto
+		correto dos gráficos na matriz de projeção.
+
+initGfx()	
+	<b class=sc2>// (...)</b>
+	chama <b class=prg>inicializar_Camera()</b> para a configuração inicial da câmera
+	<b class=sc16>
+	chama <b class=prg>inicializar_Pointsprite()</b> para inicializar os objetos e estados
+	pertinentes da produção de partículas.</b>
+
+Renderizar()
+	Limpa a tela	
+	<b class=sc16>chama <b class=prg>renderizar_Pointsprite()</b> para renderizar as partículas.</b>
+	Apresenta a cena
+
+Limpar()	
+	Libera os objetos utilizados.		
+	
+</div>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Aspectos globais - arquivo motor.h </u></b>
+<div class=niceview><span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+<b>
+ <span class=sc2>// Definição do formato de vértice de suporte ao pontosprite</span>
+ <span class=sc16>#define </span><span class=sc4>CustomVertex_PointSprite_Format</span> (<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_PSIZE</span> | <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+ <span class=sc2>// Formato de vértice de suporte ao ponto sprite</span>
+ <span class=prg>struct </span><span class=sc5>CustomVertex_PointSprite</span>
+ <span class=sc16>{</span>
+   <span class=sc2>// Posição e tamanho do pontosprite</span>
+   <span class=prg>float </span>x, y, z, nTamanho; 
+
+   <span class=sc2>// Cor do pontosprite</span>
+   <span class=prg>DWORD </span>dwCor; 
+ <span class=sc16>}</span>; 
+
+ <span class=sc2>// Inicializar a configuração de pointsprite</span>
+ <span class=prg>void </span>inicializar_Pointsprite(<span class=prg>void</span>);   
+
+ <span class=sc2>// Renderiza o objeto Pointsprite</span>
+ <span class=prg>void </span>renderizar_Pointsprite();  
+</b>
+ <span class=sc2>// Esta função inicializa o Direct3D</span>
+ <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+ <span class=sc2>// Essa função libera os objetos utilizados</span>
+ <span class=prg>void </span>Limpar();  
+
+ <span class=sc2>// Essa função desenha a cena</span>
+ <span class=prg>void </span>Renderizar();  
+
+ <span class=sc2>// Configuração inicial da câmera</span>
+ <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<u>Definição do formato de vértice de suporte ao pontosprite</u>
+<b class=prg-code>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PointSprite_Format</span> (<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_PSIZE</span> | <span class=sc4>D3DFVF_DIFFUSE</span>) </b>
+A chave da implementação de um sistema de partículas reside fortemente
+no formato de vértice  que  traz  uma  posição  3d ( <b>D3DFVF_XYZ</b> ),  o
+tamanho da partícula dado em um tipo <b class=prg>float</b> ( <b>D3DFVF_PSIZE</b> ) e uma cor
+<b>D3DFVF_DIFFUSE</b> codificada no tipo <b class=prg>DWORD</b>.
+
+<u>Formato de vértice de suporte ao ponto sprite</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;"><span class=prg>struct </span><span class=sc5>CustomVertex_PointSprite</span>
+ <span class=sc16>{</span>
+ <span class=sc2>// Posição e tamanho do pontosprite</span>
+ <span class=prg>float </span>x, y, z, nTamanho; 
+ 
+ <span class=sc2>// Cor do pontosprite</span>
+ <span class=prg>DWORD </span>dwCor; 
+<span class=sc16>}</span>; </div>
+Aqui  está  a  estrutura  que  tipifica o formato de vértice que será
+utilizado  para  produzir  cada  partícula.  Posteriormente no espaço
+global vamos criar uma  array  de  vértices ( <b>g_Pontos</b> )  contendo  4
+vértices posicionados na formação de um quadrado.
+
+<b class=prg-code><span class=prg>void </span>inicializar_Pointsprite(<span class=prg>void</span>);   </b>
+Essa  função  inicializa  os  objetos  e configura os estados que vão
+compor as partículas. Isso envolve produzir o  vertexbuffer  com  uma
+configuração  específica  para  receber  pointsprites,  configurar  o
+recurso de alpha blending e alguns fatores que determinam  o  tamanho
+final da partícula na cena.
+
+<b class=prg-code><span class=prg>void </span>renderizar_Pointsprite(); </b>
+Essa função renderiza as partículas.  Isso envolve declarar a textura
+e o vertexbuffer para o dispositivo renderizador  e também configurar
+a matriz mundo do sistema de partículas. A partícula  é  representada
+pela primitiva do tipo <b>D3DPT_POINTLIST</b>.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais: arquivo motor.cpp </u></b>
+<div class=niceview><b><span class=sc2>// Preparação para pointsprites</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vertexbuffer</span>
+<span class=sc5>IDirect3DVertexBuffer9 </span>*g_pVertexbuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Textura</span>
+<span class=sc5>IDirect3DTexture9 </span> *g_pTex = <span class=prg>NULL</span>; 
+
+<span class=sc2>// matriz de posição e orientação do pontosprite</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxPos, g_mtxRot; 
+
+<span class=sc2>// Tamanho de cada sprite</span>
+<span class=sc16>const </span><span class=prg>float </span>nTamanho = <span class=sc4>6.0f</span>; 
+
+<span class=sc2>// Posição, tamanho e cor de cada pontosprite</span>
+<span class=sc5>CustomVertex_PointSprite </span>g_Pontos[] = 
+<span class=sc16>{</span>
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>,  <span class=sc4>100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, amarelo  <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, azul     <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>, <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, verde    <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>100.0f</span>,   <span class=sc4>5.0f</span>, nTamanho, vermelho <span class=sc16>}</span>
+<span class=sc16>}</span>; 
+
+<span class=sc2>// Controla o ângulo de rotação do objeto 3d</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Ponteiro de acesso aos dados do vertexbuffer</span>
+<span class=prg>void </span>*g_pDados; 
+</b>
+</div>
+
+Segue abaixo os objetos e estruturas que vão dar o suporte existencial
+das partículas:
+<div class=prg-code>
+<span class=sc5>IDirect3DVertexBuffer9 </span>*g_pVertexbuffer = <span class=prg>NULL</span>; 
+<span class=sc5>IDirect3DTexture9 </span>     *g_pTex          = <span class=prg>NULL</span>; </div>
+Aqui estão a interface de textura  e de vertexbuffer  do  sistema  de
+partículas.
+
+
+<b class=prg-code><span class=sc5>D3DXMATRIX </span>g_mtxPos, g_mtxRot; </b>
+Estas matrizes vão receber posição e rotação e na sequência são usadas
+na montagem da matriz mundo do sistema de partículas.
+
+<b class=prg-code><span class=sc16>const </span><span class=prg>float </span>nTamanho = <span class=sc4>6.0f</span>; </b>
+Essa constante define o tamanho das sprites na tela. Usamos  o  mesmo
+valor para todas  entretanto poderia ser definido um valor individual
+para cada partícula.
+
+
+<u>Array de vértices</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;"><span class=sc2>// Posição, tamanho e cor de cada pontosprite</span>
+<span class=sc5>CustomVertex_PointSprite </span>g_Pontos[] = 
+<span class=sc16>{</span>
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>,  <span class=sc4>100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, amarelo  <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, azul     <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>, <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, verde    <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>100.0f</span>,   <span class=sc4>5.0f</span>, nTamanho, vermelho <span class=sc16>}</span>
+<span class=sc16>}</span>; </div>
+Esse  bloco  de  vértices  vai  dar  origem ao sistema de partículas.
+O directx transforma cada vértice  em um quad texturizado e colorido.
+Na ordem das coisas cada  elemento  dessa  array  é  copiado  para  o
+vertexbuffer ( <b>g_pVertexbuffer</b>  ) do sistema de partículas.
+
+<b class=prg-code><span class=prg>void </span>*g_pDados; </b>
+Esse ponteiro é usado para acessar a área de  dados  do  vertexbuffer
+para o preenchimento do  mesmo  com  os  elementos  da  array  acima.
+
+<b class=prg-code><span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; </b>
+Esta variável é utilizada para animar a rotação das partículas.
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 initGfx() -  Inicialização do motor gráfico (Direct3D) </u></b>
+<div class=niceview><span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai permitir o uso de alpha blending</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_A8R8G8B8</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a câmera</span>
+  inicializar_Camera();  
+<b>
+  <span class=sc2>// Inicializa o ambiente e objetos pertinentes da produção</span>
+  <span class=sc2>// de pointsprites.</span>
+  inicializar_Pointsprite();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b class=prg-code>inicializar_Pointsprite();  </b>
+Essa função é chamada em initGfx() para inicializar o ambiente  e  os
+objetos pertinentes da produção de pointsprites.
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 inicializar_Pointsprite()- Inicialização das partículas </u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Pointsprite(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Configuração dos estados pertinentes a sprites</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSPRITEENABLE</span>, <span class=prg>true</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALEENABLE</span>, <span class=prg>true</span>);   
+
+<span class=sc2>// Configuração de tamanho de ponto</span>
+<span class=prg>float </span>nPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE</span>, *((<span class=prg>DWORD*</span>)  &nPointSize));  
+
+<span class=sc2>// Configuração do tamanho mínimo</span>
+<span class=prg>float </span>nMinPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE_MIN</span>, *((<span class=prg>DWORD*</span>)  &nMinPointSize));  
+
+<span class=sc2>// Configuração do fator de escala</span>
+<span class=prg>float </span>nPointScaleB = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALE_B</span>, *((<span class=prg>DWORD*</span>)  &nPointScaleB));  
+
+<span class=sc2>// Aciona iluminação automática</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);   
+
+<span class=sc2>// Desliga uso do z buffer</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_FALSE</span>);   
+
+<span class=sc2>// Configuração de alpha blending</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, <span class=sc4>D3DBLEND_ONE</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>, <span class=sc4>D3DBLEND_ZERO</span>);   
+
+<span class=sc2>// Configura o formato de vértice</span>
+<span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PointSprite_Format</span>);  
+
+<span class=sc2>// Elaboração do vertexbuffer</span>
+<span class=prg>g_device-&gt;CreateVertexBuffer</span>(<span class=sc16>sizeof</span>( g_Pontos), 
+               <span class=sc4>D3DUSAGE_POINTS </span>| <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+               <span class=sc4>CustomVertex_PointSprite_Format</span>, 
+               <span class=sc4>D3DPOOL_MANAGED</span>, 
+               &g_pVertexbuffer, <span class=prg>NULL</span>);   
+
+<span class=sc2>// Tranca o vertexbuffer para inicializar o ponteiro de dados</span>
+<span class=prg>g_pVertexbuffer-&gt;Lock</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, &g_pDados, <span class=sc4>0</span>);   
+
+<span class=sc2>// Transfere os dados para o vertexbuffer</span>
+<span class=prg>memcpy</span>(g_pDados, g_Pontos, <span class=sc16>sizeof</span>(g_Pontos) );  
+
+<span class=sc2>// Destranca o vertexbuffer</span>
+<span class=prg>g_pVertexbuffer-&gt;Unlock</span>();  
+
+<span class=sc2>// Carrega a textura</span>
+<span class=prg>D3DXCreateTextureFromFile</span>(g_device, <span class=sc6>"particula.png"</span>, &g_pTex);  
+
+<span class=sc16>} <span class=sc2>// inicializar_Pointsprite()</span></span>
+</div>
+
+<b class=prg-code><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSPRITEENABLE</span>, <span class=prg>true</span>);   </b>
+Habilitamos aqui o uso de pointsprites.
+
+<b class=prg-code><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALEENABLE</span>, <span class=prg>true</span>);   </b>
+Habilitamos  aqui  o  uso  de  fatores  de  escala na contribuição do
+tamanho final da partícula.  Os fatores que impactam no tamanho final
+da partícula estão definidos logo abaixo.
+
+
+<u>Configuração dos fatores de escala</u>
+<div class=prg-code><span class=sc2>// Configuração de tamanho de ponto</span>
+<span class=prg>float </span>nPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE</span>, *((<span class=prg>DWORD*</span>)  &nPointSize));  
+
+<span class=sc2>// Configuração do tamanho mínimo</span>
+<span class=prg>float </span>nMinPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE_MIN</span>, *((<span class=prg>DWORD*</span>)  &nMinPointSize));  
+
+<span class=sc2>// Configuração do fator de escala</span>
+<span class=prg>float </span>nPointScaleB = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALE_B</span>, *((<span class=prg>DWORD*</span>)  &nPointScaleB));  </div>
+Este bloco configura os fatores de escala  que  impactam  no  tamanho
+final da partícula.
+
+
+<b class=prg-code><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);   </b>
+Aqui  desligamos  a  iluminação  manual para utilizarmos a iluminação
+automática default.
+
+<b class=prg-code><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_FALSE</span>); </b>
+Desligamos o uso do buffer de profundidade.  
+
+
+<u>Configuração de alpha blending</u>
+<div class=prg-code><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, <span class=sc4>D3DBLEND_ONE</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>, <span class=sc4>D3DBLEND_ZERO</span>);   </div>
+Este  bloco  faz  a  configuração  do recurso de alpha blending. Essa
+configuração vai permitir a cor do formato  de  vértice  tomar  conta  
+totalmente da cor branca presente na textura da partícula.
+
+
+<b class=prg-code><span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PointSprite_Format</span>);  </b>
+Apontamos aqui o formato de vértice adequado para renderizar pointsprites.
+
+
+<u>Elaboração do vertexbuffer</u>
+<div class=prg-code><span class=prg>g_device-&gt;CreateVertexBuffer</span>(<span class=sc16>sizeof</span>( g_Pontos), 
+               <span class=sc4>D3DUSAGE_POINTS </span>| <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+               <span class=sc4>CustomVertex_PointSprite_Format</span>, 
+               <span class=sc4>D3DPOOL_MANAGED</span>, 
+               &g_pVertexbuffer, <span class=prg>NULL</span>);   </div>
+Esta linha faz a criação  do  vertexbuffer. O ponto  mais  chave  na
+especificação do sistema de partículas  é  a declaração de uso com o
+flag <b>D3DUSAGE_POINTS</b>  que  indica  a  presença  de  pointsprites  no
+vertexbuffer.
+
+
+<b class=prg-code><span class=prg>g_pVertexbuffer-&gt;Lock</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, &g_pDados, <span class=sc4>0</span>);   </b>
+Aqui trancamos o vertexbuffer para desta forma inicializar o ponteiro
+com o endereço inicial da área de dados do mesmo.
+
+<b class=prg-code><span class=prg>memcpy</span>(g_pDados, g_Pontos, <span class=sc16>sizeof</span>(g_Pontos) );  </b>
+Nesta linha copiamos nossa array de vértices para o vertexbuffer.
+
+<b class=prg-code><span class=prg>g_pVertexbuffer-&gt;Unlock</span>();  </b>
+Aqui liberamos o vertexbuffer para uso do directx.
+
+<b class=prg-code><span class=prg>D3DXCreateTextureFromFile</span>(g_device, <span class=sc6>"particula.png"</span>, &g_pTex);  </b>
+Aqui carregamos a textura que deve  estar  na  pasta  do  projeto  da
+aplicação e também estar presente no diretório do executável  para  a
+aplicação funcionar fora do ambiente do visual studio.
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 renderizar_Pointsprite() - Renderização das partículas </u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Pointsprite() 
+<span class=sc16>{</span>
+
+<span class=sc2>// Configura transformação do objeto Pointsprite</span>
+<span class=prg>D3DXMatrixRotationZ</span>(&g_mtxRot, g_angulo );  
+<span class=prg>D3DXMatrixTranslation</span>(&g_mtxPos, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+<span class=prg>g_device-&gt;SetTransform</span>(<span class=sc4>D3DTS_WORLD</span>, &( g_mtxRot * g_mtxPos ) );  
+
+<span class=sc2>// Declara a textura e o vertexbuffer</span>
+<span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_pTex);  
+<span class=prg>g_device-&gt;SetStreamSource</span>(<span class=sc4>0</span>, g_pVertexbuffer, <span class=sc4>0</span>, <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PointSprite</span>) );  
+
+<span class=sc2>// Desenha o objeto pointsprite</span>
+<span class=prg>g_device-&gt;DrawPrimitive</span>(<span class=sc4>D3DPT_POINTLIST</span>, <span class=sc4>0</span>, <span class=sc4>4</span>);   
+
+<span class=sc2>// Atualiza ângulo para a próxima renderização</span>
+g_angulo  += <span class=sc4>0.10f</span>; 
+<span class=sc16>} <span class=sc2>// renderizar_Pointsprite().fim</span></span>
+</div>
+
+
+<u>Definição da matriz mundo</u>
+<div class=prg-code><span class=prg>D3DXMatrixRotationZ</span>   (&g_mtxRot, g_angulo );  
+<span class=prg>D3DXMatrixTranslation</span> ( &g_mtxPos, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+<span class=prg>g_device-&gt;SetTransform</span>(<span class=sc4>D3DTS_WORLD</span>, &( g_mtxRot * g_mtxPos ) );  </div>
+Gradualmente definimos aqui a matriz mundo que comporta a  posição  e
+rotação do sistema de partículas.
+
+
+Declaração da textura e do vertexbuffer ao dispositivo gráfico:
+<div class=prg-code><span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_pTex);  
+<span class=prg>g_device-&gt;SetStreamSource</span>(<span class=sc4>0</span>, g_pVertexbuffer, <span class=sc4>0</span>, <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PointSprite</span>) );  </div>
+
+<b class=prg-code><span class=prg>g_device-&gt;DrawPrimitive</span>(<span class=sc4>D3DPT_POINTLIST</span>, <span class=sc4>0</span>, <span class=sc4>4</span>);   </b>
+Aqui é a forma de se desenhar adequadamente o sistema de partículas.
+
+<b class=prg-code>g_angulo  += <span class=sc4>0.10f</span>; </b>
+A atualização dessa variável a cada frame garante a rotação animada
+do sistema de partículas.
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 Renderizar() - Renderização da cena </u></b>
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Fundo preto para combinar com o fundo da textura do pontosprite</span>
+  <span class=sc16>const </span><span class=prg>DWORD </span>dwPreto = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, 
+    <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, 
+    dwPreto, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+<b>
+  renderizar_Pointsprite();  
+</b>
+  <span class=sc2>// Finalizando a cena</span>
+  <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b class=prg-code><span class=sc16>const </span><span class=prg>DWORD </span>dwPreto = <span class=sc4>0</span>; </b>
+A cor de fundo do backbuffer foi definida como  preto  para  combinar
+com o fundo preto da textura do pontosprite.
+
+<b class=prg-code>renderizar_Pointsprite();  </b>
+Essa função é chamada para renderizar o sistema de partículas.
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Pointsprite</u></b>
+<div class=prg-code><img src=images\prj_Pointsprite.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_PointSprite - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar partículas com pontosprites</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+ <span class=sc2>// Definição do formato de vértice de suporte ao pontosprite</span>
+ <span class=sc16>#define </span><span class=sc4>CustomVertex_PointSprite_Format</span> (<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_PSIZE</span> | <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+ <span class=sc2>// Formato de vértice de suporte ao ponto sprite</span>
+ <span class=prg>struct </span><span class=sc5>CustomVertex_PointSprite</span>
+ <span class=sc16>{</span>
+   <span class=sc2>// Posição e tamanho do pontosprite</span>
+   <span class=prg>float </span>x, y, z, nTamanho; 
+
+   <span class=sc2>// Cor do pontosprite</span>
+   <span class=prg>DWORD </span>dwCor; 
+ <span class=sc16>}</span>; 
+
+ <span class=sc2>// Inicializar a configuração de pointsprite</span>
+ <span class=prg>void </span>inicializar_Pointsprite(<span class=prg>void</span>);   
+
+ <span class=sc2>// Renderiza o objeto Pointsprite</span>
+ <span class=prg>void </span>renderizar_Pointsprite();  
+
+ <span class=sc2>// Esta função inicializa o Direct3D</span>
+ <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+ <span class=sc2>// Essa função libera os objetos utilizados</span>
+ <span class=prg>void </span>Limpar();  
+
+ <span class=sc2>// Essa função desenha a cena</span>
+ <span class=prg>void </span>Renderizar();  
+
+ <span class=sc2>// Configuração inicial da câmera</span>
+ <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+<span class=sc2>// fim do arquivo: motor.h</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_PointSprite - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar partículas com pontosprites</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;string.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Desliga aviso de 'função insegura' devido ao uso das</span>
+<span class=sc2>// funções de string antigas( strcat etc-&gt;. )</span>
+<span class=sc16>#pragma </span>warning( disable:4996 ) 
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>IDirect3D9 </span>            *g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9 </span>      *g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho  = <span class=sc4>0xFFFF0000</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde      = <span class=sc4>0xFF00FF00</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul      = <span class=sc4>0xFF0000FF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>amarelo      = <span class=sc4>0xFFFFFF00</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Preparação para pointsprites</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vertexbuffer</span>
+<span class=sc5>IDirect3DVertexBuffer9 </span>*g_pVertexbuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Textura</span>
+<span class=sc5>IDirect3DTexture9 </span> *g_pTex = <span class=prg>NULL</span>; 
+
+<span class=sc2>// matriz de posição e orientação do pontosprite</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxPos, g_mtxRot; 
+
+<span class=sc2>// Tamanho de cada sprite</span>
+<span class=sc16>const </span><span class=prg>float </span>nTamanho = <span class=sc4>6.0f</span>; 
+
+<span class=sc2>// Posição, tamanho e cor de cada pontosprite</span>
+<span class=sc5>CustomVertex_PointSprite </span>g_Pontos[] = 
+<span class=sc16>{</span>
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>,  <span class=sc4>100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, amarelo  <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, azul     <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>-100.0f</span>, <span class=sc4>-100.0f</span>,  <span class=sc4>5.0f</span>, nTamanho, verde    <span class=sc16>}</span>, 
+  <span class=sc16>{ </span><span class=sc4>100.0f</span>,  <span class=sc4>100.0f</span>,   <span class=sc4>5.0f</span>, nTamanho, vermelho <span class=sc16>}</span>
+<span class=sc16>}</span>; 
+
+<span class=sc2>// Controla o ângulo de rotação do objeto 3d</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Ponteiro de acesso aos dados do vertexbuffer</span>
+<span class=prg>void </span>*g_pDados; 
+
+
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai permitir o uso de alpha blending</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_A8R8G8B8</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Inicializa o ambiente e objetos pertinentes da produção</span>
+  <span class=sc2>// de pointsprites.</span>
+  inicializar_Pointsprite();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Pointsprite(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Configuração dos estados pertinentes a sprites</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSPRITEENABLE</span>, <span class=prg>true</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALEENABLE</span>, <span class=prg>true</span>);   
+
+<span class=sc2>// Configuração de tamanho de ponto</span>
+<span class=prg>float </span>nPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE</span>, *((<span class=prg>DWORD*</span>)  &nPointSize));  
+
+<span class=sc2>// Configuração do tamanho mínimo</span>
+<span class=prg>float </span>nMinPointSize = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSIZE_MIN</span>, *((<span class=prg>DWORD*</span>)  &nMinPointSize));  
+
+<span class=sc2>// Configuração do fator de escala</span>
+<span class=prg>float </span>nPointScaleB = <span class=sc4>1.0f</span>; 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_POINTSCALE_B</span>, *((<span class=prg>DWORD*</span>)  &nPointScaleB));  
+
+<span class=sc2>// Aciona iluminação automática</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);   
+
+<span class=sc2>// Desliga uso do z buffer</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_FALSE</span>);   
+
+<span class=sc2>// Configuração de alpha blending</span>
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, <span class=sc4>D3DBLEND_ONE</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>, <span class=sc4>D3DBLEND_ZERO</span>);   
+
+<span class=sc2>// Configura o formato de vértice</span>
+<span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PointSprite_Format</span>);  
+
+<span class=sc2>// Elaboração do vertexbuffer</span>
+<span class=prg>g_device-&gt;CreateVertexBuffer</span>(<span class=sc16>sizeof</span>( g_Pontos), 
+               <span class=sc4>D3DUSAGE_POINTS </span>| <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+               <span class=sc4>CustomVertex_PointSprite_Format</span>, 
+               <span class=sc4>D3DPOOL_MANAGED</span>, 
+               &g_pVertexbuffer, <span class=prg>NULL</span>);   
+
+<span class=sc2>// Tranca o vertexbuffer para inicializar o ponteiro de dados</span>
+<span class=prg>g_pVertexbuffer-&gt;Lock</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, &g_pDados, <span class=sc4>0</span>);   
+
+<span class=sc2>// Transfere os dados para o vertexbuffer</span>
+<span class=prg>memcpy</span>(g_pDados, g_Pontos, <span class=sc16>sizeof</span>(g_Pontos) );  
+
+<span class=sc2>// Destranca o vertexbuffer</span>
+<span class=prg>g_pVertexbuffer-&gt;Unlock</span>();  
+
+<span class=sc2>// Carrega a textura</span>
+<span class=prg>D3DXCreateTextureFromFile</span>(g_device, <span class=sc6>"particula.png"</span>, &g_pTex);  
+<span class=sc16>} <span class=sc2>// inicializar_Pointsprite().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Pointsprite() 
+<span class=sc16>{</span>
+
+<span class=sc2>// Configura transformação do objeto Pointsprite</span>
+<span class=prg>D3DXMatrixRotationZ</span>(&g_mtxRot, g_angulo );  
+<span class=prg>D3DXMatrixTranslation</span>(&g_mtxPos, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+<span class=prg>g_device-&gt;SetTransform</span>(<span class=sc4>D3DTS_WORLD</span>, &( g_mtxRot * g_mtxPos ) );  
+
+<span class=sc2>// Declara a textura e o vertexbuffer</span>
+<span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_pTex);  
+<span class=prg>g_device-&gt;SetStreamSource</span>(<span class=sc4>0</span>, g_pVertexbuffer, <span class=sc4>0</span>, <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PointSprite</span>) );  
+
+<span class=sc2>// Desenha o objeto pointsprite</span>
+<span class=prg>g_device-&gt;DrawPrimitive</span>(<span class=sc4>D3DPT_POINTLIST</span>, <span class=sc4>0</span>, <span class=sc4>4</span>);   
+
+<span class=sc2>// Atualiza ângulo para a próxima renderização</span>
+g_angulo  += <span class=sc4>0.10f</span>; 
+
+<span class=sc16>} <span class=sc2>// renderizar_Pointsprite().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>700.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+
+  <span class=sc2>// Pega o tamanho da área cliente</span>
+  <span class=sc5>RECT </span>area_cliente; 
+  <span class=prg>GetWindowRect </span>(hJanela, &area_cliente);  
+  g_xtela = <span class=prg>area_cliente.right</span>; 
+  g_ytela = <span class=prg>area_cliente.bottom</span>;  
+
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao =  <span class=sc4>0.785398f</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Fundo preto para combinar com o fundo da textura do pontosprite</span>
+  <span class=sc16>const </span><span class=prg>DWORD </span>dwPreto = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, 
+    <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, 
+    dwPreto, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+  renderizar_Pointsprite();  
+
+  <span class=sc2>// Finalizando a cena</span>
+  <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL </span>      ) <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL </span>    ) <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Libera a textura</span>
+  <span class=sc9>if</span>(g_pTex != <span class=prg>NULL </span>         ) <span class=prg>g_pTex-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o vertexbuffer</span>
+  <span class=sc9>if</span>(g_pVertexbuffer != <span class=prg>NULL</span>) <span class=prg>g_pVertexbuffer-&gt;Release</span>();  
+
+  <span class=sc2>// Limpeza dos ponteiros</span>
+  g_device     = <span class=prg>NULL</span>; 
+  g_Direct3d     = <span class=prg>NULL</span>; 
+  g_pTex          = <span class=prg>NULL</span>; 
+  g_pVertexbuffer = <span class=prg>NULL</span>; 
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+  <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+<span class=sc2>// fim do arquivo: motor.cpp﻿
+</div>
+
+<div class=prg-code>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_PointSprite - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar partículas com pontosprites</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Pointsprite"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+<span class=sc2>// fim do arquivo: entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track06-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track07-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                 -  Inicialização do motor gráfico (Direct3D)</a>
+<a href=#2.4>2.4 inicializar_Pointsprite() - Inicialização das partículas</a>
+<a href=#2.5>2.5 renderizar_Pointsprite()  - Renderização das partículas</a>
+<a href=#2.6>2.6 Renderizar()              - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Pointsprite</a>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

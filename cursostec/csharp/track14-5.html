@@ -1,0 +1,542 @@
+﻿<html>
+<head>
+<title>C_Sharp_14-5</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 14-5</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track14-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track14"></a>
+<h3 style="background-color:#ead5ff">14-5 Gravação e leitura de arquivos em paralelo</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+A operação de leitura e gravação de arquivos pode ser feita em paralelo,
+ou de maneira assíncrona em  palavras  mais  técnicas.  Isso  tem  duas
+vantagens:  evita que a aplicação trave  no caso de grandes arquivos ou
+quando  é  lenta  a  fonte dos dados como arquivos sediados na Internet.
+A  outra  vantagem  é  que  a  aplicação  pode  realizar outras tarefas 
+enquanto  ocorre  em  outra  linha de execução as operações de arquivos.
+
+Os métodos  para  isso  são <b class=prg>BeginRead()</b> e <b class=prg>BeginWrite()</b> do objeto <b class=prg>Stream.</b>
+A grande diferença destes métodos em relação aos vistos anteriormente é
+que  eles  recebem  um  <b>delegate</b> que aponta para a função a ser chamada 
+quando a operação de leitura ou gravação está completa. Esse método que
+sinaliza  o  final  da operação geralmente é chamado de callback e nele
+deve  ser  fechado  a  operação  de  arquivo com <b class=prg>EndRead()</b> e <b class=prg>EndWrite()</b>
+respectivamente a operação sendo realizada.
+
+<b><u>1.2 Contexto da aplicação de exemplo</b></u>
+<img src=images\prj_Paralelo.png>
+
+Nossa  aplicação  de exemplo elabora uma classe  <b>Disco</b>  que  aplica  os
+processos de leitura e gravação de dados usando os métodos que realizam
+essas  operações em paralelo liberando a aplicação para realizar outras
+tarefas  enquanto o processo de leitura e gravação está sendo realizado. 
+
+Para manter  o código mais simples e mais compacto possível dispensamos
+a simulação  de  realizar outras tarefas e dispensamos o uso de grandes
+arquivos.  Apenas mostramos como montar  o contexto de uso da leitura e
+gravação assíncronas.  Todo  o  código  funcional foi mantido dentro da 
+classe <b>Disco</b>,  mas uma aplicação real vai distribuir melhor as tarefas.
+
+<b><u>2. Preparação básica comum para leitura e gravação</u></b>
+<div class=niceview>
+<span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Disco</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// O delegate que vai receber o método callback que avisa 
+// quando a operação de leitura ou gravação está completa.
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="prg">AsyncCallback</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Objetos de trabalho
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="prg">Stream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="prg">Byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">;</span><span class="sc0">
+
+<span class=sc2>// (...) </span>
+
+</span><span class="sc10">}</span><span class="sc2">// endclass
+</span></div>
+Vamos ler e gravar bytes,  isso explica o objeto <b class=prg>Stream</b>, <b>arquivo</b>,  e  a
+array <b>dados</b>  que serão usados no processo de leitura e gravação. O mais
+complicado desse contexto é o delegate <b>Mensageiro</b> do tipo <b class=sc16>AsyncCallback</b>.
+Acostume-se  com  esse  tipo  pois  ele é usado em qualquer contexto de 
+processos rodando em paralelo.  Já  passamos  por ele no tópico 9.4 que 
+trata sobre eventos.
+
+O delegate <b>Mensageiro</b>, mais adiante no código de leitura e gravação vai
+receber uma função callback  na qual a assinatura tem <span class=prg>void</span> como retorno
+e a aceitação  de  um  objeto  que  implementa a interface <b class=sc16>IAsyncResult</b>:
+
+<div class=niceview><span class=prg> 
+<span class=sc2>//(...)</span> 
+<span class=sc2>// Dentro do método ler_dados()</span>
+<b>Mensageiro</b> = <b class=sc16>new AsyncCallback(this.quandoLeituraCompleta);</b>
+<span class=sc2>// Faz leitura dos dados</span>
+arquivo.BeginRead(dados, 0, 10, <b>Mensageiro</b>, null);
+
+<span class=sc2>// quandoLeituraCompleta()</span>
+<b>void</b> quandoLeituraCompleta(<b>IAsyncResult</b> oResultadoParalelo)
+{ 
+<span class=sc2>//(...)</span> 
+}
+</div>
+
+<div class=niceview><span class=prg>
+<span class=sc2>//(...)</span> 
+<span class=sc2>// gravar_dados()</span>
+<b>Mensageiro</b> = <b class=sc16>new AsyncCallback(this.quandoGravacaoCompleta);</b>
+<span class=sc2>// Iniciando o processo de gravar os dados</span>
+arquivo.BeginWrite(dados, 0, dados.Length, <b>Mensageiro</b>, null);
+
+<span class=sc2>// quandoGravacaoCompleta()</span>
+<b>void</b> quandoGravacaoCompleta(<b>IAsyncResult</b> oResultadoParalelo)
+{
+<span class=sc2>// (...)</span>
+}
+</div>	
+
+<b><u>3. O processo de gravação paralela</u></b>
+O processo  de  gravação  é composto por dois métodos, <b>gravar_dados()</b> e
+<b>quandoGravacaoCompleta()</b> que é a função que <b class=prg>BeginWrite()</b> chama quando a
+gravação está completa.
+
+<div class=niceview>
+<span class="sc2">// gravar_dados() - Grava dados no arquivo delme.txt
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gravar_dados</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Dados para serem gravados
+</span><span class="sc0">  </span><span class="sc11">Byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc4">71</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">97</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">109</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">101</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">112</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">114</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">111</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">103</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">13</span><span class="sc0"> </span><span class="sc10">};</span><span class="sc0">
+
+  </span><span class="sc2">// Inicializa os dados a serem gravados
+</span><span class="sc0">  </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+    </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">];</span><span class="sc0">
+
+  </span><span class="sc2">// Abre o arquivo para gravação
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">OpenWrite</span><span class="sc10">(</span><span class="sc6">"delme.txt"</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc11">Mensageiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Iniciando o processo de gravar os dados
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">BeginWrite</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// gravar_dados().fim
+</span></div>
+
+<span class=prg>arquivo.BeginWrite(dados, 0, dados.Length, Mensageiro, <b>null</b>);</span>
+Ao lado do delegate, este método aceita qualquer objeto  que  pode  ser
+aproveitado do jeito que melhor convier a aplicação, mas geralmente ele
+é usado para passar informações convenientes ao contexto. Em nosso caso
+não  passamos  nenhum objeto por isso o argumento está configurado como 
+<span class=prg>null.</span>  Esse objeto é recebido na função callback através da propriedade
+oResultadoParalelo<b class=prg>.AsyncState</b> do objeto <b class=prg>IAsyncResult.</b>
+
+<div class=niceview>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">oResultadoParalelo</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Fecha o processo de leitura paralela
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">EndWrite</span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">.</span><span class="sc11">IsCompleted</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\t Gravação Ok"</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoGravacaoCompleta().fim
+</span></div>
+Na função callback de qualquer contexto de processamento paralelo deve
+haver  uma  função  <b class=prg>End...()</b>  correspondente  com  o uso de uma função 
+<b class=prg>Begin...()</b> para fechar adequadamente a linha de execução que se abriu.
+
+Veja que  objeto <b class=prg>IAsyncResult</b> recebido deve ser repassado para função
+<b class=prg>End...()</b>,  no  nosso  caso  <b>oResultadoParalelo</b>  para <b class=prg>EndWrite()</b>. Esse 
+objeto apresenta várias propriedades que representam de forma geral o 
+status da situação. Por exemplo, a  propriedade <span class=prg>IsCompleted</span> indica se 
+a  operação  foi  completada.  Ilustramos  abaixo  como  poderia  ser 
+aproveitado o objeto retornado pela propriedade <span class=prg>AsyncState</span>:
+<span class=prg>
+<span class=sc2>// gravar_dados()</span>
+arquivo.BeginWrite(dados, 0, dados.Length, Mensageiro, <b>arquivo</b>);
+
+<span class=sc2>// quandoLeituraCompleta() ou quandoGravacaoCompleta()</span>
+<b>Stream arquivo_local = (Stream) oResultadoParalelo.AsyncState;</b>
+</span>
+
+<b><u>4. O processo de leitura paralela</u></b>
+O processo  de  leitura  é  composto  por dois métodos, <b>ler_dados()</b> e
+<b>quandoLeituraCompleta()</b> que é a função que <b class=prg>BeginRead()</b> chama quando a
+leitura está completa.  Veja atentamente os comentários para entender
+o  código  de  exemplo  que  é  muito similar ao processo de gravação.
+
+<div class=niceview>
+<span class="sc2">// ler_dados() - Lê dados do arquivo delme.txt
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ler_dados</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Passando o método-recado para o Mensageiro
+</span><span class="sc0">  </span><span class="sc11">Mensageiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Abre o arquivo para leitura
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">OpenRead</span><span class="sc10">(</span><span class="sc6">"delme.txt"</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Faz leitura dos dados
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">BeginRead</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ler_dados().fim
+</span></div>
+
+<div class=niceview>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">oResultadoParalelo</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nlido_qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Finaliza a operação de leitura
+</span><span class="sc0">  </span><span class="sc11">nlido_qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">EndRead</span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Avisos
+</span><span class="sc0">  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\t Quantidade de bytes lidos: {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nlido_qtd</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\t Leitura de dados Ok: \n\t "</span><span class="sc10">);</span><span class="sc0">
+  
+  </span><span class="sc2">// Converte os bytes numa string
+</span><span class="sc0">  </span><span class="sc11">String</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Encoding</span><span class="sc10">.</span><span class="sc11">ASCII</span><span class="sc10">.</span><span class="sc11">GetString</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// fecha o arquivo
+</span><span class="sc0">  </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoLeituraCompleta().fim</span>
+</div>
+
+<span class=prg>String txt = <b>Encoding.ASCII.GetString(dados)</b>;</span>
+Uma novidade  aqui  é esta função do namespace <b class=prg>System.Text</b> que 
+aproveitamos  para transformar os bytes de  <b>dados</b>  na  palavra
+Gameprog. Certamente que os bytes de <b>dados</b> já representavam os
+os  caracteres  do  código  ASCII de codificação de informação. 
+
+<b><u>5. Código fonte do programa exemplo: prj_Paralelo</u></b>
+<div class=prg-code>
+<img src=images\prj_Paralelo.png>
+
+<span class="sc2">// Projeto prj_Paralelo -  Arquivo: Disco.cs
+// Este programa ilustra gravação e leitura de arquivos binários
+// em paralelo
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Vamos usar Enconding.ASCII.GetString() para converter uma
+// array de bytes numa só string
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Paralelo</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Disco</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// O delegate que vai receber o método callback que avisa 
+</span><span class="sc0">    </span><span class="sc2">// quando a operação de leitura ou gravação está completa.
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Objetos de trabalho
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Stream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Construtor
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Disco</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Define dados como uma array de 10 bytes
+</span><span class="sc0">      </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Byte</span><span class="sc10">[</span><span class="sc4">10</span><span class="sc10">];</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// gravar_dados() - Grava dados no arquivo delme.txt
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gravar_dados</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Dados para serem gravados
+</span><span class="sc0">      </span><span class="sc11">Byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc4">71</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">97</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">109</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">101</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">112</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">114</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">111</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">103</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">13</span><span class="sc0"> </span><span class="sc10">};</span><span class="sc0">
+
+      </span><span class="sc2">// Inicializa os dados a serem gravados
+</span><span class="sc0">      </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+        </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc2">// Abre o arquivo para gravação
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">OpenWrite</span><span class="sc10">(</span><span class="sc6">"delme.txt"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Mensageiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Iniciando o processo de gravar os dados
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">BeginWrite</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// gravar_dados().fim
+</span><span class="sc0">
+    </span><span class="sc2">// ler_dados() - Lê dados do arquivo delme.txt
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ler_dados</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Passando o método-recado para o Mensageiro
+</span><span class="sc0">      </span><span class="sc11">Mensageiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Abre o arquivo para leitura
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">OpenRead</span><span class="sc10">(</span><span class="sc6">"delme.txt"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Faz leitura dos dados
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">BeginRead</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Mensageiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ler_dados().fim
+</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">oResultadoParalelo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nlido_qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Finaliza a operação de leitura
+</span><span class="sc0">      </span><span class="sc11">nlido_qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">EndRead</span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Avisos
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\t Quantidade de bytes lidos: {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nlido_qtd</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\t Leitura de dados Ok: \n\t "</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc2">// Converte os bytes numa string
+</span><span class="sc0">      </span><span class="sc11">String</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Encoding</span><span class="sc10">.</span><span class="sc11">ASCII</span><span class="sc10">.</span><span class="sc11">GetString</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// fecha o arquivo
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoLeituraCompleta().fim
+</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">oResultadoParalelo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Fecha o processo de leitura paralela
+</span><span class="sc0">      </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">EndWrite</span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">);</span><span class="sc0">
+     
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">oResultadoParalelo</span><span class="sc10">.</span><span class="sc11">IsCompleted</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\t Gravação Ok"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">arquivo</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoGravacaoCompleta().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_Paralelo -  Arquivo: Programa.cs
+// Este programa ilustra gravação e leitura de arquivos binários
+// em paralelo
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Paralelo</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Paralelo"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Disco</span><span class="sc0"> </span><span class="sc11">meuhd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Disco</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">meuhd</span><span class="sc10">.</span><span class="sc11">gravar_dados</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">meuhd</span><span class="sc10">.</span><span class="sc11">ler_dados</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\t *** Pressione ENTER para encerrar! ***"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim 
+</span><span class="sc0">
+
+
+    </span><span class="sc2">// menu() - Apresenta um menu com duas opções
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \t \t Menu \n \t -------------------------\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \t G- Gravar dados no arquivo delme.txt \n\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \t L- Ler dados do arquivo delme.txt \n\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\t Escolha sua opção (G, L): "</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">ConsoleKeyInfo</span><span class="sc0"> </span><span class="sc11">tecla</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">tecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ConsoleKeyInfo</span><span class="sc10">)</span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ReadKey</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">G</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// A linha Main() trava e aguarda o final do processamento das linhas.
+</span><span class="sc0">        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">L</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">nulo</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// menu().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Paralelo
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track14-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

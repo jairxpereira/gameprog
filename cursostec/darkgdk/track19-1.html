@@ -1,0 +1,535 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase19-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 19.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track18-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track20-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track19"></a><h3 style="background-color:#80ff80">19.1 Utilizando o sistema de partículas</h3><pre>
+<b><u>1 Visão geral</b></u><div class=prg-code>
+<img src="images\particulas.png"></div>
+A DarkGdk apresenta um sistema de partículas ideal para compor pequenos
+efeitos especiais.
+
+<b class=sntx>void dbMakeParticles ( int iID, int iImageIndex, int maxParticles, float fRadius );</b>
+<b class=prg>dbMakeParticles ( nObjParticulas , nImagem,   nQtdMax, nRaioEmissor);</b>
+Essa função cria um sistema de partículas.
+
+<b>nObjParticulas</b>		Handle numérico do sistema de partículas
+<b>nImagem</b>			Imagem que texturiza as partículas
+<b>nQtdMax</b>			Quantidade máxima de partículas emitidas por ciclo
+<b>nRaioEmissor</b>		Tamanho do emissor expresso por raio
+
+Exemplo:
+<div class=niceview> <span class=prg>
+const int img_fire = 3;
+dbLoadImage ("c:\\gameprog\\gdkmedia\\bitmap\\fire.bmp",img_fire);
+
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+
+<span class=sc2>// Quantidade máxima de partículas</span>
+int partic_max = 50;
+
+<span class=sc2>// Raio de emissão das partículas</span>
+float raio = 20.0f;
+
+<span class=sc2>// Cria o sistema de partículas</span>
+dbMakeParticles ( partic_sys , img_fire, partic_max, raio);
+</span></div>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbColorParticles ( int iID, int iRed, int iGreen, int iBlue );</b>
+<b class=prg>dbColorParticles ( nObjParticulas, nVermelho,  nVerde, nAzul );</b>
+
+Essa função adiciona uma cor às partículas que se combina com a textura 
+aplicada. A cor é dada na forma de valores rbg's individuais (nVermelho, 
+nVerde, nAzul);
+
+Exemplo:<div class=niceview> <span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+
+<span class=sc2>// Cor das partículas</span>
+int r,g,b;
+r = g = b = 255; <span class=sc2>// Branco</span>
+
+// Configura cor das partículas
+dbColorParticles ( partic_sys, r, g, b );
+</span></div>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbPositionParticles ( int iID, float fX, float fY, float fZ );</b>
+<b class=prg>dbPositionParticles ( nObjParticulas, xpos, ypos, zpos);</b>
+Essa função posiciona o emissor de partículas no espaço 3D.
+
+Exemplo:<div class=niceview><span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+float xcursor = 975, ycursor = 535, zcursor = -320;
+dbPositionParticles ( partic_sys, xcursor, ycursor, zcursor);
+</span></div>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetParticleEmmissions( int iID, int iNumber );</b>
+<b class=prg>dbSetParticleEmissions ( nObjParticulas, nQtd );</b>
+Essa função configura a quantidade (nQtd) de partículas emitidas. nQtd
+representa uma taxa de volume.
+
+Exemplo:
+<div class=niceview><span class=prg>
+int partic_sys  = 1;
+<span class=sc2>// Quantidade de partículas na emissão</span>
+int partic_qtd = 10;
+dbSetParticleEmissions ( partic_sys, partic_qtd );
+</span></div>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetParticleSpeed ( int iID, float fTime );</b>
+<b class=prg>dbSetParticleSpeed ( nObjParticulas, partic_tempo );</b>
+Essa função configura a velocidade de movimentação das partículas.
+
+Exemplo:<div class=niceview><span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+<span class=sc2>// Frequência de emissão das partículas</span>
+float partic_tempo = 0.01f;
+dbSetParticleSpeed  ( partic_sys, partic_tempo);
+</span></div>	
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetParticleGravity ( int iID, float fGravity );</b>
+<b class=prg>dbSetParticleGravity ( nObjParticulas, partic_gravidade );</b>
+Essa função configura a força de gravidade sobre as partículas. Valores 
+negativos invertem a direção de movimento das partículas.
+
+Exemplo:<div class=niceview><span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+<span class=sc2>// Gravidade da queda</span>
+float partic_gravidade = 2.0f;
+dbSetParticleGravity  ( partic_sys, partic_gravidade);
+</span></div>	
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetParticleFloor ( int iID, int iFlag );</b>
+<b class=prg>dbSetParticleFloor(nObjParticulas, lPiso);</b>
+Essa função liga (lPiso = 1) ou desliga (lPiso = 0) o piso limite das 
+partículas. Se estiver desligado as partículas se movimentam por todo
+o espaço 3D até desaparecerem.
+
+Exemplo:<div class=niceview><span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+int lPiso = 0;
+dbSetParticleFloor ( partic_sys, lPiso);
+</span></div>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbGhostParticlesOn ( int iID, int iMode );</b>
+<b class=prg>dbGhostParticlesOn(nObjParticulas, modo_ghost);</b>
+Essa função aplica um efeito fantasma nas partículas adicionando-lhes,
+conforme a configuração do <b>modo_ghost</b>, alguma transparência às mesmas.
+
+<b>modo_ghost</b>	Vai de zero (0) a cinco (5) determinando 6 configurações 
+		distintas de modo ghost.
+		
+Exemplo:<div class=niceview><span class=prg>
+<span class=sc2>// Handle para o objeto partículas.</span>
+int partic_sys  = 1;
+int modo_ghost = 2;
+dbGhostParticlesOn ( partic_sys, modo_ghost);
+</span></div>	
+
+Veja agora o programa exemplo completo:	
+<div class=prg-code>
+<img src="images\particulas.png">
+
+<span class="sc2">// particulas.cpp
+// Esse programa mostra o uso do sistema de partículas
+</span><span class="sc9">#include "DarkGDK.h"
+#include "windows.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// Interpreta o teclado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">          </span><span class="sc2">// Texturiza a matrix
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gpParticles</span><span class="sc10">();</span><span class="sc0">         </span><span class="sc2">// Testa Partículas
+</span><span class="sc0">
+</span><span class="sc2">// Configuração da camera
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1005</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">475</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">555</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xcursor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">975</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">535</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">320</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xcam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Configuração dos modos
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">img_fire</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_cursor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc2">// Carrega a textura do terreno e a textura das partículas
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\textura2x2.bmp"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\fire.bmp"</span><span class="sc10">,</span><span class="sc11">img_fire</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Carrega soldado e sua textura
+</span><span class="sc11">dbSetDir</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\Modelos\\German"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"german.dds"</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"H-German-Idle.x"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Texturiza o soldado
+</span><span class="sc11">dbTextureObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Nosso cursor 3D
+</span><span class="sc11">dbMakeObjectSphere</span><span class="sc10">(</span><span class="sc11">obj_cursor</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Faz o terreno do cenário
+</span><span class="sc11">dbMakeMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2000</span><span class="sc10">,</span><span class="sc4">10000</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPrepareMatrixTexture</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Ajusta escala do objeto e ponto de apoio
+</span><span class="sc11">dbScaleObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">12000</span><span class="sc10">,</span><span class="sc4">12000</span><span class="sc10">,</span><span class="sc4">12000</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbFixObjectPivot</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Ajusta câmera e posiciona objeto na cena
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1005</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">475</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">970</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">185</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbSyncOn</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbDeleteImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">  </span><span class="sc11">dbDeleteImage</span><span class="sc10">(</span><span class="sc11">img_fire</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDeleteImage</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDeleteMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDeleteObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc11">dbDeleteObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cursor</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"particulas.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetTextTransparent</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbDisableEscapeKey</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbSyncRate</span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetAmbientLight</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionMouse</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+// texturizar() - Aplica aleatóriamente a textura na matrix
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">4</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSetMatrixTile</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tile</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// linha
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//coluna
+</span><span class="sc0">
+</span><span class="sc11">dbUpdateMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// texturizar().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+// teclado() - Lê o teclado e executa comandos do usuário
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc2">// Lê o teclado
+</span><span class="sc0">    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc10">=</span><span class="sc6">"??"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbEscapeKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">gpParticles</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Troca de modo
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"c"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"r"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"f"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Movimentação dos objetos
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbUpKey</span><span class="sc10">())</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbDownKey</span><span class="sc10">())</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">--;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">--;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc0"> </span><span class="sc10">-=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbLeftKey</span><span class="sc10">())</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">--;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcam_rot</span><span class="sc10">--;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcursor</span><span class="sc0"> </span><span class="sc10">-=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbRightKey</span><span class="sc10">())</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcam_rot</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">xcursor</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbKeyState</span><span class="sc10">(</span><span class="sc4">201</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycam</span><span class="sc10">++;</span><span class="sc0">   </span><span class="sc2">// page_up;
+</span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbKeyState</span><span class="sc10">(</span><span class="sc4">209</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycam</span><span class="sc10">--;</span><span class="sc0">   </span><span class="sc2">// page_down;
+</span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">--;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc0"> </span><span class="sc10">-=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+
+</span><span class="sc2">// Mostra informações na tela
+</span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"modo = modo_cam - (r) para modo rotacionar (f) cursor"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"xcam:%f ycam:%f zcam:%f"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"(clique) - aciona sistema de particulas"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cam_rot</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"modo = modo_cam_rot - (c) posicionar camera (f) cursor"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"xcam_rot:%f ycam_rot:%f zcam_rot:%f"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"(clique) - aciona sistema de particulas"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">modo</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">modo_cursor</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"modo = modo_cursor - (c,r) para posicionar ou rotacionar a camera"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"xcursor:%f ycursor:%f zcursor:%f "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"(clique) - aciona sistema de particulas"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// dbPointCamera (xcursor, ycursor, zcursor);
+</span><span class="sc0"></span><span class="sc11">dbPositionObject</span><span class="sc10">(</span><span class="sc11">obj_cursor</span><span class="sc10">,</span><span class="sc11">xcursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc2">// Resseta o teclado
+</span><span class="sc0"></span><span class="sc11">strcpy</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"??"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbRotateCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xcam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycam_rot</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam_rot</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// teclado().fim
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gpParticles</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Criação de partículas
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Quantidade máxima de partículas
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">partic_max</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Raio de emissão das partículas
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">raio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">20.0f</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Cor das partículas
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">r</span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">255</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Frequência de emissão das partículas
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">partic_tempo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.01f</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Gravidade da queda
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">partic_gravidade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Quantidade de partículas na emissão
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">partic_qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// 1- Liga piso 0 - Desliga piso
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">lPiso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// 0-5 Modo ghost
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">modo_ghost</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Cria o sistema de partículas
+</span><span class="sc0"></span><span class="sc11">dbMakeParticles</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">img_fire</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">partic_max</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">raio</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Configura cor, posição e taxa de emissão
+</span><span class="sc0"></span><span class="sc11">dbColorParticles</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionParticles</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ycursor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcursor</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetParticleEmissions</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">partic_qtd</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Configura velocidade de emissão e gravidade
+</span><span class="sc0"></span><span class="sc11">dbSetParticleSpeed</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">partic_tempo</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetParticleGravity</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">partic_gravidade</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Configura efeito piso e efeito fantasma (ghost)
+</span><span class="sc0"></span><span class="sc11">dbSetParticleFloor</span><span class="sc10">(</span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">lPiso</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbGhostParticlesOn</span><span class="sc10">(</span><span class="sc11">partic_sys</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">modo_ghost</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// gpParticles().fim</span></div>
+
+<b><u>Esconde e re-exibir o sistema de partículas</u></b>
+Como esperado, há as duas funções clássicas da DarkGdk para esconder
+e re-exibir o sistemas de partículas.
+<b class=prg>
+dbHideParticles (nObjPartic); <span class=sc2>// Esconde as partículas</span>
+dbShowParticles (nObjPartic); <span class=sc2>// Mostra as partículas</span>
+</b>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track18-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track20-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

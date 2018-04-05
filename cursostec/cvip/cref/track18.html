@@ -1,0 +1,319 @@
+<html><head>
+<title>cbiblioteca_track18_bios</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track18.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track17.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track19.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="18.00">
+<CENTER><H2>18.00 bios.h</H2></CENTER>
+<A HREF="#18.01">18.01</a> bioscom...........Serviços de comunicação RS-232
+<A HREF="#18.02">18.02</a> biosdisk..........Serviços de disco da bios
+<A HREF="#18.03">18.03</a> biosequip.........Obtém lista de hardware do sistema
+<A HREF="#18.04">18.04</a> bioskey...........Serviços de teclado da bios
+
+<A HREF="#18.05">18.05</a> biosmemory........Obtém o total de memória baixa do sistema
+<A HREF="#18.06">18.06</a> biosprint.........Serviços de impressão da bios
+<A HREF="#18.07">18.07</a> biostime..........Serviços de timer da bios
+
+<A NAME="18.01"><B>18.01 bioscom</B></a>
+        Esta função é um interface para comunicação com as portas seriais
+        COM padrão RS-232. Esta função utiliza a interrupção 0x14 da bios
+        para performar serviços de comunicação.
+        <b style="color:green">
+        int bioscom(int cmd, char abyte, int port);
+        nResult = bioscom(nCmd, nData, nPort);</b>
+
+        nResult.....Resultado ou status da operação
+        nCmd........comando, 0 = estabelece nData como parâmetros de configuração para
+                    a porta; 1 = envia nData, 2 = Recebe um byte, 3 = Requisita Status
+
+        nPort........Porta de comunicação, 0 = COM1, 1 = COM2 e assim por diante.
+
+        Os bits mais significativos de nResult representam o status da operação,
+        os bits menos significativos são dados da operação que variam segundo
+        o comando requisitado.
+
+        Ex.:    int nResult;
+                int nData;
+                nResult = bioscom(3,nData,0);
+
+.......................................................................................
+<A NAME="18.02"><B>18.02 biosdisk</B></a>
+        Esta função é uma interface para a interrupção 0x13 da bios que executa
+        serviços de leitura/gravação de discos. Tenha muita precaução no uso
+        desta função, pois operações de escrita em disco podem destruir dados
+        e diretórios imediamente.
+        <b style="color:green">
+        int biosdisk (int cmd, int drive, int head, int track,
+                        int sector, int nsects, void *buffer);
+
+        nResult = biosdisk (nCmd, nDrive, nHead, nTrack,
+                                nSector, nNroSects, sBuffer);</b>
+
+        nCmd.......Comando da operação
+        nDrive.....Drive alvo da operação
+        nHead......Número da cabeça de disco
+        nTrack.....Número da trilha
+        nSector....Número do setor
+        nNroSects..Número de setores para ler ou escrever.
+        sBuffer....Buffer com os dados, geralmente de 512 bytes
+
+        Significado dos valores para nCmd:
+        -------------------------------------------------------------------------
+        0..._DISK_RESET....Resseta o sistema do disco, forçando o controlador do driver
+                           a fazer um hard reset; todos os outros parâmetros são ignorados.
+        1..._DISK_STATUS...Retorna o status da última operação em disco;
+                           todos os outros parâmetros são ignorados.
+        2..._DISK_READ.....Lê um ou mais setores do disco para a memória
+        3..._DISK_WRITE....Escreve em um ou mais setores do disco os dados da memória
+        4..._DISK_VERIFY...Verifica um ou mais setores
+        5..._DISK_FORMAT...Formata a trilha
+
+        6...Formata a trilha e liga o flag de setor estragado
+        7...Formata o drive iniciando numa trilha especifica
+        8...Retorna os parâmetros do drive atual nos primeiros 4 bytes do buffer
+        9...Inicializa as características pares-drive
+        10..Efetua uma leitura longa (512 mais 4 bytes extras por setor)
+        11..Efetua uma escrita longa (512 mais 4 bytes extras por setor)
+        12..Efetua uma procura em disco
+        13..Alterna o reset de disco
+        14..Lê o buffer de setor
+        15..Escreve no buffer de setor
+        16..Testa se o drive nomeado está pronto
+        17..Recalibra o drive
+        18..Controlador RAM de diagnóstico
+        19..Diagnóstico do drive
+        20..Diagnóstico do controlado interno
+
+        Ex.:    char sBuffer[512];
+                int nResult;
+                nResult = biosdisk(4,0,0,0,0,1,sBuffer);
+
+        Veja este programa exemplo: <font color="darkblue">
+        #include "bios.h"
+        #include "stdio.h"
+
+        int main(void) {
+        int result;
+        char buffer[512];
+
+        printf("Testando para ver se drive a: está pronto\n");
+        result = biosdisk(4,0,0,0,0,1,buffer);
+        result &= 0x02;
+        (result) ? (printf("Drive A: Pronto\n")) :
+        (printf("Drive A: não está pronto!\n"));
+        return 0; }</font>
+        <font color="red">
+        Consulte outras fontes para um maior esclarecimento desta função e
+        de seus resultados antes do uso sério da mesma para evitar problemas.
+        Consulte o material de ajuda do Turbo C++ 3.1, e procure outras fontes
+        sobre a interrupção 0x13 da bios. O exemplo e o programa exemplo não
+        foram testados.</font>
+
+.......................................................................................
+<A NAME="18.03"><B>18.03 biosequip</B></a>
+        Esta função utiliza a interrupção 0x11 do bios para obter a lista de
+        hardware conectado ao sistema. Esta lista vem codificada em um valor
+        de retorno de 16 bits.
+        <b style="color:green">
+        int biosequip(void);
+        nHardware = biosequip();</b>
+
+        Ex.:    int nHardware;
+                char sNumber[20];
+                nHardware = biosequip();
+                itoa (nHardware, sNumber, 2);
+                printf ("%s\n",sNumber);
+                /* Resultou em 1100010000100011 */
+
+        Tabela de significado dos bits de nHarware:
+        -----------------------------------------------------------------
+        15-14.....Número de impressoras paralelas instaladas
+        13........Impressora serial instalada
+        12........Joystick instalado
+        11-9......Número de portas COM instalado
+        8.........DMA (direct memory access) instalado
+        7-6.......Número de disk drives instalados
+        5-4.......Modo de vídeo inicial
+        3-2.......Quantidade de RAM instalada
+        1.........Processador matemático instalado
+        0.........Boot a partir do disco
+
+        Veja programa exemplo: <font color="darkblue">
+
+        #include "stdio.h"
+        #include "conio.h"
+        #include "bios.h"
+
+        #define CO_PROCESSOR_MASK 0x0002
+
+        int main(void) {
+        int nHardware;
+
+        nHardware = biosequip();
+
+        clrscr();
+
+        if (nHardware & CO_PROCESSOR_MASK)
+        printf("Há um co-processador matemático instalado.\n");
+        else
+        printf("Não há um co-processador matemático instalado.\n");
+        getch();
+        return 0;}</font>
+
+        Saída:
+        Há um co-processador matemático instalado.
+
+.......................................................................................
+<A NAME="18.04"><B>18.04 bioskey</B></a>
+        Esta função é uma interface para obter os serviços de teclado
+        da bios.
+        <b style="color:green">
+        int bioskey(int cmd);
+        nResult = bioskey(nCmd);</b>
+
+        Significado dos valores para nCmd:
+        ----------------------------------------------------
+        0.....Retorna o scandcode da tecla do buffer, deleta-o do buffer. Espera
+              pela próxima tecla se o buffer estiver vazio.
+        1.....Retorna o scandcode da tecla do buffer, mas não o deleta. Retorna
+              0 se o buffer estiver vazio.
+        2.....Retorna o flag de status das teclas SHIFT
+
+        Ex.:    int nResult;
+                nResult = bioskey(2);
+
+        Veja este programinha: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "math.h"
+
+        void main(void) {
+
+        int nTecla;
+
+        clrscr();
+        printf ("Pressione a letra A.\n");
+
+        do {
+        nTecla = bioskey(1);
+        } while (!nTecla);
+
+        printf ("nTecla: %d\n",nTecla);
+
+        puts("End of Program.\n");
+        getch();
+        getch(); }</font>
+
+        Saída:
+        Pressione a letra A
+        nTecla: 7745
+        End of Program
+
+.......................................................................................
+<A NAME="18.05"><B>18.05 biosmemory</B></a>
+        Esta função retorna em kbytes o total de memória baixa do sistema.
+        Geralmente o valor deste retorno é 640K.
+        <b style="color:green">
+        int biosmemory(void);
+        nLowMem = biosmemory();</b>
+
+        Ex.:    int nLowMem;
+                nLowMem = biosmemory();
+                printf (%d\n",nLowMem);
+                /* Resultou em 640 */
+
+.......................................................................................
+<A NAME="18.06"><B>18.06 biosprint</B></a>
+        Esta função é uma interface para usar os serviços de impressão da
+        bios.
+        <b style="color:green">
+        int biosprint (int cmd, int abyte, int port);
+        nSts = biosprint (nCmd, nData, nPort);</b>
+
+        nCmd....comando, 0 = imprime nData, 1 = Impressora é inicializada,
+                2 = obtém status da impressora.
+
+        nData...byte ou caracter a ser impresso
+
+        nPorta..porta da impressora, 0 = LPT1, 1 = LPT2 e assim por diante
+
+        nSts....O valor de retorno para qualquer comando é o status da impressora
+
+        Codificação do valor de retorno em nSts
+        ------------------------------------------------
+        Bit....Valor..Status da impressora
+        -----------------------------------------------
+        0....0x01.....Device time out, tempo expirou
+        3....0x08.....I/O error, erro de entrada/saída
+        4....0x10.....Selected, selecionado
+        5....0x20.....Out of paper, sem papel
+        6....0x40.....Acknowledge, reconhecimento
+        7....0x80.... Not busy, desocupada
+
+        Ex.:    int nSts;
+                nSts = biosprint (2,0,0);
+
+.......................................................................................
+<A NAME="18.07"><B>18.07 biostime</B></a>
+        Esta função é uma interface para os serviços de timer da bios.
+        Esta função estabelece ou obtém o timer da bios em ticks de clock,
+        sendo que cada segundo gera 18.2 ticks.
+        <b style="color:green">
+        long biostime (int cmd, long newvalue);
+        nTicks = biostime(nCmd, nNewTicks);</b>
+
+        nTicks......A função retorna o tempo em ticks de clock (18.2/s)
+        nCmd........0 para ler o timer, 1 para estabelecer o valor do timer
+        nNewTicks...Novo valor do timer para quando nCmd = 1.
+
+        Ex.:    /* 20:00:?? hs */
+                long nTicks;
+                nTicks = biostime(0,NULL);
+                printf("%li\n",nTicks);
+                /* Resultou em 1310722 */
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track17.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track19.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

@@ -1,0 +1,309 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase21-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 21.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track20-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="darkgdk.html#start" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track19"></a><h3 style="background-color:#80ff80">21.1 Introdução aos Shaders</h3><pre>
+<b><u>1. Visão geral</b></u><div class=prg-code>
+<img src="images\shader01.png"></div>
+A ilustração acima traz a imagem de 3 caixas  texturizadas.   A  terceira  delas,
+que está destacada em vermelho, foi texturizada pela placa de vídeo utilizando o
+recurso dos <b>shaders</b>. Repare  que  a  textura da terceira caixa é uma combinação
+da primeira e da segunda textura exibidas nas primeiras caixas. Esse efeito foi 
+produzindo utilizando-se o recurso de shader da placa de vídeo.
+
+O shader é um recurso programável da placa de vídeo que oferece serviços de textura,
+iluminação, mapeamento e reposicionamento de vértices de um objeto 3d. É um recurso
+poderoso que por si só demanda um novo curso para ser assimilado e aqui vamos manter
+apenas essa  breve introdução ao assunto.
+
+Visto que o shader é programável, então ele se torna ideal para realizar efeitos
+dinâmicos de textura, iluminação e transformação dos objetos de uma cena 3d.
+O shader é programado utilizando uma linguagem própria desse recurso chamada HLSL,
+high level shader language, com a nossa tradução de linguagem shader de alto nível.
+Geralmente o shader é concebido em duas partes, o <b>vertex shader</b> que faz o 
+posicionamento dos objetos na cena, e o <b>pixel shader</b> que controla a cor final
+dos pixels da imagem final renderizada.
+
+A DarkGdk embute linguagen HLSL em um arquivo de texto com a extensão .dbs, que
+depois é compilado internamente ou externamente para arquivos de efeito com a
+extensão .fx; os dados compilados são enviados para a placa de vídeo junto com
+as texturas e o conjunto de vértices que formam uma cena 3d.
+
+<u><b>2.Funções de shaders e efeitos especiais</b></u>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbLoadEffect ( char* pFilename, int iEffectID, int iUseDefaultTextures );</b>
+<b class=prg>dbLoadEffect ( sArquivo_fx_dbs, nObj_fx, nUsarTexturaDefault);</b>
+Essa função carrega um arquivo de efeito que pode ter extensão .fx ou .dbs.
+
+<b>sArquivo_fx_dbs</b>		String que representa o nome do arquivo fx ou dbs
+
+<b>nObj_fx</b>			Handle numérico para o efeito ser utilizado por outras 
+			funções
+
+<b>nUsarTexturaDefault</b>	Habilita (1) ou desabilita (0) o uso de texturas default
+			Este parâmetro está mal documentado na documentação 
+			original da DarkGdk. Conserve o valor 1 que a função 
+			carrega automaticamente as texturas apontadas dentro 
+			do arquivo de efeito.
+
+É importante destacar que as texturas usadas pelo efeito devem estar 
+na  mesma pasta que contém o arquivo do efeito.    As texturas serão 
+carregadas automaticamente.
+
+			
+Exemplo: <span class=prg>
+const int obj_fx = 1;
+dbSetDir ("c:\\gameprog\\gdkmedia\\shader");
+<b>dbLoadEffect ( "DetailMapping.dbs", obj_fx, 1 );</b>
+</span>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetObjectEffect( int iID, int iEffectID );</b>
+<b class=prg>dbSetObjectEffect ( nObj, int nObj_fx);</b>
+Esta função aplica um efeito (nObj_fx) no objeto especificado (nObj).
+
+Exemplo: <span class=prg>
+const int obj_fx = 1;
+const int obj = 1;
+dbSetDir ("c:\\gameprog\\gdkmedia\\shader");
+dbLoadEffect ( "DetailMapping.dbs", obj_fx, 1 );
+<b>dbSetObjectEffect ( obj, obj_fx );</b> </span>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbSetEffectConstantFloat ( int iEffectID, char* pConstantName, float fValue );</b>
+<b class=prg>dbSetEffectConstantFloat ( nObj_fx , sAtributo, nValor);</b>
+Essa função configura a propriedade ou atributo (sAtributo) do efeito especificado
+(nObj_fx) com o valor dado (nValor.)
+
+Exemplo: <span class=prg>
+
+void tst_shader(int obj) 
+{
+const int obj_fx = 1;
+dbSetDir ("c:\\gameprog\\gdkmedia\\shader");
+dbLoadEffect ( "DetailMapping.dbs", obj_fx, 1 );
+
+dbSetObjectEffect ( obj, obj_fx );
+<b>dbSetEffectConstantFloat ( obj_fx, "detailScale", 1.0f );</b>
+}</span>
+
+Essa pequena função acima ilustra como carregar, aplicar e reconfigurar um
+atributo de um efeito. Fica aqui agora a recomendação da pesquisa para
+você descobrir mais sobre shaders e atributos modificáveis. Segue abaixo
+o programa completo.
+<div class=prg-code>
+<img src="images\shader01_full.png"></div>
+<span class="sc2">// shader01.cpp
+// Esse programa mostra como utilizar shaders
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_shader</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj</span><span class="sc10">);</span><span class="sc0">       </span><span class="sc2">// Testa de shader 01
+</span><span class="sc0">
+</span><span class="sc2">// Posição do modelo 3d
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xobj_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1020</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">yobj_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zobj_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk 
+</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_caixa_01</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_caixa_02</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_caixa_03</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_caixa_04</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+
+
+</span><span class="sc2">// Configuração inicial de exibição
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc2">// Criação básica da matriz
+</span><span class="sc11">dbMakeMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2000</span><span class="sc10">,</span><span class="sc4">10000</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos fazer uma caixa e texturizar com um shader
+</span><span class="sc11">dbMakeObjectBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_01</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">tst_shader</span><span class="sc10">(</span><span class="sc11">obj_caixa_01</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Posiciona a caixa no mundo
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_01</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xobj_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">yobj_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zobj_pos</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos produzir objetos de apoio para mostrar os passos do shader
+</span><span class="sc11">dbMakeObjectBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_02</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_03</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_04</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_02</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">700</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">550</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_03</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1020</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">550</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_04</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1350</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">550</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetDir</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\shader"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"ground.jpg"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbTextureObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_02</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"door1.jpg"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbTextureObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_03</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">tst_shader</span><span class="sc10">(</span><span class="sc11">obj_caixa_04</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Posiciona a camera
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1005</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">475</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">500</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSyncOn</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc2">// Gire a caixa_01 para a esquerda
+</span><span class="sc0"> </span><span class="sc11">dbTurnObjectLeft</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa_01</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc11">dbDeleteMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">  </span><span class="sc11">dbDeleteObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"shader01.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetAmbientLight</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_shader</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj</span><span class="sc10">)</span><span class="sc0"> 
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Essa função carrega um arquivo de efeito, reconfigura um atributo
+// aplica o efeito no objeto especificado por obj
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_fx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSetDir</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\shader"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadEffect</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"DetailMapping.dbs"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">obj_fx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbSetObjectEffect</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">obj</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">obj_fx</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetEffectConstantFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">obj_fx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"detailScale"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"></span></div>
+
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track19-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="darkgdk.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

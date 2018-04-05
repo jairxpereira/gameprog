@@ -1,0 +1,652 @@
+﻿<html>
+<head>
+<title>C_Sharp_15-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 15-1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track15"></a>
+<h3 style="background-color:#ead5ff">15-1 Comunicação de dados via tcp\ip</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+A  atual  realidade  do mundo é dominada  pela comunicação  em rede 
+utilizando o conjunto de protocolos de comunicação  conhecido  como
+tcp\ip. Qualquer dispositivo que implemente a funcionalidade desses
+protocolos consegue se comunicar com os demais que façam o mesmo. O
+resultado  é  que  há  os  mais  diversos  dispositivos eletrônicos 
+conversando entre si como celulares, catracas eletrônicas,  laptops 
+e  muitos  outros dispositivos que falam essa linguagem eletrônica.
+
+Geralmente  para  haver comunicação é necessário que no mínimo dois
+computadores estejam na mesma rede e tenham uma identificação de IP
+configurada. Ainda, é  necessário um esquema de troca de dados como
+se  fosse  uma <b>tomada</b> aonde duas extremidades de comunicação possam 
+ser conectadas;  essa  tomada  aonde  o  cliente  encontra-se com o 
+servidor é chamado de  <b>soquete</b> (socket).  O  soquete  por  sua  vez 
+gerencia uma <b>porta</b> ou porto de onde os dados vem e vão.
+
+Esse  mesmo  esquema  de  comunicação  pode  ser  usado com bastante
+eficiência  para  conectar  duas  aplicações  rodando  em  um  mesmo
+computador. Por exemplo, um programa cliente pode  se conectar a uma
+aplicação  servidora  de banco de dados utilizando tcp\ip para isso.
+
+<b><u>1.2 Contexto da aplicação de exemplo</b></u>
+<div class=prg-code>
+<img src=images\prj_tcpServer.png>
+<img src=images\prj_tcpCliente.png>
+</div>
+Para exemplificar a comunicação  via  tcp\ip  vamos  utilizar  dois 
+programas  separados  para  enviar e receber um pequeno conjunto de
+dados  representados  por  quatro strings. A aplicação servidor vai
+enviar os dados e a aplicação cliente vai  recebê-los e mostrá-los.
+Primeiro  deve-se  rodar  a  aplicação  servidor  e  depois rodar a 
+aplicação cliente.
+
+Vamos utilizar os seguintes namespaces nestes exemplos:
+<b class=prg>
+- System.IO;
+- System.Net;
+- System.Net.Sockets; </b>
+
+<b><u>2. Estabelecendo a conexão para o envio dos dados</u></b>
+<div class=niceview>
+<span class="sc2">// Roda o código de estabelecimento de conexão 
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_servidor</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">      
+ </span><span class="sc2">// Define um objeto endereço de ip
+</span><span class="sc0">  </span><span class="prg">IPAddress</span><span class="sc0"> </span><span class="sc11">endereco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">IPAddress.Parse</span><span class="sc10">(</span><span class="sc6">"127.0.0.1"</span><span class="sc10">);</span><span class="sc0">      
+
+  </span><span class="sc2">// Define um listener (ouvinte) para o endereço de ip em uma
+</span><span class="sc0">  </span><span class="sc2">// porta específica
+</span><span class="sc0">  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">porta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="prg">TcpListener</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new TcpListener</span><span class="sc10">(</span><span class="sc11">endereco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">porta</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Aguardando conexão..."</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="prg">porteiro.Start</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc2">// Se um cliente conectar, aceite a conexão e retorne um novo 
+</span><span class="sc0">  </span><span class="sc2">// soquete nomeado 'tomada' 
+</span><span class="sc0">  </span><span class="prg">Socket</span><span class="sc0"> </span><span class="sc11">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">porteiro.AcceptSocket</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Cliente conectado."</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Vamos enviar dados por uma tomada particular       
+</span><span class="sc0">  </span><span class="sc11">EnviarDados</span><span class="sc10">(</span><span class="prg">tomada</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Disconectando..."</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Fecha a conexão
+</span><span class="sc0">  </span><span class="prg">tomada.Close</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="prg">porteiro.Stop</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Saindo..."</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_servidor().fim
+</span></div>
+
+<u>Pontos básicos da conexão</u>   
+<span class="sc2">// Define um objeto endereço de ip</span>
+<span class="prg">IPAddress</span><span class="sc11"> endereco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">IPAddress.Parse</span><span class="sc10">(</span><span class="sc6">"127.0.0.1"</span><span class="sc10">);</span>
+Aqui é definido o endereço de IP da máquina servidor de dados. Esse
+número de IP  é conhecido como <b>localhost</b> e faz o computador apontar
+para si mesmo. Geralmente  aqui  você  vai  configurar com qualquer 
+outro IP válido de um ponto de rede para ser o servidor de dados.
+
+<span class=prg>int porta = 65000</span>
+A  porta  é o ponto que reúne duas extremidades para a comunicação.
+Em  inglês  é  chamado  <b>port</b> que seria melhor traduzido como <b>porto</b> 
+dando uma idéia melhor do intercâmbio que ocorre em um processo de
+comunicação. As  portas  são  numeradas  de 0 a 65535 e geralmente 
+identificam programas. 
+
+Alguns números de portas são reservados pelo Sistema  Windows para
+serviços específicos.  Por  exemplo  a  porta  80  é  usada   para 
+intercâmbio   de  dados  pelos  sites  de  Internet;  a  porta  21 
+geralmente  é  usada  para  troca  de  arquivos  via protocolo ftp.
+
+As portas  são classificadas  de acordo com as seguintes faixas de 
+valores:
+<b>* 0–1023</b>:      portas bem conhecidas.
+<b>* 1024–49151</b>:  portas registradas
+<b>* 49152–65535</b>: portas dinâmicas ou particulares. Esta é a faixa de
+valores que você pode usar nos seus programas.
+
+Para  conhecer  a  lista  de  portas registradas ou bem conhecidas 
+acesse www.iana.org/assignments/port-numbers.
+
+<span class="prg">TcpListener</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new TcpListener</span><span class="sc10">(</span><span class="sc11">endereco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">porta</span><span class="sc10">);</span>
+Se tem  a  porta  ou  porto  tem  que  ter o <b>porteiro</b>  para fazer o 
+monitoramento  da  mesma para sinalizar quando tem algo entrando ou
+saindo. Nosso porteiro é um objeto tcp-ouvinte que monitora a porta
+especificada.
+
+<span class=prg>porteiro.Start();</span>
+É aqui que começa o monitoramento da porta. Este método não retorna
+enquanto não houver uma conexão de um cliente.
+
+<span class=prg><b>Socket</b> tomada = <b>porteiro.AcceptSocket();</b></span>
+Quando uma conexão é estabelecida,o método <span class=prg>AcceptSocket()</span> do objeto
+<b class=prg>TcpListener</b>  retorna  uma tomada ou soquete para o envio dos dados.
+
+<span class=prg>EnviarDados(<b>tomada</b>);</span>
+Aqui  aproveitamos o soquete do objeto <b class=prg>TcpListener</b> para  enviar  os 
+dados em outra função.  Nesta  função  deverá  ser criado um <b>stream</b> 
+que  representa o fluxo de dados na rede e um  <b>stream escritor</b> para
+lançar os dados neste fluxo.
+
+<span class=prg>tomada.Close();  porteiro.Stop();</span>
+Após enviar os dados é fechado todos os <b>streams</b> que foram abertos e
+fechamos aqui o soquete e o objeto que monitora a porta. O processo
+de  fechamento  é  importante  pois  libera os recursos utilizados.
+
+<b><u>3. Enviando os dados</u></b>
+
+Naturalmente esta função somente é  executada  quando  a  aplicação
+cliente  é  rodada  e  entra  em comunicação com o código servidor:
+
+<div class=niceview>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">EnviarDados</span><span class="sc10">(</span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomadaCliente</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">];</span><span class="sc0">
+  </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 01"</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 02"</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 03"</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 04"</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Cria um stream fluxo de rede, fluxo_rede, um stream escritor
+</span><span class="sc0">  </span><span class="sc2">// para escrever neste fluxo de rede.
+</span><span class="sc0">  </span><span class="sc5">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new NetworkStream</span><span class="sc10">(</span><span class="sc11">tomadaCliente</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">StreamWriter</span><span class="sc0"> </span><span class="sc11">escritor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new StreamWriter</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Envia um conjunto de strings pelo fluxo de rede
+</span><span class="sc0">  </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Enviando {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+    </span><span class="prg">escritor.WriteLine</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+    </span><span class="prg">escritor.Flush</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">
+  </span><span class="sc2">// Fechando os streams     
+</span><span class="prg">  fluxo_rede.Close</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="prg">escritor.Close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//().fim
+</span></div>
+
+<span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">];</span>
+Nossos  dados  para  o  envio  são  representados  por uma array de 
+strings.  A  última  string  deve  ser  <span class=prg>null</span>  para sinalizar para a 
+aplicação  cliente  que  todos  os  dados  foram  enviados. Estamos 
+enviando  strings mas poderia ser um arquivo presente no computador
+servidor.
+
+<span class=sc2>// ----------------------------------------------------------------</span>
+<span class="sc5">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new NetworkStream</span><span class="sc10">(</span><span class="sc11">tomadaCliente</span><span class="sc10">);</span>
+<span class="sc5">StreamWriter</span><span class="sc0"> </span><span class="sc11">escritor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new StreamWriter</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span>
+<span class=sc2>// ----------------------------------------------------------------</span>
+Dois objetos são necessários para enviar o  dados:  um  <b>stream</b>  que 
+representa  dados  de   um  fluxo  de  rede  obtido   pela   classe 
+<b class=prg>NetworkStream</b>; o outro objeto é obtido pela classe <b class=prg>StreamWriter</b> que
+vai  escrever  os  dados  no  objeto  <b class=prg>NetworkStream</b>  recebido  como 
+referência.
+
+<span class=sc2>// ----------------------------------------------------------------</span>
+<span class=prg>escritor<b>.WriteLine</b>(dados[ncx]);</span>
+<span class=prg>escritor<b>.Flush();</b></span>
+<span class=sc2>// ----------------------------------------------------------------</span>
+Para  jogar os  dados no fluxo de rede, você vai utilizar o método
+<span class=prg>WriteLine()</span> e o método <span class=prg>Flush()</span>  para efetivar o despacho dos dados.
+
+<span class=prg>fluxo_rede.Close(); escritor.Close(); </span>
+Depois de tudo enviado, feche os <b>streams</b> abertos.
+
+<b><u>4.Recebendo os dados na aplicação cliente</u></b>
+Na aplicação cliente configuramos a conexão e recebemos os dados na
+mesma função apresentada abaixo.
+
+<div class=niceview>
+<span class="sc2">// Recebe dados via tcp\ip
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_cliente</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc2">// Memória para receber os dados
+</span><span class="sc0">  </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Cria uma tomada TcpCliente para conversar com o servidor
+</span><span class="sc0">  </span><span class="sc5">TcpClient</span><span class="sc0"> </span><span class="sc11">tomada_servidor</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">tomada_servidor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new TcpClient</span><span class="sc10">(</span><span class="sc6">"localHost"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0">
+  </span><span class="sc5">catch</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0">
+    </span><span class="sc6">" Falha de conexão com o servidor em {0}:65000"</span><span class="sc10">,</span><span class="sc0">
+    </span><span class="sc6">"localhost"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0">
+
+  </span><span class="sc2">// Cria o stream de network, fluxo_rede, e o stream de leitura
+</span><span class="sc0">  </span><span class="sc5">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">tomada_servidor.GetStream</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc5">StreamReader</span><span class="sc0"> </span><span class="sc11">leitor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new StreamReader</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Faz a leitura dos dados do servidor e mostra-os
+</span><span class="sc0">    </span><span class="sc5">do</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">leitor</span><span class="sc10">.</span><span class="sc11">ReadLine</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados_chegando</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+  </span><span class="sc5">catch</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0">
+    </span><span class="sc6">" Erro de leitura do servidor"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+  </span><span class="sc2">// Fechando a conexão
+</span><span class="sc0">  </span><span class="sc11">fluxo_rede.Close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc0">  </span><span class="sc11">leitor.Close</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_cliente().fim
+</span></div>
+
+<span class=prg><b>string</b> dados_chegando = "";</span>
+Definimos uma string para receber os dados que estiverem chegando.
+
+<span class=prg><b>TcpClient</b> tomada_servidor;
+tomada_servidor = <b>new TcpClient("localHost", 65000)</b>;</span>
+Estabelecemos  aqui  a  conexão  com  o  servidor na porta definida
+previamente.  É  importante  colocar  esse código no bloco try para 
+pegar possíveis problemas de conexão que possam ocorrer.
+
+<span class=sc2>// ----------------------------------------------------------------</span>
+<span class="sc5">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">tomada_servidor<b>.GetStream</b></span><span class="sc10">();</span>
+<span class="sc5">StreamReader</span><span class="sc0"> </span><span class="sc11">leitor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new StreamReader</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span>
+<span class=sc2>// ----------------------------------------------------------------</span>
+Depois que a conexão é estabelecida é necessário dois objetos para
+fazer a leitura dos dados. É necessário o objeto <b class=prg>NetworkStream</b> que 
+recebeu o fluxo de dados que veio da tomada  via <span class=prg>GetStream()</span>, e  o
+objeto  <b class=prg>StreamReader</b> para ler os dados que aparecem neste fluxo de 
+rede.
+
+<span class=prg>dados_chegando = leitor<b>.ReadLine();</b></span>
+Aqui lemos os dados do fluxo de rede.
+
+<span class=prg>fluxo_rede.Close(); leitor.Close();</span>
+E fechamos  de  maneira responsável os streams abertos no final do
+processo de leitura.
+
+<b><u>5. Código fonte da aplicação servidora de dados: prj_tcpServer</u></b>
+<div class=prg-code>
+<img src=images\prj_tcpServer.png>
+
+<span class="sc2">// Projeto prj_tcpServer -  Arquivo: Program.cs
+// Este programa ilustra comunicação de dados via procotocolo tcp\ip
+// Lado servidor - transmissão de dados
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">.</span><span class="sc11">Sockets</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_tcpServer</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_tcpServer"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">iniciar_servidor</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"\n\t *** Pressione ENTER para encerrar! ***"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim   
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+
+    </span><span class="sc2">// Roda o código de estabelecimento de conexão 
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_servidor</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">      
+     </span><span class="sc2">// Define um objeto endereço de ip
+</span><span class="sc0">      </span><span class="sc11">IPAddress</span><span class="sc0"> </span><span class="sc11">endereco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">IPAddress</span><span class="sc10">.</span><span class="sc11">Parse</span><span class="sc10">(</span><span class="sc6">"127.0.0.1"</span><span class="sc10">);</span><span class="sc0">      
+
+      </span><span class="sc2">// Define um listener (ouvinte) para o endereço de ip em uma
+</span><span class="sc0">      </span><span class="sc2">// porta específica
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">porta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">TcpListener</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TcpListener</span><span class="sc10">(</span><span class="sc11">endereco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">porta</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Aguardando conexão..."</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Se um cliente conectar, aceite a conexão e retorne um novo 
+</span><span class="sc0">      </span><span class="sc2">// soquete nomeado 'tomada' 
+</span><span class="sc0">      </span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">AcceptSocket</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Cliente conectado."</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Vamos enviar dados por uma tomada particular       
+</span><span class="sc0">      </span><span class="sc11">EnviarDados</span><span class="sc10">(</span><span class="sc11">tomada</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Disconectando..."</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Fecha a conexão
+</span><span class="sc0">      </span><span class="sc11">tomada</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">Stop</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Saindo..."</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_servidor().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método auxiliar para enviar os dados
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">EnviarDados</span><span class="sc10">(</span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomadaCliente</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">];</span><span class="sc0">
+      </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 01"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 02"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 03"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"linha 04"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Cria um stream fluxo de rede, fluxo_rede, um stream escritor
+</span><span class="sc0">      </span><span class="sc2">// para escrever neste fluxo de rede.
+</span><span class="sc0">      </span><span class="sc11">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">NetworkStream</span><span class="sc10">(</span><span class="sc11">tomadaCliente</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">StreamWriter</span><span class="sc0"> </span><span class="sc11">escritor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">StreamWriter</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Envia um conjunto de strings pelo fluxo de rede
+</span><span class="sc0">      </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Enviando {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+        </span><span class="sc11">escritor</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+        </span><span class="sc11">escritor</span><span class="sc10">.</span><span class="sc11">Flush</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">
+      </span><span class="sc2">// Fechando os streams     
+</span><span class="sc0">      </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">escritor</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//().fim
+</span><span class="sc0">    
+    </span><span class="sc2">// Mostra uma mensagem na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// avisar().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_tcpServer
+</span><span class="sc0"></span></div>
+
+<b><u>6. Código fonte da aplicação que recebe os dados: prj_tcpCliente</u></b>
+<div class=prg-code>
+<img src=images\prj_tcpCliente.png>
+
+<span class="sc2">// Projeto prj_tcpCliente -  Arquivo: Cliente.cs
+// Este programa ilustra comunicação de dados via procotocolo tcp\ip
+// Lado cliente - recepção de dados
+// Produzido por Gameprog: www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">.</span><span class="sc11">Sockets</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_tcpCliente</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Cliente</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a janela
+</span><span class="sc0">      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_tcpCliente"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Roda o código de recepção de dados
+</span><span class="sc0">      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">" Iniciando leitura de rede: "</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">iniciar_cliente</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Finaliza o programa
+</span><span class="sc0">      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"\n\t *** Pressione ENTER para encerrar! ***"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim   
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+
+    </span><span class="sc2">// Recebe dados via tcp\ip
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_cliente</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Memória para receber os dados
+</span><span class="sc0">      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Cria uma tomada TcpCliente para conversar com o servidor
+</span><span class="sc0">      </span><span class="sc11">TcpClient</span><span class="sc0"> </span><span class="sc11">tomada_servidor</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">tomada_servidor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TcpClient</span><span class="sc10">(</span><span class="sc6">"localHost"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc6">" Falha de conexão com o servidor em {0}:65000"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc6">"localhost"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0">
+
+      </span><span class="sc2">// Cria o stream de network, fluxo_rede, e o stream de leitura
+</span><span class="sc0">      </span><span class="sc11">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">tomada_servidor</span><span class="sc10">.</span><span class="sc11">GetStream</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">StreamReader</span><span class="sc0"> </span><span class="sc11">leitor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">StreamReader</span><span class="sc10">(</span><span class="sc11">fluxo_rede</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc2">// Faz a leitura dos dados do servidor e mostra-os
+</span><span class="sc0">        </span><span class="sc5">do</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+          </span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">leitor</span><span class="sc10">.</span><span class="sc11">ReadLine</span><span class="sc10">();</span><span class="sc0">
+          </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0">
+          </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dados_chegando</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dados_chegando</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc6">" Erro de leitura do servidor"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+      </span><span class="sc2">// Fechando a conexão
+</span><span class="sc0">      </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">leitor</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_cliente().fim 
+</span><span class="sc0">
+    </span><span class="sc2">// Mostra um aviso na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// avisar().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_tcpCliente
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

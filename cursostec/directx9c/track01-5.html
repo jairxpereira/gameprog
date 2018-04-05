@@ -1,0 +1,994 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.5 Linhas</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Linhas.png></div>
+O  directx apresenta a interface <b class=prg>ID3DXLine</b> que simplifica o  trabalho
+de desenhar  linhas  dando  ainda a opção de controlar a espessura da 
+linha  e  de  aplicar  facilmente  o filtro antialias para suavizar o 
+serrilhado desagradável que  pode  surgir  nas  linhas  diagonais.  A 
+aplicação   desse  tópico  vai  desenhar  retângulos utilizando  essa 
+interface  e  vai mostrar como tratar  o evento de mouse <b>WM_MOUSEMOVE</b>
+que  ocorre  quando  o  ponteiro  do mouse é movimentado sobre a tela.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>WinMain()</b>
+	criação da classe da janela
+	registro da classe da janela
+	criação da janela de acordo com a classe definida
+	chama initGfx() para inicializar o motor gráfico
+	mostra a janela
+	estabelecimento do laço de mensagens
+	finaliza a aplicação</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+	Inicializa objeto para mostrar texto
+
+<b class=sc16><u>quadrado()</u>
+	Cria o objeto para desenhar linhas
+	Define os pontos das linhas
+	Calcula os pontos do quadrado
+	Configura como as linhas serão desenhadas
+	Desenha as linhas
+	Libera o objeto de desenhar linhas</b>
+
+Renderizar()
+	Limpa a tela
+	Desenha a cena
+	mostra texto
+	<b class=sc16><u>Desenha retângulos com quadrado()</u></b>
+	Apresenta a cena
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+	  Verifica teclado - finaliza aplicação na tecla Escape
+	  <b class=sc16>Verifica mouse - mostra coordenada do mouse no evento WM_MOUSEMOVE</b>
+	  chama Limpar() na finalização da aplicação
+	  chama Renderizar() para desenhar os gráficos
+
+Limpar()
+	Libera objeto de mostrar texto
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Linhas - Arquivo: motor.h</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+  <span class=prg>void </span>inicializarTexto();  
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+	<b>
+  <span class=sc2>// Desenha um quadrado na posição (x, y) com as dimensões</span>
+  <span class=sc2>// especificadas (largura, altura)</span>
+  <span class=prg>void </span>quadrado( <span class=prg>float </span>x, <span class=prg>float </span>y, <span class=prg>float </span>largura, <span class=prg>float </span>altura);  
+	</b>
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div><b>
+<span class=sc2>// Desenha um quadrado na posição (x, y) com as dimensões</span>
+<span class=sc2>// especificadas (largura, altura)</span>
+<span class=prg>void </span>quadrado( <span class=prg>float </span>x, <span class=prg>float </span>y, <span class=prg>float </span>largura, <span class=prg>float </span>altura);  </b>
+Essa função mostra como inicializar  e utilizar o objeto da interface
+<b class=prg>ID3DXLine</b> para desenhar linhas.
+
+<b><span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+			 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  </b>
+Como anunciado antes, essa função dinâmica veio fazer parte do arquivo
+<b>motor.cpp</b> merecidamente.
+
+<b><u>2.2 Desenhando linhas</u></b>
+<div class=niceview><span class=prg>void </span>quadrado( <span class=prg>float </span>x, <span class=prg>float </span>y, <span class=prg>float </span>largura, <span class=prg>float </span>altura) 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do objeto linha</span>
+  <span class=sc5>ID3DXLine* </span>linhas = <span class=prg>NULL</span>; 
+  <span class=prg>D3DXCreateLine</span>(g_device, &linhas);  
+
+  <span class=sc2>// Quantidade de pontos</span>
+  <span class=sc16>const </span><span class=prg>int </span>nQtd = <span class=sc4>5</span>; 
+
+  <span class=sc2>// Array de coordenadas dos pontos</span>
+  <span class=sc5>D3DXVECTOR2 </span>pontos[nQtd];  
+
+  <span class=sc2>// Preenchimento dos pontos do quadrado</span>
+  <span class=sc2>// (esquerda, cima)</span>
+  pontos[<span class=sc4>0</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y );  
+  <span class=sc2>// (direita, cima)</span>
+  pontos[<span class=sc4>1</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y );  
+  <span class=sc2>// (direita, baixo)</span>
+  pontos[<span class=sc4>2</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y + altura );  
+  <span class=sc2>// (esquerda, baixo)</span>
+  pontos[<span class=sc4>3</span>] = <span class=sc5>D3DXVECTOR2</span>(x,  y + altura);  
+  <span class=sc2>// (esquerda, cima)</span>
+  pontos[<span class=sc4>4</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y);   
+
+  <span class=sc2>// Cor da linha</span>
+  <span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+
+   <span class=sc2>// Configura espessura da linha e antiAlias</span>
+  <span class=prg>linhas-&gt;SetWidth </span>(<span class=sc4>3.0f</span>);   
+  <span class=prg>linhas-&gt;SetAntialias</span>(<span class=prg>true</span>);   
+
+  <span class=sc2>// Prepara o ambiente</span>
+  <span class=prg>linhas-&gt;Begin</span>();  
+
+  <span class=sc2>// Desenha a linha</span>
+  <span class=prg>linhas-&gt;Draw</span>(pontos, nQtd, vermelho );  
+
+  <span class=sc2>// Finaliza restaurando estados internos</span>
+  <span class=prg>linhas-&gt;End</span>();  
+
+  <span class=sc2>// Libera o objeto linhas</span>
+  <span class=prg>linhas-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// quadrado().fim</span></span>
+</div><b>
+<span class=sc2>// Criação do objeto linha</span>
+<span class=sc5>ID3DXLine* </span>linhas = <span class=prg>NULL</span>; 
+<span class=prg>D3DXCreateLine</span>(g_device, &linhas);  </b>
+Novamente aqui se repete o padrão de criação de objetos  do  directx;
+primeiro ocorre <span class=prg>a declaração do ponteiro</span> e na  sequência  temos  uma
+função <span class=prg>Create...()</span> criando alguma coisa. Utilizamos <span class=prg>ID3DXLine*</span>  para
+declarar  o ponteiro e depois utilizamos <span class=prg>D3DXCreateLine</span> para criar o
+objeto que desenha linhas com o ponteiro declarado previamente  como
+referência ( <b>&linhas</b> ) na função de criação. Esse  padrão  se repete
+ao longo do curso com outros objetos diferentes do directx.
+
+<b><span class=sc2>// Quantidade de pontos</span>
+<span class=sc16>const </span><span class=prg>int </span>nQtd = <span class=sc4>5</span>; </b>
+Vamos utilizar cinco pontos que esse objeto fará a conexão para gerar
+as linhas e montar o quadrado.
+
+<b><span class=sc2>// Array de coordenadas dos pontos</span>
+<span class=sc5>D3DXVECTOR2 </span>pontos[nQtd];  </b>
+Os pontos são criados utilizando a estrutura <span class=prg>D3DXVECTOR2</span> que traz 
+como membros os elementos <b>x</b> e <b>y</b> do tipo <span class=prg>float</span>.
+
+<div class=niceview style="border-style:dashed;"><img src="images\quadrado_config.png">
+<span class=sc2>// Preenchimento dos pontos do quadrado</span>
+<span class=sc2>// (esquerda, cima)</span>
+pontos[<span class=sc4>0</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y );  
+<span class=sc2>// (direita, cima)</span>
+pontos[<span class=sc4>1</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y );  
+<span class=sc2>// (direita, baixo)</span>
+pontos[<span class=sc4>2</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y + altura );  
+<span class=sc2>// (esquerda, baixo)</span>
+pontos[<span class=sc4>3</span>] = <span class=sc5>D3DXVECTOR2</span>(x,  y + altura);  
+<span class=sc2>// (esquerda, cima)</span>
+pontos[<span class=sc4>4</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y);   </div>
+Destacamos o simples algoritmo que gera o retângulo a  partir  de uma
+posição (x, y) e dimensões (largura, altura).  Destacamos visualmente
+a formação desta forma geométrica porque  o  retângulo desempenha  um
+papel  fundamental  dentro  de  programação  de  jogos  e  da própria
+programação Windows. A tela,  o  backbuffer,  imagens  e  textura são 
+todas superfícies retangulares. As técnicas de colisões mais  simples
+são  desenvolvidas  usando  o  retângulo  como referência.   Então  é
+importante pegar intimidade com o retângulo.
+
+<b><span class=sc2>// Cor da linha</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; </b>
+A linha aceita configuração de cor.
+
+<b><span class=sc2>// Configura espessura da linha e antiAlias</span>
+<span class=prg>linhas-&gt;SetWidth </span>(<span class=sc4>3.0f</span>);   </b>
+Esta é a forma de configurar a espessura da linha.
+
+<b><span class=prg>linhas-&gt;SetAntialias</span>(<span class=prg>true</span>);  </b>
+Esta configuração ativa a correção do serrilhado que ocorre em linhas
+diagonais.   Para uma retângulo essa configuração não tem sentido mas
+para linhas diagonais é importante ativar essa correção.
+
+<b><span class=sc2>// Prepara o ambiente</span>
+<span class=prg>linhas-&gt;Begin</span>();  </b>
+O processo de desenhar as linhas  é cercado por <span class=prg>Begin()</span> e <span class=prg>End()</span> desse
+objeto que faz o trabalho de preservar e restaurar  estados  internos 
+do motor gráfico do directx. Aliás, esse é um outro padrão do directx
+que ocorre com outros objetos que realizam processos particulares  de
+renderização.   Na programação Windows,  há as funções BeginPaint() e 
+EndPaint() que cercam processos de desenho na janela.
+
+<b><span class=sc2>// Desenha a linha</span>
+<span class=prg>linhas-&gt;Draw</span>(pontos, nQtd, vermelho ); </b>
+A função <span class=prg>Draw</span> desse objeto pega uma array de pontos, uma indicação de
+quantidade  de  pontos nessa array e a cor para fazer seu trabalho de
+desenhar linhas conectando esse pontos pré-definidos.
+
+<b><span class=sc2>// Finaliza restaurando estados internos</span>
+<span class=prg>linhas-&gt;End</span>();  </b>
+O processo de desenhar linhas é encerrado.
+
+<b><span class=sc2>// Libera o objeto linhas</span>
+<span class=prg>linhas-&gt;Release</span>();  </b>
+Por fim, o objeto linhas é devidamente liberado.
+
+<b><u>2.3 Renderizando a cena</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>cor_fundo = branco; 
+
+  <span class=sc2>// Superfícies que serão limpas</span>
+  <span class=prg>DWORD </span>superficies = <span class=sc4>D3DCLEAR_TARGET</span>; 
+
+  <span class=sc2>// Configuração padrão do buffer de profundidade</span>
+  <span class=prg>float </span>zBuffer = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração padrão do stencil</span>
+  <span class=prg>DWORD </span>sBuffer = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de retângulos a serem limpos</span>
+  <span class=prg>DWORD </span>nPartes = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Array de retângulos que serão limpos</span>
+  <span class=sc16>const </span><span class=sc5>D3DRECT* </span>pPartes = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( nPartes, pPartes, superficies, cor_fundo, 
+    zBuffer, sBuffer);  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (120, 160, <span class=sc6>"Produzido na escola Gameprog"</span>);   
+    mostrarTexto (200, 200, <span class=sc6>"Programar é legal!"</span>);   
+
+    <span class=sc2>// Desenha dois quadrados</span>
+    quadrado (<span class=sc4>90.0f</span>, <span class=sc4>130.0f</span>, <span class=sc4>420.0f</span>, <span class=sc4>120.0f</span>);   
+    quadrado (<span class=sc4>100.0f</span>, <span class=sc4>140.0f</span>, <span class=sc4>400.0f</span>, <span class=sc4>100.0f</span>);   
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=sc2>// Retangulo fonte e destino</span>
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rFonte = <span class=prg>NULL</span>; 
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rDestino = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Janela alternativa para apresentar os dados visuais</span>
+  <span class=sc16>HWND </span>hOutraJanela = <span class=prg>NULL</span>; 
+
+  <span class=prg>g_device-&gt;Present</span>( rFonte, rDestino, hOutraJanela, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Começa a cena</span>
+<span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+<span class=sc16>{</span>
+<span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+
+mostrarTexto (120, 160, <span class=sc6>"Produzido na escola Gameprog"</span>);   
+mostrarTexto (200, 200, <span class=sc6>"Programar é legal!"</span>);   
+<b>
+<span class=sc2>// Desenha dois quadrados</span>
+quadrado (<span class=sc4>90.0f</span>, <span class=sc4>130.0f</span>, <span class=sc4>420.0f</span>, <span class=sc4>120.0f</span>);   
+quadrado (<span class=sc4>100.0f</span>, <span class=sc4>140.0f</span>, <span class=sc4>400.0f</span>, <span class=sc4>100.0f</span>);   
+</b>
+<span class=sc2>// Finalizando a cena</span>
+<span class=prg>g_device-&gt;EndScene</span>();  
+<span class=sc16>} <span class=sc2>// endif</span></span></div>
+Aqui sem novidade:  primeiro desenhamos o texto e depois desenhamos os
+quadrados.   Mas  é  importante  destacar  que  o que é desenhando por
+último é o que prevalesce visualmente.  Se ocorrer do quadrado estiver
+na posição do texto, o texto é coberto pelo quadrado que foi desenhado
+por último.
+
+<b><u>2.4 Tratando o mouse</u></b>
+<div class=niceview><span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+	<b>
+  <span class=sc2>// Variáveis para coletar informação do mouse</span>
+  <span class=prg>int </span>xmouse = <span class=sc4>0</span>; 
+  <span class=prg>int </span>ymouse = <span class=sc4>0</span>; 
+  <span class=prg>char </span>info[25];  
+	</b>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+	<b>
+  <span class=sc9>case </span>WM_MOUSEMOVE: 
+    xmouse = <span class=prg>LOWORD </span>(lParam);  
+    ymouse = <span class=prg>HIWORD </span>(lParam);  
+    <span class=prg>sprintf </span>(info, <span class=sc6>"prj_Linhas </span>(%i, %i)<span class=sc6>"</span>, xmouse, ymouse);  
+    <span class=prg>SetWindowText </span>(hJanela, info);  
+    <span class=sc6>break</span>; 
+	</b>
+  <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+Mostramos com os blocos de código a seguir como tratar  o  evento  de
+mouse notificado pela mensagem <b>WM_MOUSEMOVE</b> que ocorre quando o mouse
+é movimentado pela tela.  Primeiro  criamos  algumas  variáveis  para
+para guardar as informações coletadas:
+
+<b><span class=sc2>// Variáveis para coletar informação do mouse</span>
+<span class=prg>int </span>xmouse = <span class=sc4>0</span>; 
+<span class=prg>int </span>ymouse = <span class=sc4>0</span>; 
+<span class=prg>char </span>info[25]; </b>
+<b>(xmouse, ymouse)</b> coletam a informação da coordenada <b>(x,y)</b> do mouse, e
+usamos a função  <span class=prg>sprintf()</span>  para formatar estas informações dentro da
+string <b>info</b> criada.
+<b>
+<span class=sc9>switch </span>(mensagem) 
+<span class=sc16>{</span>
+<span class=sc9>case </span>WM_MOUSEMOVE: 
+xmouse = <span class=prg>LOWORD </span>(lParam);  
+ymouse = <span class=prg>HIWORD </span>(lParam);  
+<span class=prg>sprintf </span>(info, <span class=sc6>"prj_Linhas </span>(%i, %i)<span class=sc6>"</span>, xmouse, ymouse);  
+<span class=prg>SetWindowText </span>(hJanela, info);  
+<span class=sc6>break</span>; 
+<span class=sc16>} <span class=sc2>// endswitch</span></span></b>
+
+No  caso  particular  da  mensagem  <b>WM_MOUSEMOVE</b>,  <b>lParam</b>  recebe  as
+coordenadas do mouse codificadas dessa maneira: <b>YYYY XXXX</b>.  A legenda
+<b>XXXX</b>  é  a  <b>palavra  baixa</b>  extraída  pela  macro <span class=prg>LOWORD()</span> e <b>YYYY</b> é a 
+<b>palavra alta</b> extraída pela macro <span class=prg>HIWORD()</span>. Uma palavra é um valor  de
+16 bits ou dois bytes.
+
+<span class=prg>sprintf()</span> imprime informações numa string e <span class=prg>SetWindowText()</span> configura
+o texto da barra de títulos da janela.
+
+Esse código parece não fazer nada prático e útil na aplicação como um
+todo,   mas  usamos  este artifício para definir o posicionamento dos
+dois quadrados na tela.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Linhas</u></b>
+<div class=prg-code><img src=images\prj_Linhas.png>
+
+<span class=sc2>// Projeto: prj_Linhas - Arquivo: motor.h</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+  <span class=prg>void </span>inicializarTexto();  
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+  <span class=sc2>// Desenha um quadrado na posição (x, y) com as dimensões</span>
+  <span class=sc2>// especificadas (largura, altura)</span>
+  <span class=prg>void </span>quadrado( <span class=prg>float </span>x, <span class=prg>float </span>y, <span class=prg>float </span>largura, <span class=prg>float </span>altura);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Linhas - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como desenhar linhas</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+<span class=sc5>ID3DXFont* </span>      gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  inicializarTexto();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>quadrado( <span class=prg>float </span>x, <span class=prg>float </span>y, <span class=prg>float </span>largura, <span class=prg>float </span>altura) 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do objeto linha</span>
+  <span class=sc5>ID3DXLine* </span>linhas = <span class=prg>NULL</span>; 
+  <span class=prg>D3DXCreateLine</span>(g_device, &linhas);  
+
+  <span class=sc2>// Quantidade de pontos</span>
+  <span class=sc16>const </span><span class=prg>int </span>nQtd = <span class=sc4>5</span>; 
+
+  <span class=sc2>// Array de coordenadas dos pontos</span>
+  <span class=sc5>D3DXVECTOR2 </span>pontos[nQtd];  
+
+  <span class=sc2>// Preenchimento dos pontos do quadrado</span>
+  <span class=sc2>// (esquerda, cima)</span>
+  pontos[<span class=sc4>0</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y );  
+  <span class=sc2>// (direita, cima)</span>
+  pontos[<span class=sc4>1</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y );  
+  <span class=sc2>// (direita, baixo)</span>
+  pontos[<span class=sc4>2</span>] = <span class=sc5>D3DXVECTOR2</span>(x + largura, y + altura );  
+  <span class=sc2>// (esquerda, baixo)</span>
+  pontos[<span class=sc4>3</span>] = <span class=sc5>D3DXVECTOR2</span>(x,  y + altura);  
+  <span class=sc2>// (esquerda, cima)</span>
+  pontos[<span class=sc4>4</span>] = <span class=sc5>D3DXVECTOR2</span>(x, y);   
+
+  <span class=sc2>// Cor da linha</span>
+  <span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+
+   <span class=sc2>// Configura espessura da linha e antiAlias</span>
+  <span class=prg>linhas-&gt;SetWidth </span>(<span class=sc4>3.0f</span>);   
+  <span class=prg>linhas-&gt;SetAntialias</span>(<span class=prg>true</span>);   
+
+  <span class=sc2>// Prepara o ambiente</span>
+  <span class=prg>linhas-&gt;Begin</span>();  
+
+  <span class=sc2>// Desenha a linha</span>
+  <span class=prg>linhas-&gt;Draw</span>(pontos, nQtd, vermelho );  
+
+  <span class=sc2>// Finaliza restaurando estados internos</span>
+  <span class=prg>linhas-&gt;End</span>();  
+
+  <span class=sc2>// Libera o objeto linhas</span>
+  <span class=prg>linhas-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// quadrado().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Variáveis para coletar informação do mouse</span>
+  <span class=prg>int </span>xmouse = <span class=sc4>0</span>; 
+  <span class=prg>int </span>ymouse = <span class=sc4>0</span>; 
+  <span class=prg>char </span>info[25];  
+
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span>WM_MOUSEMOVE: 
+    xmouse = <span class=prg>LOWORD </span>(lParam);  
+    ymouse = <span class=prg>HIWORD </span>(lParam);  
+    <span class=prg>sprintf </span>(info, <span class=sc6>"prj_Linhas </span>(%i, %i)<span class=sc6>"</span>, xmouse, ymouse);  
+    <span class=prg>SetWindowText </span>(hJanela, info);  
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto()</span></span>
+
+
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc5>RECT </span>area_limite; 
+
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto(); </span></span>
+
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>cor_fundo = branco; 
+
+  <span class=sc2>// Superfícies que serão limpas</span>
+  <span class=prg>DWORD </span>superficies = <span class=sc4>D3DCLEAR_TARGET</span>; 
+
+  <span class=sc2>// Configuração padrão do buffer de profundidade</span>
+  <span class=prg>float </span>zBuffer = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração padrão do stencil</span>
+  <span class=prg>DWORD </span>sBuffer = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de retângulos a serem limpos</span>
+  <span class=prg>DWORD </span>nPartes = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Array de retângulos que serão limpos</span>
+  <span class=sc16>const </span><span class=sc5>D3DRECT* </span>pPartes = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( nPartes, pPartes, superficies, cor_fundo, 
+    zBuffer, sBuffer);  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (120, 160, <span class=sc6>"Produzido na escola Gameprog"</span>);   
+    mostrarTexto (200, 200, <span class=sc6>"Programar é legal!"</span>);   
+
+    <span class=sc2>// Desenha dois quadrados</span>
+    quadrado (<span class=sc4>90.0f</span>, <span class=sc4>130.0f</span>, <span class=sc4>420.0f</span>, <span class=sc4>120.0f</span>);   
+    quadrado (<span class=sc4>100.0f</span>, <span class=sc4>140.0f</span>, <span class=sc4>400.0f</span>, <span class=sc4>100.0f</span>);   
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=sc2>// Retangulo fonte e destino</span>
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rFonte = <span class=prg>NULL</span>; 
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rDestino = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Janela alternativa para apresentar os dados visuais</span>
+  <span class=sc16>HWND </span>hOutraJanela = <span class=prg>NULL</span>; 
+
+  <span class=prg>g_device-&gt;Present</span>( rFonte, rDestino, hOutraJanela, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Linhas - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como desenhar linhas</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Linhas"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,880 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase08-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 08-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track09-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>08.1 Efeitos sonoros</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_consoleSom.png></div>
+Neste  capítulo  vamos  aprender  como  adicionar  efeitos sonoros na
+aplicação. A infraestrutura utilizada é a do <b class=sc16>DirectSound</b> que é a parte
+do directx responsável pela manipulação de efeitos  sonoros  contidos
+em arquivos do formato wave (wav).
+
+A intenção desse tópico é proporcionar um caminho fácil  e  rápido de
+carregar  um  efeito  sonoro,  tocá-lo  ou  pará-lo  de  acordo com a
+necessidade  da  aplicação.  Para  a realização desse propósito vamos
+utilizar   a  classe  <b class=prg>CSoundPlayer</b>  elaborada  pelo  professor  <b>Keith
+Ditchburn</b> disponibilizada no site <span class=prg>www.toymaker.info</span>, que  é  um  site
+excelente sobre o directx 9.
+
+Foi  completamente  evitado  explicações  diretas sobre o DirectSound
+visto que a classe citada permite o uso de efeitos sonoros de maneira
+simples, fácil e rápida.
+
+Existe um pequeno conjunto de classes contidas  no arquivo <span class=prg>dsutil.cpp</span>
+que simplificam o uso básico do directsound. Algumas  destas  classes
+são utilizadas pela classe <span class=prg>CSoundPlayer</span> na realização do seu trabalho:
+	- <b class=prg>CSoundManager</b> - faz gerenciamento do dispositivo de som;
+	- <b class=prg>CSound</b>	- manipulação dos efeitos sonoros;
+	- <b class=prg>CWaveFile</b> 	- faz leitura e gravação do arquivo wav.
+Informamos que estas classes não serão cobertas.  O foco será dado no
+aproveitamento das funcionalidades da classe <span class=prg>CSoundPlayer</span>.
+
+Informamos que os arquivos da composição desse projeto  não são fiéis
+em   relação   às  fontes  originais  pois  sofreram  simplificações,
+traduções e adaptações para se enquadrarem na perspectiva desse curso.
+Portanto, utilize-os como base para sonorizar suas  aplicações  visto
+que  os  originais  não  vão  oferecer  o mesmo caminho fácil de uso.
+
+
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: entrada.cpp</b>
+
+<div class=niceview style="border-style:dashed;">
+Aspectos globais
+	Declaração global do objeto da classe CSoundPlayer (g_Tocador)
+		e do handle da janela (hJanela)
+		
+iniciar()
+	Configura a janela de console
+	
+menu()
+	Mostra as teclas para controle de execução do efeito sonoro
+
+<b class=prg>main()</b>
+	Chama iniciar() e menu() para inicializar a aplicação
+	Pega o handle da janela de console e inicializa o directsound
+	
+	Carrega um efeito sonoro e toca-o inicialmente.
+	
+	Através de algumas teclas o usuário consegue selecionar o
+		efeito sonoro, tocar e pará-lo.
+
+</div>
+
+<b class=sc2>Arquivos: motor.h - dsutil.h\dsutil.cpp</b>
+<div class=niceview style="border-style:dashed;">
+As  classes  CSound,  CWaveFile,  CStreamingFile  são os alicerces da
+classe CSoundManager.
+<img src=images\dsoundInfra01.png>
+
+<img src=images\esquema_prj_consoleSom.png>
+A  classe  CSoundManager  é  o  alicerce da classe final CSoundPlayer
+que  faz  a  interface  com  a  aplicação para tocar efeitos sonoros.
+*  a repetição de certas classes nos diagramas tem a função de manter
+a boa estética do diagrama, entretanto, mostra a relação de afinidade
+e proximidade das classes.
+
+</div>
+
+<b class=sc2>Arquivo: SoundPlayer.cpp - classe CSoundPlayer</b>
+<div class=niceview style="border-style:dashed;">
+<img src=images\esquema_csoundplayer.png>
+
+<b><span class=sc5>CSoundManager </span>*m_soundManager; </b>
+Esta  é  uma  instância  de um objeto da classe <span class=prg>CSoundManager</span> que vai
+ser  responsável  por  criar um objeto da interface <b class=prg>IDirectSound8</b> que
+representa o dispositivo de som utilizado para sonorizar a aplicação.
+
+<b><span class=sc5>std::vector </span><b class=prg>&lt;CSound*&gt;</b> m_soundVector; </b>
+Este objeto vai representar a coleção de efeitos  sonoros  carregados
+pela aplicação.
+
+<b><span class=prg>bool </span>AddWav(<span class=prg>char </span>*filename, <span class=prg>int </span>*id);  </b>
+Este  método  adiciona  um  arquivo  sonoro na coleção e produz um id
+numérico  para  identificar  esse som nos futuros processos que serão
+aplicados sobre ele.
+
+<b><span class=prg>bool </span>PlaySound(<span class=prg>int </span>id, <span class=prg>bool </span>loop);  </b>
+Esse método toca o som apontado pelo id e repete-o continuamente se o
+flag   de   repetição   (<b>loop</b>)   estiver   configurado   como   TRUE.
+
+<b><span class=prg>void </span>StopSound(<span class=prg>int </span>id);  </b>
+Este método pára o som identificado pelo id.
+
+<b><span class=sc16>HRESULT </span>Initialise(<span class=sc16>HWND </span>hWnd);  </b>
+Este método inicializa o gerenciador de som da classe <span class=prg>CSoundManager</span> e
+outros  objetos  necessários  para  a  utilização de efeitos sonoros.
+
+<b>CSoundPlayer();  
+virtual ~CSoundPlayer();  </b>
+Aqui estão o construtor e o destrutor da classe.
+</div>
+
+</div>
+
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview>//*******************************************************************</span>
+<span class=sc2>// Projeto: prj_consoleSom - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação exemplifica como tocar um efeito sonoro</span>
+<span class=sc2>// contido em um arquivo do formato wav</span>
+<span class=sc2>// By www.toymaker.info \\ www.gameprog.com.br</span>
+//*******************************************************************</span>
+
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Exclui conteúdo raramente usado para agilizar compilação</span>
+<span class=sc16>#define </span><span class=sc4>WIN32_LEAN_AND_MEAN</span>
+
+<span class=sc2>// Funcionalidades do Windows</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+
+<span class=sc2>// Funcionalidades da linguagem C</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;malloc.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;memory.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;tchar.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;assert.h&gt;</span>
+
+<span class=sc2>// Acesso multimídia</span>
+<span class=sc16>#include </span><span class=prg>&lt;mmsystem.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dxerr9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dsound.h&gt;</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Macros de utilidades</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Deleta memória alocada com new</span>
+<span class=sc16>#define </span>SAFE_DELETE(p)       <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete </span>(p);      (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc2>// Deleta memória alocada com new em arrays</span>
+<span class=sc16>#define </span>SAFE_DELETE_ARRAY(p) <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete</span>[] (p);    (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc2>// Libera interfaces do directx</span>
+<span class=sc16>#define </span>SAFE_RELEASE(p)      <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span>(p)<span class=prg>-&gt;Release</span>();  (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc16>#endif</span>
+</div>
+
+<u>motor.h</u>
+Este arquivo foi montado para dar suporte ao arquivo  <span class=prg>dsutil.cpp</span>  que
+faz uso das macros e dos arquivos incluídos.   Então  para  sonorizar 
+suas futuras aplicações é essencial transportar para  seu  projeto  o
+conteúdo desse arquivo.
+
+
+<b><span class=sc16>#define </span><span class=sc4>WIN32_LEAN_AND_MEAN</span></b>
+O uso dessa macro é para simplificar a compilação do projeto.  O  uso
+dessa  macro  desabilita  a  inclusão  de  arquivos de cabeçalhos com
+funcionalidades raramente usadas; por exemplo, exclusão  das  funções
+de    criptografia    que    não   vem   ao   caso   desse   projeto.
+Essa macro deve ser utilizada antes da inclusão do arquivo <span class=prg>windows.h</span>.
+
+
+<b><span class=sc16>#include </span><span class=prg>&lt;mmsystem.h&gt;</span></b>
+O  DirectSound  utiliza  o  temporizador  oferecido  neste arquivo de
+cabeçalho.   O   arquivo   lib   referente   a   ele   é   <span class=prg>winmm.lib</span>.
+
+
+<b><span class=sc16>#include </span><span class=prg>&lt;dxerr9.h&gt;</span></b>
+Este arquivo contém definições de erros e exceções do directx 9.
+
+
+<b><span class=sc16>#include </span><span class=prg>&lt;dsound.h&gt;</span></b>
+Este  aqui  é  o  arquivo  de cabeçalho do DirectSound. O arquivo lib
+referente é <span class=prg>dsound.lib</span>.
+
+
+<b><span class=sc16>#define </span>SAFE_DELETE(p)       <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete </span>(p);      (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+<span class=sc16>#define </span>SAFE_DELETE_ARRAY(p) <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete</span>[] (p);    (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+<span class=sc16>#define </span>SAFE_RELEASE(p)      <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span>(p)<span class=prg>-&gt;Release</span>();  (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span></b>
+Esta coleção de macros encurtam a digitação do  código  de  liberação
+dos   objetos   das   interfaces   e  de  memória  alocada  com  <span class=prg>new</span>.
+Por exemplo, <b class=prg>SAFE_RELEASE(g_device)</b> é expandido para
+<span class=prg>if (g_device) { 
+g_device-&gt;Release(); 
+g_device = NULL; }</span>
+
+<b><u>2.1.2 Aspectos globais - A classe CSoundPlayer</u></b>
+<div class=niceview>//*******************************************************************</span>
+<span class=sc2>// SoundPlayer.h: Interface para a classe CSoundPlayer.</span>
+<span class=sc2>// Descrição:   Usa  o  DirectSound  para  tocar  sons</span>
+<span class=sc2>// Nota: Faz uso dos arquivos dsutil.cpp e dsutil.h que pertencem</span>
+<span class=sc2>// ao framework do directx. Estes arquivos definem as classes</span>
+<span class=sc2>// CSoundManager e CSound  usadas  por  este  programa</span>
+<span class=sc2>// Criado por Keith Ditchburn 30/01/2004</span>
+//*******************************************************************</span>
+
+<span class=sc16>#ifndef </span>soundplayer_h 
+ <span class=sc16>#define </span>soundplayer_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;vector&gt;</span>
+
+<span class=sc2>// Classes utilizadas na implementação deste arquivo</span>
+<span class=prg>class </span><span class=sc5>CSoundManager</span>; 
+<span class=prg>class </span><span class=sc5>CSound</span>; 
+
+<span class=prg>class </span>CSoundPlayer 
+<span class=sc16>{</span>
+
+<span class=sc16>private:</span>
+  <span class=sc2>// Objeto gerenciador de som</span>
+  <span class=sc5>CSoundManager </span>*m_soundManager; 
+
+  <span class=sc2>// Coleção de arquivos de som</span>
+  <span class=sc5>std::vector </span>&lt;CSound*&gt;  m_soundVector; 
+
+<span class=sc16>public:</span>
+
+  <span class=sc2>// Adiciona um arquivo wav ao vetor produzindo um id</span>
+  <span class=prg>bool </span>AddWav(<span class=prg>char </span>*filename, <span class=prg>int </span>*id);  
+
+  <span class=sc2>// Toca o som com repetição continua se loop = TRUE</span>
+  <span class=prg>bool </span>PlaySound(<span class=prg>int </span>id, <span class=prg>bool </span>loop);  
+
+  <span class=sc2>// Pára de tocar o som</span>
+  <span class=prg>void </span>StopSound(<span class=prg>int </span>id);  
+
+  <span class=sc2>// Inicializa o objeto tocador de som (CSoundManager)</span>
+  <span class=sc16>HRESULT </span>Initialise(<span class=sc16>HWND </span>hWnd);  
+
+  <span class=sc2>// Construtor</span>
+  CSoundPlayer();  
+
+  <span class=sc2>// Destrutor</span>
+  virtual ~CSoundPlayer();  
+
+<span class=sc16>}</span>; 
+
+<span class=sc16>#endif</span>
+</div>
+
+<b><span class=sc16>#include </span><span class=prg>&lt;vector&gt;</span></b>
+A classe <span class=prg>CSoundPlayer</span> utiliza o recipiente STL <span class=prg>vector</span>  para manter os
+arquivos sonoros wav adicionados pela aplicação.
+
+<b><span class=prg>class </span><span class=sc5>CSoundManager</span>; 
+<span class=prg>class </span><span class=sc5>CSound</span>; </b>
+Estas classes são utilizadas pela classe <span class=prg>CSoundPlayer</span>  para adicionar
+uma sonorização simples à aplicação.
+
+<b><span class=sc5>CSoundManager </span>*m_soundManager; </b>
+Esta  é  uma  instância  de um objeto da classe <span class=prg>CSoundManager</span> que vai
+ser  responsável  por  criar um objeto da interface <b class=prg>IDirectSound8</b> que
+representa o dispositivo de som utilizado para sonorizar a aplicação.
+
+<b><span class=sc5>std::vector </span><b class=prg>&lt;CSound*&gt;</b> m_soundVector; </b>
+Este objeto vai representar a coleção de efeitos  sonoros  carregados
+pela aplicação.
+
+<b><span class=prg>bool </span>AddWav(<span class=prg>char </span>*filename, <span class=prg>int </span>*id);  </b>
+Este  método  adiciona  um  arquivo  sonoro na coleção e produz um id
+numérico  para  identificar  esse som nos futuros processos que serão
+aplicados sobre ele.
+
+<b><span class=prg>bool </span>PlaySound(<span class=prg>int </span>id, <span class=prg>bool </span>loop);  </b>
+Esse método toca o som apontado pelo id e repete-o continuamente se o
+flag   de   repetição   (<b>loop</b>)   estiver   configurado   como   TRUE.
+
+<b><span class=prg>void </span>StopSound(<span class=prg>int </span>id);  </b>
+Este método pára o som identificado pelo id.
+
+<b><span class=sc16>HRESULT </span>Initialise(<span class=sc16>HWND </span>hWnd);  </b>
+Este método inicializa o gerenciador de som da classe <span class=prg>CSoundManager</span> e
+outros  objetos  necessários  para  a  utilização de efeitos sonoros.
+
+<b>CSoundPlayer();  
+virtual ~CSoundPlayer();  </b>
+Aqui estão o construtor e o destrutor da classe.
+
+<b><u>2.1.3 Aspectos globais - Arquivo: entrada.cpp</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_consoleSom - Arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação exemplifica como tocar um efeito sonoro</span>
+<span class=sc2>// contido em um arquivo do formato wav</span>
+<span class=sc2>// By www.toymaker.info \\ www.gameprog.com.br</span>
+
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;conio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"SoundPlayer.h"</span>
+
+<span class=sc2>// Inclusão das bibliotecas</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"winmm.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dsound.lib"</span>)  
+
+<span class=sc2>// Protótipo das funções</span>
+<span class=prg>void </span>iniciar(<span class=prg>void</span>);   
+<span class=prg>void </span>menu(<span class=prg>void</span>);   
+
+<span class=sc2>// Ponteiro para um objeto CSoundPlayer</span>
+CSoundPlayer *g_Tocador = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Vamos precisar do handle da janela de console</span>
+<span class=sc16>HWND </span>hJanela; 
+</div>
+<b><span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span></b>
+Vamos  precisar  da  função  <span class=prg>GetConsoleWindow()</span> desse  arquivo  para
+conectar a janela de console com o dispositivo de som.
+
+<b><span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"winmm.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dsound.lib"</span>)  </b>
+Estas bibliotecas permitem o uso  das funcionalidades do DirectSound.
+
+<b><span class=prg>void </span>iniciar(<span class=prg>void</span>);   </b>
+A função <b>iniciar()</b> faz uma configuração básica na janela de console.
+
+<b><span class=prg>void </span>menu(<span class=prg>void</span>);   </b>
+A  função  <b class=prg>menu()</b>  mostra  as teclas de controle dos efeitos sonoros.
+
+<b>CSoundPlayer *g_Tocador = <span class=prg>NULL</span>; </b>
+Este objeto é a interface pela qual a aplicação adiciona  e  controla
+os efeitos sonoros.
+
+<b><span class=sc16>HWND </span>hJanela; </b>
+Este handle de janela vai ser usado para coletar o handle  da  janela
+de   console   necessário   para   a  inicialização  do  DirectSound.
+
+<b><u>2.2 Utilização da classe CSoundPlayer na função main()</u></b>
+<div class=niceview><span class=prg>int </span>main(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Identifica qual efeito sonoro tocar</span>
+  <span class=prg>int </span>nSom = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Controle de pressionamento das teclas</span>
+  <span class=prg>int </span>ntecla = <span class=sc4>0</span>; 
+  <span class=prg>int </span>nchar = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Inicializa a janela de console e mostra menu</span>
+  iniciar();  
+  menu();  
+
+  <span class=sc2>// Cria um objeto CSoundPlayer</span>
+  g_Tocador = <span class=prg>new </span>CSoundPlayer; 
+
+  <span class=sc2>// Inicializa o gerenciador de som</span>
+  hJanela  = <span class=prg>GetConsoleWindow </span>();  
+  <span class=prg>g_Tocador-&gt;Initialise</span>(hJanela);  
+
+  <span class=sc2>// Adiciona efeitos sonoros na fila</span>
+  <span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum1.wav"</span>, &nSom);  
+  <span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum2.wav"</span>, &nSom);  
+
+  <span class=sc2>// Toca um som inicialmente</span>
+  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(<span class=sc4>0</span>, <span class=prg>false</span>);   
+
+  <span class=sc2>// Pressione a letra 'Q' para quebrar o laço</span>
+  <span class=sc9>while</span>(<span class=prg>true</span>) 
+  <span class=sc16>{</span>
+    ntecla = <span class=prg>_kbhit</span>();  
+    <span class=sc9>if </span>(ntecla != <span class=sc4>0</span>)  nchar = <span class=prg>_getch</span>();  
+
+    <span class=sc2>// Indicação de qual id de som para manipular</span>
+    <span class=sc9>if</span>(nchar ==  '1')  nSom = <span class=sc4>0</span>; 
+    <span class=sc9>if</span>(nchar ==  '2')  nSom = <span class=sc4>1</span>; 
+
+    <span class=sc2>// Mostra o som sendo manipulado na janela</span>
+    <span class=sc9>if</span>(nchar ==  '1')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum1.wav"</span>);   
+    <span class=sc9>if</span>(nchar ==  '2')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum2.wav"</span>);   
+
+    <span class=sc2>// Toca o som indicado</span>
+    <span class=sc9>if</span>(nchar ==  'P')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   
+    <span class=sc9>if</span>(nchar ==  'p')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   
+
+    <span class=sc2>// Pára o som que está sendo tocado</span>
+    <span class=sc9>if</span>(nchar ==  'S')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  
+    <span class=sc9>if</span>(nchar ==  's')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  
+
+    <span class=sc2>// Toca o som continuamente (looping)</span>
+    <span class=sc9>if</span>(nchar ==  'L')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   
+    <span class=sc9>if</span>(nchar ==  'l')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   
+
+    <span class=sc2>// Encerra a aplicação</span>
+    <span class=sc9>if</span>(nchar ==  'Q')  <span class=sc6>break</span>; 
+    <span class=sc9>if</span>(nchar ==  'q')  <span class=sc6>break</span>; 
+
+    <span class=sc2>// Limpa as variáveis de leitura do teclado</span>
+    <span class=sc9>if</span>(nchar != 'Q' ) nchar = <span class=sc4>0</span>; 
+    ntecla = <span class=sc4>0</span>; 
+
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// Libera o objeto CSoundPlayer</span>
+  <span class=prg>g_Tocador-&gt;~CSoundPlayer </span>();  
+
+  <span class=sc6>return </span><span class=sc4>1</span>; 
+<span class=sc16>} <span class=sc2>// main().fim</span></span>
+</div>
+
+<b><span class=prg>int </span>nSom = <span class=sc4>0</span>;</b>
+Esta variável indica qual efeito sonoro vai sofrer o comando aplicado.
+
+<b><span class=prg>int </span>ntecla = <span class=sc4>0</span>;</b> 
+Esta  variável  vai  ser utilizada como um flag de aviso para indicar
+quando ocorrer o pressionamento de uma tecla.
+
+<b><span class=prg>int </span>nchar = <span class=sc4>0</span>;</b>
+Esta  variável  vai  receber  a tecla pressionada e vai ser utilizada 
+para   discernir   qual   comando  aplicar  sobre  o  efeito  sonoro.
+
+<b>iniciar();    menu();</b> 
+Aqui a janela de console é inicializada e o menu é mostrado.
+
+<b>g_Tocador = <span class=prg>new </span>CSoundPlayer; </b>
+Aqui   <b>g_Tocador</b>   é   inicializado  como  uma  instância  da  classe
+<span class=prg>CSoundPlayer</span>.
+
+<b>hJanela  = <span class=prg>GetConsoleWindow </span>();  
+<span class=prg>g_Tocador-&gt;Initialise</span>(hJanela);  </b>
+Esse bloco de código pega o handle da janela de console e na sequência
+inicializa o dispositivo de som.
+
+<b><span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum1.wav"</span>, &nSom);  
+<span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum2.wav"</span>, &nSom);  </b>
+Aqui  é  a  forma de adicionar arquivos de efeitos sonoros na coleção
+interna  da  classe.  Repare  que <b>nSom</b> é passado como referência para
+receber    a    identificação    numérica    do    som    adicionado.
+
+<b><span class=prg>g_Tocador-&gt;PlaySoundA</span>(<span class=sc4>0</span>, <span class=prg>false</span>);   </b>
+Aqui é a forma de tocar o efeito sonoro sem o loop ligado.
+
+<span class=sc9>while</span>(<span class=prg>true</span>)  <span class=sc16>{</span>
+Com  essa  sintaxe o laço do <span class=prg>while</span> é eterno sendo quebrado pela letra
+<b>'Q'</b> do teclado finalizando a aplicação.
+
+<b>ntecla = <span class=prg>_kbhit</span>();  </b>
+Essa função examina se houve um pressionamento de tecla. (*) Em algum
+momento da década de '90 as funções padrões da linguagem  C  ganharam
+um underline o quê explica a nova aparência de <span class=prg>_kbhit()</span> e <span class=prg>_getch()</span>.
+
+<b><span class=sc9>if </span>(ntecla != <span class=sc4>0</span>)  nchar = <span class=prg>_getch</span>();  </b>
+Nessa linha pegamos qual foi o caracter do teclado pressionando.
+
+<b><span class=sc9>if</span>(nchar ==  '1')  nSom = <span class=sc4>0</span>; 
+<span class=sc9>if</span>(nchar ==  '2')  nSom = <span class=sc4>1</span>; </b>
+As teclas 1 e 2 identificam respectivamente qual som ficará  em  foco
+para receber o controle aplicado.
+
+<b><span class=sc9>if</span>(nchar ==  '1')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum1.wav"</span>);   
+<span class=sc9>if</span>(nchar ==  '2')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum2.wav"</span>);   </b>
+Exibimos qual som está em foco na barra de títulos da janela.
+
+<b><span class=sc9>if</span>(nchar ==  'P')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   
+<span class=sc9>if</span>(nchar ==  'p')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   </b>
+Toca o som indicado.
+ 
+<b><span class=sc9>if</span>(nchar ==  'S')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  
+<span class=sc9>if</span>(nchar ==  's')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  </b>
+Pára o som que está sendo tocado
+
+<b><span class=sc9>if</span>(nchar ==  'L')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   
+<span class=sc9>if</span>(nchar ==  'l')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   </b>
+Toca o som continuamente (looping)
+
+<b><span class=sc9>if</span>(nchar ==  'Q')  <span class=sc6>break</span>; 
+<span class=sc9>if</span>(nchar ==  'q')  <span class=sc6>break</span>; </b>
+Encerra a aplicação.
+
+<b><span class=sc9>if</span>(nchar != 'Q' ) nchar = <span class=sc4>0</span>; 
+ntecla = <span class=sc4>0</span>;   <span class=sc16>} <span class=sc2>// endwhile</span></span></b>
+Limpa   as   variáveis   de  leitura  do  teclado  para  não  ocorrer
+comportamento não desejado.
+
+<b><span class=prg>g_Tocador-&gt;~CSoundPlayer </span>();  
+<span class=sc6>return </span><span class=sc4>1</span>; </b>
+Libera o objeto <span class=prg>CSoundPlayer</span> e finaliza a aplicação.
+
+<b><u>2.3 Inicialização da janela de console e apresentação do menu</u></b>
+Segue a listagem simples das funções <b>iniciar()</b> e <b>menu()</b>. Lembramos que
+a função <span class=prg>system()</span> executa um comando de console ou programa do Windows.
+
+<div class=niceview><span class=prg>void </span>iniciar(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>system</span>(<span class=sc6>"color f1"</span>);   
+  <span class=prg>printf</span>(<span class=sc6>"\n"</span>);   
+  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom"</span>);   
+<span class=sc16>} <span class=sc2>// iniciar().fim</span></span>
+</div>
+
+<u>O menu da aplicação</u>
+<div class=niceview><span class=prg>void </span>menu(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>printf </span>(<span class=sc6>" \t 1- Seleciona drum1.wav \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t 2- Seleciona drum2.wav \n\n"</span>);   
+
+  <span class=prg>printf </span>(<span class=sc6>" \t P- Play </span>( Tocar )<span class=sc6> \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t S- Stop </span>( Parar )<span class=sc6> \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t L- Loop </span>( Tocar continuamente )<span class=sc6> \n\n"</span>);   
+
+  <span class=prg>printf </span>(<span class=sc6>" \t Q- Quit </span>( Sair )<span class=sc6> \n\n"</span>);   
+
+<span class=sc16>} <span class=sc2>// menu().fim</span></span>
+</div>
+
+
+<b><u>3. Código fonte do projeto de exemplo:prj_consoleSom</u></b>
+<div class=prg-code><img src=images\prj_consoleSom.png>
+
+//*******************************************************************</span>
+<span class=sc2>// Projeto: prj_consoleSom - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação exemplifica como tocar um efeito sonoro</span>
+<span class=sc2>// contido em um arquivo do formato wav</span>
+<span class=sc2>// By www.toymaker.info \\ www.gameprog.com.br</span>
+//*******************************************************************</span>
+
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Exclui conteúdo raramente usado para agilizar compilação</span>
+<span class=sc16>#define </span><span class=sc4>WIN32_LEAN_AND_MEAN</span>
+
+<span class=sc2>// Funcionalidades do Windows</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+
+<span class=sc2>// Funcionalidades da linguagem C</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;malloc.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;memory.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;tchar.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;assert.h&gt;</span>
+
+<span class=sc2>// Acesso multimídia</span>
+<span class=sc16>#include </span><span class=prg>&lt;mmsystem.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dxerr9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dsound.h&gt;</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Macros de utilidades</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Deleta memória alocada com new</span>
+<span class=sc16>#define </span>SAFE_DELETE(p)       <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete </span>(p);      (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc2>// Deleta memória alocada com new em arrays</span>
+<span class=sc16>#define </span>SAFE_DELETE_ARRAY(p) <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span><span class=prg>delete</span>[] (p);    (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc2>// Libera interfaces do directx</span>
+<span class=sc16>#define </span>SAFE_RELEASE(p)      <span class=sc16>{ </span><span class=sc9>if</span>(p) <span class=sc16>{ </span>(p)<span class=prg>-&gt;Release</span>();  (p) = <span class=prg>NULL</span>; <span class=sc16>} </span><span class=sc16>}</span>
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code>//*******************************************************************</span>
+<span class=sc2>// SoundPlayer.h: Interface para a classe CSoundPlayer.</span>
+<span class=sc2>// Descrição: Usa o  DirectSound para tocar sons</span>
+<span class=sc2>// Nota: Faz uso dos arquivos dsutil.cpp e dsutil.h que pertencem</span>
+<span class=sc2>// ao framework do directx. Estes arquivos definem as classes</span>
+<span class=sc2>// CSoundManager e CSound usadas por este programa</span>
+<span class=sc2>// Criado por Keith Ditchburn 30/01/2004</span>
+//*******************************************************************</span>
+
+<span class=sc16>#ifndef </span>soundplayer_h 
+ <span class=sc16>#define </span>soundplayer_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;vector&gt;</span>
+
+<span class=sc2>// Classes utilizadas na implementação deste arquivo</span>
+<span class=prg>class </span><span class=sc5>CSoundManager</span>; 
+<span class=prg>class </span><span class=sc5>CSound</span>; 
+
+<span class=prg>class </span>CSoundPlayer 
+<span class=sc16>{</span>
+
+<span class=sc16>private:</span>
+  <span class=sc2>// Objeto gerenciador de som</span>
+  <span class=sc5>CSoundManager </span>*m_soundManager; 
+
+  <span class=sc2>// Coleção de arquivos de som</span>
+  <span class=sc5>std::vector </span>&lt;CSound*&gt;  m_soundVector; 
+
+<span class=sc16>public:</span>
+
+  <span class=sc2>// Adiciona um arquivo wav ao vetor produzindo um id</span>
+  <span class=prg>bool </span>AddWav(<span class=prg>char </span>*filename, <span class=prg>int </span>*id);  
+
+  <span class=sc2>// Toca o som com repetição continua se loop = TRUE</span>
+  <span class=prg>bool </span>PlaySound(<span class=prg>int </span>id, <span class=prg>bool </span>loop);  
+
+  <span class=sc2>// Pára de tocar o som</span>
+  <span class=prg>void </span>StopSound(<span class=prg>int </span>id);  
+
+  <span class=sc2>// Inicializa o objeto tocador de som (CSoundManager)</span>
+  <span class=sc16>HRESULT </span>Initialise(<span class=sc16>HWND </span>hWnd);  
+
+  <span class=sc2>// Construtor</span>
+  CSoundPlayer();  
+
+  <span class=sc2>// Destrutor</span>
+  virtual ~CSoundPlayer();  
+
+<span class=sc16>}</span>; 
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// Projeto: prj_consoleSom - Arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação exemplifica como tocar um efeito sonoro</span>
+<span class=sc2>// contido em um arquivo do formato wav</span>
+<span class=sc2>// By www.toymaker.info \\ www.gameprog.com.br</span>
+
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;conio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"SoundPlayer.h"</span>
+
+<span class=sc2>// Inclusão das bibliotecas</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"winmm.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dsound.lib"</span>)  
+
+<span class=sc2>// Protótipo das funções</span>
+<span class=prg>void </span>iniciar(<span class=prg>void</span>);   
+<span class=prg>void </span>menu(<span class=prg>void</span>);   
+
+<span class=sc2>// Ponteiro para um objeto CSoundPlayer</span>
+CSoundPlayer *g_Tocador = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Vamos precisar do handle da janela de console</span>
+<span class=sc16>HWND </span>hJanela; 
+
+
+
+<span class=prg>int </span>main(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Identifica qual efeito sonoro tocar</span>
+  <span class=prg>int </span>nSom = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Controle de pressionamento das teclas</span>
+  <span class=prg>int </span>ntecla = <span class=sc4>0</span>; 
+  <span class=prg>int </span>nchar = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Inicializa a janela de console e mostra menu</span>
+  iniciar();  
+  menu();  
+
+  <span class=sc2>// Cria um objeto CSoundPlayer</span>
+  g_Tocador = <span class=prg>new </span>CSoundPlayer; 
+
+  <span class=sc2>// Inicializa o gerenciador de som</span>
+  hJanela  = <span class=prg>GetConsoleWindow </span>();  
+  <span class=prg>g_Tocador-&gt;Initialise</span>(hJanela);  
+
+  <span class=sc2>// Adiciona efeitos sonoros na fila</span>
+  <span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum1.wav"</span>, &nSom);  
+  <span class=prg>g_Tocador-&gt;AddWav</span>(<span class=sc6>"drum2.wav"</span>, &nSom);  
+
+  <span class=sc2>// Toca um som inicialmente</span>
+  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(<span class=sc4>0</span>, <span class=prg>false</span>);   
+
+  <span class=sc2>// Pressione a letra 'Q' para quebrar o laço</span>
+  <span class=sc9>while</span>(<span class=prg>true</span>) 
+  <span class=sc16>{</span>
+    ntecla = <span class=prg>_kbhit</span>();  
+    <span class=sc9>if </span>(ntecla != <span class=sc4>0</span>)  nchar = <span class=prg>_getch</span>();  
+
+    <span class=sc2>// Indicação de qual id de som para manipular</span>
+    <span class=sc9>if</span>(nchar ==  '1')  nSom = <span class=sc4>0</span>; 
+    <span class=sc9>if</span>(nchar ==  '2')  nSom = <span class=sc4>1</span>; 
+
+    <span class=sc2>// Mostra o som sendo manipulado na janela</span>
+    <span class=sc9>if</span>(nchar ==  '1')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum1.wav"</span>);   
+    <span class=sc9>if</span>(nchar ==  '2')  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom: drum2.wav"</span>);   
+
+    <span class=sc2>// Toca o som indicado</span>
+    <span class=sc9>if</span>(nchar ==  'P')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   
+    <span class=sc9>if</span>(nchar ==  'p')  <span class=prg>g_Tocador-&gt;PlaySoundA</span>(nSom, <span class=prg>false</span>);   
+
+    <span class=sc2>// Pára o som que está sendo tocado</span>
+    <span class=sc9>if</span>(nchar ==  'S')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  
+    <span class=sc9>if</span>(nchar ==  's')  <span class=prg>g_Tocador-&gt;StopSound </span>(nSom);  
+
+    <span class=sc2>// Toca o som continuamente (looping)</span>
+    <span class=sc9>if</span>(nchar ==  'L')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   
+    <span class=sc9>if</span>(nchar ==  'l')  <span class=prg>g_Tocador-&gt;PlaySoundA </span>(nSom, <span class=prg>true</span>);   
+
+    <span class=sc2>// Encerra a aplicação</span>
+    <span class=sc9>if</span>(nchar ==  'Q')  <span class=sc6>break</span>; 
+    <span class=sc9>if</span>(nchar ==  'q')  <span class=sc6>break</span>; 
+
+    <span class=sc2>// Limpa as variáveis de leitura do teclado</span>
+    <span class=sc9>if</span>(nchar != 'Q' ) nchar = <span class=sc4>0</span>; 
+    ntecla = <span class=sc4>0</span>; 
+
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// Libera o objeto CSoundPlayer</span>
+  <span class=prg>g_Tocador-&gt;~CSoundPlayer </span>();  
+
+  <span class=sc6>return </span><span class=sc4>1</span>; 
+<span class=sc16>} <span class=sc2>// main().fim</span></span>
+
+
+<span class=prg>void </span>iniciar(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>system</span>(<span class=sc6>"color f1"</span>);   
+  <span class=prg>printf</span>(<span class=sc6>"\n"</span>);   
+  <span class=prg>system</span>(<span class=sc6>"title prj_consoleSom"</span>);   
+<span class=sc16>} <span class=sc2>// iniciar().fim</span></span>
+
+
+<span class=prg>void </span>menu(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>printf </span>(<span class=sc6>" \t 1- Seleciona drum1.wav \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t 2- Seleciona drum2.wav \n\n"</span>);   
+
+  <span class=prg>printf </span>(<span class=sc6>" \t P- Play </span>( Tocar )<span class=sc6> \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t S- Stop </span>( Parar )<span class=sc6> \n"</span>);   
+  <span class=prg>printf </span>(<span class=sc6>" \t L- Loop </span>( Tocar continuamente )<span class=sc6> \n\n"</span>);   
+
+  <span class=prg>printf </span>(<span class=sc6>" \t Q- Quit </span>( Sair )<span class=sc6> \n\n"</span>);   
+
+<span class=sc16>} <span class=sc2>// menu().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track09-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

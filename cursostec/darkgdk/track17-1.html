@@ -1,0 +1,687 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase17-1</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 17.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track16-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track18-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">17.1 Salvando e recuperando dados</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<img src="images\savegame.png" style="border:2px solid lightgray">
+
+Neste tópico vamos ver como salvar e recuperar dados que é um processo típico 
+de diversas situações como salvar e carregar o status de uma sessão do jogo,
+para produzir e recuperar dados em formato próprio como uma mapa de jogo.
+
+Relembramos que existe outros dois caminhos de gravar e recuperar dados em
+arquivos que você pode usar para complementar  ou  substituir a  DarkGdk
+que neste aspecto apresenta algumas <b class=err>inconsistências</b> na versão aqui utilizada.
+Você pode usar as funções de entrada e  saída da  biblioteca  padrão  da 
+linguagem c/c++ e da biblioteca do Windows.
+
+Neste tópico vamos estudar as seguintes funções de gravação:
+---------------------------------------------------------------------------
+<b class=prg>dbOpenToWrite()</b>	- Cria e abre um arquivo para gravação			
+<b class=prg>dbFileOpen()</b>	- Verifica o sucesso da abertura de arquivo
+<b class=prg>dbWriteString()</b>	- Grava uma string no arquivo aberto
+<b class=prg>dbWriteLong()</b>	- Grava um (long) valor de 32 bits no arquivo
+<b class=prg>dbWriteWord ()</b>	- Grava um (word) valor de 16 bits no arquivo	
+<b class=prg>dbWriteByte()</b>	- Grava um (byte) valor de 8 bits no arquivo
+<b class=prg>dbCloseFile()</b>	- Fecha o arquivo que foi aberto em modo leitura ou gravação
+
+As funções de gravação acima apresentam as respectivas contraparte de leitura:
+---------------------------------------------------------------------------
+<b class=prg>dbOpenToRead()</b>	- Abre um arquivo para leitura
+<b class=err>dbReadString()</b>	- Lê uma string no arquivo aberto
+<b class=prg>dbReadLong()</b>	- Lê um (long) valor de 32 bits do arquivo
+<b class=prg>dbReadWord ()</b>	- Lê um (word) valor de 16 bits do arquivo	
+<b class=prg>dbReadByte()</b>	- Lê um (byte) valor de 8 bits do arquivo
+
+A função <b>dbReadString()</b> não será estudada pois não está funcionando adequadamente.
+Em seu lugar será utilizada a função <b>dbReadByte()</b>.
+
+<hr><!--------------------------------------------------------------------------------------------->	
+<b><u>1.1.1 Ponteiro interno</u></b>
+
+<img src="images\ponteiro.png" height=258 width=648> 
+
+É importante saber que o arquivo em disco tem um endereço, tem uma posição
+específica aonde ele está gravado. Nos  bastidores do processo de gravação
+e leitura é criado um ponteiro  que aponta para esta  posição  e  qualquer
+operação de gravação e  leitura provoca  um  deslocamento  neste  ponteiro
+determinando aonde vai ocorrer a próxima leitura/gravação de dados.
+
+Dado então a existência do ponteiro é necessário ficar atento ao <b>tamanho</b>,
+<b>quantidade</b> e na <b>ordem</b> dos dados que serão lidos ou gravados. Um descontrole
+nestes aspectos  pode  ocasionar  discrepâncias na recuperação dos mesmos,
+pode ocasionar falta de correspondência do dado gravado com o  dado  lido.
+
+Segue abaixo algumas nomenclaturas e tamanho dos tipos de dados básicos:
+
+<b>nibble</b>  	4 bits	
+<b>byte</b>		8 bits ou dois nibbles	
+<b>char</b>		1 byte	
+<b>word</b> 		2 bytes 
+<b>long</b> 		4 bytes	(*)
+<b>int</b>		4 bytes (*)
+
+* O tamanho de alguns tipos pode variar conforme o sistema e/ou compilador
+sendo usados. Você pode checar o tamanho em tempo real usando o operador
+<b>sizeof()</b> da linguagem c/c++.
+
+<hr>
+<b><u>1.2 Estudo das funções de leitura e gravação</b></u>
+
+<b class=prg>dbOpenToWrite(hfile, sArquivo)
+void dbOpenToWrite ( int f, char* pFilename );</b>
+Esta função cria um arquivo e o abre para gravação. Esta função falha se
+o arquivo existir de forma que você deve deletá-lo e recriá-lo para ter 
+sucesso nos processos de gravação. Você deve verificar o sucesso da 
+abertura do arquivo com a função <b>dbFileOpen().</b>
+
+<b>hfile</b>		- valor que indentifica o arquivo em processsos posteriores
+<b>sArquivo</b> 	- nome do arquivo a ser aberto	
+
+Ex.: <span class=prg><b>
+int hfile = 6;
+char *sArquivo = "savegame.sav";	
+dbOpenToWrite(hfile,sArquivo);		
+if(dbFileOpen(hfile))</b>
+{
+ dbPrint(" savegame() ok - Arquivo criado/aberto com sucesso!");
+}
+else
+{
+MsgInfo(" Arquivo não foi aberto com sucesso!");
+return;
+} // endif </span>	
+-------------------------------------------------------------------------------
+
+<b class=prg>nsts = dbFileOpen(hfile);
+int dbFileOpen ( int f ); </b>
+Esta função retorna 1 caso o arquivo especificado tenha sido aberto com
+sucesso. Veja o exemplo de uso na função acima <b>dbOpenToWrite().</b>		
+-------------------------------------------------------------------------------
+
+<b class=prg>dbWriteString(hfile, sTexto);
+void dbWriteString ( int f, char* pString );</b>
+Esta função grava uma string no arquivo aberto. 
+	<font color=darkblue>
+// Define ou coleta os dados
+char *sNome = "Jogador01"; 
+int hfile = 6;
+// (...) abre o arquivo e verifica se está ok
+// Grava os dados
+<b>dbWriteString (hfile, sNome);</b> </font>
+-------------------------------------------------------------------------------
+
+<b class=prg>dbWriteLong(hfile, nval)
+void dbWriteLong ( int f, int iValue );</b>
+Esta função escreve um valor do tipo long (4 bytes) no arquivo.
+	<font color=darkblue>
+// Define ou coleta os dados
+long nPontos = 558000; 
+int hfile = 6;
+// (...) abre o arquivo e verifica se está ok
+// Grava os dados
+<b>dbWriteLong (hfile, nPontos); </b></font>
+-------------------------------------------------------------------------------
+
+
+<b class=prg>dbWriteWord (hfile, nval)
+void dbWriteWord ( int f, int iValue );</b>
+Esta função um valor tipo word (2 bytes) no arquivo.
+	<font color=darkblue>
+// Define ou coleta os dados
+WORD nVidas = 16;       
+int hfile = 6;
+// (...) abre o arquivo e verifica se está ok
+// Grava os dados
+<b>dbWriteWord (hfile, nVidas);</b> </font>
+-------------------------------------------------------------------------------		
+
+
+<b class=prg>dbWriteByte(hfile, nval)
+void dbWriteByte ( int f, int iValue );</b>
+Esta função escreve um byte no arquivo.
+	<font color=darkblue>
+// Define ou coleta os dados
+char *sNome = "Jogador01"; 
+int nSaude = 68;         
+int hfile = 6;
+// (...) abre o arquivo e verifica se está ok
+// Grava os dados
+<b>dbWriteByte (hfile, nSaude);</b> </font>
+-------------------------------------------------------------------------------	
+
+
+<b class=prg>dbCloseFile(hfile)
+void dbCloseFile ( int f ); </b>
+Fecha o arquivo que foi aberto em modo leitura ou gravação
+
+Ex.:   <font color="darkblue">
+// Fechando o arquivo...
+<b>dbCloseFile(hfile); </b></font>
+-------------------------------------------------------------------------------
+
+
+<b class=prg>dbOpenToRead(hfile, sArquivo)
+void dbOpenToRead( int f, char* pFilename );</b>
+Abre um arquivo para leitura.
+
+Ex.: <font color="darkblue">
+char *sArquivo = "savegame.sav";
+// Abre e verifica arquivo
+int hfile = 2;
+<b>dbOpenToRead(hfile,sArquivo); </b></font>
+-------------------------------------------------------------------------------	
+	
+<b class=prg>dbReadLong(hfile, &nval)
+int dbReadLong( int f, int* pInteger );</b>
+Lê um (long) valor de 32 bits do arquivo.
+
+Ex.: <font color=darkblue>
+// (...) abre o arquivo para leitura e verifica se está ok
+int np = 0;
+<b>dbReadLong (hfile, &np);</b></font>	
+-------------------------------------------------------------------------------	
+
+
+<b class=prg>dbReadWord (hfile, &nval)
+WORD dbReadWord ( int f, WORD* pWord );</b>
+Lê um (word) valor de 16 bits do arquivo.
+
+Ex.:<font color=darkblue>	
+// (...) abre o arquivo para leitura e verifica se está ok
+WORD nv = 0;
+<b>dbReadWord (hfile, &nv);</b> </font>
+-------------------------------------------------------------------------------	
+
+
+<b class=prg>dbSkipBytes(hfile, nbytes);
+void dbSkipBytes ( int f, int iSkipValue );</b>
+Esta função desloca o ponteiro de leitura para a frente pulando uma 
+quantidade especifica de bytes. Você vai usar essa função geralmente
+para pular bytes de controle ou de demarcação de dados. Veja abaixo
+na função <b>dbReadByte()</b> um exemplo de uso.
+-------------------------------------------------------------------------------
+
+
+<b class=prg>dbReadByte(hfile, &nval)
+unsigned char dbReadByte ( int f, unsigned char* pByte );</b>
+Esta função lê um byte do arquivo. Você pode usar esta função para ler
+uma string que nada mais é do que uma sequência de bytes.
+
+Ex.: <font color=darkblue>
+// Define ou coleta os dados
+char *sNome = "Jogador01"; 
+int hfile = 6;
+// (...) abre o arquivo para gravação e verifica se está ok
+// Grava os dados
+dbWriteString (hfile, sNome);	
+
+// (...) abre o arquivo para leitura e verifica se está ok
+
+// memória para guardar os dados que serão lidos.
+unsigned char sn[13]="\0";	
+
+// A quantidade a ser lida deve ser a quantidade que foi gravada
+int ntam = strlen("jogador01");
+
+// Lê o byte e estoca-o em ns[posição]
+for (int ncx=0; ncx < ntam; ncx++) <b>dbReadByte(hfile, &sn[ncx]);
+dbSkipBytes(hfile,2);</b> </font>
+
+Repare no exemplo acima que usamos a função  <b>dbSkypeBytes()</b>  para  pular
+2 bytes para frente e assim posicionar corretamente o ponteiro no próximo
+dado a ser lido do arquivo. Esses dois bytes que foram  pulados  são  os
+caractereres <b>0x0D 0x0A</b> que são usados para ocasionar um avanço de linha 
+em funções ou aplicativos que exibem texto.
+
+Outro pequeno exemplo: <font color=darkblue>
+BYTE ns = 0;
+<b>dbReadByte (hfile, &ns);</b> </font>
+-------------------------------------------------------------------------------	
+
+Veja o programa exemplo dessa sessão:
+<div class=prg-code>
+<img src="images\savegame.png">
+// savegame.cpp
+// Este programa ilustra como salvar e carregar(load) status de jogo(savegame)
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                 </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">cText</span><span class="sc10">);</span><span class="sc0">      </span><span class="sc2">// Mostra uma mensagem na tela
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">savegame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">            </span><span class="sc2">// Salva jogo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">            </span><span class="sc2">// Carrega jogo
+</span><span class="sc0">
+</span><span class="sc2">// Flag para terminar o programa. 1 = terminar
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Elenco de cores
+</span><span class="sc9">#define nBranco     0xFFFFFF
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc11">savegame</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">loadgame</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction DarkGDK()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"savegame.cpp"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSetTextOpaque</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">cText</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">MessageBox</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cText</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"savegame.cpp"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">MB_OK</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc2">// endfuncion MsgInfo
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">savegame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sArquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"savegame.sav"</span><span class="sc10">;</span><span class="sc0">    
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbFileExist</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">dbDeleteFile</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">
+        
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sNome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Jogador01"</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// Jogador01
+</span><span class="sc0">    </span><span class="sc11">WORD</span><span class="sc0"> </span><span class="sc11">nVidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x4242</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// 16.962           - codificado em ascii: BB
+</span><span class="sc0">    </span><span class="sc16">long</span><span class="sc0"> </span><span class="sc11">nPontos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x43434343</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// 1.128.481.603    - codificado em ascii: CCCC 
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nSaude</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x44</span><span class="sc0"> </span><span class="sc10">;</span><span class="sc0">         </span><span class="sc2">// 68               - codificado em ascii: D
+</span><span class="sc0">
+    </span><span class="sc2">// Abre o arquivo e verifica que está ok
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">dbOpenToWrite</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">  
+    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">dbFileOpen</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">))</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"savegame() ok - Arquivo criado/aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">"Arquivo não foi aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+    </span><span class="sc2">// Grava os dados
+</span><span class="sc0">    </span><span class="sc11">dbWriteString</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sNome</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbWriteWord</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVidas</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbWriteLong</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nPontos</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbWriteByte</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nSaude</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Mostra os dados gravados
+</span><span class="sc0">    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"Dados gravados: "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc6">"Nome:%s Vidas:%d Saude:%d Pontos:%li"</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">sNome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVidas</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nSaude</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nPontos</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Fechando o arquivo
+</span><span class="sc0">    </span><span class="sc11">dbCloseFile</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: savegame()
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sArquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"savegame.sav"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbFileExist</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">       
+        </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">"Arquivo savegame.sav não existe"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+        
+    </span><span class="sc11">WORD</span><span class="sc0"> </span><span class="sc11">nv</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sn</span><span class="sc10">[</span><span class="sc4">13</span><span class="sc10">]=</span><span class="sc6">"\0"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">BYTE</span><span class="sc0"> </span><span class="sc11">ns</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Mostra variáveis antes da leitura
+</span><span class="sc0">    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"----------------------- loadgame() ok --------------------------"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Nome: %s Vidas: %d Saude: %d Pontos: %li"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">sn</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nv</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ns</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">np</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ns</span><span class="sc10">);</span><span class="sc0">    
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"Valores das variaveis antes da leitura:"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Abre e verifica arquivo
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">dbOpenToRead</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">dbFileOpen</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">))</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"loadgame() ok - Arquivo aberto com sucesso para leitura!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> 
+    </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">"Arquivo não foi aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">strlen</span><span class="sc10">(</span><span class="sc6">"jogador01"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc11">dbReadByte</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">sn</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+    </span><span class="sc11">dbSkipBytes</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc2">//Esta função não está funcionado: ReadString()
+</span><span class="sc0">    
+    </span><span class="sc11">dbReadWord</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">nv</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbReadLong</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">np</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbReadByte</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">ns</span><span class="sc10">);</span><span class="sc0">    
+
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">"Variaveis depois da leitura: "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Nome: %s Vidas: %d Saude: %d Pontos: %li"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">sn</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nv</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ns</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">np</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ns</span><span class="sc10">);</span><span class="sc0">    
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc2">// Fechando o arquivo...
+</span><span class="sc0">    </span><span class="sc11">dbCloseFile</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: loadgame</span></div>
+
+	
+<hr>
+	<b><u>1.3 Salvando e recuperando floats</b></u>
+	
+	<b class=prg>dbWriteFloat(hfile, nval)
+	void dbWriteFloat ( int f, float fValue ); </b>
+	Esta função escreve um valor do tipo float no arquivo.
+			<font color=darkblue>
+	// Define ou coleta os dados
+	 float x = 320.10f;  float y = 240.11f;  float z = 100.12f;
+	// (...) abre o arquivo e verifica se está ok
+	// Grava os dados
+	dbWriteFloat (hfile, x); dbWriteFloat (hfile, y);
+	dbWriteFloat (hfile, z);  </font>
+-------------------------------------------------------------------------------	
+
+	<b class=prg>dbReadFloat(hfile, &nval)
+	void dbReadFloat ( int f, float *pFloat ); </b>
+	Esta função lê um valor do tipo float do arquivo.
+			<font color=darkblue>
+	// Reserva espaço de memória
+	float u, v, w;
+	 u = v = w = 0.0f;
+	// (...) abre o arquivo e verifica se está ok
+	// Lê os dados
+	dbReadFloat (hfile, &u); dbWriteFloat (hfile, &v);
+	dbWriteRead (hfile, &w);  </font>
+-------------------------------------------------------------------------------	
+	
+Veja o programa exemplo abaixo:
+<div class=prg-code>
+<img src="images\myfloats.png">	
+// myfloats.cpp
+// Este programa ilustra como salvar e carregar(load) status de jogo(savegame)
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                 </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">cText</span><span class="sc10">);</span><span class="sc0">      </span><span class="sc2">// Mostra uma mensagem na tela
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">savegame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">            </span><span class="sc2">// Salva jogo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">            </span><span class="sc2">// Carrega jogo
+</span><span class="sc0">
+</span><span class="sc2">// Flag para terminar o programa. 1 = terminar
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc11">savegame</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction DarkGDK()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"myfloats.cpp"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSetTextOpaque</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">cText</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">MessageBox</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cText</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"myfloats.cpp"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">MB_OK</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc2">// endfuncion MsgInfo
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">savegame</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sArquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"myfloats.sav"</span><span class="sc10">;</span><span class="sc0">    
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbFileExist</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">dbDeleteFile</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">
+        
+    </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">320.10f</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">240.11f</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">z</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.12f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Abre o arquivo e verifica que está ok
+</span><span class="sc0">    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">dbOpenToWrite</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">      
+    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">dbFileOpen</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">))</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" savegame() ok - Arquivo criado/aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">" Arquivo não foi aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif  
+</span><span class="sc0">
+    </span><span class="sc2">// Grava os dados
+</span><span class="sc0">    </span><span class="sc11">dbWriteFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbWriteFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbWriteFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">z</span><span class="sc10">);</span><span class="sc0">    
+    
+    </span><span class="sc2">// Mostra os dados gravados
+</span><span class="sc0">    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" Dados gravados: "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">" Posicao do jogador: (%f, %f, %f)"</span><span class="sc10">,</span><span class="sc11">x</span><span class="sc10">,</span><span class="sc11">y</span><span class="sc10">,</span><span class="sc11">z</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Fechando o arquivo
+</span><span class="sc0">    </span><span class="sc11">dbCloseFile</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: savegame()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sArquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"myfloats.sav"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">sinfo</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbFileExist</span><span class="sc10">(</span><span class="sc11">sArquivo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">       
+        </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">" Arquivo myfloats.sav não existe"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+        
+    </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">u</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">v</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">w</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">u</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">v</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">w</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Mostra variáveis antes da leitura
+</span><span class="sc0">    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" ----------------------- loadgame() ok --------------------------"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">" Posicao do jogador: (%f, %f, %f)"</span><span class="sc10">,</span><span class="sc11">u</span><span class="sc10">,</span><span class="sc11">v</span><span class="sc10">,</span><span class="sc11">w</span><span class="sc10">);</span><span class="sc0">  
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" Valores das variaveis antes da leitura:"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Abre e verifica arquivo
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">dbOpenToRead</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc11">sArquivo</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">dbFileOpen</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">))</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" loadgame() ok - Arquivo aberto com sucesso para leitura!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> 
+    </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc11">MsgInfo</span><span class="sc10">(</span><span class="sc6">" Arquivo não foi aberto com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+        
+    </span><span class="sc11">dbReadFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">u</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbReadFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">v</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbReadFloat</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">w</span><span class="sc10">);</span><span class="sc0">   
+
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc6">" Variaveis depois da leitura: "</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">" Posicao do jogador: (%f, %f, %f)"</span><span class="sc10">,</span><span class="sc11">u</span><span class="sc10">,</span><span class="sc11">v</span><span class="sc10">,</span><span class="sc11">w</span><span class="sc10">);</span><span class="sc0">      
+    </span><span class="sc11">dbPrint</span><span class="sc10">(</span><span class="sc11">sinfo</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc2">// Fechando o arquivo...
+</span><span class="sc0">    </span><span class="sc11">dbCloseFile</span><span class="sc10">(</span><span class="sc11">hfile</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: loadgame</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track16-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track18-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

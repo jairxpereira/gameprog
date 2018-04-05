@@ -1,0 +1,222 @@
+<html><head>
+<title>cbiblioteca_track23_stdarg</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track23.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track22.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track24.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="23.00">
+<CENTER><H2>23.00 stdarg.h</H2></CENTER>
+<A HREF="#23.01">23.01</a> va_arg............Acessa uma lista variável de argumentos
+
+<A HREF="#23.02">23.02</a> va_end............Assinala o final de uma lista variável de argumentos
+
+<A HREF="#23.03">23.03</a> va_start..........Assinala o início de uma lista variável de argumentos
+
+<A NAME="23.01"><B>23.01 va_arg</B></a>
+        Esta função acessa uma lista variável de argumentos.
+        <b style="color:green">
+        type va_arg(va_list ap, type);
+        tNextItem = va_arg(ArgPtr, info);
+</b>
+        tNextItem...Esta função retorna o argumento corrente da lista;
+                    va_arg() retorna sempre o próximo item da lista em
+                    chamadas consecutivas.
+
+        ArgPtr......um ponteiro criado com o tipo va_list contido em stdarg.h
+
+        info........formatos e argumentos padrão "printf()" oriundos de outra função.
+
+        Ex.:    void soma(char *msg, ...) {
+                int total = 0;
+                va_list ap;
+                int arg;
+                va_start(ap, msg);
+                while ((arg = va_arg(ap,int)) != 0) {
+                total += arg;   }
+                printf(msg, total);
+                va_end(ap); }
+                /* Subentende-se o corpo de main() aqui. */
+                soma("O total de 1+2+3+4 é %d\n", 1,2,3,4,0);
+
+        Veja o programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdarg.h"
+
+        /* calculate sum of a 0 terminated list */
+        void soma(char *msg, ...) {
+        int total = 0;
+        va_list ap;
+        int arg;
+        va_start(ap, msg);
+        while ((arg = va_arg(ap,int)) != 0) {
+        total += arg;   }
+        printf(msg, total);
+        va_end(ap); }
+
+        int main(void) {
+        clrscr();
+        soma("O total de 1+2+3+4 é %d\n", 1,2,3,4,0);
+        puts("End of Program\n");
+        getch();
+        return 0; }</font>
+
+        Saída:
+        O total de 1+2+3+4 é 10
+        End of Program
+
+.......................................................................................
+<A NAME="23.02"><B>23.02 va_end</B></a>
+        Esta função assinala o final de uma lista variável de argumentos.
+        <b style="color:green">
+        void va_end(va_list ap);
+        va_end(ArgPtr);</b>
+
+        ArgPtr...um ponteiro criado com o tipo va_list contido em stdarg.h
+
+        Ex.:    int teste (char *info,...);
+                int teste(char *info,...) {
+                va_list ArgPtr;
+                va_start(ArgPtr,info);
+                vprintf(info,ArgPtr);
+                va_end(ArgPtr);
+                return ; }
+                /* Aqui subentende-se que vai o corpo de main() */
+                teste("Nome: %s \tIdade:%d \tSalário:%2.2f\n",sName,nIdade,fSalario);
+                teste("Jair\n");
+
+        Veja o programa exemplo: <font color = "darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdarg.h"
+
+        teste (char *info,...);
+        teste(char *info,...) {
+
+        va_list ArgPtr;
+
+        va_start(ArgPtr,info);
+        vprintf(info,ArgPtr);
+        va_end(ArgPtr);
+
+        return 0; }
+
+        int main(int nCmd, char **sCmd) {
+
+        char sName[]="Jair Pereira";
+        float fSalario=600.80;
+        int nIdade=33;
+
+        clrscr();
+
+        teste("Nome: %s \tIdade:%d \tSalário:%2.2f\n",sName,nIdade,fSalario);
+        teste("Jair\n");
+
+        getch();}</font>
+
+        Saída:
+        Nome: Jair Pereira      Idade:33        Salário:600.80
+        Jair
+
+        Para um melhor domínio desta função veja vprintf() em stdio.h
+
+.......................................................................................
+<A NAME="23.03"><B>23.03 va_start</B></a>
+        Esta função assinala o início de uma lista variável de argumentos.
+        <b style="color:green">
+        void va_start(va_list ap, parmN);
+        va_start(ArgPtr, info);</b>
+
+        ArgPtr...um ponteiro criado com o tipo va_list contido em stdarg.h
+        info.....formatos e argumentos padrão "printf()" oriundos de outra função.
+
+        Ex.:    int teste (char *info,...);
+                int teste(char *info,...) {
+                va_list ArgPtr;
+                va_start(ArgPtr,info);
+                vprintf(info,ArgPtr);
+                va_end(ArgPtr);
+                return ; }
+                /* Aqui subentende-se que vai o corpo de main() */
+                teste("Nome: %s \tIdade:%d \tSalário:%2.2f\n",sName,nIdade,fSalario);
+                teste("Jair\n");
+
+        Veja o programa exemplo: <font color = "darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdarg.h"
+
+        teste (char *info,...);
+        teste(char *info,...) {
+
+        va_list ArgPtr;
+
+        va_start(ArgPtr,info);
+        vprintf(info,ArgPtr);
+        va_end(ArgPtr);
+
+        return 0; }
+
+        int main(int nCmd, char **sCmd) {
+
+        char sName[]="Jair Pereira";
+        float fSalario=600.80;
+        int nIdade=33;
+
+        clrscr();
+
+        teste("Nome: %s \tIdade:%d \tSalário:%2.2f\n",sName,nIdade,fSalario);
+        teste("Jair\n");
+
+        getch();}</font>
+
+        Saída:
+        Nome: Jair Pereira      Idade:33        Salário:600.80
+        Jair
+
+        Para um melhor domínio desta função veja vprintf() em stdio.h
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track22.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track24.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

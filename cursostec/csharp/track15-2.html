@@ -1,0 +1,214 @@
+﻿<html>
+<head>
+<title>C_Sharp_15-2</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 15-2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track15-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track15"></a>
+<h3 style="background-color:#ead5ff">15-2 Comunicação assíncrona de dados via tcp\ip - parte 1\3: Introdução</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+O processo  de  ler ou escrever em grandes arquivos, principalmente se eles
+estiverem longe na internet ou vir por lentas conexões pode ser um processo
+muito demorado. Para amenizar isso, a linha principal da sua aplicação pode
+realizar  outras  tarefas  enquanto  outras  linhas  realizam o trabalho de 
+leitura  ou  escrita nos arquivos de rede. Seguindo os padrões já vistos de
+computação paralela da biblioteca .net, os métodos assíncronos avisam pelas
+funções callback quando os processos de leitura e escrita foram completados.
+
+O esquema de computação paralela ou assíncrona é bem consistente, repetindo
+o mesmo  padrão  já  visto  na  leitura e gravação paralela de arquivos. Os 
+métodos a serem utilizados são  <b class=prg>BeginWrite()</b> e <b class=prg>BeginRead()</b> configurados com
+os  <b>delegates</b>  que  apontam  para  as  funções  que são executadas quando o 
+processo de leitura ou gravação são completados.
+
+<b><u>1.2 Contexto da aplicação de exemplo</u></b>
+<img src=images\prj_PoliServidor.png>
+
+<img src=images\prj_tcpPoliCliente.png>
+Nosso exemplo  vai consistir de duas aplicações que vão conversar entre si, 
+tanto lendo como enviando dados:
+Uma aplicação servidora de dados que vai atender  a  demanda  de  múltiplos 
+clientes.  E  uma  aplicação  cliente  que  vai  solicitar uma informação e 
+recebê-la  quando  a  aplicação servidora conseguí-la. A aplicação  cliente
+poderá   ser  rodada  muitas  vezes  simultaneamente para simular múltiplas 
+demandas sobre a aplicação servidora.
+
+A aplicação servidora será configurada para responder a certos comandos  da 
+aplicação cliente como responder a um  <b>olá</b>  e  retornar  a  pasta  aonde  o  
+sistema  está  instalado  quando  o  cliente  utilizar  o comando <b>windir</b>. A
+aplicação cliente deve desconectar-se com o comando <b>parar</b>.  Na prática é um
+comportamento  semelhante com  uma aplicação centralizada de banco de dados
+enviando as  informações  solicitadas a vários clientes espalhados em rede.
+
+Do ponto de vista do usuário, as aplicações vão trocar informações na forma
+de strings, porém  as  aplicações vão trabalhar realmente com o recebimento
+e envio de bytes. Isso acarreta a necessidade da existência de duas funções,
+uma para converter string em bytes e outra para reverter bytes em  strings.
+
+Tanto a aplicação cliente como a aplicação servidora vai  contar  com  três 
+objetos  para  manipular  o  fluxo  de  dados, o fluxo de rede provido pela 
+classe  <b class=prg>NetworkStream</b>,  o  leitor  do  fluxo  provido  por <b class=prg>StreamReader</b> e o 
+escritor  ou  gravador  do  fluxo provido por <b class=prg>StreamWriter</b>. Necessariamente 
+ambas as aplicações terão objetos soquetes para estabelecimento da conexão.
+
+<b class=prg>Encoding</b>  é  uma classe dentro de <b class=prg>System.Text</b> que provê vários métodos para
+recodificação de texto.   Em nossa aplicação ela é utilizada no processo de
+comunicação  para  transformar  string  em  bytes e depois bytes em string.
+
+A informação para ser trocada  entre  computadores  e  outros  dispositivos 
+eletrônicos  precisa  ser  codificada  em um conjunto de códigos comuns que
+todos  esses  dispositivos  entendam.  Há  vários  padrões  de codificação, 
+encontrando-se o código <b>ascii</b> entre eles composto por  256 caracteres aonde
+os  primeiros   128  são  padronizados  e  o  restante  apresenta variações
+de  significados  conforme  o país de origem  da informação. O código <b>ascii</b>
+atendia  muito  bem  os  países de lingua inglesa mas não conseguia atender 
+adequadamente todas as línguas do mundo devido às suas limitações de tamanho.
+Então,  outros padrões de codificação surgiram como o <b>unicode</b>  composto por 
+65536  caracteres com suporte para todos os idiomas.  Entre outros formatos
+de  codificação  de  informação  há  o <b>UTF8</b> e <b>UTF16</b>  bastante utilizados na
+Internet. O namespace <b class=prg>System.Text</b> provê suporte para esses  vários tipos de
+formatação da informação e conversão entre eles.
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track15-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

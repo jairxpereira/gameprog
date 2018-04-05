@@ -1,0 +1,249 @@
+﻿<html>
+<head>
+<title>mdx9_fase01-7</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-7</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">1.7 Compreendendo matrizes e transformações</h3><pre>
+
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_Lab01.png>
+</div>
+A matemática de matrizes, vetores  e  transformações  junto  com  os
+típicos diagramas e notação particular é a parte  mais  intimidadora
+da programação de jogos,  entretanto  há  um  caminho alternativo de 
+assimilá-la: o caminho da experiência direta.
+
+Esse tópico vai estimular a compreensão de matrizes e transformações
+através  da  experiência prática visualizando os efeitos ocasionados
+pela mudança de valores dos argumentos das <b>três matrizes principais:</b>
+
+ - <span class=prg>device.Transform.Projection</span>		(matriz de projeção)
+ - <span class=prg>device.Transform.View</span>		(matriz de visualização)
+ - <span class=prg>device.Transform.World</span>		(matriz de espaço mundial)
+ 
+Cada vértice do nosso triângulo ocupou uma estrutura Vector3 trazendo
+a coordenada 3d (x, y, z) da posição do vértice. Geralmente a rotação
+e a escala dos objetos são realizados com vetores Vector3 com x, y, z
+se referindo a ângulo e intensidade de escala e rotação em cada eixo.
+
+Geralmente  a  matriz  vai  conter  em  sua estrutura interna estes 3 
+vetores  com  3 elementos se referindo a posição, escala e rotação do 
+objeto. Portanto a matriz básica vai ter 9 elementos:
+
+
+<img src=images\matrizes.png>
+Geralmente  os   vetores  de  rotação,  escala  e  posicionamento  se 
+apresentam de forma separada e o processo de juntá-los numa só matriz
+consiste de uma sequência de multiplicações: <span class=prg>
+Matrix mtx_movimento  = Matrix.Translation(mundo_pos);
+Matrix mtx_escala     = Matrix.Scaling(mundo_escala);
+Matrix mtx_rotacao    = Matrix.RotationYawPitchRoll(mundo_rotacao.X,
+                                   mundo_rotacao.Y, mundo_rotacao.Z);     
+device.Transform.World = <b>mtx_movimento * mtx_rotacao * mtx_escala;</b>    
+</span>
+Esse código coleta os dados  de  posicionamento,  escala  e  rotação; 
+insere-os  em  objetos Vector3, transforma estes vetores  em matrizes
+parciais  e  na  sequência  multiplica  as 3 matrizes para produzir a
+matriz final com todos os elementos. Apenas fique atento que a ordem
+de multiplicação das matrizes importa e a permutação da sequência das
+matrizes produz resultados finais diferentes.   Veja  que  todo  esse
+processo foi amparado por funções do DirectX e você não precisa saber
+exatamente as peripécias matemáticas da multiplicação de matrizes.
+
+O primeiro elemento da  matriz  é  referido  como  <b>m11</b>  respectivo  à 
+primeira  linha  e primeira coluna. O último chama-se  <b>m33</b>,  terceira 
+linha da terceira coluna.  Veja  na  ilustração  abaixo  o esquema de 
+nomeação dos elementos da matriz:
+<img src=images\elementos_nomeados.png>
+Para mostrar os elementos da matriz de espaço mundial  nós utilizamos
+essa convenção de nomeação dos elementos também usada no DirectX:
+<div class=niceview>
+<b class=prg>private void</b> loadWorldData()
+{       
+  <span class=sc2>// Primeiro vector</span><span class=prg>
+  txtWorld_<b>m11</b>.Text = mundo_pos.X.ToString();
+  txtWorld_<b>m12</b>.Text = mundo_pos.Y.ToString();
+  txtWorld_<b>m13</b>.Text = mundo_pos.Z.ToString();
+
+    <span class=sc2>//// segundo vector</span>
+  txtWorld_<b>m21</b>.Text = mundo_rotacao.X.ToString();
+  txtWorld_<b>m22</b>.Text = mundo_rotacao.Y.ToString();
+  txtWorld_<b>m23</b>.Text = mundo_rotacao.Z.ToString();
+
+    <span class=sc2>//// segundo vector</span>
+  txtWorld_<b>m31</b>.Text = mundo_escala.X.ToString() ;
+  txtWorld_<b>m32</b>.Text = mundo_escala.Y.ToString();
+  txtWorld_<b>m33</b>.Text = mundo_escala.Z.ToString(); </span>
+} <span class=sc2>// getWorldMatrixData().fim        
+</span></div>
+(*) Os elementos foram nomeados para  a  nossa  conveniência.  Não  é
+correto acreditar que o DirectX utiliza ordem igual de posicionamento
+dos elementos na matriz final.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+Essa aplicação não apresenta novidades do DirectX  e utiliza o código
+fonte do projeto <b>prj_Triangulo3d</b> como base acrescido de controles  do
+Windows para alteração individual de cada argumento  de  configuração
+das matrizes principais.   A camada de código acrescentada ao projeto
+anterior citado focaliza apenas na funcionalidade de ligar e desligar
+o   acesso   aos  vetores,  matrizes  e  elementos  para  permitir  a 
+visualização  individual  ou  combinada  do  trabalho das matrizes na 
+movimentação dos elementos e formação da imagem 2d final. 
+O conhecimento essencial para conseguir usar as matrizes para produzir
+efeitos com clareza de causa deve advir da experiência obtida através
+dessa aplicação.
+
+<u>Forma de uso</u>
+A imagem abaixo ilustra a forma de  uso  do  programa  e  de  como  a
+experiência visual  produzida  se  corresponde  com  o  código  fonte:
+<img src=images\uso_prj_Lab01.png>
+Selecione a matriz de projeção, selecione o vetor e  depois selecione  
+um dos eixos. Na sequência pressione ++ ou -- e acompanhe o resultado
+visual da configuração gerada na renderização do triângulo.
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,2172 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase09-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 09-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track08-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>09.1 Música e vídeo com DirectShow </h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_DirectShow.png></div>
+Neste capítulo vamos aprender como adicionar música e vídeo em nossas
+aplicações  com  o  <b class=sc16>DirectShow</b>.  Para  isso  vamos  utilizar a classe
+<b class=prg>GPMediaPlayer</b>  que  empacota  as  funcionalidades  mínimas para tocar
+vídeo e música utilizando a mesma estrutura.  O foco  maior será dado
+na cobertura das funcionalidades da classe <span class=prg>GPMediaPlayer</span>  que oferece
+uma interface popular com os métodos <b>stop()</b>, <b>play()</b>, <b>pause()</b> e outros
+para  controle  da  <b>mídia</b>  carregada.  O  termo mídia será usado como
+sinônimo de música ou vídeo.
+
+Informamos que não haverá um detalhamento profundo do DirectShow visto
+que esse não é o foco do nosso curso mas a classe oferecida permitirá
+a inclusão e a manipulação básica de música e vídeo.
+
+<u>A interface mãe do DirectShow: <b class=sc5>IGraphBuilder</b></u>
+<div class=prg-code><img src=images\graphbuilder.png></div>
+A primeira interface do directshow chama-se <b class=sc5>IGraphBuilder</b> e esse nome
+graph(grafo ou gráfico) + builder (construtor) que pode ser traduzido
+como 'construtor de gráficos' dá uma boa pista da  primeira concepção
+que devemos ter sobre o directshow para entendê-lo.
+
+O  menor  esquema  interno  para  tocar  um vídeo com aúdio envolve a
+combinação  de  várias  peças:  o  mecanismo inicial do directshow, o
+mecanismo fatiador que separa o vídeo e o aúdio  e  que  encaminha-os
+para os canais respectivos de processamento, o decodificador de vídeo,
+o renderizador  de  vídeo,  o  decodificador de áudio  e finalmente o
+renderizador de aúdio.  E todos estes módulos colocados em um desenho
+dá origem a um gráfico complexo  fato  que justifica o nome da classe
+mãe do directshow como 'construtor de gráficos', <b class=sc5>IGraphBuilder</b>.
+
+A interface <b class=sc5>IGraphBuilder</b>  monta o esquema de renderização da mídia e
+produz  os  outros  objetos  que  permitem  o  controle  da  mídia  e
+o  processamento  de  eventos  em  torno da mídia tocando (playback).
+
+<u>Controle do playback da mídia: <b class=sc5>IMediaControl</b></u>
+O objeto da interface <b class=sc5>IMediaControl</b> permite o controle do playback da
+mídia, isto é, ele aplica os comandos stop, pause,  run (play), pause
+e outros métodos oferecidos pela interface.
+
+<u>Controle dos eventos do playback da mídia: <b class=sc5>IMediaEventEx</b> </u>
+O objeto da interface <b class=sc5>IMediaEventEx</b> permite o processamento de eventos
+em torno do playback da mídia, por exemplo, é interessante a aplicação
+ficar ciente quando o playback completa-se ou é abortado pelo usuário
+para  prosseguir  depois  disso  com  o  fluxo  normal  da aplicação.
+
+<u>A janela de playback do vídeo: <b class=sc5>IVideoWindow</b> </u>
+Inicialmente  o  DirectShow  toca  o  vídeo em sua própria janela e o
+controle dessa janela é obtido pelo objeto da interface  <b class=sc5>IVideoWindow</b>
+que também permite que a aplicação ofereça sua  própria  janela  para
+o playback do vídeo.
+
+O DirectShow executa música e vídeo  com as mesmas interfaces o que é
+muito conveniente.  Porém esta conveniência estraga-se pelo  fato  de
+que inicialmente o DirectShow toca o vídeo em sua própria  janela,  e
+quando  você  usa  sua  própria  janela  para tocar o vídeo, depois o
+DirectShow  não  permite tocar  sua própria música antes da aplicação
+devolver o controle da janela ao directshow.
+
+É  inconveniente  também rodar o vídeo na janela do DirectShow. Então
+esses aspectos inconvenientes trazem uma pequena complicação no código
+da  aplicação  que  precisa  verificar  quem  é  o  dono da janela de
+playback antes de tocar música ou vídeo.  A  classe <span class=prg>GPMediaPlayer</span> não
+gerencia muito bem este aspecto visto  que  é apenas  uma  classe  de
+exemplo    mas   numa  aplicação final você deve tratar adequadamente
+estes comportamentos do DirectShow.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>WinMain()</b>
+	criação da classe da janela
+	registro da classe da janela
+	criação da janela de acordo com a classe definida
+
+	<b class=sc16>a aplicação vai operar em modo vídeo ou música?</b>
+
+	chama initGfx() para inicializar o motor gráfico	
+	mostra a janela<b class=sc16>
+
+	chama a função tocar_media() para tocar a mídia conforme a decisão
+		tomada pela caixa de diálogo.</b>
+		
+	estabelecimento do laço de mensagens
+	finaliza a aplicação</div>
+
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">Aspectos globais<b class=sc16>
+	Declaração do ponteiro global para o objeto da classe GPMediaPlayer
+		( g_Tocador )
+	
+	Declaração da variável global para evitar a renderização em caso de
+		playback de vídeo ( bVideoAcionado ) </b>
+		
+initGfx()
+	Inicializa o objeto Direct3d
+	Inicializa o dispositivo renderizador
+	chama inicializar_Buffers() para criar o vertexbuffer
+	chama inicializar_Camera() para a configuração inicial da câmera
+	chama montar_Geometria() para configurar os vértices do vertexbuffer
+	<b class=sc16>* o arquivo de mídia será tocado depois da inicialização do motor gráfico.</b>
+	
+
+processaJanela()<b class=sc16>
+	tratamento de teclado:
+	permite o controle do playback da mídia através da tecla espaço (abortar),
+	S(parar), T(tocar), P(pausar)
+	
+	chama a função tratarMediaEvento() para processar eventos de mídia
+	como 'playback completo' ou 'playback abortado'. </b>
+	
+		
+inicializar_Buffers()
+	Criação do buffer de vértices (vertexbuffer)		
+	
+montar_Geometria()
+	Acessa o buffer de vértices
+	calcula a posição circular de cada vértice
+	joga a posição do vértice no vertexbuffer
+	
+renderizar_Geometria()
+	Declara o formato de vértice utilizado ao directx
+	Indica ao dispositivo o buffer de vértices que será utilizado	
+	O temporizador indica a cada dois segundos uma primitiva diferente
+	Renderiza os vértices com g_device->DrawPrimitive()
+
+Renderizar()
+	<b class=sc16>Retorne se o vídeo estiver sendo exibido</b>
+	Limpa a tela	
+	chama renderizar_Geometria() para desenhar as primitivas
+	Apresenta a cena
+
+Limpar()	
+	Libera o buffer de vértices	
+	<b class=sc16>Libere os objetos do DirectShow via g_Tocador.limpar()</b>
+	Libera o dispositivo renderizador
+	Libera o objeto Direct3d	
+</div>
+
+<b class=sc2>Arquivo: gpmediaplayer.cpp - classe GPMediaPlayer</b>
+<div class=niceview style="border-style:dashed;">
+<img src=images\gpmediaplayer.png>
+Como propriedades principais a classe traz os  principais  objetos  do
+DirectShow, já discutidos na introdução, para manipular música e vídeo.
+Os nomes das funções são auto-explicativos  com exceção de <b class=sc16>setOwner()</b>
+que define a janela da aplicação como a janela  na  qual  o vídeo vai
+ser exibido.
+
+<b class=sc16>inicializar() e limpar()</b>
+	O primeiro método inicializa o motor do DirectShow e o segundo 
+	libera os objetos alocados.
+
+<b class=sc16>carregarMusica() e carregarVideo()</b>
+	Estas funções carregam respectivamente música e vídeo configurando
+	uma variável interna sobre o tipo de mídia  carregado,  música  ou
+	vídeo.
+
+<b class=sc16>play(), pause(), stop()</b>
+	São obviamente métodos para tocar, pausar e parar a execução da
+	mídia.
+	
+<b class=sc16>GPMediaPlayer()</b>
+	É a função construtora do objeto da classe que apenas zera as
+	variáveis internas inicialmente.
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=sc16>#define </span>modo_video <span class=sc4>1</span>
+<span class=sc16>#define </span>modo_musica <span class=sc4>-1</span>
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionColored_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Estrutura do vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    cor = _cor; 
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função inicializa o buffer de índices e</span>
+  <span class=sc2>// o buffer de vértices</span>
+  <span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura a câmera da aplicação</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+<b>
+  <span class=sc2>// Toca um arquivo de música ou vídeo</span>
+  <span class=prg>void </span>tocar_media(<span class=prg>void</span>);   
+
+  <span class=sc2>// Trata evento de mídia</span>
+  <span class=prg>void </span>tratarMediaEvento();  
+</b>
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+    <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<u>Indicação se o DirectShow está tocando música ou vídeo</u>
+<img src=images\musica_ou_video.png><b>
+<span class=sc16>#define 	</span>modo_video 	<span class=sc4> 1</span>
+<span class=sc16>#define 	</span>modo_musica 	<span class=sc4>-1</span> </b>
+Estas  macros  são  usadas  ao  <span class=prg><b class=prg>long</b></span>o  do  código  para  configurar a
+aplicação para tocar especialmente música ou vídeo.  Naturalmente que
+tomando os cuidados para gerenciar as inconveniências  já  citadas na
+introdução é possível alternar durante  a mesma aplicação  o playback
+de vídeo ou música.
+
+<b><span class=prg>void </span>tocar_media(<span class=prg>void</span>);   </b>
+Esta função toca música ou vídeo  conforme  a configuração inicial da
+aplicação.    Essa  função  é  chamada  por  <b class=prg>WinMain()</b>  logo   após a
+inicialização do motor gráfico.
+
+<b><span class=prg>void </span>tratarMediaEvento();  </b> 
+Essa função ilustra como estruturar o código para tratar  os  eventos
+de   mídia,  por  exemplo,  o  evento  que  informa  que  o  playback
+completou-se ou foi abortado pelo usuário.  Essa função é chamada por
+<b>processaJanela()</b>  no  evento  maior  <b class=sc4>WM_P_GRAPHNOTIFY</b>  disparado pelo
+DirectShow. Dentro dessa função é  verificado  mais  exatamente  qual
+evento  ocorreu  em  torno  do  playback da mídia usando um objeto da
+interface <b class=prg>IMediaEventEx</b>. 
+O código que trata o evento  <b>WM_P_GRAPHNOTIFY</b>  aparece dessa forma em
+<b>processaJanela():</b> <b class=prg>
+	case <b class=sc4>WM_P_GRAPHNOTIFY:</b>
+	tratarMediaEvento();
+	break; </b>
+
+<b><span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <b class=sc2>// (...)</b> ); </b>
+Essa  função  através  do  tratamento  do evento <b class=sc4>WM_KEYDOWN</b> permite o
+controle  do  playback  da  mídia  carregada com as seguintes teclas:
+
+<b class=prg>if (wParam == 'T') g_Tocador.play();</b>
+A tecla 'T' toca o mídia carregada.
+
+<b class=prg>if (wParam == 'S') g_Tocador.stop();</b>
+A tecla 'S' pára a mídia que está tocando.
+
+<b class=prg>if (wParam == 'P') g_Tocador.pause();</b>
+A tecla 'P' páusa a mídia que está tocando.
+
+A  tecla  espaço  aborta  a  execução  da  mídia  deixando por alguns
+instantes   a   última   imagem   no   caso  do  playback  de  vídeo:<b class=prg>
+	if (mediaModo == modo_video) g_Tocador.abortarVideo(2000);		
+	if (mediaModo == modo_musica) g_Tocador.stop();
+	bVideoAcionado = -1;  </b>
+A variável <b>bVideoAcionado</b> configurada com <b>-1</b> faz a  aplicação  voltar
+para o fluxo normal de renderização. Isso simula o ambiente  com  uma
+cena de introdução seguida no seu encerramento pelo retorno  ao fluxo
+normal do jogo.
+
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><b>
+GPMediaPlayer g_Tocador; 
+<span class=prg>int </span>bVideoAcionado = <span class=sc4>1</span>; 
+</b></div>
+
+<b>GPMediaPlayer g_Tocador; </b>
+Este objeto da classe <span class=prg>GPMediaPlayer</span>  é capaz de tocar música ou vídeo
+oferecendo  os  controles  populares  de  mídia  como  <b>carregar...()</b>,
+<b>play()</b>, <b>pause()</b> e <b>stop()</b> além de permitir acesso direto  aos  objetos
+do   DirectShow   pelas   propriedades   públicas   listadas  abaixo:
+
+<span class=prg>g_Tocador.gfxConstrutor</span>
+Acesso ao objeto da interface <b class=prg>IGraphBuilder</b>,  construtor de gráficos.
+
+<span class=prg>g_Tocador.mdControle</span>
+Acesso  ao  objeto  da  interface  <b class=prg>IMediaControl</b> de controle de mídia
+(Run (play), Stop, Pause, etc...)
+
+<span class=prg>g_Tocador.mdEventos</span>
+Acesso ao objeto da interface <b class=prg>IMediaEventEx</b>  para acesso e tratamento
+de eventos em torno do playback da mídia.
+
+<span class=prg>g_Tocador.janelaVideo</span>
+Acesso  ao  objeto  da  interface  <b class=prg>IVideoWindow</b> de acesso a janela de
+playback de vídeo.
+
+<b><span class=prg>int </span>bVideoAcionado = <span class=sc4>1</span>; </b>
+Esta variável é um flag para evitar o processo de renderização quando
+o  video  estiver  passando(<b>1</b>). O valor de <b>-1</b> libera a aplicação para
+renderizar a geometria.
+
+<b><u>2.2 Controle do playback da mídia</u></b>
+Segue abaixo a listagem de <b>processaJanela()</b>.  O código em destaque de
+controle de evento e de playback de mídia já foi comentado  na  seção
+2.1.1 acima.
+
+<div class=niceview><span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+<b>
+  <span class=sc9>case </span><b class=sc4>WM_P_GRAPHNOTIFY:</b> 
+  tratarMediaEvento();  
+  <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == 'T') <span class=prg>g_Tocador.play</span>();  
+    <span class=sc9>if </span>(wParam == 'S') <span class=prg>g_Tocador.stop</span>();  
+    <span class=sc9>if </span>(wParam == 'P') <span class=prg>g_Tocador.pause</span>();  
+
+    <span class=sc2>// Aborte o vídeo na tecla espaço</span>
+    <span class=sc9>if </span>(wParam == <b class=sc4>VK_SPACE</b> ) 
+    <span class=sc16>{</span>
+    <span class=sc9>if </span>(mediaModo == modo_video) <span class=prg>g_Tocador.abortarVideo</span>(2000);  
+    <span class=sc9>if </span>(mediaModo == modo_musica) <span class=prg>g_Tocador.stop</span>();  
+    bVideoAcionado = <span class=sc4>-1</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+</b>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+
+<b><u>2.3 Renderização no tempo certo</u></b>
+O destaque da função <b>Renderizar()</b> é o flag <b>bVideoAcionado</b> que evita o
+processo  de  renderização  quando  o  vídeo  estiver  passando  (1).
+
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span><b>
+  <span class=sc9>if</span>(bVideoAcionado == <span class=sc4>1</span>)  <span class=sc6>return</span>; </b>
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor preta</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, <span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b><u>2.4 Tocando o arquivo de mídia</u></b>
+<div class=niceview><span class=prg>void </span>tocar_media() 
+<span class=sc16>{</span>
+  <span class=sc2>// Inicializa o tocador</span>
+  g_Tocador = GPMediaPlayer();  
+
+  <span class=sc2>// Inicializa os objetos do DirectShow para tocar mídia</span>
+  <span class=prg>g_Tocador.inicializar</span>();  
+
+  <span class=sc9>if </span>(mediaModo == modo_video) 
+  <span class=sc16>{</span>
+  <span class=prg>g_Tocador.carregarVideo</span>(<span class=sc6>L"\\gameprog\\gdkmedia\\Video\\RiskyDance.mp4"</span>);   
+
+  <span class=sc2>// Configura a janela da aplicação como a janela de vídeo</span>
+  <span class=prg>g_Tocador.setOwner </span>(hJanela);  
+  bVideoAcionado = <span class=sc4>1</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc9>if </span>(mediaModo == modo_musica) 
+  <span class=sc16>{</span>
+  <span class=prg>g_Tocador.carregarMusica </span>(<span class=sc6>L"\\gameprog\\gdkmedia\\musica\\megaman3Intro.mp3"</span>);   
+  bVideoAcionado = <span class=sc4>-1</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Toca o arquivo de mídia</span>
+  <span class=prg>g_Tocador.play</span>();  
+
+<span class=sc16>} <span class=sc2>// tocar_media().fim</span></span>
+</div>
+
+<b>g_Tocador = GPMediaPlayer();  </b>
+Esta linha inicializa o tocador e zera suas variáveis internas.
+
+<b><span class=prg>g_Tocador.inicializar</span>();  </b>
+Com  esta  linha  o  tocador  inicializa  os  objetos  do  DirectShow
+utilizados  para  manipulação  básica  de  vídeo  e música. Em outras
+palavras  o  método  <b>inicializar()</b>  ilustra  como inicializar o motor
+básico do DirectShow para renderizar música e vídeo.
+
+<b><span class=sc9>if </span>(mediaModo == modo_video) <span class=sc16>{</span>
+<span class=prg>g_Tocador.carregarVideo</span>(<span class=sc6>L"\\gameprog\\gdkmedia\\Video\\RiskyDance.mp4"</span>);   
+<span class=prg>g_Tocador.setOwner </span>(hJanela);  
+bVideoAcionado = <span class=sc4>1</span>; <span class=sc16>} <span class=sc2>// endif</span></span> </b>
+Este bloco carrega um vídeo do disco e bloqueia  a  renderização  com
+'<b>bVideoAcionado  =  1;</b>  O  método <b>setOwner()</b>  informa que a janela da
+aplicação  deve  ser  usada  para  receber  a  renderização do vídeo.
+
+<b><span class=sc9>if </span>(mediaModo == modo_musica) <span class=sc16>{</span>
+<span class=prg>g_Tocador.carregarMusica </span>(<span class=sc6>L"\\gameprog\\gdkmedia\\musica\\megaman3Intro.mp3"</span>);   
+bVideoAcionado = <span class=sc4>-1</span>; <span class=sc16>}</span> </b>
+Este bloco carrega uma música do disco e permite  a  continuidade  da
+renderização da geometria com '<b>bVideoAcionado = -1</b>'
+
+<b><span class=prg>g_Tocador.play</span>();  </b>
+Esta linha toca o arquivo de mídia.
+
+<b><u>2.5 Tratando eventos do playback de mídia</u></b>
+<div class=niceview><span class=prg>void </span>tratarMediaEvento() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Coleta dos resultados das operações do directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+
+  <span class=sc2>// Variáveis para coleta do evento e informações complementares</span>
+  <span class=prg><b class=prg>long</b></span> cdgEvento; 
+  <span class=prg><b class=prg>long</b></span> param1, param2; 
+
+  <span class=sc2>// Verifica a ocorrência de eventos</span>
+  hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>(&cdgEvento, &amp;param1, &amp;param2, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Trata a ocorrência de eventos</span>
+  <span class=sc9>while</span>(<span class=prg>SUCCEEDED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Tira o evento da fila de eventos</span>
+    hr = <span class=prg>g_Tocador.mdEventos-&gt;FreeEventParams</span>(cdgEvento, param1, param2);  
+
+
+    <span class=sc2>// Verifica se o evento que o playback da mídia completou-se ou</span>
+    <span class=sc2>// foi abortada ocorreu</span>
+    <span class=sc9>if </span>(( cdgEvento == <b class=sc4>EC_COMPLETE</b> ) || ( cdgEvento == <b class=sc4>EC_USERABORT</b> )) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Aborta o playback da mídia</span>
+      <span class=prg>g_Tocador.abortarVideo</span>(2000);  
+      bVideoAcionado = <span class=sc4>-1</span>; 
+
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc2>// Verifica a ocorrência de eventos para alimentar o while{}</span>
+    hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>(&cdgEvento, &amp;param1, &amp;param2, <span class=sc4>0</span>);   
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+<span class=sc16>} <span class=sc2>// tratarMediaEvento()</span></span>
+</div>
+<b><span class=sc16>HRESULT </span>hr; </b>
+Essa  variável  é  para  coletar o resultado da operação de coleta de
+eventos pelo conjunto  <span class=prg>g_Tocador.mdEventos-&gt;GetEvent()</span>  cujo  sucesso
+vai manter ativo o bloco da instrução <span class=prg>while</span>.
+
+<b><span class=prg><b class=prg>long</b></span> cdgEvento; </b>
+Esta  variável  vai  receber qual evento de mídia ocorreu. Os eventos
+possíveis  estão  definidos  no arquivo <span class=prg>evcode.h</span> que fica no seguinte
+diretório de SDK's da Microsoft conforme nossa instalação:
+<b class=prg>C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include.</b>
+Dois valores possíveis para eventos que vão ser tratados nessa função
+são:  <b class=sc4>EC_COMPLETE</b> disparado quando o playback da mídia completou-se e
+<b class=sc4>EC_USERABORT</b>  que ocorre quando o usuário fecha a janela da aplicação.
+
+<b><span class=prg><b class=prg>long</b></span> param1, param2; </b>
+Estas  variáveis  vão  receber  informações adicionais sobre o evento
+ocorrido.
+
+<b>hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>(&cdgEvento, &amp;param1, &amp;param2, <span class=sc4>0</span>);   </b>
+Esta  linha  verifica  a  primeira ocorrência de eventos para abrir o
+bloco <span class=prg>while</span>.  Se houver eventos as devidas variáveis são preenchidas
+e <b>hr</b> vai representar sucesso.
+
+<b><span class=sc9>while</span>(<span class=prg>SUCCEEDED</span>(hr) ) <span class=sc16>{</span> </b>
+Se houver eventos o bloco <span class=prg>while</span> vai sustentar-se.
+
+<b>hr = <span class=prg>g_Tocador.mdEventos-&gt;FreeEventParams</span>(cdgEvento, param1, param2);  </b>
+Esta linha deleta o evento interceptado  da fila de eventos de mídia.
+
+
+<b><span class=sc9>if </span>(( cdgEvento == <b class=sc4>EC_COMPLETE</b> ) || ( cdgEvento == <b class=sc4>EC_USERABORT</b> )) <span class=sc16>{</span>
+<span class=prg>g_Tocador.abortarVideo</span>(2000);  
+bVideoAcionado = <span class=sc4>-1</span>; 
+<span class=sc6>break</span>; <span class=sc16>} <span class=sc2>// endif</span></span> </b>
+Esse bloco é executado quando a mídia completou sua execução ou quando
+o  playback  foi  abortado.  Em  ambos  os casos a mídia é parada e a
+a renderização da geometria ganha continuidade. Repetimos que a classe
+<span class=prg>GPMediaPlayer</span>  não  é  uma  produção final que trata adequadamente as
+considerações de se tocar música ou vídeo.  Aqui é um mero exemplo de
+como tratar um evento.
+
+
+<b>hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>( &cdgEvento, 
+			&amp;param1, &amp;param2, <span class=sc4>0</span>);   <span class=sc16>} <span class=sc2>// endwhile</span></span></b>
+Aqui novamente a fila de eventos de mídia é verificada para sustentar
+a   execução   do  bloco  <span class=prg>while</span>  se  houver  mais  eventos  na  fila.
+
+<b><u>3.0 A classe GPMediaPlayer</u></b>
+<b><u>3.1 Aspectos globais - Arquivo: gpmediaplayer.cpp</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - arquivo: gpmediaplayer.cpp</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dshow.h&gt;</span>
+
+<span class=sc2>// Biblioteca do DirectShow</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"strmiids.lib"</span>)  
+
+<span class=sc2>// Notificação de eventos do DirectShow</span>
+<span class=sc16>#define </span><b class=sc4>WM_P_GRAPHNOTIFY  WM_APP</b> + <span class=sc4>1</span>
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=sc16>#define </span>modo_video <span class=sc4>1</span>
+<span class=sc16>#define </span>modo_musica <span class=sc4>-1</span>
+</div>
+<b><span class=sc16>#include </span><span class=prg>&lt;dshow.h&gt;</span></b>
+Este é o principal arquivo de cabeçalho do DirectShow.
+
+<b><span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"strmiids.lib"</span>)  </b>
+Esta é a principal biblioteca do DirectShow.
+
+<b><span class=sc16>#define </span><b class=sc4>WM_P_GRAPHNOTIFY  WM_APP</b> + <span class=sc4>1</span> </b>
+Esta  macro  é  uma  preparação  que o DirectShow precisa para enviar
+eventos de mídia para a aplicação.
+
+<b><span class=sc16>#define </span>modo_video <span class=sc4>1</span>
+<span class=sc16>#define </span>modo_musica <span class=sc4>-1</span></b>
+Lembramos  que  estas  macros  é  para assinalar que a aplicação está
+trabalhando com música ou vídeo.
+
+<b><u>3.2 Propriedades privadas da classe</u></b>
+<div class=niceview><span class=prg>class </span>GPMediaPlayer 
+
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// Membro para receber o handle da janela da aplicação</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// 1 = video // -1 = música</span>
+  <span class=prg>int </span>mediaModo; 
+</div>
+<b><span class=sc16>HWND </span>hJanela; </b>
+Este  membro é para receber  o  handle  da janela da aplicação caso a
+aplicação indique sua própria janela para receber  a renderização  do
+vídeo.  A intenção de uso desta variável é para preservar o handle da
+janela da aplicação  quando o DirectShow estiver renderizando música.
+
+<b><span class=prg>int </span>mediaModo; </b>
+Este  membro  é  assinalado  com os valores <b>modo_musica</b> ou <b>modo_video</b>
+para assinalar  que a aplicação está processando música ou vídeo para
+que seja tomado os cuidados especiais que cada mídia pode exigir para
+a aplicação operar com harmonia.
+
+<b><u>3.3 Propriedades públicas da classe</u></b>
+<div class=niceview><span class=sc16>public:</span>
+  <span class=sc2>// Recebe os resultados das operações</span>
+  <span class=sc16>HRESULT </span>m_hr; 
+
+  <span class=sc2>// Interface do construtor de gráficos</span>
+  <b class=sc5>IGraphBuilder</b> *gfxConstrutor; 
+
+  <span class=sc2>// Interface de controle de mídia (play, stop, pause, etc...)</span>
+  <b class=sc5>IMediaControl</b> *mdControle; 
+
+  <span class=sc2>// Interfaces de controle de evento</span>
+  <b class=sc5>IMediaEventEx</b> *mdEventos; 
+
+  <span class=sc2>// Interface da janela de vídeo</span>
+  <b class=sc5>IVideoWindow</b>  *janelaVideo; 
+</div>
+<b><span class=sc16>HRESULT </span>m_hr; </b>
+Este membro é para guardar temporariamente o resultado das operações.
+Ele  é  utilizado  geralmente  ao  longo  da  classe  e  efetivamente
+verificado  no  método  <b>seHouverFalha()</b>  que verifica a ocorrência de
+falhas  e  mostra  mensagens  pertinentes  ao  local  do código aonde
+ocorreu o insucesso.
+
+<b><b class=sc5>IGraphBuilder</b> *gfxConstrutor; </b>
+A interface <b class=sc5>IGraphBuilder</b>  monta o esquema de renderização da mídia e
+produz  os  outros  objetos  que  permitem  o  controle  da  mídia  e
+o  processamento  de  eventos  em  torno da mídia tocando (playback).
+
+<b><b class=sc5>IMediaControl</b> *mdControle; </b>
+O objeto da interface <b class=sc5>IMediaControl</b> permite o controle do playback da
+mídia, isto é, ele aplica os comandos stop, pause,  run (play), pause
+e outros métodos oferecidos pela interface.
+
+<b><b class=sc5>IMediaEventEx</b> *mdEventos; </b>
+O objeto da interface <b class=sc5>IMediaEventEx</b> permite o processamento de eventos
+em torno do playback da mídia, por exemplo, é interessante a aplicação
+ficar ciente quando o playback completa-se ou é abortado pelo usuário
+para  prosseguir  depois  disso  com  o  fluxo  normal  da aplicação.
+
+<b><b class=sc5>IVideoWindow</b>  *janelaVideo; </b>
+Inicialmente  o  DirectShow  toca  o  vídeo em sua própria janela e o
+controle dessa janela é obtido pelo objeto da interface  <b class=sc5>IVideoWindow</b>
+que também permite que a aplicação ofereça sua  própria  janela  para
+o playback do vídeo.
+
+<b><u>3.4 O construtor da classe</u></b>
+O construtor da classe simplesmente zera os membros de trabalho.
+
+<div class=niceview><span class=sc2>// Construtor default</span>
+  GPMediaPlayer ()  <span class=sc16>{</span>
+    gfxConstrutor 	= <span class=prg>NULL</span>; 
+    mdControle  	= <span class=prg>NULL</span>; 
+    janelaVideo  	= <span class=prg>NULL</span>; 
+    mdEventos   	= <span class=prg>NULL</span>; 
+    m_hr     		= <span class=sc4>0</span>; 
+    hJanela    		= <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// Contrutor().fim</span></span>
+
+</div>
+  
+<b><u>3.5 Inialização do DirectShow</u></b>
+<div class=niceview><span class=prg>void </span>inicializar(<span class=prg>void</span>)  
+  <span class=sc16>{</span>
+    <span class=sc2>// inicializa a interface COM</span>
+    <span class=prg>CoInitialize(NULL</span>);   
+
+    <span class=sc2>// Cria o gerenciador do gráfico de filtros</span>
+    m_hr = <span class=prg>CoCreateInstance</span> (<b class=sc4>CLSID_FilterGraph</b>, <span class=prg>NULL</span>, 
+      <b class=sc4>CLSCTX_INPROC_SERVER</b>, <b class=sc5>IID_IGraphBuilder</b>, (<span class=prg>void </span>**) &gfxConstrutor);  
+
+    <span class=sc2>// Cria a interface de controle de mídia</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaControl</b>, (<span class=prg>void </span>**)&mdControle);  
+
+    <span class=sc2>// Cria a interface de controle de eventos extras</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaEventEx</b>, (<span class=prg>void </span>**)&mdEventos);  
+
+  <span class=sc16>} <span class=sc2>// inicializar().fim</span></span>
+</div>
+<b class=prg>CoInitialize(<span class=prg>NULL</span>);</b>
+Esta é a forma de preparar a aplicação para se conectar com objetos
+da interface da tecnologia tipo COM.
+
+<b>m_hr = <span class=prg>CoCreateInstance</span> (<b class=sc4>CLSID_FilterGraph</b>, <span class=prg>NULL</span>, 
+  <b class=sc4>CLSCTX_INPROC_SERVER</b>, <b class=sc5>IID_IGraphBuilder</b>,   (<span class=prg>void </span>**) &gfxConstrutor);  </b>
+Esta é a forma de criar o gráfico de filtros que é a interface mãe do
+DirectShow.
+
+<b>m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaControl</b>, (<span class=prg>void </span>**)&mdControle);  </b>
+Esta é a forma de criar o objeto da interface de controle  de  mídia.
+
+<b>m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaEventEx</b>, (<span class=prg>void </span>**)&mdEventos);  </b>
+Esta é a forma de criar o objeto da interface de controle de eventos.
+
+<b><u>3.6 Carregando arquivo de vídeo</u></b>
+<div class=niceview><span class=prg>void </span>carregarVideo( <span class=prg>LPCWSTR</span> videoArquivo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Carrega o arquivo de mídia apontado</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;RenderFile</span>(videoArquivo, <span class=prg>NULL</span>);   
+
+    <span class=sc2>// indica modo de vídeo</span>
+    mediaModo = modo_video; 
+
+    <span class=sc2>// avisa se houver falha</span>
+    seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;RenderFile</span>()<span class=sc6>"</span>, 
+				<span class=sc6>"GPMediaPlayer:carregarVideo</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// carregarVideo().fim</span></span>
+
+</div>
+<b>m_hr = <span class=prg>gfxConstrutor-&gt;RenderFile</span>(videoArquivo, <span class=prg>NULL</span>);   </b>
+O método <span class=prg>RenderFile()</span> carrega o arquivo de mídia apontado e  monta  o
+esquema de renderizá-lo. Depois do trabalho desse método  o  restante
+da manipulação da mídia é feita com a interface de  controle de mídia.
+
+<b>mediaModo = modo_video; </b>
+Esta linha deixa claro para as outras operações da classe  de  que  o
+processamento será sobre um vídeo.
+
+<b>seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;RenderFile</span>()<span class=sc6>"</span>, 
+	<span class=sc6>"GPMediaPlayer:carregarVideo</span>()<span class=sc6>"</span>);   </b>
+Em caso de falha esta função pipoca uma mensagem para o  usuário  com
+a localidade do insucesso.
+
+<b><u>3.7 Carregando arquivo de música</u></b>
+<div class=niceview><span class=prg>void </span>carregarMusica( <span class=prg>LPCWSTR</span> musicaArquivo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Carrega o arquivo de mídia apontado</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;RenderFile</span>(musicaArquivo, <span class=prg>NULL</span>);   
+
+    <span class=sc2>// indica modo de música</span>
+    mediaModo = modo_musica; 
+
+    <span class=sc2>// avisa se houver falha</span>
+    seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;RenderFile</span>()<span class=sc6>"</span>,
+	<span class=sc6>"GPMediaPlayer:carregarVideo</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// carregarMusica().fim</span></span>
+</div>
+<b>mediaModo = modo_musica; </b>
+Esta linha deixa claro para as outras operações da classe  de  que  o
+processamento será sobre uma música.
+
+<b><u>3.8 Definindo a janela de playback de vídeo: setOwner()</u></b>
+Este método configura a janela da aplicação como sendo a  janela  que
+recebe  a  renderização  do  vídeo.  O  funcionamento  adequado desse
+método  da  forma  que  está  demandou  mais  de 24 horas de testes e 
+pesquisas  na  Internet  pois  pequenos  desvios faziam-no  deixar de
+funcionar sem nenhuma pista do que estava errado.
+
+<div class=niceview><span class=prg>void </span>setOwner( <span class=sc16>HWND </span>hWnd ) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Essa função não interessa pra música!</span>
+<span class=sc9>if </span>(mediaModo == modo_musica ) <span class=sc6>return</span>; 
+
+<span class=sc2>// Obtém a janela de vídeo</span>
+<span class=sc9>if </span>(janelaVideo == <span class=prg>NULL</span>)  
+m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=prg>IID_IVideoWindow</b>, 
+  (<span class=prg>void </span>**) &janelaVideo);  
+
+<span class=sc2>// Verifica se houve falha</span>
+<span class=sc9>if</span>(seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;QueryInterface</span>()<span class=sc6>"</span>, <span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>)  ) 
+  <span class=sc6>return</span>; 
+
+<span class=sc2>// Muda a janela de vídeo para a janela da aplicação</span>
+m_hr = <span class=prg>janelaVideo-&gt;put_Owner</span>( (<b class=sc4><b class=sc4>OAHWND</b></b>) hWnd );  
+<span class=sc2>// Configura janela de notificação</span>
+<span class=prg>mdEventos-&gt;SetNotifyWindow</span>((<b class=sc4><b class=sc4>OAHWND</b></b>)hWnd, <b class=sc4>WM_P_GRAPHNOTIFY</b>, <span class=sc4>0</span>);   
+<span class=sc2>// Verifica se houve falha</span>
+seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;put_Owner</span>()<span class=sc6>"</span>, <span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+hJanela = hWnd; 
+
+<span class=sc2>// Configura o estilo da janela de vídeo</span>
+m_hr = <span class=prg>janelaVideo-&gt;put_WindowStyle</span>( <b class=sc4>WS_CHILD</b>| <b class=sc4>WS_CLIPSIBLINGS</b> );  
+<span class=sc2>// Verifica se houve falha</span>
+seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;put_WindowStyle</span>()<span class=sc6>"</span>,
+	<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+
+<span class=sc2>// Configura o tamanho da janela</span>
+<span class=sc2>// Pega o tamanho da janela</span>
+<span class=sc5>RECT </span>rect; 
+<span class=prg>GetClientRect</span>(hWnd, &rect);  
+
+<span class=sc2>// Reconfigura o tamanho da janela</span>
+m_hr = <span class=prg>janelaVideo-&gt;SetWindowPosition</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>rect.right</span>, <span class=prg>rect.bottom</span>);   
+<span class=sc2>// Verifica se houve falha</span>
+seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;SetWindowPosition</span>()<span class=sc6>"</span>, 
+	<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+
+<span class=sc16>} <span class=sc2>// setOwner().fim</span></span>
+</div>
+<b><span class=sc9>if </span>(mediaModo == modo_musica ) <span class=sc6>return</span>; </b>
+O método <span class=prg>setOwner()</span> não interessa para o processamento de música, por
+isso  existe  essa  linha  para evitar mal funcionamento na aplicação
+quando ela tocar música.
+
+<b>m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=prg>IID_IVideoWindow</b>,  
+		(<span class=prg>void </span>**) &janelaVideo);  </b>
+Esta linha obtém acesso a janela de vídeo do  DirectShow  através  do
+objeto da interface <b class=prg>IVideoWindow</b>  inicializado aqui.
+
+<b>m_hr = <span class=prg>janelaVideo-&gt;put_Owner</span>( (<b class=sc4><b class=sc4>OAHWND</b></b>) hWnd );  </b>
+Aqui  a  janela  da  aplicação  torna-se  a  janela que vai receber a
+renderização do vídeo.
+
+<b><span class=prg>mdEventos-&gt;SetNotifyWindow</span>( (<b class=sc4><b class=sc4>OAHWND</b></b>) hWnd, <b class=sc4>WM_P_GRAPHNOTIFY</b>, <span class=sc4>0</span>);   </b>
+Aqui  a  janela  da  aplicação  é  configurada  como a janela que vai
+receber os eventos de mídia.
+
+<b>hJanela = hWnd; </b>
+Aqui salvamos a janela da aplicação para recuperá-la  depois de tocar
+música.
+
+<b>m_hr = <span class=prg>janelaVideo-&gt;put_WindowStyle</span>( <b class=sc4>WS_CHILD</b>| <b class=sc4>WS_CLIPSIBLINGS</b> );  </b>
+Aqui a janela da aplicação  recebe o estilo adequado para ser tratada
+adequadamente pelo DirectShow.
+
+<b><span class=sc5>RECT </span>rect; 	<span class=prg>GetClientRect</span>(hWnd, &rect);  
+m_hr = <span class=prg>janelaVideo-&gt;SetWindowPosition</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>rect.right</span>, <span class=prg>rect.bottom</span>);   </b>
+Aqui o DirectShow é informado do tamanho da janela da aplicação.
+
+<b><u>3.9 Tocando o arquivo de mídia</u></b>
+O  método  <b>play()</b> da  nossa classe toca o arquivo de mídia. Quando a
+mídia é música a janela da aplicação  é  desconectada da renderização
+e restaurada quando a mídia é vídeo.   Lembramos  que  esses cuidados
+tomados não são exaustivos devendo serem  melhor  implementados  numa
+aplicação final.
+
+<div class=niceview><span class=prg>void </span>play() 
+<span class=sc16>{</span>
+
+<span class=sc2>// Desconecte a janela da aplicação se for música</span>
+<span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>)  && (mediaModo == modo_musica) ) 
+				<span class=prg>janelaVideo-&gt;put_Owner </span>(<span class=prg>NULL</span>);   
+
+<span class=sc2>// Reconecte com a janela da aplicação se for vídeo</span>
+<span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>)  && (mediaModo == modo_video) ) 
+  <span class=sc9>if </span>(hJanela != <span class=prg>NULL</span>)  <span class=prg>janelaVideo-&gt;put_Owner</span>((<b class=sc4><b class=sc4>OAHWND</b></b>) hJanela);  
+
+<span class=sc2>// Toque o arquivo de mídia</span>
+m_hr = <span class=prg>mdControle-&gt;Run</span>();  
+
+<span class=sc2>// Avisa se houve falha</span>
+seHouverFalha(<span class=sc6>"mdControle-&gt;Run</span>()<span class=sc6>"</span>,
+	<span class=sc6>"GPMediaPlayer::play</span>()<span class=sc6>"</span>);   
+
+
+<span class=sc16>} <span class=sc2>// play().fim</span></span>
+</div>
+<b><span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>) && (mediaModo == modo_musica))
+		<span class=prg>janelaVideo-&gt;put_Owner </span>(<span class=prg>NULL</span>);   </b>
+Desconecte a janela da aplicação se for música
+
+<b><span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>)  && (mediaModo == modo_video) ) 
+<span class=sc9>if </span>(hJanela != <span class=prg>NULL</span>)  <span class=prg>janelaVideo-&gt;put_Owner</span>((<b class=sc4><b class=sc4>OAHWND</b></b>) hJanela);  </b>
+Reconecte a janela da aplicação se for vídeo.
+
+<b>m_hr = <span class=prg>mdControle-&gt;Run</span>();  </b>
+Toque o arquivo de mídia.
+
+<b><u>3.10 Parando o arquivo de mídia</u></b>
+O método <b>stop()</b> pára a execução da mídia.
+
+<div class=niceview><span class=prg>void </span>stop() 
+  <span class=sc16>{</span>
+    <span class=sc2>// Pára de tocar o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Stop</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Stop</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer::stop</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// stop().fim</span></span>
+
+</div>
+
+
+<b><u>3.11 Pausando o arquivo de mídia</u></b>
+O método <b>pause()</b> páusa a execução da mídia até que  o  método  <b>play()</b>
+seja novamente executado.
+
+<div class=niceview><span class=prg>void </span>pause() 
+  <span class=sc16>{</span>
+    <span class=sc2>// Pausa o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Pause</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Pause</span>()<span class=sc6>"</span>, <span class=sc6>"GPMediaPlayer::pause</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// pause</span></span>
+</div>
+
+<b><u>3.12 Abortando o arquivo de vídeo</u></b>
+O  método  <b>abortarVideo()</b> pára  a  execução do vídeo, deixa a última
+imagem por alguns instantes, aborta a execução do vídeo  e desconecta
+a janela da aplicação do DirectShow.
+
+<div class=niceview><span class=prg>void </span>abortarVideo( <span class=prg>DWORD </span>nSleep) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Pára o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Stop</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Stop</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer::abortarVideo</span>()<span class=sc6>"</span>);   
+
+    <span class=sc2>// Deixe por algum tempo a última imagem</span>
+    <span class=sc9>if </span>(nSleep &gt; <span class=sc4>0</span>)  <span class=prg>Sleep</span>( nSleep);  
+
+    <span class=sc2>// Esconda a janela e desconecte da aplicação</span>
+    <span class=sc9>if </span>(janelaVideo != <span class=prg>NULL</span>)  
+    <span class=sc16>{</span>
+    <span class=prg>janelaVideo-&gt;put_Visible </span>(<b class=sc4>OAFALSE</b>);  
+    <span class=prg>janelaVideo-&gt;put_Owner </span>(<span class=prg>NULL</span>);   
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc16>} <span class=sc2>// abortarVideo().fim</span></span>
+
+</div>
+
+
+<b><u>3.13 Verificação de ocorrência de erros</u></b>
+A função <b>seHouverFalha()</b> verifica o membro <b>m_hr</b> e mostra as mensagens
+na ocorrência de falhas.
+
+<div class=niceview><span class=prg>bool </span>seHouverFalha( <span class=prg>char </span>*aviso, <span class=prg>char </span>*processo) 
+  <span class=sc16>{</span>
+    <span class=prg>bool </span>status = <span class=prg>false</span>; 
+
+    <span class=sc2>// Verifica se houve erro</span>
+    <span class=sc9>if </span>(<span class=prg>FAILED</span>(m_hr)) 
+    <span class=sc16>{</span>
+      <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, aviso, processo, <span class=sc4>MB_OK</span>);   
+
+      status = <span class=prg>true</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc6>return </span>status; 
+
+  <span class=sc16>} <span class=sc2>// seHouverFalha().fim</span></span>
+</div>
+  
+
+<b><u>3.14 Liberação dos objetos utilizados</u></b>
+<div class=niceview><span class=prg>void </span>limpar() 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Libera os objetos utilizados</span>
+    <span class=sc9>if</span>(gfxConstrutor != <span class=prg>NULL</span>) <span class=prg>gfxConstrutor-&gt;Release</span>();  
+    <span class=sc9>if</span>(mdControle   != <span class=prg>NULL</span>) <span class=prg>mdControle-&gt;Release</span>();  
+    <span class=sc9>if</span>(janelaVideo  != <span class=prg>NULL</span>) <span class=prg>janelaVideo-&gt;Release</span>();  
+    <span class=sc9>if</span>(mdEventos   != <span class=prg>NULL</span>) <span class=prg>mdEventos-&gt;Release</span>();  
+
+    <span class=sc2>// Anula os ponteiros</span>
+    gfxConstrutor = <span class=prg>NULL</span>; 
+    mdControle  = <span class=prg>NULL</span>; 
+    janelaVideo  = <span class=prg>NULL</span>; 
+    mdEventos   = <span class=prg>NULL</span>; 
+
+    <span class=prg>CoUninitialize();</span>
+
+  <span class=sc16>} <span class=sc2>// limpar().fim</span></span>
+
+</div>
+
+<b>CoUninitialize();  </b>
+Esta função desconecta a aplicação do processo de comunicação com as
+interfaces de tecnologia COM.
+
+<b><u>4.0 O arquivo entrada.cpp</u></b>
+<b><u>4.1 Escolhendo música ou vídeo</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=prg>int </span>mediaModo; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_DirectShow"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <b class=sc4>WS_OVERLAPPEDWINDOW;</b> 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=prg>int </span>res = <span class=prg>MessageBox </span>(hJanela, 
+    <span class=sc6>"Acionar modo vídeo ???"</span>, 
+    <span class=sc6>"prj_DirectShow"</span>, <b class=sc4>MB_YESNO</b>);  
+
+  <span class=sc9>if </span>(res == <b class=sc4>IDYES</b>) mediaModo = modo_video; 
+  <span class=sc9>else</span>
+  mediaModo = modo_musica; 
+</b>
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+ 
+ <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+   
+    tocar_media();  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+
+</div>
+<b><span class=prg>int </span>mediaModo; </b>
+Já vimos que esta variável define se a aplicação vai tocar uma música
+ou vídeo.
+
+<b><span class=sc16>HWND </span>hJanela; </b>
+Este handle é exportado para o motor da aplicação que o utiliza para
+configurar a janela como a janela de playback de vídeo.
+
+<img src=images\musica_ou_video.png>
+<b><span class=prg>int </span>res = <span class=prg>MessageBox </span>(hJanela, 
+<span class=sc6>"Acionar modo vídeo ???"</span>, <span class=sc6>"prj_DirectShow"</span>, <b class=sc4>MB_YESNO</b>);  </b>
+Ao responder esta caixa de mensagem o usuário define  se a aplicação
+vai rodar uma música ou um vídeo.
+
+<b><span class=sc9>if </span>(res == <b class=sc4>IDYES</b>) mediaModo = modo_video; 
+<span class=sc9>else</span> mediaModo = modo_musica; </b>
+Depois de responder a caixa de mensagem, o <b>mediaModo</b> é configurado de
+acordo.
+
+<b>tocar_media();  </b>
+E  finalmente  a  mídia  é  tocada  depois  da inicialização do motor
+gráfico.
+
+<b><u>5.0 Código fonte do projeto de exemplo: prj_DirectShow</u></b>
+<div class=prg-code><img src=images\prj_DirectShow.png>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=sc16>#define </span>modo_video <span class=sc4>1</span>
+<span class=sc16>#define </span>modo_musica <span class=sc4>-1</span>
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionColored_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Estrutura do vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    cor = _cor; 
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função inicializa o buffer de índices e</span>
+  <span class=sc2>// o buffer de vértices</span>
+  <span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura a câmera da aplicação</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+
+  <span class=sc2>// Toca um arquivo de música ou vídeo</span>
+  <span class=prg>void </span>tocar_media(<span class=prg>void</span>);   
+
+  <span class=sc2>// Trata evento de mídia</span>
+  <span class=prg>void </span>tratarMediaEvento();  
+
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+    <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;math.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;time.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dshow.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=sc6>"gpmediaplayer.cpp"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o buffer de vértices</span>
+<span class=sc5>IDirect3DVertexBuffer9* </span>g_vbVertices = <span class=prg>NULL</span>; 
+
+
+GPMediaPlayer g_Tocador; 
+<span class=prg>int </span>bVideoAcionado = <span class=sc4>1</span>; 
+
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+<span class=sc16>extern </span><span class=prg>int </span>mediaModo; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = <span class=sc4>0xFFFF0000</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>amarelo  = <span class=sc4>0xFFFFFF00</span>; 
+
+<span class=prg>UINT </span>g_nVerticesQtd = 60; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Controla a mudança periodica da primitiva</span>
+<span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; 
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// inicializa o vertexbuffer</span>
+  inicializar_Buffers();  
+
+  <span class=sc2>// configura o posicionamento dos vértices</span>
+  montar_Geometria();  
+
+  <span class=sc2>// configura câmera da aplicação</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Habilita iluminação default</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+<span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+  <span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionColored</span>)  * g_nVerticesQtd; 
+
+  <span class=sc2>// Criação efetiva do buffer de vértices (vertexbuffer)</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+    <span class=sc4>CustomVertex_PositionColored_Format</span>, <span class=sc4>D3DPOOL_MANAGED</span>, &g_vbVertices, <span class=prg>NULL</span>);   
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>xcol = <span class=sc4>0.0f</span>; 
+  <span class=prg>float </span>ylin = <span class=sc4>0.0f</span>; 
+  <span class=prg>float </span>zpos = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Utilizado para controlar o índice do vértice</span>
+  <span class=prg>UINT </span>ndx = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Distribuição circular dos vértices no espaço</span>
+   <span class=prg>UINT </span>passo = 360 / g_nVerticesQtd; 
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de vértices</span>
+  <b class=prg>CustomVertex_PositionColored</b> *pVerts; 
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de vértices</span>
+  <span class=prg>g_vbVertices-&gt;Lock</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, (<span class=prg>void**</span>) &pVerts, <span class=sc4>0</span>);  
+
+  <span class=sc2>// Vamos posicionar os vértices em círculo</span>
+<span class=prg>for </span>(<span class=prg>float </span>ncx = <span class=sc4>0.0f</span>; ncx &lt;= <span class=sc4>360.0f</span>; ncx += passo) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Converte graus para radianos</span>
+ <span class=prg>double </span>radianos = ncx * (<span class=sc4>D3DX_PI </span>/ <span class=sc4>180.0f</span>);   
+
+ <span class=sc2>// Tamanho do círculo</span>
+ <span class=prg>float </span>nRaio = <span class=sc4>2.0f</span>; 
+
+ <span class=sc2>// (x,y) distribuidos de maneira circular</span>
+ xcol = (<span class=prg>float</span>)  <span class=prg>cos</span>(radianos) * nRaio; 
+ ylin = (<span class=prg>float</span>)  <span class=prg>sin</span>(radianos) * nRaio; 
+
+  <span class=sc2>// Posicionamento do vértice</span>
+  pVerts[ndx] = <span class=sc5>CustomVertex_PositionColored</span>( xcol, ylin, zpos, vermelho);  
+
+ <span class=sc2>// Coloca no centro o terceiro vértice de cada triângulo</span>
+ <span class=sc9>if </span>(ndx % <span class=sc4>3 </span>== <span class=sc4>0</span>)  
+ pVerts[ndx] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, zpos, amarelo);  
+
+ <span class=sc2>// Atualiza índice de controle do vértice</span>
+ ndx++;   
+
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Liberação do vertexbuffer</span>
+  <span class=prg>g_vbVertices-&gt;Unlock</span>();  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Produz a cada dois segundos um valor de 0 a 5.</span>
+  temporizador = ( <span class=prg>clock</span>() / 500 ) % <span class=sc4>3</span>; 
+
+  <span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionColored_Format</span>);  
+
+  <span class=sc2>// Informação do buffer de vértices utilizado</span>
+  <span class=prg>g_device-&gt;SetStreamSource</span>( <span class=sc4>0</span>, g_vbVertices, <span class=sc4>0</span>,<span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionColored</span>));  
+
+  <span class=sc9>if </span>(temporizador == <span class=sc4>0</span>)  
+  <span class=prg>g_device-&gt;DrawPrimitive</span>( <span class=sc4>D3DPT_LINELIST</span>, <span class=sc4>0</span>, g_nVerticesQtd / <span class=sc4>2</span>);   
+
+  <span class=sc9>if </span>(temporizador == <span class=sc4>1</span>)  
+  <span class=prg>g_device-&gt;DrawPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, <span class=sc4>0</span>, g_nVerticesQtd / <span class=sc4>3</span>);   
+
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><b class=sc4>WM_P_GRAPHNOTIFY</b>:
+  tratarMediaEvento();  
+  <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == 'T') <span class=prg>g_Tocador.play</span>();  
+    <span class=sc9>if </span>(wParam == 'S') <span class=prg>g_Tocador.stop</span>();  
+    <span class=sc9>if </span>(wParam == 'P') <span class=prg>g_Tocador.pause</span>();  
+
+    <span class=sc2>// Aborte o vídeo na tecla espaço</span>
+    <span class=sc9>if </span>(wParam == <b class=sc4>VK_SPACE</b> ) 
+    <span class=sc16>{</span>
+    <span class=sc9>if </span>(mediaModo == modo_video) <span class=prg>g_Tocador.abortarVideo</span>(2000);  
+    <span class=sc9>if </span>(mediaModo == modo_musica) <span class=prg>g_Tocador.stop</span>();  
+    bVideoAcionado = <span class=sc4>-1</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o buffer de vértices</span>
+  <span class=sc9>if</span>( g_vbVertices != <span class=prg>NULL</span>)  <span class=prg>g_vbVertices-&gt;Release</span>();  
+
+  <span class=sc2>// Limpa o DirectShow e seus objetos utilizados</span>
+  <span class=prg>g_Tocador.limpar</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Anula os ponteiros</span>
+  g_vbVertices = <span class=prg>NULL</span>; 
+  g_device   = <span class=prg>NULL</span>; 
+  g_Direct3d  = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc9>if</span>(bVideoAcionado == <span class=sc4>1</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor preta</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, <span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_<b class=prg>long</b>e = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_<b class=prg>long</b>e);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=prg>void </span>tocar_media() 
+<span class=sc16>{</span>
+  <span class=sc2>// Inicializa o tocador</span>
+  g_Tocador = GPMediaPlayer();  
+
+  <span class=sc2>// Inicializa os objetos do DirectShow para tocar mídia</span>
+  <span class=prg>g_Tocador.inicializar</span>();  
+
+  <span class=sc9>if </span>(mediaModo == modo_video) 
+  <span class=sc16>{</span>
+  <span class=prg>g_Tocador.carregarVideo</span>(<span class=sc6>L"\\gameprog\\gdkmedia\\Video\\RiskyDance.mp4"</span>);   
+
+  <span class=sc2>// Configura a janela da aplicação como a janela de vídeo</span>
+  <span class=prg>g_Tocador.setOwner </span>(hJanela);  
+  bVideoAcionado = <span class=sc4>1</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc9>if </span>(mediaModo == modo_musica) 
+  <span class=sc16>{</span>
+  <span class=prg>g_Tocador.carregarMusica </span>(<span class=sc6>L"\\gameprog\\gdkmedia\\musica\\megaman3Intro.mp3"</span>);   
+  bVideoAcionado = <span class=sc4>-1</span>; 
+  <span class=sc16>}</span>
+
+
+  <span class=sc2>// Toca o arquivo de mídia</span>
+  <span class=prg>g_Tocador.play</span>();  
+
+<span class=sc16>} <span class=sc2>// tocar_media().fim</span></span>
+
+
+<span class=prg>void </span>tratarMediaEvento() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Coleta dos resultados das operações do directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+
+  <span class=sc2>// Variáveis para coleta do evento e informações complementares</span>
+  <b class=prg>long</b> cdgEvento; 
+  <b class=prg>long</b> param1, param2; 
+
+  <span class=sc2>// Verifica a ocorrência de eventos</span>
+  hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>(&cdgEvento, &amp;param1, &amp;param2, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Trata a ocorrência de eventos</span>
+  <span class=sc9>while</span>(<span class=prg>SUCCEEDED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Tira o evento da fila de eventos</span>
+    hr = <span class=prg>g_Tocador.mdEventos-&gt;FreeEventParams</span>(cdgEvento, param1, param2);  
+
+
+    <span class=sc2>// Verifica se o evento que o playback da mídia completou-se ou</span>
+    <span class=sc2>// foi abortada ocorreu</span>
+    <span class=sc9>if </span>(( cdgEvento == <b class=sc4>EC_COMPLETE</b> ) || ( cdgEvento == <b class=sc4>EC_USERABORT</b> )) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Aborta o playback da mídia</span>
+      <span class=prg>g_Tocador.abortarVideo</span>(2000);  
+      bVideoAcionado = <span class=sc4>-1</span>; 
+
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc2>// Verifica a ocorrência de eventos para alimentar o while{}</span>
+    hr = <span class=prg>g_Tocador.mdEventos-&gt;GetEvent</span>(&cdgEvento, &amp;param1, &amp;param2, <span class=sc4>0</span>);   
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+<span class=sc16>} <span class=sc2>// tratarMediaEvento()</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - arquivo: gpmediaplayer.cpp</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;dshow.h&gt;</span>
+
+<span class=sc2>// Biblioteca do DirectShow</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"strmiids.lib"</span>)  
+
+<span class=sc2>// Notificação de eventos do DirectShow</span>
+<span class=sc16>#define </span><b class=sc4>WM_P_GRAPHNOTIFY  WM_APP</b> + <span class=sc4>1</span>
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=sc16>#define </span>modo_video <span class=sc4>1</span>
+<span class=sc16>#define </span>modo_musica <span class=sc4>-1</span>
+
+
+<span class=prg>class </span>GPMediaPlayer 
+
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// Membro para receber o handle da janela da aplicação</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// 1 = video // -1 = música</span>
+  <span class=prg>int </span>mediaModo; 
+
+
+<span class=sc16>public:</span>
+  <span class=sc2>// Recebe os resultados das operações</span>
+  <span class=sc16>HRESULT </span>m_hr; 
+
+  <span class=sc2>// Interface do construtor de gráficos</span>
+  <b class=sc5>IGraphBuilder</b> *gfxConstrutor; 
+
+  <span class=sc2>// Interface de controle de mídia (play, stop, pause, etc-&gt;.)</span>
+  <b class=sc5>IMediaControl</b> *mdControle; 
+
+  <span class=sc2>// Interfaces de controle de evento</span>
+  <b class=sc5>IMediaEventEx</b> *mdEventos; 
+
+  <span class=sc2>// Interface da janela de vídeo</span>
+  <b class=sc5>IVideoWindow</b>  *janelaVideo; 
+
+
+  <span class=sc2>// Construtor default</span>
+  GPMediaPlayer () 
+  <span class=sc16>{</span>
+    gfxConstrutor = <span class=prg>NULL</span>; 
+    mdControle  = <span class=prg>NULL</span>; 
+    janelaVideo  = <span class=prg>NULL</span>; 
+    mdEventos   = <span class=prg>NULL</span>; 
+    m_hr     = <span class=sc4>0</span>; 
+    hJanela    = <span class=prg>NULL</span>; 
+
+  <span class=sc16>} <span class=sc2>// Contrutor().fim</span></span>
+
+
+  <span class=prg>void </span>inicializar(<span class=prg>void</span>)  
+  <span class=sc16>{</span>
+    <span class=sc2>// inicializa a interface COM</span>
+    <span class=prg>CoInitialize(NULL)</span>;   
+
+    <span class=sc2>// Cria o gerenciador do gráfico de filtros</span>
+    m_hr = <span class=prg>CoCreateInstance</span> (<b class=sc4>CLSID_FilterGraph</b>, <span class=prg>NULL</span>, 
+      <b class=sc4>CLSCTX_INPROC_SERVER</b>, <b class=sc5>IID_IGraphBuilder</b>, 
+      (<span class=prg>void </span>**) &gfxConstrutor);  
+
+    <span class=sc2>// Cria a interface de controle de mídia</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaControl</b>, (<span class=prg>void </span>**)&mdControle);  
+
+    <span class=sc2>// Cria a interface de controle de eventos extras</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=sc5>IID_IMediaEventEx</b>, (<span class=prg>void </span>**)&mdEventos);  
+
+  <span class=sc16>} <span class=sc2>// inicializar().fim</span></span>
+
+
+  <span class=prg>void </span>carregarVideo( <span class=prg>LPCWSTR</span> videoArquivo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Carrega o arquivo de mídia apontado</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;RenderFile</span>(videoArquivo, <span class=prg>NULL</span>);   
+
+    <span class=sc2>// indica modo de vídeo</span>
+    mediaModo = modo_video; 
+
+    <span class=sc2>// avisa se houver falha</span>
+    seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;RenderFile</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer:carregarVideo</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// carregarVideo().fim</span></span>
+
+
+  <span class=prg>void </span>carregarMusica( <span class=prg>LPCWSTR</span> musicaArquivo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Carrega o arquivo de mídia apontado</span>
+    m_hr = <span class=prg>gfxConstrutor-&gt;RenderFile</span>(musicaArquivo, <span class=prg>NULL</span>);   
+
+    <span class=sc2>// indica modo de música</span>
+    mediaModo = modo_musica; 
+
+    <span class=sc2>// avisa se houver falha</span>
+    seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;RenderFile</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer:carregarVideo</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// carregarMusica().fim</span></span>
+
+
+  <span class=prg>void </span>setOwner( <span class=sc16>HWND </span>hWnd ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Essa função não interessa pra música!</span>
+    <span class=sc9>if </span>(mediaModo == modo_musica ) <span class=sc6>return</span>; 
+
+    <span class=sc2>// Obtém a janela de vídeo</span>
+    <span class=sc9>if </span>(janelaVideo == <span class=prg>NULL</span>)  
+    m_hr = <span class=prg>gfxConstrutor-&gt;QueryInterface</span>(<b class=prg>IID_IVideoWindow</b>, 
+      (<span class=prg>void </span>**) &janelaVideo);  
+
+    <span class=sc2>// Verifica se houve falha</span>
+    <span class=sc9>if</span>(seHouverFalha(<span class=sc6>"Falha: gfxConstrutor-&gt;QueryInterface</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>)  ) 
+      <span class=sc6>return</span>; 
+
+    <span class=sc2>// Muda a janela de vídeo para a janela da aplicação</span>
+    m_hr = <span class=prg>janelaVideo-&gt;put_Owner</span>( (<b class=sc4><b class=sc4>OAHWND</b></b>) hWnd );  
+    <span class=sc2>// Configura janela de notificação</span>
+    <span class=prg>mdEventos-&gt;SetNotifyWindow</span>((<b class=sc4><b class=sc4>OAHWND</b></b>)hWnd, <b class=sc4>WM_P_GRAPHNOTIFY</b>, <span class=sc4>0</span>);   
+    <span class=sc2>// Verifica se houve falha</span>
+    seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;put_Owner</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+    hJanela = hWnd; 
+
+    <span class=sc2>// Configura o estilo da janela de vídeo</span>
+    m_hr = <span class=prg>janelaVideo-&gt;put_WindowStyle</span>( <b class=sc4>WS_CHILD</b> | <b class=sc4>WS_CLIPSIBLINGS</b> );  
+    <span class=sc2>// Verifica se houve falha</span>
+    seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;put_WindowStyle</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+
+    <span class=sc2>// Configura o tamanho da janela</span>
+    <span class=sc2>// Pega o tamanho da janela</span>
+    <span class=sc5>RECT </span>rect; 
+    GetClientRect(hWnd, &rect);  
+
+    <span class=sc2>// Reconfigura o tamanho da janela</span>
+    m_hr = <span class=prg>janelaVideo-&gt;SetWindowPosition</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>rect.right</span>, <span class=prg>rect.bottom</span>);   
+    <span class=sc2>// Verifica se houve falha</span>
+    seHouverFalha(<span class=sc6>"Falha: janelaVideo-&gt;SetWindowPosition</span>()<span class=sc6>"</span>, 
+	<span class=sc6>"Video::setOwner</span>()<span class=sc6>"</span>);   
+
+  <span class=sc16>} <span class=sc2>// setOwner().fim</span></span>
+
+
+  <span class=prg>void </span>play() 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Desconecte a janela da aplicação se for música</span>
+    <span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>)  && (mediaModo == modo_musica) )
+			<span class=prg>janelaVideo-&gt;put_Owner </span>(<span class=prg>NULL</span>);   
+
+    <span class=sc2>// Reconecte com a janela da aplicação se for vídeo</span>
+    <span class=sc9>if</span>((janelaVideo != <span class=prg>NULL</span>)  && (mediaModo == modo_video) ) 
+      <span class=sc9>if </span>(hJanela != <span class=prg>NULL</span>)  <span class=prg>janelaVideo-&gt;put_Owner</span>((<b class=sc4><b class=sc4>OAHWND</b></b>) hJanela);  
+
+    <span class=sc2>// Toque o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Run</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Run</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer::play</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// play().fim</span></span>
+
+
+
+  <span class=prg>void </span>stop() 
+  <span class=sc16>{</span>
+    <span class=sc2>// Pára de tocar o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Stop</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Stop</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer::stop</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// stop().fim</span></span>
+
+
+  <span class=prg>void </span>pause() 
+  <span class=sc16>{</span>
+    <span class=sc2>// Pausa o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Pause</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Pause</span>()<span class=sc6>"</span>, 
+		<span class=sc6>"GPMediaPlayer::pause</span>()<span class=sc6>"</span>);   
+  <span class=sc16>} <span class=sc2>// pause</span></span>
+
+
+  <span class=prg>void </span>abortarVideo( <span class=prg>DWORD </span>nSleep) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Pára o arquivo de mídia</span>
+    m_hr = <span class=prg>mdControle-&gt;Stop</span>();  
+
+    <span class=sc2>// Avisa se houve falha</span>
+    seHouverFalha(<span class=sc6>"mdControle-&gt;Stop</span>()<span class=sc6>"</span>, <span class=sc6>"GPMediaPlayer::abortarVideo</span>()<span class=sc6>"</span>);   
+
+    <span class=sc2>// Deixe por algum tempo a última imagem</span>
+    <span class=sc9>if </span>(nSleep &gt; <span class=sc4>0</span>)  <span class=prg>Sleep</span>( nSleep);  
+
+    <span class=sc2>// Esconda a janela e desconecte da aplicação</span>
+    <span class=sc9>if </span>(janelaVideo != <span class=prg>NULL</span>)  
+    <span class=sc16>{</span>
+    <span class=prg>janelaVideo-&gt;put_Visible </span>(<b class=sc4>OAFALSE</b>);  
+    <span class=prg>janelaVideo-&gt;put_Owner </span>(<span class=prg>NULL</span>);   
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc16>} <span class=sc2>// abortarVideo().fim</span></span>
+
+
+  <span class=prg>bool </span>seHouverFalha( <span class=prg>char </span>*aviso, <span class=prg>char </span>*processo) 
+  <span class=sc16>{</span>
+    <span class=prg>bool </span>status = <span class=prg>false</span>; 
+
+    <span class=sc2>// Verifica se houve erro</span>
+    <span class=sc9>if </span>(<span class=prg>FAILED</span>(m_hr)) 
+    <span class=sc16>{</span>
+      <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, aviso, processo, <span class=sc4>MB_OK</span>);   
+
+      status = <span class=prg>true</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc6>return </span>status; 
+
+  <span class=sc16>} <span class=sc2>// seHouverFalha().fim</span></span>
+
+
+  <span class=prg>void </span>limpar() 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Libera os objetos utilizados</span>
+    <span class=sc9>if</span>(gfxConstrutor != <span class=prg>NULL</span>) <span class=prg>gfxConstrutor-&gt;Release</span>();  
+    <span class=sc9>if</span>(mdControle   != <span class=prg>NULL</span>) <span class=prg>mdControle-&gt;Release</span>();  
+    <span class=sc9>if</span>(janelaVideo  != <span class=prg>NULL</span>) <span class=prg>janelaVideo-&gt;Release</span>();  
+    <span class=sc9>if</span>(mdEventos   != <span class=prg>NULL</span>) <span class=prg>mdEventos-&gt;Release</span>();  
+
+    <span class=sc2>// Anula os ponteiros</span>
+    gfxConstrutor = <span class=prg>NULL</span>; 
+    mdControle  = <span class=prg>NULL</span>; 
+    janelaVideo  = <span class=prg>NULL</span>; 
+    mdEventos   = <span class=prg>NULL</span>; 
+
+    <span class=prg>CoUninitialize();</span>
+
+  <span class=sc16>} <span class=sc2>// limpar().fim</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da classe</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_DirectShow - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como tocar vídeo e música</span>
+<span class=sc2>// com o DirectShow. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// Indicação se o DirectShow está tocando música ou vídeo</span>
+<span class=prg>int </span>mediaModo; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_DirectShow"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <b class=sc4>WS_OVERLAPPEDWINDOW;</b> 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>int </span>res = <span class=prg>MessageBox </span>(hJanela, 
+    <span class=sc6>"Acionar modo vídeo ???"</span>, 
+    <span class=sc6>"prj_DirectShow"</span>, <b class=sc4>MB_YESNO</b>);  
+
+  <span class=sc9>if </span>(res == <b class=sc4>IDYES</b>) mediaModo = modo_video; 
+  <span class=sc9>else</span>
+  mediaModo = modo_musica; 
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+ 
+ <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+    tocar_media();  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track08-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

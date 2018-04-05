@@ -1,0 +1,681 @@
+﻿<html>
+<head>
+<title>mdx9_fase05-3</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-3</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.3 Mouse via DirectInput</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Mouse01.png></div>
+O processo de acessar o mouse com o DirectInput é muito semelhante ao
+processo de acessar o  teclado  com  pequenas  mudanças  naturalmente 
+lógicas para acomodar as particularidades do mouse. 
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Mouse01.png></div>
+A estrutura da aplicação é  a  mesma  do  projeto  <b>prj_Teclado01</b>  com
+poucas  mudanças  necessárias  para  acomodar  as particularidades do
+mouse.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <b>
+ <span class=sc2>// Variável para criação do dispositivo de gerenciamento do mouse</span>
+ <span class=prg>private </span><span class=prg>DirectInput.Device </span>mouse = <span class=prg>null;</span>
+ </b>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// A tecla Escape terminará a aplicação</span>
+ <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+ <span class=sc2>// Dados para o 'jogador'</span>
+ <span class=prg>private </span><span class=prg>int </span>xcol; 
+ <span class=prg>private </span><span class=prg>int </span>ylin; 
+ <span class=prg>string </span>jogador = <span class=prg>null;</span>
+
+ <span class=sc2>// Fontes para mostrar o 'jogador' na tela</span>
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+ <span class=sc2>// (...)</span>
+ 
+} <span class=sc2>// fim da classe</span>
+</div>
+
+<b><span class=sc2>// Variável para criação do dispositivo de gerenciamento do mouse</span>
+<span class=prg>private </span><span class=prg>DirectInput.Device </span>mouse = <span class=prg>null;</span></b>
+Tanto o mouse como o teclado ou  o  Joystick  são  instanciados  como
+objetos  da  classe <b class=prg>DirectInput.Device</b> recebendo uma particularização
+do  tipo  de  dispositivos  que são no processo de inicialização pela
+classe <b class=prg>DirectInput.SystemGuid</b>.
+
+<b><u>2.2 Inicializando o mouse</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+  
+ <span class=sc2>// Configuração das fontes para mostrar Mensagens e títulos</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+ <span class=sc2>// Inicializa jogador</span>
+ xcol = 320; 
+ ylin = 240; 
+ jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+ <b>inicializarMouse();</b>
+
+ <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</div>
+
+<b>inicializarMouse();</b>
+Esta função que inicializa o mouse tem essa forma:
+
+<div class=niceview> <span class=prg>private </span><span class=prg>void </span>inicializarMouse() 
+ <span class=sc16>{</span>
+ <span class=sc2>// Cria o dispositivo de gerenciamento do mouse</span>
+ mouse = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>DirectInput.SystemGuid.Mouse</span>);  
+
+ <span class=sc2>// Configura nível de cooperação</span>
+ <span class=prg>mouse.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+ <span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+   <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+ <span class=sc2>// Configurado como false, os eixos terão valores relativos ao último frame</span>
+ <span class=prg>mouse.Properties.AxisModeAbsolute </span>= <span class=prg>false;</span>
+
+ <span class=sc2>// Adquire o mouse</span>
+ <span class=prg>mouse.Acquire</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarMouse().fim</span></span>
+</div>
+Repare  que  o  código  principal dessa  função é muito semelhante ao
+processo  de  inicializar  o  teclado:  mudou o GUID que passou a ser
+<span class=prg>SystemGuid.Mouse</span>  e  os  métodos  <span class=prg>SetCooperativeLevel()</span>  e  <span class=prg>Acquire()</span> 
+continuaram com as mesmas configurações para o mouse.
+
+A diferença mais consistente reside na linha abaixo mas que também é
+opcional visto que é um valor default da configuração do mouse:
+<b><span class=prg>mouse.Properties.AxisModeAbsolute </span>= <span class=prg>false;</span></b>
+
+O mouse  desloca  seu  ponteiro  em  dois eixos  principais  X  e  Y,
+respectivos aos movimentos horizontais e verticais.O valor da leitura
+dos eixos,  quando  esta  propriedade  está configurada como <span class=prg>false</span>, é
+relativo  ao último posicionamento do mouse no frame anterior. Existe
+também o eixo Z no mouse geralmente na forma de botão giratório. Se o
+mouse estiver sem movimento estes valores serão (0,0,0).
+
+Configurado como <span class=prg>true</span>, a leitura dos eixos retornam valores inteiros
+absolutos acumulados do deslocamento do mouse sobre  a  tela.   Essa
+configuração  não  é  muito  usada  pelas  aplicações predominando o 
+uso dos valores relativos.  Os  valores absolutos ainda apresentam a
+desvantagem  que  precisam ser retrabalhados para terem senso dentro
+da aplicação desenvolvida.
+
+O uso do mouse quanto do teclado pode ser facilitado  e  enriquecido 
+com o uso do suporte  mais  maduro  dado a estes  dispositivos  pelo
+framework .net através  dos  eventos atrelados a janela que retornam
+informações em mais alto nível destes dispositivos  de  entrada. Por
+exemplo,  as coordenadas  do  ponteiro  do  mouse  na  tela  é  mais
+facilmente  obtido  monitorando  estas  coordenadas   no  evento  de
+movimentação  do  mouse  (mouseMove)  disparado  sobre  a  janela da 
+aplicação.
+
+<b><u>2.3 Verificando o mouse</u></b>
+<div class=niceview><span class=prg>void </span>verificarMouse() 
+<span class=sc16>{</span>
+
+ <span class=sc9>if </span>(<span class=prg>this.Focused </span>== <span class=prg>false</span>)  return; 
+
+ <span class=sc2>// Variáveis para guardar o estado das teclas</span>
+ <span class=prg>int </span>seta_esquerda = 0; 
+ <span class=prg>int </span>seta_direita = 0; 
+ <span class=prg>int </span>seta_cima = 0; 
+ <span class=prg>int </span>seta_abaixo = 0; 
+ <b>
+ <span class=prg>DirectInput.MouseState </span>state;  
+ state = <span class=prg>mouse.CurrentMouseState;</span>
+
+ <span class=prg>byte</span>[] btn = <span class=prg>state.GetMouseButtons</span>();  
+
+ <span class=sc9>if </span>(btn[<span class=sc4>0</span>] &gt; <span class=sc4>0</span>)  
+ <span class=sc16>{</span>
+ <span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>0</span>)  seta_esquerda = 1; 
+ <span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>0</span>)  seta_direita = 1; 
+ <span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>0</span>)  seta_cima = 1; 
+ <span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>0</span>)  seta_cima = 1; 
+ <span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+
+ <span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  
+ <span class=sc16>{</span>
+ xcol = 320; 
+ ylin = 240; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc2>// Pressione os dois botões do mouse para sair</span>
+ <span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span>
+ </b>
+ <span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+ <span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>  )  ylin += 5; 
+ <span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>    )  ylin -= 5; 
+ <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  xcol -= 5; 
+ <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span> )  xcol += 5; 
+
+ <span class=sc2>// Muda 'jogador' conforme seta pressionada</span>
+ <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  jogador = <span class=sc6>"&lt;</span>(<span class=sc6>-:";</span>
+ <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span> )  jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+ <span class=sc2>// Processa a tecla Escape</span>
+ <span class=sc9>if </span>(terminar) 
+ <span class=sc16>{</span>
+ <span class=prg>device.Dispose</span>();  
+ <span class=prg>mouse.Dispose</span>();  
+ <span class=prg>this.Close</span>();  
+ <span class=prg>Application.Exit</span>();  
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+ 
+<span class=sc16>} <span class=sc2>// verificarMouse()</span></span>
+</div>
+
+<span class=sc9>if </span>(<span class=prg>this.Focused </span>== <span class=prg>false</span>)  return; 
+Esta linha evita que os eventos do mouse adquirido sejam  processados
+quando nossa aplicação estiver sem o foco ativo do usuário.
+
+<b><span class=prg>DirectInput.MouseState </span>state; 
+state = <span class=prg>mouse.CurrentMouseState;</span></b>
+Com esta linha é obtido o estado atual do mouse com informações sobre
+os eixos (x,y,z) e botões.  Os  eixos  serão acessados verificando as
+propriedades state<b class=prg>.X</b>, state<b class=prg>.Y</b> e state<b class=prg>.Z</b> desse objeto criado.
+A configuração da propriedade <span class=prg>mouse.Properties.AxisModeAbsolute</span> afeta
+os valores obtidos da leitura dos eixos.
+
+<b><span class=prg>byte</span>[] btn = <span class=prg>state.GetMouseButtons</span>();</b>  
+Esta linha obtém o estado dos botões presente no objeto <b>state</b>  obtido
+com <span class=prg>mouse.CurrentMouseState. </span> Geralmente o botão esquerdo é o btn[0]
+e o botão direito é btn[1].
+
+<b><span class=sc9>if </span>(btn[<span class=sc4>0</span>] &gt; <span class=sc4>0</span>) <span class=sc16>{</span>
+<span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>0</span>)  seta_esquerda = 1; 
+<span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>0</span>)  seta_direita = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>0</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+Com este bloco de código o usuário move o jogador pressionando o botão
+esquerdo do mouse e movimentando-o.
+
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>0</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>0</span>)  seta_abaixo = 1;
+A rolagem do botão do mouse que representa o  eixo  Z  também  aplica
+movimento ao jogador.
+
+<b><span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>) <span class=sc16>{</span>
+xcol = 320; 
+ylin = 240; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+Aqui o botão esquerdo resseta a coordenada de tela(xcol, ylin).
+
+<b><span class=sc2>// Pressione os dois botões do mouse para sair</span>
+<span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span></b>
+Com os dois principais botões do mouse pressionados o usuário finaliza
+a aplicação.
+
+<b><u>2.4 Mostrando informações de estado do mouse</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>MostrarMouseInfo() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Variáveis string para coletar informações do mouse</span>
+ <span class=prg>string </span>btn_info = <span class=prg>null;</span>
+ <span class=prg>string </span>eixo_info = <span class=prg>null;</span>
+
+ <span class=sc2>// Verifica o estado do mouse</span>
+ <span class=prg>DirectInput.MouseState </span>estadoMouse = <span class=prg>mouse.CurrentMouseState;</span>
+
+ <span class=sc2>// Obtém e mostra informação sobre os eixos do mouse</span>
+ eixo_info = <span class=prg>string.Format</span>(<span class=sc6>"X:{0} Y:{1} Z:{2}\r\n"</span>, 
+  <span class=prg>estadoMouse.X</span>, <span class=prg>estadoMouse.Y</span>, <span class=prg>estadoMouse.Z</span>);  
+
+ <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, eixo_info, <span class=prg>new </span><span class=sc5>Rectangle</span>(20, 70, <span class=sc4>0</span>, <span class=sc4>0</span>), 
+  <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+
+ <span class=sc2>// Obtém e mostra estado dos botões</span>
+ <span class=prg>byte</span>[] buttons = <span class=prg>estadoMouse.GetMouseButtons</span>();  
+
+ btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>0</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>0</span>]<span class=prg>.ToString</span>());  
+ btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>1</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>1</span>]<span class=prg>.ToString</span>());  
+ btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>2</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>2</span>]<span class=prg>.ToString</span>());  
+
+ <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, btn_info, <span class=prg>new </span><span class=sc5>Rectangle</span>(120, 70, <span class=sc4>0</span>, <span class=sc4>0</span>), 
+  <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+
+<span class=sc16>} <span class=sc2>// MostrarMouseInfo().fim</span></span>
+</div>
+<b><u>3. Código fonte do projeto de exemplo:prj_Mouse01</u></b>
+<div class=prg-code>
+<img src=images\prj_Mouse01.png>
+
+<span class=sc2>// prj_Mouse01 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como usar o mouse via DirectInput</span>
+<span class=sc2>// Exemplo 01 - Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>DirectInput = <span class=prg>Microsoft.DirectX.DirectInput;</span>
+
+<span class=sc16>namespace </span>prj_Mouse01 
+<span class=sc16>{</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+
+
+    <span class=sc2>// Variável para criação do dispositivo de gerenciamento mouse</span>
+    <span class=prg>private </span><span class=prg>DirectInput.Device </span>mouse = <span class=prg>null;</span>
+
+
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// A tecla Escape terminará a aplicação</span>
+    <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+    <span class=sc2>// Dados para o 'jogador'</span>
+    <span class=prg>private </span><span class=prg>int </span>xcol; 
+    <span class=prg>private </span><span class=prg>int </span>ylin; 
+    <span class=prg>string </span>jogador = <span class=prg>null;</span>
+
+    <span class=sc2>// Fontes para mostrar o 'jogador' na tela</span>
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=sc2>// (...)</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+      <span class=prg>this.Size </span>= <span class=prg>new </span>Size(640, 480);  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar Mensagens e títulos</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Inicializa jogador</span>
+      xcol = 320; 
+      ylin = 240; 
+      jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+
+      inicializarMouse();  
+
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+
+      verificarMouse();  
+      <span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+
+      <span class=sc2>// Mostra 'jogador' e sua posição na tela</span>
+      <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, xcol, ylin);  
+      MostrarTitulo(10, 10, info, <span class=prg>Color.Black</span>);  
+      MostrarTitulo(xcol, ylin, jogador, <span class=prg>Color.Red</span>);  
+      MostrarMouseInfo();  
+
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      Renderizar();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarMouse() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria o dispositivo de gerenciamento do mouse</span>
+      mouse = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>DirectInput.SystemGuid.Mouse</span>);  
+
+      <span class=sc2>// Configura nível de cooperação</span>
+      <span class=prg>mouse.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+        <span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+           <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+      <span class=sc2>// Configurado como false, os eixos terão valores relativos ao último frame</span>
+      <span class=prg>mouse.Properties.AxisModeAbsolute </span>= <span class=prg>false;</span>
+
+      <span class=sc2>// Adquire o mouse</span>
+      <span class=prg>mouse.Acquire</span>();  
+
+    <span class=sc16>} <span class=sc2>// inicializarMouse().fim</span></span>
+
+
+
+
+    <span class=prg>void </span>verificarMouse() 
+    <span class=sc16>{</span>
+
+      <span class=sc9>if </span>(<span class=prg>this.Focused </span>== <span class=prg>false</span>)  return; 
+
+      <span class=sc2>// Variáveis para guardar o estado das teclas</span>
+      <span class=prg>int </span>seta_esquerda = 0; 
+      <span class=prg>int </span>seta_direita = 0; 
+      <span class=prg>int </span>seta_cima = 0; 
+      <span class=prg>int </span>seta_abaixo = 0; 
+
+
+      <span class=prg>DirectInput.MouseState </span>state; 
+      state = <span class=prg>mouse.CurrentMouseState;</span>
+
+      <span class=prg>byte</span>[] btn = <span class=prg>state.GetMouseButtons</span>();  
+
+      <span class=sc9>if </span>(btn[<span class=sc4>0</span>] &gt; <span class=sc4>0</span>)  
+      <span class=sc16>{</span>
+        <span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>0</span>)  seta_esquerda = 1; 
+        <span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>0</span>)  seta_direita = 1; 
+        <span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>0</span>)  seta_cima = 1; 
+        <span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+      <span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>0</span>)  seta_cima = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+
+      <span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  
+      <span class=sc16>{</span>
+        xcol = 320; 
+        ylin = 240; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+      <span class=sc2>// Pressione os dois botões do mouse para sair</span>
+      <span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span>
+
+
+      <span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+      <span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>)  ylin += 5; 
+      <span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>)  ylin -= 5; 
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  xcol -= 5; 
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  xcol += 5; 
+
+      <span class=sc2>// Muda 'jogador' conforme seta pressionada</span>
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  jogador = <span class=sc6>"&lt;</span>(<span class=sc6>-:";</span>
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+      <span class=sc2>// Processa a tecla Escape</span>
+      <span class=sc9>if </span>(terminar) 
+      <span class=sc16>{</span>
+        <span class=prg>device.Dispose</span>();  
+        <span class=prg>mouse.Dispose</span>();  
+        <span class=prg>this.Close</span>();  
+        <span class=prg>Application.Exit</span>();  
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc16>} <span class=sc2>// verificarMouse()</span></span>
+
+
+
+    <span class=sc2>// Mostra texto com tamanho de fonte grande para títulos</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarTitulo(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfTitulo.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, font_cor);  
+    <span class=sc16>} <span class=sc2>// MostrarTitulo().fim</span></span>
+
+
+
+    <span class=prg>private </span><span class=prg>void </span>MostrarMouseInfo() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Variáveis string para coletar informações do mouse</span>
+      <span class=prg>string </span>btn_info = <span class=prg>null;</span>
+      <span class=prg>string </span>eixo_info = <span class=prg>null;</span>
+
+      <span class=sc2>// Verifica o estado do mouse</span>
+      <span class=prg>DirectInput.MouseState </span>estadoMouse = <span class=prg>mouse.CurrentMouseState;</span>
+
+      <span class=sc2>// Obtém e mostra informação sobre os eixos do mouse</span>
+      eixo_info = <span class=prg>string.Format</span>(<span class=sc6>"X:{0} Y:{1} Z:{2}\r\n"</span>, 
+        <span class=prg>estadoMouse.X</span>, <span class=prg>estadoMouse.Y</span>, <span class=prg>estadoMouse.Z</span>);  
+
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, eixo_info, <span class=prg>new </span><span class=sc5>Rectangle</span>(20, 70, <span class=sc4>0</span>, <span class=sc4>0</span>), 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+
+      <span class=sc2>// Obtém e mostra estado dos botões</span>
+      <span class=prg>byte</span>[] buttons = <span class=prg>estadoMouse.GetMouseButtons</span>();  
+
+      btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>0</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>0</span>]<span class=prg>.ToString</span>());  
+      btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>1</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>1</span>]<span class=prg>.ToString</span>());  
+      btn_info += <span class=prg>string.Format</span>(<span class=sc6>" Btn</span>[<span class=sc4>2</span>]<span class=sc6>:{0}  "</span>, buttons[<span class=sc4>2</span>]<span class=prg>.ToString</span>());  
+
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, btn_info, <span class=prg>new </span><span class=sc5>Rectangle</span>(120, 70, <span class=sc4>0</span>, <span class=sc4>0</span>), 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+
+    <span class=sc16>} <span class=sc2>// MostrarMouseInfo().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

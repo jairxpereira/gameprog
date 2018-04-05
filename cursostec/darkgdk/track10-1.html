@@ -1,0 +1,226 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase10.1</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">10.1 Criando um terreno com dbMakeMatrix()</h3><pre>
+<b><u>10.1 Aspectos gerais</b></u>
+
+<u><b>Terreno</u></b>
+O terreno na DarkGdk é basicamente um plano com a possibilidade de ser
+segmentado, reposicionado e texturizado:
+
+<img src="images\matrix_info.png">
+
+Cada <b>polígono</b> ou 'quadradinho' resultante da segmentação vertical e horizontal
+pode ser texturizado individualmente. Os pontos ou <b>vértices</b>  destes  polígonos
+podem ser reposicionados para se criar elevações e  depressões  no  relevo  do 
+terreno. Cada polígono ganha uma coordenada  que  representa  sua  posição  no 
+terreno, por exemplo na nossa foto, o primeiro polígono  tem  coordenada  <b>(0,0)</b>,
+e o último coordenada <b>(3,2)</b>; essas coordenadas são usadas como referência para
+texturização e reposicionamento.
+
+Cada ponto ou vértice ganha uma coordenada  conforme  sua  localização  no
+terreno, na nosso foto alguns vértices estão identificados com um pontinho 
+vermelho. O primeiro vértice tem coordenada <b>(0,0)</b>, e o último na nossa foto
+tem coordenada <b>(4,3)</b> que é o último do canto direito superior.  É necessário
+prestar atenção nesse sistema de coordenada e localização de  cada  vértice
+na matrix para que depois você possa levantar  cada  vértice  corretamente e
+assim criar elevações e depressões no relevo do seu terreno.
+
+No inglês da Darkgdk o terreno recebe o nome de <b>matrix</b>, e esta é a palavra
+chave das funções que fazem a manipulação de terrenos. O  quadradinho  que
+chamamos de polígono, o DarkGdk nomeia-o como <b>tile</b>, azulejo em  português.
+
+Como todo e qualquer objeto, a matrix deve receber um número de identificação
+pelo qual o terreno criado vai ser manipulado.
+
+<u><b>Câmera</u></b>
+A imagem que vemos em nosso monitor representa um ponto de vista dado por uma
+câmera. Em outras palavras, a câmera é um objeto 3D que recorta do mundo 3D 
+a imagem que vemos. Obviamente que algumas das propriedades dessa imagem vai 
+depender da localização e rotação da câmera, vai depender para aonde ela 
+aponta e da distância da câmera em relação aos objetos. Não vamos estudar
+funções de câmera neste capítulo, abordamos o assunto porque vamos precisar
+de uma câmera para visualizar nosso terreno. Quando você usa os comandos 3D,
+tal  como  as  funções  de  manipulação  de  terreno,  a  DarkGdk  coloca 
+automaticamente  uma  câmera  no  ambiente.
+
+<u><b>Criando um terreno (matrix)  simples</u></b>
+<img src="images\matrix01.png">
+
+<div class=prg-code><span class="sc2">// matrix01.cpp
+// Esse programa apresenta a criação de terreno (matrix)
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"matrix01.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Criação básica de um terreno com o posicionamento da câmera para visualizá-lo
+</span><span class="sc11">dbMakeMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1000</span><span class="sc10">,</span><span class="sc4">1000</span><span class="sc10">,</span><span class="sc4">4</span><span class="sc10">,</span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">950</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1500</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPointCamera</span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,-</span><span class="sc4">500</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">500</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()</span></div>
+
+<b><u>Criando a matrix</b></u> <span class=prg>
+void dbMakeMatrix (nMatrix, nLargura, nAltura, recorte-x, recorte-z); </span>
+<b class=sc2>void dbMakeMatrix ( int MatrixNumber, float Width, float Height, int Xsegments, int Zsegments );</b>
+<span class=prg>dbMakeMatrix (1,1000,1000,4,3);</span>
+
+A função <b>dbMakeMatrix()</b> cria um terreno com a largura <b>(nLargura)</b> e altura 
+<b>(nAltura)</b> especificadas. Os argumentos <b>recorte-x</b> e <b>recorte-y</b> segmentam o
+terreno respectivamente na largura e altura.
+
+Perceba a segmentação na foto do programa exemplo, tem 4 quadrados no eixo x, 
+e 3 quadrados no eixo y. Cada quadrado é formado por dois triângulos que são 
+chamado de <b>faces.</b>	
+
+<b class=prg>dbPositionCamera (950, 300, 1500);</b>
+Essa função determina a posição (x,y,z) da câmera.
+
+<b class=prg>dbPointCamera(10,-500, -500);</b>
+Essa função determina o ponto (x,y,x) para o qual a câmera aponta.	
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

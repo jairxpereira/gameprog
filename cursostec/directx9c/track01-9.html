@@ -1,0 +1,1253 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-09</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-9</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-8.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-10.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.9 Recipientes do directx</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Buffers.png></div>
+A aplicação de exemplo deste tópico replica  a  aplicação  do  tópico
+anterior com a diferença de utilizar  os <b>recipientes</b> de vértices e de
+índices  providos  pelas  interfaces do directx. De um certo ponto de
+vista  o  buffer  de  índices  e  o  buffer de vértices são formas de 
+recipientes para conter índices e vértices. O mesmo podemos pensar da
+textura e  de outras superfícies de imagens como sendo recipientes de
+informação de cor.
+
+Estes recipientes providos pelas interfaces do directx  são  chamados
+<b>recursos</b> ( <b class=prg>resources</b> ) na documentação e  na codificação da Microsoft.
+Uma das primeiras vantagens em se utilizar os recipientes do  directx
+é velocidade:  de  acordo  com  a  configuração dada  ao recipiente o 
+directx   pode  mandá-lo  para  estocagem  e  processamento  na placa 
+aceleradora fato que melhora a eficiência  da  aplicação.  As  outras
+vantagens  consiste  no  fato  do  próprio directx fazer a gestão dos 
+dados  do  recipiente  e  ainda  prover  alguns  métodos  comuns para
+facilitar  algumas  operações.  Por exemplo,  na questão  da  textura  
+você  vai encontrar funções para ler e salvar a textura no disco.
+
+A gestão dos dados dos recipientes não é uma coisa simples pois entra
+em  questão  a  concorrência no acesso aos dados pela aplicação, pelo
+directx  e  pela  placa  aceleradora bem como a questão da troca e da
+posse de dados entre cada ponto.  Então  essas  questões  impactam na
+configuração  inicial  e  no acesso aos recipientes pela aplicação. É
+comum  na  criação  dos  recipientes  pelas  interfaces  do directx a 
+<b>indicação  de  uso</b> que a aplicação vai fazer dos dados, se vai ler ou
+modificar  com  frequência; a antecipação dessa informação permite ao
+directx  selecionar  o melhor local para guardar esses dados que pode
+ser  a  memória  gerenciada  pelo  directx, a memória gerenciada pelo 
+Sistema  ou  na memória da placa de vídeo. Essa diferença de local de
+memória  dá  origem a <b>classes de memória</b> também chamado de <b>piscina</b> ou
+<b class=prg>pool</b> pelo directx.   Por fim,  na  solicitação de acesso aos dados, a
+informação se vai ser apenas  para  leitura  ou  escrita  permite  ao
+directx  fazer otimizações internas de como ele vai liberar  o acesso
+à aplicação esses dados.
+
+Para facilitar a fluência do texto a expressão <b>buffer de vértices</b> vai
+ser referida também pelo termo inglês <b class=prg>vertexbuffer</b> e o mesmo ocorrerá
+com o <b>buffer de índices</b> a ser chamado de <b class=prg>indexbuffer</b>.   As expressões
+em inglês  e  em português serão usadas de maneira intercambiável sem
+perda do significado do que são estes recipientes.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+Aspectos globais<b class=sc16>
+	<u>Declaração do ponteiro global para o buffer de vértices</u>	
+	<u>Declaração do ponteiro global para o buffer de índices</u></b> 
+	
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+	<b class=sc16><u>chama inicializar_Buffers() para inicializar o buffer de</u>
+		<u>índices e o buffer de vértices.</u>
+		
+	<u>chama montar_Geometria() para configurar os vértices no</u>
+		<u>buffer de vértices e os índices no buffer de índices.</u></b>
+		
+<b class=sc16><u>inicializar_Buffers()</u>
+	Criação do buffer de vértices (vertexbuffer)	
+	Criação do buffer de índices (indexbuffer) </b>
+	
+montar_Geometria()
+	<b class=sc16><u>Acessa o buffer de vértices</u></b>	
+	<b class=sc16><u>Configura posição dos 4 vértices no vertexbuffer</u></b>
+	
+	<b class=sc16><u>Acessa o buffer de índices</u></b>	
+	<b class=sc16><u>Configura posição dos 6 índices no indexbuffer</u></b>
+	
+renderizar_Geometria()
+	Declara o formato de vértice utilizado ao directx<b class=sc16>
+	<u>Indica ao dispositivo o buffer de vértices que será utilizado</u>
+		<u>g_device->SetStreamSource()</u>
+		
+	<u>Indica ao dispositivo o buffer de índices que será utilizado</u>
+		<u>g_device->SetIndices()</u>
+	
+	<u>Renderiza os vértices com g_device->DrawIndexedPrimitive()</u></b>	
+
+Renderizar()
+	Limpa a tela
+	Desenha a cena
+	chama renderizar_Geometria() para desenhar o quadrado
+	Apresenta a cena
+
+Limpar()	
+	<b class=sc16><u>Libera o buffer de vértices</u>
+	
+	<u>Libera o buffer de índices</u></b>
+	
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Buffers - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um quadrado</span>
+<span class=sc2>// utilizando as interfaces do directx para buffer de</span>
+<span class=sc2>// índices e buffer de vértices. By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+<b>
+  <span class=sc2>// Essa função inicializa o buffer de índices e</span>
+  <span class=sc2>// o buffer de vértices</span>
+  <span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+</b>
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+
+</div>
+<b><span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   </b>
+Essa função inicializa o buffer de índices e o buffer de vértices. Na
+verdade,     essa  inicialização  consiste  na  criação  desses  dois 
+recipientes com a configuração básica que cada um  exige.   Decidimos
+criar esses dois recipientes aqui na mesma função  para  facilitar  a
+percepção de que eles têm aspectos e configurações semelhantes.
+
+<b><span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   </b>
+Essa função configura os vértices no vertexbuffer  e  os  índices  no
+indexbuffer para formar o quadrado.
+
+<b><span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   </b>
+Essa  função  vai  renderizar  o  quadrado  que   está  confinado  na
+configuração  e  contéudos  do  vertexbuffer  e   do  indexbuffer.  É
+importante  destacar  que  tanto o indexbuffer e o vertexbuffer podem
+ser renderizados  parcialmente.   A  aplicação  pode  possuir  vários 
+recipientes mas a melhor eficiência é obtida  quando todos os objetos
+3d  estão  no  mesmo  pacote  com  a aplicação gerenciando a parte do 
+pacote  que  quer  ter  renderizada,  certamente  com  cada parte  do 
+recipiente global e geral confinando uma forma geométrica.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// Representa o buffer de vértices</span>
+<span class=sc5>IDirect3DVertexBuffer9* </span>g_vbVertices = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o buffer de índices</span>
+<span class=sc5>IDirect3DIndexBuffer9* </span>g_ibIndices = <span class=prg>NULL</span>; 
+</div>
+<b><span class=sc5>IDirect3DVertexBuffer9* </span>g_vbVertices = <span class=prg>NULL</span>;</b> 
+Esta é a interface que  representa o buffer de vértices.   Depois  na
+aplicação  segue  o  padrão  do  directx  que  já vimos: eles vão ser 
+inicializados  por  uma  função  <span class=prg>Create...()</span> e depois dispensados com
+<span class=prg>Release()</span>  no final da aplicação.
+
+<b><span class=sc5>IDirect3DIndexBuffer9* </span>g_ibIndices = <span class=prg>NULL</span>; </b>
+Essa é a interface que representa o buffer de índices.
+
+<b><u>2.2 Inicializando o motor gráfico</u></b>
+Segue a listagem de <b>initGfx()</b> que chama as funções <b>inicializar_Buffers()</b>
+e  <b>montar_Geometria()</b>  para o trabalho de estabelecer o cenário inicial
+da aplicação.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  inicializar_Buffers();  
+  montar_Geometria();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.3 Criação do buffer de vértices e do buffer de índices</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Segue abaixo os argumentos utilizados na criação do buffer</span>
+  <span class=sc2>// de vértices. Alguns deles aparecem também na criação do</span>
+  <span class=sc2>// buffer de índices.</span>
+
+  <span class=sc2>// Quantidade de vértices do vertexbuffer</span>
+  <span class=prg>UINT </span> nVertices = <span class=sc4>4</span>; 
+
+  <span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+  <span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>)  * nVertices; 
+
+  <span class=sc2>// Dica de uso.</span>
+  <span class=sc2>// É usado usado também na configuração do buffer de índices</span>
+  <span class=prg>DWORD </span> uso_flags = <span class=sc4>D3DUSAGE_WRITEONLY</span>; 
+
+  <span class=sc2>// Formato do vértice dos vértices do vertexbuffer</span>
+  <span class=prg>DWORD </span> vbFormato = <span class=sc4>CustomVertex_TransformedColored_Format</span>; 
+
+  <span class=sc2>// Definição da classe de memória (alojamento)</span>
+  <span class=sc2>// É usado também na configuração do buffer de índices</span>
+  <span class=sc4>D3DPOOL </span>Piscina   = <span class=sc4>D3DPOOL_MANAGED</span>; 
+
+  <span class=sc2>// Argumento sem uso</span>
+  <span class=sc2>// Aparece também na criação do buffer de índices</span>
+  <span class=sc16>HANDLE* </span>hSem_Uso = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Criação efetiva do buffer de vértices (vertexbuffer)</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, uso_flags, 
+    vbFormato, Piscina, &g_vbVertices, hSem_Uso);  
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Quantidade de triângulos</span>
+  <span class=prg>UINT </span>  nTriangulos = <span class=sc4>2</span>; 
+
+  <span class=sc2>// Cálculo do tamanho do buffer de índices</span>
+  <span class=prg>UINT </span>  ibTamanho = nTriangulos * <span class=sc4>3 </span>* <span class=sc4>2</span>; 
+
+  <span class=sc2>// Formato do tipo de dado do buffer de índices</span>
+  <span class=sc4>D3DFORMAT </span>  ibFormato = <span class=sc4>D3DFMT_INDEX16</span>; 
+
+  <span class=sc2>// Criação efetiva do buffer de índices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateIndexBuffer</span>(ibTamanho, uso_flags, 
+    ibFormato, Piscina, &g_ibIndices, hSem_Uso);  
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+</div>
+
+Segue abaixo  os  argumentos  utilizados  na  criação  do  buffer  de
+de vértices.   Alguns  deles  aparecem também na criação do buffer de 
+índices e  os demais acabam guardando certa semelhança de finalidade.
+Vamos  discutir  primeiro  os  argumentos  que são iguais para ambos:
+
+<b><span class=prg>DWORD </span> uso_flags = <span class=sc4>D3DUSAGE_WRITEONLY</span>; </b>
+O valor deste flag indica que o recipiente vai ser usado apenas  para
+escrita. É uma das melhores configurações.Geralmente o recipiente vai
+ter  o  conteúdo  escrito na configuração inicial e depois ficará aos
+cuidados exclusivos do directx.  Geralmente  você  vai usar isso para
+cenários ou objetos 3d estáticos.  Lembramos que este flag representa
+um dica de uso que a aplicação passa ao directx para que ele  tome  a
+a melhor providência de alojamento e gerenciamento do  recurso.  Essa
+melhor  providência  não  é  uma fatalidade e pode ser que devido aos
+limites do contexto o directx não consiga as condições ideais para  o
+recurso.   Outro  valor  comum para este flag é <b>D3DUSAGE_DYNAMIC</b> para
+recipientes dinâmicos que vão re-escrever ou adicionar elementos novos
+ao recipiente; um exemplo de uso é um sistema de  partículas  com  as
+partículas sendo modificadas ou adicionadas gradualmente.
+
+<span class=sc2>// Definição da classe de memória (alojamento)</span>
+<span class=sc2>// É usado também na configuração do buffer de índices</span>
+<b><span class=sc4>D3DPOOL </span>Piscina   = <span class=sc4>D3DPOOL_MANAGED</span>; </b>
+A variável <b>Piscina</b> define a classe  de  memória  para o alojamento do
+recurso.   Esta  opção,  <b>D3DPOOL_MANAGED</b>,  é  uma das melhores opções
+para a maioria das aplicações pois é gerenciada  pelo  directx  e  de 
+fácil  acesso  ao  dispositivo  renderizador.  Outra  vantagem  dessa
+classe é que quando o dispositivo renderizador é  perdido  o  próprio
+directx recupera os recursos que estão  nesta  classe  de  memória. O
+dispositivo renderizador pode ser perdido quando o usuário alterna  o
+foco de atenção para outra aplicação.
+
+<b><span class=sc16>HANDLE* </span>hSem_Uso = <span class=prg>NULL</span>; </b>
+Este é o último argumento que coincide exatamente na criação dos dois
+recipientes. Este argumento não tem uso dentro do  directx  e  existe
+apenas como reserva para o futuro.  Seu valor deve ser  sempre  <span class=prg>NULL</span>.
+
+<b><span class=sc2>// Quantidade de vértices do vertexbuffer</span>
+<span class=prg>UINT </span> nVertices = <span class=sc4>4</span>; 
+<span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+<span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>)  * nVertices; </b>
+A função de criação dos recipientes necessita saber qual o tamanho que
+estes recipientes devem ter.  Aqui  é  a  preparação  da informação do
+tamanho do vertexbuffer.
+
+<b><span class=sc2>// Formato do vértice dos vértices do vertexbuffer</span>
+<span class=prg>DWORD </span> vbFormato = <span class=sc4>CustomVertex_TransformedColored_Format</span>; </b>
+A função de criação dos recipientes necessita saber  qual  o  formato
+do tipo do dado principal dos recipientes.   Aqui  é  a  indicação do 
+formato dos vértices que vão no vertexbuffer.
+
+<b>g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, uso_flags, 
+vbFormato, Piscina, &g_vbVertices, hSem_Uso);  </b>
+Aqui ocorre a criação efetiva do buffer de vértices (vertexbuffer).
+
+Agora vamos adentrar na configuração inicial do buffer de índices. Os
+argumentos <b>Piscina</b>, <b>uso_flags</b> e <b>hSem_Uso</b> já foram discutidos pois são
+exatamente os mesmos na mesma  configuração  ideal.   Destacamos  que 
+seria  mais  natural  configurar  o  buffer  de índices em uma função
+própria  para  isso  e  dar a ele configurações diferentes conforme a
+necessidade  da  aplicação. Mas aqui aproximamos os dois para mostrar
+a estreita semelhança na criação. O mesmo vale para o acesso aos dados
+em <b>montar_Geometria()</b> e na rederização em  <b>renderizar_Geometria()</b> que
+apresentam  fatores  em  comuns  no  trabalho  com estes recipientes.
+
+<b><span class=sc2>// Quantidade de triângulos</span>
+<span class=prg>UINT </span>  nTriangulos = <span class=sc4>2</span>; 
+<span class=sc2>// Cálculo do tamanho do buffer de índices</span>
+<span class=prg>UINT </span>  ibTamanho = nTriangulos * <span class=sc4>3 </span>* <span class=sc4>2</span>; </b>
+Aqui é a preparação da informação do tamanho do indexbuffer. O tamanho
+é  obtido  pela multiplicação sucessiva da quantidade  de  triângulos
+(<b>nTriangulos</b>)  que vão ser montados pela ocupação de índices que cada
+triângulo  toma  (<b>3</b>)  pelo tamanho em bytes (<b>2</b>) do tipo de dado desse
+índice ( <b>D3DFMT_INDEX16</b> ).
+
+<b><span class=sc4>D3DFORMAT </span>  ibFormato = <span class=sc4>D3DFMT_INDEX16</span>; </b>
+Aqui é a definição do formato do tipo de dado do buffer  de  índices.
+Atualmente  (2014)  como  é comum computadores e sistemas de 32 bits
+para  melhor performance utilize sempre que puder formatos de 32bits
+onde for possível (<b>D3DFMT_INDEX32</b>). Naturalmente a placa aceleradora
+precisa suportar as configurações feitas.  Aqui  utilizamos o mínimo
+para rodar em qualquer placa de vídeo.
+
+<b>g_hr = <span class=prg>g_device-&gt;CreateIndexBuffer</span>(ibTamanho, uso_flags, 
+ ibFormato, Piscina, &g_ibIndices, hSem_Uso);  </b>
+Aqui ocorre a criação efetiva do buffer de índices (indexbuffer).
+
+<b><u>2.4 Montagem da geometria</u></b>
+<div class=niceview><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Segue abaixo os argumentos utilizados no acesso ao buffer</span>
+  <span class=sc2>// de vértices. Alguns deles aparecem também no acesso ao</span>
+  <span class=sc2>// buffer de índices.</span>
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de vértices</span>
+  <span class=sc5>CustomVertex_TransformedColored* </span>pVerts; 
+
+  <span class=sc2>// nPosInicial e nQtd permite acesso parcial ao buffer de vértices</span>
+  <span class=sc2>// Ambos configurados como zero (0) indica acesso ao conteúdo total</span>
+  <span class=prg>UINT </span>nPosInicial = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>nQtd     = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Estabelece o modo de acesso ao buffer</span>
+  <span class=prg>DWORD </span>tranca_flags  = <span class=sc4>0</span>; 
+
+  <span class=sc2>// nPosInicial, nQtd, tranca_flags também são utilizados no</span>
+  <span class=sc2>// acesso ao buffer de índices com os mesmos significados.</span>
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de vértices</span>
+  <span class=prg>g_vbVertices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pVerts, tranca_flags );  
+
+  <span class=sc2>// Configuração normal dos vértices agora</span>
+  pVerts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+    <span class=sc4>0.7f</span>, vermelho);  
+
+  pVerts[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>384.0f</span>, zpos, 
+    <span class=sc4>0.8f</span>, verde);  
+
+  pVerts[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>384.0f</span>, zpos, 
+    <span class=sc4>1.0f</span>, azul);  
+
+  pVerts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+    <span class=sc4>1.0f</span>, cinza);  
+
+  <span class=sc2>// Buffer de índices local temporário</span>
+  <span class=prg>WORD </span>Indices[<span class=sc4>6</span>] = {0, <span class=sc4>1</span>, <span class=sc4>2</span>, <span class=sc4>0</span>, <span class=sc4>3</span>, 1}; 
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de índices</span>
+  <span class=prg>WORD </span>*pIndices = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de índices</span>
+  <span class=prg>g_ibIndices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pIndices, tranca_flags );  
+
+  <span class=sc2>// Configuração normal do buffer de índices</span>
+  <span class=sc2>// Copiando dados do buffer local para o indexbuffer definitivo</span>
+  <span class=prg>for </span>(<span class=prg>int </span>ncx=0; ncx &lt;6; ncx++) pIndices[ncx] = Indices[ncx];  
+
+  <span class=sc2>// Liberação dos buffers (vertexbuffer, indexbuffer) ao directx</span>
+  <span class=sc2>// que pode mandá-los ou não para a memória de vídeo da placa</span>
+  <span class=prg>g_vbVertices-&gt;Unlock</span>();  
+  <span class=prg>g_ibIndices-&gt;Unlock</span>();  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+</div>
+Segue  abaixo  os  argumentos  utilizados  no  acesso  ao  buffer  de
+de vértices.   Alguns  deles  aparecem  também no acesso ao buffer de 
+índices e  os demais acabam guardando certa semelhança de finalidade.
+Vamos  discutir  primeiro  os  argumentos  que são iguais para ambos:
+
+<b><span class=prg>UINT </span>nPosInicial = <span class=sc4>0</span>; 
+<span class=prg>UINT </span>nQtd     = <span class=sc4>0</span>; </b>
+<b>nPosInicial</b> e <b>nQtd</b> permite acesso parcial aos  dados  do  recipiente.
+Ambos configurados como zero (<b>0</b>)  indica que a aplicação quer acesso 
+ao conteúdo total do recipiente.
+
+<b><span class=prg>DWORD </span>tranca_flags  = <span class=sc4>0</span>; </b>
+Esse flag estabelece a forma de acesso ao buffer.  O  zero  (<b>0</b>)  quer
+dizer que sua aplicação não se preocupa com ele. Valores  comuns  são
+<b>D3DLOCK_READONLY</b> ( apenas leitura );  <b>D3DLOCK_NOOVERWRITE</b> ( append ou
+adição de dados )  e  <b>D3DLOCK_DISCARD</b>  (totalmente descartável )  que
+só  podem  ser  usados  quando  <b>o uso</b> do recipiente foi indicado como
+dinâmico ( <b>D3DUSAGE_DYNAMIC</b> ).
+
+<b><span class=sc5>CustomVertex_TransformedColored* </span>pVerts; </b>
+Aqui  é  o ponteiro que vai receber o endereço de acesso aos dados do
+vertexbuffer.
+
+<b><span class=prg>g_vbVertices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pVerts, tranca_flags );  </b>
+Aqui  a  aplicação  ganha acesso ao local de  memória  dos  dados  do
+recipiente.
+
+<b>pVerts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+<span class=sc4>0.7f</span>, vermelho);
+<b class=sc2>// (...)</b>
+pVerts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+<span class=sc4>1.0f</span>, cinza);  </b>
+Veja que na sequência segue a configuração normal dos vértices como se
+estivessem em uma array de usuário.
+
+Agora seguimos para a configuração do buffer de índices.
+
+<b><span class=prg>WORD </span>Indices[<span class=sc4>6</span>] = {0, <span class=sc4>1</span>, <span class=sc4>2</span>, <span class=sc4>0</span>, <span class=sc4>3</span>, 1}; </b>
+Este é o  indexbuffer de usuário do tópico anterior cujos dados serão
+copiados para o indexbuffer do directx.
+
+<b><span class=prg>WORD </span>*pIndices = <span class=prg>NULL</span>; </b>
+Aqui  é  o ponteiro que vai receber o endereço de acesso aos dados do
+indexbuffer.
+
+<b><span class=prg>g_ibIndices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pIndices, tranca_flags );  </b>
+Aqui  a  aplicação  ganha acesso ao local de  memória  dos  dados  do
+recipiente. Lembramos que para ambos os recipientes, <b>nPosInicial, nQtd</b>
+e <b>tranca_flags</b> foram todos configurados como  zero  (0)  para  acesso
+total e incondicional aos dados nesse momento inicial de configuração.
+
+<b><span class=prg>for </span>(<span class=prg>int </span>ncx=0; ncx &lt;6; ncx++) pIndices[ncx] = Indices[ncx];  </b>
+Aqui é a configuração normal do buffer de índices como  se estivessem
+em uma array de usuário. Aqui copiamos os dados do buffer local  para
+o indexbuffer definitivo.
+
+<b><span class=sc2>// Liberação dos buffers (vertexbuffer, indexbuffer) ao directx</span>
+<span class=sc2>// que pode mandá-los ou não para a memória de vídeo da placa</span>
+<span class=prg>g_vbVertices-&gt;Unlock</span>();  
+<span class=prg>g_ibIndices-&gt;Unlock</span>();  </b>
+Aqui é uma operação fundamental: a liberação dos recipientes para uso
+exclusivo do directx e placa de vídeo.
+
+<b><u>2.5 Renderização da geometria</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  
+<b>
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitive()</span>
+  <span class=sc2>// A finalidade destes 5 argumentos é permitir a renderização</span>
+  <span class=sc2>// parcial ou uma região localizada do vertexbuffer.</span>
+  <span class=sc2>// A configuração deste contexto é para renderizar totalmente</span>
+  <span class=sc2>// o buffer de vértices.</span>
+  <span class=prg>UINT </span>  nVerticeBase   = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nIndiceInicial   = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nMinVertexIndice = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nVerticeQtd   = <span class=sc4>4</span>; 
+  <span class=prg>UINT </span>  nContagemPrim  = <span class=sc4>2</span>; 
+
+  <span class=sc2>// O passo (stride) permite ao directx navegar com segurança pelos</span>
+  <span class=sc2>// vértices apresentados.</span>
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   
+
+  <span class=sc2>// Indicação do stream fonte dos dados</span>
+  <span class=prg>UINT </span>idStream = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Informação do buffer de vértices utilizado</span>
+  <span class=prg>g_device-&gt;SetStreamSource</span>( idStream, g_vbVertices, nVerticeBase, nPasso);  
+
+  <span class=sc2>// Informação do buffer de índices utilizado</span>
+  <span class=prg>g_device-&gt;SetIndices</span>( g_ibIndices);  
+
+  <span class=sc2>// Renderização efetiva dos vértices</span>
+  <span class=prg>g_device-&gt;DrawIndexedPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nVerticeBase, 
+    nMinVertexIndice, nVerticeQtd, nIndiceInicial, nContagemPrim);  
+</b>
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div><b>
+<span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+<span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  </b>
+Aqui é a configuração do formato de vértice que deve ser  usado  para
+renderizar o vertexbuffer apresentado.  Esta configuração não precisa
+bater  exatamente  com  a  configuração dos vértices mas não pode ser
+mais volumosa que a configuração do formato dos vértices;  não  posso
+renderizar  luz  ou  textura se o formato de vértice não trouxer essa
+informação  mas  posso  escolher  não  renderizar esses dados se eles
+estiverem presentes.
+
+Agora discutiremos os argumentos da função <span class=prg>DrawIndexedPrimitive()</span>.
+
+<b><span class=prg>UINT </span>  nVerticeBase   = <span class=sc4>0</span>; 
+<span class=prg>UINT </span>  nIndiceInicial   = <span class=sc4>0</span>; 
+<span class=prg>UINT </span>  nMinVertexIndice = <span class=sc4>0</span>; </b>
+A finalidade destes argumentos é permitir que ocorra a renderização
+parcial do vertexbuffer.Como todos estão configurados como zero (0)
+que  é  o  índice  base  de  qualquer  array indicamos que queremos
+renderizar totalmente o vertexbuffer.
+
+<b><span class=prg>UINT </span>  nVerticeQtd   = <span class=sc4>4</span>; 
+<span class=prg>UINT </span>  nContagemPrim  = <span class=sc4>2</span>; </b>
+Aqui indicamos a quantidade presente de vértices no vertexbuffer e
+quantas  primitivas  ( triângulos )  queremos  produzir  com  eles.
+
+<b><span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   </b>
+O passo (stride) permite  ao  directx  navegar  com  segurança  pelos
+vértices  apresentados  usando  a  matemática  dos  ponteiros.
+
+<b><span class=sc2>// Indicação do stream fonte dos dados</span>
+<span class=prg>UINT </span>idStream = <span class=sc4>0</span>; </b>
+Este argumento é pouco esclarecido na documentação original do directx
+e ao longo de todo o nosso curso esse valor é zero (0).   Ele  indica
+um fluxo de dados que traz apenas um componente dos vértices tal como
+posicionamento ou apenas coordenadas de textura.
+
+<b><span class=sc2>// Informação do buffer de vértices utilizado</span>
+<span class=prg>g_device-&gt;SetStreamSource</span>( idStream, g_vbVertices, nVerticeBase, nPasso);  </b>
+Aqui  é  indicado  ao  dispositivo  renderizador  o  vertexbuffer  de
+trabalho.
+
+<b><span class=prg>g_device-&gt;SetIndices</span>( g_ibIndices);  </b>
+Aqui  é  indicado  ao  dispositivo  renderizador  o  indexbuffer  de
+trabalho.
+
+<b><span class=prg>g_device-&gt;DrawIndexedPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nVerticeBase, 
+nMinVertexIndice, nVerticeQtd, nIndiceInicial, nContagemPrim); </b>
+Aqui ocorre a renderização efetiva do vertexbuffer.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Buffers</u></b>
+<div class=prg-code><img src=images\prj_Buffers.png>
+<span class=sc2>// Projeto: prj_Buffers - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um quadrado</span>
+<span class=sc2>// utilizando as interfaces do directx para buffer de</span>
+<span class=sc2>// índices e buffer de vértices. By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função inicializa o buffer de índices e</span>
+  <span class=sc2>// o buffer de vértices</span>
+  <span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Buffers - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um quadrado</span>
+<span class=sc2>// utilizando as interfaces do directx para buffer de</span>
+<span class=sc2>// índices e buffer de vértices. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o buffer de vértices</span>
+<span class=sc5>IDirect3DVertexBuffer9* </span>g_vbVertices = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o buffer de índices</span>
+<span class=sc5>IDirect3DIndexBuffer9* </span>g_ibIndices = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde  = 0xFF00FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul  = 0xFF0000FF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>cinza  = 0xFF101010; 
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_TransformedColored_Format</span>(<span class=sc4>D3DFVF_XYZRHW </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Estrutura do vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_TransformedColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>float </span>rhw; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>() {} 
+
+  <span class=sc5>CustomVertex_TransformedColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, 
+                        <span class=prg>float </span>_rhw, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    rhw = _rhw; 
+    cor = _cor; 
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_TransformedColored</span></span>
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  inicializar_Buffers();  
+  montar_Geometria();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Segue abaixo os argumentos utilizados na criação do buffer</span>
+  <span class=sc2>// de vértices. Alguns deles aparecem também na criação do</span>
+  <span class=sc2>// buffer de índices.</span>
+
+  <span class=sc2>// Quantidade de vértices do vertexbuffer</span>
+  <span class=prg>UINT </span> nVertices = <span class=sc4>4</span>; 
+
+  <span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+  <span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>)  * nVertices; 
+
+  <span class=sc2>// Dica de uso.</span>
+  <span class=sc2>// É usado usado também na configuração do buffer de índices</span>
+  <span class=prg>DWORD </span> uso_flags = <span class=sc4>D3DUSAGE_WRITEONLY</span>; 
+
+  <span class=sc2>// Formato do vértice dos vértices do vertexbuffer</span>
+  <span class=prg>DWORD </span> vbFormato = <span class=sc4>CustomVertex_TransformedColored_Format</span>; 
+
+  <span class=sc2>// Definição da classe de memória (alojamento)</span>
+  <span class=sc2>// É usado também na configuração do buffer de índices</span>
+  <span class=sc4>D3DPOOL </span>Piscina   = <span class=sc4>D3DPOOL_MANAGED</span>; 
+
+  <span class=sc2>// Argumento sem uso</span>
+  <span class=sc2>// Aparece também na criação do buffer de índices</span>
+  <span class=sc16>HANDLE* </span>hSem_Uso = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Criação efetiva do buffer de vértices (vertexbuffer)</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, uso_flags, 
+    vbFormato, Piscina, &g_vbVertices, hSem_Uso);  
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Quantidade de triângulos</span>
+  <span class=prg>UINT </span>  nTriangulos = <span class=sc4>2</span>; 
+
+  <span class=sc2>// Cálculo do tamanho do buffer de índices</span>
+  <span class=prg>UINT </span>  ibTamanho = nTriangulos * <span class=sc4>3 </span>* <span class=sc4>2</span>; 
+
+  <span class=sc2>// Formato do tipo de dado do buffer de índices</span>
+  <span class=sc4>D3DFORMAT </span>  ibFormato = <span class=sc4>D3DFMT_INDEX16</span>; 
+
+  <span class=sc2>// Criação efetiva do buffer de índices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateIndexBuffer</span>(ibTamanho, uso_flags, 
+    ibFormato, Piscina, &g_ibIndices, hSem_Uso);  
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+
+
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Segue abaixo os argumentos utilizados no acesso ao buffer</span>
+  <span class=sc2>// de vértices. Alguns deles aparecem também no acesso ao</span>
+  <span class=sc2>// buffer de índices.</span>
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de vértices</span>
+  <span class=sc5>CustomVertex_TransformedColored* </span>pVerts; 
+
+  <span class=sc2>// nPosInicial e nQtd permite acesso parcial ao buffer de vértices</span>
+  <span class=sc2>// Ambos configurados como zero (0) indica acesso ao conteúdo total</span>
+  <span class=prg>UINT </span>nPosInicial = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>nQtd     = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Estabelece o modo de acesso ao buffer</span>
+  <span class=prg>DWORD </span>tranca_flags  = <span class=sc4>0</span>; 
+
+  <span class=sc2>// nPosInicial, nQtd, tranca_flags também são utilizados no</span>
+  <span class=sc2>// acesso ao buffer de índices com os mesmos significados.</span>
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de vértices</span>
+  <span class=prg>g_vbVertices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pVerts, tranca_flags );  
+
+  <span class=sc2>// Configuração normal dos vértices agora</span>
+  pVerts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+    <span class=sc4>0.7f</span>, vermelho);  
+
+  pVerts[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>384.0f</span>, zpos, 
+    <span class=sc4>0.8f</span>, verde);  
+
+  pVerts[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>384.0f</span>, zpos, 
+    <span class=sc4>1.0f</span>, azul);  
+
+  pVerts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>50.0f</span>, zpos, 
+    <span class=sc4>1.0f</span>, cinza);  
+
+  <span class=sc2>// Buffer de índices local temporário</span>
+  <span class=prg>WORD </span>Indices[<span class=sc4>6</span>] = {0, <span class=sc4>1</span>, <span class=sc4>2</span>, <span class=sc4>0</span>, <span class=sc4>3</span>, 1}; 
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de índices</span>
+  <span class=prg>WORD </span>*pIndices = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de índices</span>
+  <span class=prg>g_ibIndices-&gt;Lock</span>( nPosInicial, nQtd, (<span class=prg>void**</span>) &pIndices, tranca_flags );  
+
+  <span class=sc2>// Configuração normal do buffer de índices</span>
+  <span class=sc2>// Copiando dados do buffer local para o indexbuffer definitivo</span>
+  <span class=prg>for </span>(<span class=prg>int </span>ncx=0; ncx &lt;6; ncx++) pIndices[ncx] = Indices[ncx];  
+
+  <span class=sc2>// Liberação dos buffers (vertexbuffer, indexbuffer) ao directx</span>
+  <span class=sc2>// que pode mandá-los ou não para a memória de vídeo da placa</span>
+  <span class=prg>g_vbVertices-&gt;Unlock</span>();  
+  <span class=prg>g_ibIndices-&gt;Unlock</span>();  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitive()</span>
+  <span class=sc2>// A finalidade destes 5 argumentos é permitir a renderização</span>
+  <span class=sc2>// parcial ou uma região localizada do vertexbuffer.</span>
+  <span class=sc2>// A configuração deste contexto é para renderizar totalmente</span>
+  <span class=sc2>// o buffer de vértices.</span>
+  <span class=prg>UINT </span>  nVerticeBase   = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nIndiceInicial   = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nMinVertexIndice = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nVerticeQtd   = <span class=sc4>4</span>; 
+  <span class=prg>UINT </span>  nContagemPrim  = <span class=sc4>2</span>; 
+
+  <span class=sc2>// O passo (stride) permite ao directx navegar com segurança pelos</span>
+  <span class=sc2>// vértices apresentados.</span>
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   
+
+  <span class=sc2>// Indicação do stream fonte dos dados</span>
+  <span class=prg>UINT </span>idStream = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Informação do buffer de vértices utilizado</span>
+  <span class=prg>g_device-&gt;SetStreamSource</span>( idStream, g_vbVertices, nVerticeBase, nPasso);  
+
+  <span class=sc2>// Informação do buffer de índices utilizado</span>
+  <span class=prg>g_device-&gt;SetIndices</span>( g_ibIndices);  
+
+  <span class=sc2>// Renderização efetiva dos vértices</span>
+  <span class=prg>g_device-&gt;DrawIndexedPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nVerticeBase, 
+    nMinVertexIndice, nVerticeQtd, nIndiceInicial, nContagemPrim);  
+
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o buffer de vértices</span>
+  <span class=sc9>if</span>( g_vbVertices != <span class=prg>NULL</span>)  <span class=prg>g_vbVertices-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o buffer de índices</span>
+  <span class=sc9>if</span>( g_ibIndices != <span class=prg>NULL</span>)  <span class=prg>g_ibIndices-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Buffers - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um quadrado</span>
+<span class=sc2>// utilizando as interfaces do directx para buffer de</span>
+<span class=sc2>// índices e buffer de vértices. By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Buffers"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-8.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-10.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

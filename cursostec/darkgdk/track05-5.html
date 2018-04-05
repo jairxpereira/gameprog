@@ -1,0 +1,354 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase05-5</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 5.5</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">05.5 Exemplo de aplicação de efeito especial 2D</h3><pre>
+
+<b><u>05.5 Visão geral</b></u>
+Aqui nesse tópico apresentamos um exemplo de efeito especial:
+
+- Carregamos um bitmap e produzimos uma versão modificada dele trocando as
+cores originais por tonalidades de cinza;
+- trocamos a cor branca pelo azul;
+- o tom de cinza é produzido pela média da soma dos valores rgb da cor
+original: <b>media = (r + g + b)/3 </b> depois <b>ncor = dbRGB(media, media, media).</b>
+
+Para obter esse efeito seguimos o seguinte caminho:
+- Carregamos o bitmap original
+- Criamos um bloco de memória com os dados de cor do bitmap original
+- Acessamos esse bloco de memória
+- Modificamos a cor de cada ponto desse bloco de memória
+- Transformamos esse bloco em um novo bitmap
+
+Como sempre veja o programa exemplo:	
+
+<b><u>Exemplo de aplicação de efeito especial 2D</b></u>
+<img src="images/amostra_gfx.png">
+<div class=prg-code><span class="sc2">// amostra_gfx.cpp
+// Esse programa exemplifica como aplicar efeitos especiais sobre a imagem 2D
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                 </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gfx_teste</span><span class="sc10">();</span><span class="sc0">               </span><span class="sc2">// Teste de efeito gráfico
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">rgb_efeito</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">);</span><span class="sc0">   </span><span class="sc2">// Retorna um tom de cinza e muda o branco para azul
+</span><span class="sc0">
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">255</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc11">gfx_teste</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"amostra_gfx.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">gfx_teste</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">naltura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nlargura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nbmp_fonte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nbmp_tela</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nbmp_gfx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0"> 
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// Ponteiro para acessar memória com imagem
+</span><span class="sc0">    
+</span><span class="sc2">// Carrega e mostra o bitmap que vai ser manipulado
+</span><span class="sc0"></span><span class="sc11">dbLoadBitmap</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\gfx_sample.bmp"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nbmp_fonte</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc11">nbmp_fonte</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nbmp_tela</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Acessa configuração do bitmap
+</span><span class="sc0"></span><span class="sc11">naltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapHeight</span><span class="sc10">(</span><span class="sc11">nbmp_fonte</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">nlargura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapWidth</span><span class="sc10">(</span><span class="sc11">nbmp_fonte</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Esse comando cria um bloco de memória-bitmap a partir de um bitmap
+</span><span class="sc0"></span><span class="sc11">dbMakeMemblockFromBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nbmp_fonte</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Obtém o endereço do bloco de memória
+</span><span class="sc0"></span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc11">dbGetMemblockPtr</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos pular o cabeçalho do bloco
+</span><span class="sc0"></span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">  </span><span class="sc2">// pula primeira posição: largura do bitmap
+</span><span class="sc0"></span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">  </span><span class="sc2">// pula segunda posição: altura do bitmap
+</span><span class="sc0"></span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">  </span><span class="sc2">// pula terceira posição: profundidade de cor
+</span><span class="sc0">    
+
+</span><span class="sc2">// Vamos hackear o bloco de memória-bitmap
+</span><span class="sc0"></span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">naltura</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">nlargura</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">   
+</span><span class="sc2">// Passa a cor do ponto para rgb_efeito() que retorna esse valor alterado
+</span><span class="sc0">        </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">rgb_efeito</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">pImagem</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Avança o ponteiro para a frente
+</span><span class="sc0"></span>	<span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">      
+
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc2">// Esse comando cria um bitmap a partir de bloco de memória-bitmap
+</span><span class="sc0"></span><span class="sc11">dbMakeBitmapFromMemblock</span><span class="sc10">(</span><span class="sc11">nbmp_gfx</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos mostrar nosso bitmap que sofreu um efeito gráfico
+</span><span class="sc0"></span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc11">nbmp_gfx</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">nlargura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">naltura</span><span class="sc10">,</span><span class="sc0"> </span>
+<span class="sc11">nbmp_tela</span><span class="sc10">,</span><span class="sc11">nlargura</span><span class="sc10">+</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">nlargura</span><span class="sc10">*</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">naltura</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos liberar a memória do sistema
+</span><span class="sc0"></span><span class="sc11">dbDeleteMemblock</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDeleteBitmap</span><span class="sc10">(</span><span class="sc11">nbmp_fonte</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDeleteBitmap</span><span class="sc10">(</span><span class="sc11">nbmp_gfx</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// gfx_teste().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">rgb_efeito</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Varíaveis de trabalho
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">soma</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">media</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">  
+
+</span><span class="sc2">// Converte um branco para um tom de azul
+</span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif  
+</span><span class="sc0">
+</span><span class="sc2">// Extrai os valores RGB
+</span><span class="sc0"></span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGBR</span><span class="sc10">(*</span><span class="sc11">pImagem</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGBR</span><span class="sc10">(*</span><span class="sc11">pImagem</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGBR</span><span class="sc10">(*</span><span class="sc11">pImagem</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Processa a cor
+</span><span class="sc0"></span><span class="sc11">soma</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">media</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">soma</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">ncor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">media</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">media</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">media</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// rgb_efeito().fim
+</span></div>	
+
+<b><u>Preparação para acessar uma área de memória</b></u> <span class=prg>	
+<b>int *pImagem = 0;</b>       // Ponteiro para acessar memória com imagem </span>
+Primeiramente é necessário um ponteiro para números inteiros no qual vamos
+receber o endereço de memória do início da imagem.	
+
+<b><u>Criando um bloco de memória-bitmap</b></u> <span class=prg>	
+dbMakeMemblockFromBitmap(1, nbmp_fonte); </span>
+Esta função forma um bloco de memória a partir de um bitmap existente. 
+Esse bloco de memória é uma réplica do bitmap apontado. 
+
+As primeiras 3 posições desse bloco contém a largura, altura e profundidade
+de cor do bitmap. Os demais dados são informações de cor na forma de um
+número inteiro integral que contém os valores rgb de cada ponto da imagem.
+A quantidade de pontos dessa área de dados do bloco é dado pela multiplicação
+<b>altura * largura</b>, propriedades básicas da imagem.
+
+No primeiro argumento dessa função você identifica o bloco de memória;
+no segundo argumento vai o bitmap fonte para o bloco.
+
+<b><u>Obtendo o endereço do bloco de memória-bitmap</b></u> <span class=prg>	
+// Obtém o endereço do bloco de memória
+<b>pImagem = (int *) dbGetMemblockPtr(1); </b></span>
+Esta função retorna um ponteiro com o endereço do início do bloco de memória
+apontado em seu argumento. Veja que é necessário fazer um type casting no
+dado de retorno dessa função:<span class=prg> pImagem = <b>(int *)</b> dbGetMemblockPtr(1); </span>
+
+<b><u>Acessando e modificando os dados do bloco</b></u>
+Como estamos trabalhando com um ponteiro de memória tanto podemos acessar
+como modificar facilmente os dados:<span class=prg>
+
+int valor = *pImagem;	// Acessando	
+
+*pImagem = valor;	// Modificando. </span>
+
+<b><u>Explicando a função rgb_efeito()</b></u><b class=prg>
+// ----------------------------------------------------------------------------
+int rgb_efeito(int *pImagem) {
+
+// Variáveis de trabalho
+int soma = 0;	int media = 0;	int ncor, r, g, b;  
+
+// Converte um branco para um tom de azul
+if (*pImagem == 0xFFFFFF) {
+*pImagem = nAzul; return *pImagem;
+} // endif  
+
+// Extrai os valores RGB
+r = dbRGBR(*pImagem); g = dbRGBR(*pImagem); b = dbRGBR(*pImagem);
+
+// Processa a cor
+soma = r + g + b; media = soma / 3;
+ncor = dbRGB(media, media, media);
+
+return ncor;
+} // rgb_efeito().fim </b>
+
+Essa função é muito simples e o código fala  por  si  mesmo.  Ilustramos
+os dois efeitos mais simples de realizar que consistiu em substituir uma
+cor por outra quando trocamos o branco <b>(255-255-255)</b> pelo azul <b>(00-00-255)</b>.
+Outro efeito simples foi acizentar a imagem quando identificamos cada canal
+de cor (r,g,b), somamos e  aproveitamos  a  <b>média</b>  de  seus  valores  para 
+reconfigurar os mesmos canais com ela.
+
+<b><u>Liberando a memória</b></u>
+Não esqueça de deletar os objetos quando não precisar mais deles ou quando
+finalizar o seu programa: <b class=prg>
+// Vamos liberar a memória do sistema
+dbDeleteMemblock(1);
+dbDeleteBitmap(nbmp_fonte);
+dbDeleteBitmap(nbmp_gfx); </b>	
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-4.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-6.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

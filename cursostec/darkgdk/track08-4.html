@@ -1,0 +1,543 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase08.4</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 8.4</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track08-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track09-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">08.4 Colisão de sprites</h3><pre>
+<b><u>Visão geral</u></b>
+<div class=prg-code>
+ <img src=images\colisaoConcept.png>
+</div>
+A colisão é um dos aspectos que mais preenche de vida um jogo de 
+videogame visto que ela detona a interação entre muitos  objetos
+quando ocorre a intersecção de um ponto ou  espaço  comum  entre
+eles.
+
+Basicamente a colisão ocorre quando dois objetos ocupam um mesmo 
+ponto ou espaço em comum. Em termos de colisão  de  pontos, dois 
+pontos colidem quando apresentam a  mesma  coordenada. Quando se 
+pensa em um objeto maior, ocorre uma  colisão  quando  um  outro 
+objeto adentra uma parte ou um ponto de  sua  área  de  ocupação. 
+
+É muito comum no cálculo de colisões considerar que os objetos 
+estão cercados por quadrados ou círculos e a partir daí basear
+todos os cálculos de colisão  no  posicionamento  e  dimensões 
+dessas formas geométricas básicas. Em inglês,  o  quadrado  ou 
+retângulo que cerca o objeto é chamado de <span class=prg>'bounding rectangle'</span> 
+e o círculo de <span class=prg>'bounding circle'.</span> 
+
+Transportando esse raciocínio para um cenário 3D, para cálculo 
+de colisões, os objetos são visualizados como se fossem  cubos 
+ou esferas. Em inglês, o cubo e a esfera que cercam os objetos
+são chamados respectivamente de <span class=prg>bounding box e bounding sphere.</span>
+
+Em objetos irregulares, como um avião 2d rascunhado na ilustração
+acima, é comum a distribuição de vários  retangulos  para  tornar
+mais preciso  o cálculo de colisão. Em um jogo  de  luta  pode-se 
+mapear o  pé do lutador com  um retângulo  para verificar colisão
+do pé com o oponente.
+
+É comum a detecção de colisão de um objeto  operar  a  partir  de
+uma distância a partir da posição  desse  objeto, essa  distância
+é chamada de deslocamento de colisão, em inglês, <span class=prg>collision offset.</span>
+
+Internamente o DirectX possui  estruturas  e  funções  que 
+implementam estes conceitos dos quais a DarkGdk se utiliza
+para seu microsistema de detecção de colisão.
+
+<b><u>Funções para teste de colisão</u></b>
+nSpriteColidindo = <b class=prg>dbSpriteHit( nSprite, nSpriveAlvo) </b>
+Esta função retorna 1 se a sprite especificada colidiu contra a sprite alvo
+mencionada. Se a sprite alvo não for mencionada esta função retorna o número
+da sprite que porventura tenha impactado contra nSprite.
+
+Exemplo:
+<div class=niceview>
+ <span class="sc2">// Se o tiro acertou o inimigo, reduza a energia dele
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteHit</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc11">dbPlaySound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">som_tiro</span><span class="sc10">);</span><span class="sc0">
+    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+  </span><span class="sc2">// Se o jogador se matou, termine o jogo...
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteHit</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+     
+     </span><span class="sc11">dbPlaySound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">som_explodiu</span><span class="sc10">);</span><span class="sc0">
+     </span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif</span>
+ </div>
+
+Veja nosso programa exemplo:
+<div class=prg-saida>
+ <img src=images\colisao.png>
+<br></div>
+<div class=prg-code>
+
+// colisao.cpp
+// Esse programa demonstra colisão de sprites
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                 </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">load_imagens</span><span class="sc10">();</span><span class="sc0">            </span><span class="sc2">// Carrega as imagens
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">load_efeitos_sonoros</span><span class="sc10">();</span><span class="sc0">    </span><span class="sc2">// Carrega os efeitos sonoros
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">                    </span><span class="sc2">// Mostra um menu de opções na tela
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">controle_principal</span><span class="sc10">();</span><span class="sc0">      </span><span class="sc2">// Controle principal do jogo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualiza_tiro</span><span class="sc10">();</span><span class="sc0">           </span><span class="sc2">// atualiza posição do tiro disparado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualiza_inimigo</span><span class="sc10">();</span><span class="sc0">        </span><span class="sc2">// atualiza posição do inimigo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_info</span><span class="sc10">();</span><span class="sc0">            </span><span class="sc2">// Mostrar status na tela
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mudar_cor_difusa</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">    </span><span class="sc2">// Muda a cor difusa do inimigo
+</span><span class="sc0">
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Atores do jogo
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sprt_jogador</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sprt_tiro</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Efeitos sonoros
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">som_tiro</span><span class="sc0">      </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">som_explodiu</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Controle do tiro disparado
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tiro_disparado</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tiro_viajando</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar_app</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Controle do inimigo
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">inimigo_distancia</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">inimigo_velocidade</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0">  </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">inimigo_energia</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// String para mostrar texto
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc2">// Estrutura para posicionar as sprites inicialmente
+</span><span class="sc16">struct</span><span class="sc0"> </span><span class="sc11">Posicao</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc11">Posicao</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc2">// Criando 4 (0-3) estruturas de Posição
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc2">// Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc2">// Carrega imagens e efeitos sonoros
+</span><span class="sc11">load_imagens</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">load_efeitos_sonoros</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbWaitKey</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">controle_principal</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">(){</span><span class="sc0">
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowSize</span><span class="sc10">(</span><span class="sc4">600</span><span class="sc10">,</span><span class="sc4">480</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowPosition</span><span class="sc10">(</span><span class="sc4">160</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"colisao.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbHideMouse</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbSetCurrentBitmap</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">(){</span><span class="sc0">
+
+</span><span class="sc2">// Variáveis de trabalho para mostrar texto
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0">                </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">260</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0">                </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">40</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0">              </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0">               </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0">                 </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">espaco_entrelinhas</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">;</span><span class="sc0">
+
+
+</span><span class="sc2">// Nossa lista de opções
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">slista</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc6">"Setas - mover"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc6">"Espaco - Atirar"</span><span class="sc10">,</span><span class="sc0"> 
+</span><span class="sc6">"q/botao direito - sair"</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc11">dbCenterText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">320</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Space Invader Gameprog"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostre a lista
+</span><span class="sc0"> </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">espaco_entrelinhas</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">slista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(ncx)
+</span><span class="sc0">
+ </span><span class="sc11">dbCenterText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">320</span><span class="sc10">,</span><span class="sc4">240</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Pressione &lt;enter&gt; para continuar"</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// menu().end
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">controle_principal</span><span class="sc10">(){</span><span class="sc0">
+
+</span><span class="sc2">// Posição inicial do jogador na tela
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_jogador</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_jogador</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">420</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Posição inicial do inimigo na tela
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_inimigo</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_inimigo</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Posição inicial do tiro alinhado com o jogador
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_tiro</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_jogador</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">45</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_tiro</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">396</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Elabora as sprites a partir das imagens
+</span><span class="sc11">dbSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_jogador</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_jogador</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_inimigo</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_inimigo</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_tiro</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">sprt_tiro</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Esconde a imagem do tiro
+</span><span class="sc11">dbHideSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Controla leitura do controle_principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+ </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">tecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"q"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Controla movimentação da sprite(2) - nosso 'player'
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbDownKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0"> 
+     </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">),</span><span class="sc0"> 
+     </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">)-</span><span class="sc4">2</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbUpKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">),</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">)+</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbRightKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">)-</span><span class="sc4">2</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">));</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbLeftKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">)+</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0">
+     </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">));</span><span class="sc0">
+
+ </span><span class="sc2">// O espaço dispara o tiro
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpaceKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tiro_disparado</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0">
+     </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc11">tiro_disparado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc11">tiro_viajando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> 
+     </span><span class="sc11">dbShowSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+
+     </span><span class="sc2">// Configura posição do tiro conforme posição do jogador
+</span><span class="sc0">     </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">);</span><span class="sc0">
+     </span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">);</span><span class="sc0">
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0"> 
+    
+     </span><span class="sc10">}</span><span class="sc2">// Só dispara um tiro por vez
+</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif (espaço) (tiro)
+</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tiro_viajando</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">atualiza_tiro</span><span class="sc10">();</span><span class="sc0">
+
+ </span><span class="sc11">atualiza_inimigo</span><span class="sc10">();</span><span class="sc0">
+
+ </span><span class="sc2">// Se o tiro acertou o inimigo, reduza a energia dele
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteHit</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+     </span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc11">dbPlaySound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">som_tiro</span><span class="sc10">);</span><span class="sc0">
+    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+  </span><span class="sc2">// Se o jogador se matou, termine o jogo...
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteHit</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+     
+     </span><span class="sc11">dbPlaySound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">som_explodiu</span><span class="sc10">);</span><span class="sc0">
+     </span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+     </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+
+</span><span class="sc2">// Se o inimigo 'morrer' toque o efeito sonoro e troque a cor dele
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">&lt;=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbPlaySound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">som_explodiu</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">inimigo_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">mudar_cor_difusa</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0"> 
+ </span><span class="sc2">// menu();
+</span><span class="sc0"> </span><span class="sc11">mostrar_info</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endwhile (leitura do controle_principal)
+</span><span class="sc0">
+</span><span class="sc2">// Vamos liberar a memória
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc0"> </span><span class="sc10">&lt;=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbImageExist</span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbDeleteImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteExist</span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbDeleteSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbShowMouse</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbCenterText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">320</span><span class="sc10">,</span><span class="sc4">240</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Pressione a tecla &lt;ESC&gt; para finalizar"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbWaitKey</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunc: controle_principal
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_info</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc2">// Mostra posição do jogador
+</span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_jogador</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Jogador.pos: (%d, %d)"</span><span class="sc10">,</span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">60</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostra posição do inimigo
+</span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Inimigo.pos: (%d, %d)"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Inimigo.hp: %d"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">inimigo_energia</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">100</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostra a posição do mouse na janela
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"colisao.cpp - mouse: %d , %d"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">dbMouseX</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">dbMouseY</span><span class="sc10">());</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar_info()
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualiza_tiro</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Pega última posição da bala
+</span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Avança bala pra frente
+</span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostra posição do tiro na tela
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"tiro.pos: %d , %d"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">+</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">320</span><span class="sc10">,</span><span class="sc4">400</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Deleta tiro que sumiu da tela
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">400</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">tiro_disparado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">tiro_viajando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">dbHideSprite</span><span class="sc10">(</span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// atualiza_tiro()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualiza_inimigo</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Faz contagem da distância
+</span><span class="sc11">inimigo_distancia</span><span class="sc10">++;</span><span class="sc0">
+
+</span><span class="sc2">// Pega posição do inimigo
+</span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Inverte movimento nas fronteiras da tela
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">inimigo_distancia</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">160</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">inimigo_velocidade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">inimigo_velocidade</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">inimigo_distancia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">120</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc2">// Movimenta o inimigo na tela
+</span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">inimigo_velocidade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// atualiza_inimigo()
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mudar_cor_difusa</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tb</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc2">// Gera cor aleatória
+</span><span class="sc11">tr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">tg</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">tb</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// Configura individualmente cada canal de cor
+</span><span class="sc11">dbSetSpriteDiffuse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sprt_inimigo</span><span class="sc10">,</span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc11">tb</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mudar_cor_difusa().fim
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">load_imagens</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// As imagens tem um fundo preto
+</span><span class="sc11">dbSetImageColorKey</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// Carrega as imagens
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\ship7.png"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_jogador</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\alien3.png"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_inimigo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\bolt.png"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt_tiro</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// load_imagens()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">load_efeitos_sonoros</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">   
+</span><span class="sc2">// Carrega os efeitos sonoros
+</span><span class="sc11">dbLoadSound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\som\\shoot.wav"</span><span class="sc10">,</span><span class="sc11">som_tiro</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadSound</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\som\\explode.wav"</span><span class="sc10">,</span><span class="sc11">som_explodiu</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// load_efeitos_sonoros()
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track08-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track09-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

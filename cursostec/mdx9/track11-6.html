@@ -1,0 +1,843 @@
+﻿<html>
+<head>
+<title>mdx9_fase11-6</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 11-6</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>11.6 Nível de detalhe dinâmico</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_MeshProgressivo.png></div>
+A classe <b class=prg>ProgressiveMesh</b> produz um  modelo  3d  no  qual  o  nível  de
+detalhe  pode  ser reduzido ou ampliado  dinamicamente.   Apesar desse
+objeto realizar seu trabalho numa velocidade muito boa é mais prudente
+produzir vários  meshes progressivos com níveis de detalhes diferentes
+para utilizar ao longo da aplicação. O processo inicial de produção do
+mesh  progressivo  também  necessita  de  limpeza  prévia no modelo 3d 
+original.
+
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_MeshProgressivo.png></div>
+Esta aplicação mostra um modelo 3d e uma versão  dinâmica  do  mesmo.
+Pressione <b>W</b> para ligar ou desligar o modo de  renderização  wireframe.
+A base inicial dessa aplicação é o <b>prj_Modelo3d</b> do <b>tópico 4.4</b> que foi
+adaptado para este tópico corrente. A função <b>gerarModeloProgressivo()</b>
+gera o modelo progressivo no qual o nível de detalhe é alterado pelas
+teclas  <b>(+)</b> e <b>(-)</b>  respectivamente aumentando ou reduzindo o nível de 
+detalhe do modelo progressivo.
+
+O mesh progressivo é renderizável  com  seu  método  <span class=prg>DrawSubset()</span>, no
+entanto  para aproveitamento da função <b>desenharObjeto()</b> esse método é
+renderizado  como  <b class=prg>BaseMesh</b>  nesta  função  que  teve  sua assinatura
+alterada para aceitar esse objeto base.  Em algumas partes do código,
+o mesh progressivo recebeu um cast para <b class=prg>BaseMesh</b> para a obtenção dos
+resultados adequados. 
+
+<b><u>2.1 Campos da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+  <b>
+ <span class=sc2>// Variáveis para guardar as malhas 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>mesh_limpo = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>ProgressiveMesh </span>mesh_progressivo = <span class=prg>null;</span>
+
+ <span class=sc2>// Informação de adjacências</span>
+ <span class=sc5>GraphicsStream </span>adj; 
+
+ <span class=sc2>// Controle do modo de preenchimento da renderização</span>
+ <span class=prg>bool </span>bWireframe = <span class=prg>false;</span>
+
+ <span class=sc2>// Controla nível de detalhe de renderização do modelo 3d</span>
+ <span class=prg>int </span>nDetalhe = 100; 
+ </b>
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para propriedade dos objetos</span>
+ Propriedades3D g_props; 
+
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+ <span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe </span>
+</div><b>
+<span class=sc2>// Controla nível de detalhe de renderização do modelo 3d</span>
+<span class=prg>int </span>nDetalhe = 100; </b>
+Esta variável é o ponto de controle  do  nível  de  detalhe  do  mesh
+progressivo  e  vai  ser  alterada  pelo pressionamento das teclas de
+adição (+) ou subtração (-).  Essa  variável  pode ser pensada como a
+quantidade  de  afastamento  do  modelo  3d do foco da câmera no qual
+um grande afastamento deve produzir um mesh mais simples e uma grande
+proximidade deve gerar um mesh mais bonito e detalhado.
+
+<b><u>2.2 Inicializando a aplicação</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Ativando o buffer de profundidade</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+ <b>
+ <span class=sc2>// Carrega modelo original e gera um clone progressivo</span>
+ diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+ CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+ gerarModeloProgressivo(); </b>  
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b>gerarModeloProgressivo(); </b>  
+Essa função gera um modelo progressivo lembrando que <b>CarregarModelo()</b>
+produz  informação  de  adjacências  usada no processo de limpeza que
+ocorre dentro dela.
+
+<b><u>2.3 Carregando o modelo</u></b>
+Segue abaixo a listagem da função <b>CarregarModelo()</b>.
+
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+<span class=sc16>{</span>
+ <span class=sc2>// Composição do nome final do arquivo</span>
+ <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+ <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+ <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+ <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+ <span class=prg>int </span>nTam = 0; 
+
+ <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+ <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+  <b>
+ <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+ <span class=sc2>// e informação de adjacências.</span>
+ objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+ device, <span class=prg>out </span>adj, <span class=prg>out </span>xMtl);  </b>
+
+ <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+  nTam = <span class=prg>xMtl.Length;</span>
+
+ <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+ <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+ g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+ g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+  <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+  <span class=sc16>{</span>
+   <span class=sc2>// Carrega materiais</span>
+   g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+   <span class=sc2>// Carrega texturas</span>
+   arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+   <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+    <span class=sc16>{</span>
+	  g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+	  diretorioBase + arquivo_textura);  
+    <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+  <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+ <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+<span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+</div>
+
+<b><u>2.4 Gerando o modelo progressivo</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>gerarModeloProgressivo() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpeza do objeto 3d</span>
+ mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  
+
+ <span class=sc2>// Geração do modelo 3d progressivo</span>
+ mesh_progressivo = <span class=prg>new </span><span class=sc5>ProgressiveMesh</span>(mesh_limpo, adj, 
+  <span class=prg>null</span>, <span class=sc4>1</span>, <span class=prg>MeshFlags.SimplifyVertex</span>);  
+
+ <span class=sc2>// O mesh é reconfigurado para o máximo nível de detalhe</span>
+ <span class=prg>mesh_progressivo.NumberFaces </span>= <span class=prg>mesh_progressivo.MaxFaces;</span>
+ <span class=prg>mesh_progressivo.NumberVertices </span>= <span class=prg>mesh_progressivo.MaxVertices;</span>
+
+<span class=sc16>} <span class=sc2>// gerarModeloProgressivo().fim</span></span>
+</div><b>
+<span class=sc2>// Limpeza do objeto 3d</span>
+mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  </b>
+Realização do processo de limpeza.
+
+<b><span class=sc2>// Geração do modelo 3d progressivo</span>
+mesh_progressivo = <span class=prg>new </span><span class=sc5>ProgressiveMesh</span>(mesh_limpo, adj, 
+  <span class=prg>null</span>, <span class=sc4>1</span>, <span class=prg>MeshFlags.SimplifyVertex</span>);</b>
+Essa linha de código produz o mesh progressivo a partir do mesh limpo.
+Este mesh inicialmente nasce o mais simplificado possível na direção
+do limite sugerido (<b>1</b>).
+
+<b><span class=sc2>// O  mesh é reconfigurado para o máximo nível de detalhe</span>
+<span class=prg>mesh_progressivo.NumberFaces </span>= <span class=prg>mesh_progressivo.MaxFaces;</span>
+<span class=prg>mesh_progressivo.NumberVertices </span>= <span class=prg>mesh_progressivo.MaxVertices;</span></b>
+Este bloco de código reconfigura o mesh para mostrar o máximo possível
+de detalhes.  Então  inicialmente o modelo pogressivo é apresentado em
+sua melhor aparência.
+
+Depois com o pressionamento das teclas (+) ou (-)  o nível de detalhe
+na renderização percorre os pontos intermediários  destes dois níveis
+extremos de detalhamento do modelo 3d.
+
+<b><u>2.5 Controlando o nível de detalhe</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+<span class=sc16>{</span>
+ <span class=sc2>// Controle de modo wireframe</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.W</span>)  bWireframe = !bWireframe; 
+ <span class=sc9>if </span>(bWireframe) <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+ <span class=sc9>else </span><span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+
+ <span class=sc2>// Tecla adição (+) - Cresce o nível de detalhe</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  
+ <span class=sc16>{</span>
+ <span class=prg>mesh_progressivo.NumberVertices </span>= 
+   ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>+ nDetalhe; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc2>// Tecla subtração (-) Reduz o nível de detalhe</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  
+ <span class=sc16>{</span>
+ <span class=prg>mesh_progressivo.NumberVertices </span>= 
+   ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>- nDetalhe; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+</div>
+<div class=niceview style="border-style:dashed"><b>
+<span class=sc2>// Tecla adição (+) - Cresce o nível de detalhe</span>
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  
+<span class=sc16>{</span>
+<span class=prg>mesh_progressivo.NumberVertices </span>= 
+  ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>+ nDetalhe; 
+<span class=sc16>} <span class=sc2>// endif</span></span> </b></div>
+Esta é a forma de aplicar o aumento do nível de detalhamento.
+A  propriedade  <span class=prg>NumberVertices</span>  somente  pode  ser  acessada
+aplicando um cast para <b class=prg>BaseMesh</b>  no  objeto  <b class=prg>ProgressiveMesh</b>.
+
+
+<div class=niceview style="border-style:dashed"><b>
+<span class=sc2>// Tecla subtração (-) Reduz o nível de detalhe</span>
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  
+<span class=sc16>{</span>
+<span class=prg>mesh_progressivo.NumberVertices </span>= 
+  ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>- nDetalhe; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b></div>
+Esta é a forma de aplicar a redução do nível de detalhamento.
+
+
+<b><u>2.6 Renderizando o modelo</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+ <span class=prg>Color.White.ToArgb</span>(), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+
+ AtualizarCamera();  
+
+ <span class=sc2>// AtualizarLuz(); </span>
+ <span class=prg>device.RenderState.Lighting </span>= <span class=prg>false;</span>
+ 
+ <span class=sc2>// Renderiza o modelo 3d original</span>
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-100.0f</span>);  
+ rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+ <b>desenharObjeto(objeto3D, g_props); </b>  
+
+ <span class=sc2>// Renderiza o modelo progressivo</span>
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-200.0f</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+ <b>desenharObjeto( mesh_progressivo, g_props);</b>  
+
+ <span class=sc2>// Mostra o número de vértices de cada modelo</span>
+ <span class=prg>string </span>info; 
+ info = <span class=prg>String.Format</span>(<span class=sc6>"Modelo limpo: {0}"</span>, <span class=prg>mesh_limpo.NumberVertices</span>);  
+ MostrarMensagem(20, 20, info);  
+
+ <b><span class=sc2>// Repare no casting de ProgressiveMesh para BaseMesh</span>
+ info = <span class=prg>String.Format</span>(<span class=sc6>"progressivo: {0}"</span>, 
+  ((<span class=sc5>BaseMesh</span>)  mesh_progressivo)<span class=prg>.NumberVertices</span>);  
+ MostrarMensagem(220, 20, info); </b>  
+ info = <span class=prg>String.Format</span>(<span class=sc6>"original: {0}"</span>, <span class=prg>objeto3D.NumberVertices</span>);  
+ MostrarMensagem(420, 20, info);  
+ info = <span class=sc6>" </span>+ <span class=sc6> Aumentar nível de detalhe       - Reduzir nível de detalhe";</span>
+ MostrarMensagem(60, <span class=prg>this.Height </span>- 60, info);  
+
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Renderiza o modelo 3d original</span>
+desenharObjeto(objeto3D, g_props);  
+<span class=sc2>// Renderiza o modelo progressivo</span>
+desenharObjeto( mesh_progressivo, g_props);  </b></div>
+O  destaque  aqui  vem  do  fato  de  que  a  assinatura  do  método 
+<b>desenharObjeto()</b> foi alterada para receber um <b class=prg>BaseMesh</b>,  desta forma
+conseguindo  renderizar o <b class=prg>Mesh</b> e o <b class=prg>ProgressiveMesh</b> sem alterações no
+bloco de código interno.
+
+<b><span class=sc2>// Repare no casting de ProgressiveMesh para BaseMesh</span>
+info = <span class=prg>String.Format</span>(<span class=sc6>"progressivo: {0}"</span>, 
+((<span class=sc5>BaseMesh</span>)  mesh_progressivo)<span class=prg>.NumberVertices</span>);  </b>
+O  casting  ocorrido  aqui é necessário conforme a razão explicada na
+função <b>Tela_KeyDown().</b>
+
+<b><u>2.7 Desenhando o BaseMesh</u></b>
+Repare na assinatura desta função que foi alterada para receber o <b class=prg>Mesh</b> 
+e o <b class=prg>ProgressiveMesh</b> para renderização sem alteração no bloco de código
+interno.
+
+<div class=niceview><b><span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>BaseMesh </span>obj, Propriedades3D props) </b>
+<span class=sc16>{</span>
+
+ <span class=sc2>// Ajusta rotação do objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+ <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+ <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+ <span class=sc2>// Ajusta posição do objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+ <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+ <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+ <span class=sc2>// Prepara e aplica  material\textura no objeto</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+ <span class=sc2>// na renderização</span>
+ <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+ <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+ <span class=sc2>// Renderiza o mesh</span>
+ <span class=prg>obj.DrawSubset</span>(ncx);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+</div>
+
+
+<b><u>3. Código fonte do projeto de exemplo:prj_MeshProgressivo</u></b>
+<div class=prg-code>
+<img src=images\prj_MeshProgressivo.png>
+
+<span class=sc2>// prj_MeshProgressivo - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como renderizar um modelo 3D</span>
+<span class=sc2>// com nível de detalhe dinâmico que pode ser reduzido</span>
+<span class=sc2>// ou aumentado progressivamente. By www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_MeshProgressivo 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variáveis para guardar as malhas 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>mesh_limpo = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>ProgressiveMesh </span>mesh_progressivo = <span class=prg>null;</span>
+
+    <span class=sc2>// Informação de adjacências</span>
+    <span class=sc5>GraphicsStream </span>adj; 
+
+    <span class=sc2>// Controle do modo de preenchimento da renderização</span>
+    <span class=prg>bool </span>bWireframe = <span class=prg>false;</span>
+
+    <span class=sc2>// Controla nível de detalhe de renderização do modelo 3d</span>
+    <span class=prg>int </span>nDetalhe = 100; 
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para propriedade dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Carrega modelo original e gera um clone progressivo</span>
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+      gerarModeloProgressivo();  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+      <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      <span class=sc2>// e informação de adjacências.</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+        device, <span class=prg>out </span>adj, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Carrega texturas</span>
+          arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+          <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+          <span class=sc16>{</span>
+            g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+              diretorioBase + arquivo_textura);  
+          <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>gerarModeloProgressivo() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpeza do objeto 3d</span>
+      mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  
+
+      <span class=sc2>// Geração do modelo 3d progressivo</span>
+      mesh_progressivo = <span class=prg>new </span><span class=sc5>ProgressiveMesh</span>(mesh_limpo, adj, 
+          <span class=prg>null</span>, <span class=sc4>1</span>, <span class=prg>MeshFlags.SimplifyVertex</span>);  
+
+      <span class=sc2>// O mesh é reconfigurado para ter o máximo nível de detalhe</span>
+      <span class=prg>mesh_progressivo.NumberFaces </span>= <span class=prg>mesh_progressivo.MaxFaces;</span>
+      <span class=prg>mesh_progressivo.NumberVertices </span>= <span class=prg>mesh_progressivo.MaxVertices;</span>
+
+    <span class=sc16>} <span class=sc2>// gerarModeloProgressivo().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Controle de modo wireframe</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.W</span>)  bWireframe = !bWireframe; 
+      <span class=sc9>if </span>(bWireframe) <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+      <span class=sc9>else </span><span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+
+      <span class=sc2>// Tecla adição (+) - Cresce o nível de detalhe</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  
+      <span class=sc16>{</span>
+        <span class=prg>mesh_progressivo.NumberVertices </span>= 
+          ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>+ nDetalhe; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+      <span class=sc2>// Tecla subtração (-) Reduz o nível de detalhe</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  
+      <span class=sc16>{</span>
+        <span class=prg>mesh_progressivo.NumberVertices </span>= 
+          ((<span class=sc5>BaseMesh</span>) mesh_progressivo)<span class=prg>.NumberVertices </span>- nDetalhe; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Essa variável foi modificada para acomodar o tamanho</span>
+      <span class=sc2>// do modelo</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>5000.0f;</span>
+
+      <span class=sc2>// Atualiza ângulo para dar movimento ao objeto 3d</span>
+      angulo += <span class=sc4>0.02f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc2>// O eixo z foi modificado para comportar o tamanho do modelo</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>600.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, 
+        cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera().fim</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+        <span class=prg>Color.White.ToArgb</span>(), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+
+      AtualizarCamera();  
+
+      <span class=sc2>// AtualizarLuz(); </span>
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>false;</span>
+
+      <span class=sc2>// Renderiza o modelo 3d original</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-100.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Renderiza o modelo progressivo</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-200.0f</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+      desenharObjeto( mesh_progressivo, g_props);  
+
+      <span class=sc2>// Mostra o número de vértices de cada modelo</span>
+      <span class=prg>string </span>info; 
+      info = <span class=prg>String.Format</span>(<span class=sc6>"Modelo limpo: {0}"</span>, <span class=prg>mesh_limpo.NumberVertices</span>);  
+      MostrarMensagem(20, 20, info);  
+
+      <span class=sc2>// Repare no casting de ProgressiveMesh para BaseMesh</span>
+      info = <span class=prg>String.Format</span>(<span class=sc6>"progressivo: {0}"</span>, 
+        ((<span class=sc5>BaseMesh</span>)  mesh_progressivo)<span class=prg>.NumberVertices</span>);  
+      MostrarMensagem(220, 20, info);  
+      info = <span class=prg>String.Format</span>(<span class=sc6>"original: {0}"</span>, <span class=prg>objeto3D.NumberVertices</span>);  
+      MostrarMensagem(420, 20, info);  
+      info = <span class=sc6>" </span>+ <span class=sc6> Aumentar nível de detalhe       - Reduzir nível de detalhe";</span>
+      MostrarMensagem(60, <span class=prg>this.Height </span>- 60, info);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>BaseMesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Ajusta rotação do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+      <span class=sc2>// Prepara e aplica material\textura no objeto</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+        <span class=sc2>// na renderização</span>
+        <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+        <span class=sc2>// Renderiza o mesh</span>
+        <span class=prg>obj.DrawSubset</span>(ncx);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+    <span class=sc2>// Mostra texto na posição (x, y) da tela</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarMensagem(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+    <span class=sc16>} <span class=sc2>// MostrarMensagem().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

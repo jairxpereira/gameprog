@@ -1,0 +1,627 @@
+﻿<html>
+<head>
+<title>C_Sharp_10-6</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10-6</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-5.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track11-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track10"></a>
+<h3 style="background-color:#ead5ff">10-6 Elaborando o indexer e o iterador</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<img src=images\prj_Indexer.png>
+
+Vamos elaborar uma classe <b>Time</b> esportivo que vai receber uma coleção
+de objetos <b>Jogadores</b> estocados numa array.
+
+O indexer vai ser elaborado para retornar um jogador do time definido.
+
+A classe <b>Time</b> vai implementar  a  interface  <b class=prg>IEnumerable</b>  presente  em 
+<b class=prg>System.Collections</b> que obriga a implementação do método <b class=prg>GetEnumerator()</b>
+que abre inicialmente o caminho para usar  a  instrução  <b class=prg>foreach</b>  para
+passar pelos objetos da coleção.
+
+O método <b class=prg>GetEnumerator()</b> vai retornar o iterador representado por um 
+objeto da classe  <b>Numerador()</b>  que  vai fornecer  os  métodos  e  as 
+referências aos objetos que a instrução <b>foreach</b> necessita: <b class=prg>MoveNext(), 
+Reset</b> e a propriedade <b class=prg>Current</b>. Estes métodos representam a interface
+<b>System.Collections.IEnumerator</b> que deve ser implementada pela classe
+que vai representar o iterador, em nosso caso, a classe <b>Numerador()</b>. 
+
+<b><u>1.2 Estrutura dos objetos básicos da coleção.</u></b>
+
+Definimos uma classe <b>Jogador</b> que vai gerar os objetos de exemplo que
+vão ser gerenciados pela classe <b>Time</b>:
+
+<div class=niceview>
+<span class="sc2">// Projeto prj_Indexer - Arquivo: Jogador.cs
+// Este programa mostra como elaborar indexer e iterador
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">Generic</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Indexer</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Atributos públicos do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// nome do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// idade do jogador
+</span><span class="sc0">    
+    </span><span class="sc2">// Construtor da classe
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">m_idade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe os dados básicos do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0"> 
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Jogador: ({0},{1})"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+ 
+<b><u>2. Implementado o indexer</u></b>
+
+O <b>indexer</b> é um método dentro da classe <b>Time</b> com este perfil:
+
+<div class=niceview>
+<span class="sc2">// O indexer '[]' recupera um objeto jogador
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">[</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// get() retorna um objeto jogador
+</span><span class="sc0">  </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+  </span><span class="sc2">// set() recebe um objeto jogador e joga na posição dada
+</span><span class="sc0">  </span><span class="sc11">set</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">value</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Indexer().fim</span>
+</div>
+Acima está um exemplo de como se elabora um indexer. Simplesmente
+ele é uma propriedade com o nome de <b>this</b>. Note que  este é apenas
+um  código  exemplo,  em  um  programa  real você deve  verificar
+se o indíce passado está dentro da faixa  de valores  válidos  em
+conformidade com o tamanho da array utilizada.  
+
+Na classe cliente, o indexer vai ser usado desta forma de exemplo:
+<div class=niceview>
+<span class="sc2">// Utilizando o indexer para recuperar e reconfigurar um objeto 
+</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">quarto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">quarto</span><span class="sc10">.</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" * Jair Pereira"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">quarto</span><span class="sc10">.</span><span class="sc11">m_idade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">42</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">quarto</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Utilizando o indexer para mudar o nome do segundo jogador
+</span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" * Romario"</span><span class="sc10">;</span>
+</div>
+
+<b><u>3.1 Implementação do iterador</u></b>
+Implemente na classe-coleção a interface <b class=prg>System.Collections.IEnumerable</b>:
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerable</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Uma array para estocar jogadores
+</span><span class="sc0"> </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">;</span><span class="sc0">
+
+ </span><span class="sc2">// (...)
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Time</span>
+</div>
+Sua coleção pode ficar estocada em uma array como fizemos acima com
+a variável <b>lista_atleta</b> que vai receber  a referência aos jogadores.
+
+<b><u>3.2 Implementando IEnumerable.GetEnumerator()</u></b>
+A interface em questão tem apenas o método <b>GetEnumerator()</b>:
+<div class=niceview>
+<span class="sc5">public System.Collections.IEnumerator GetEnumerator</span>()<span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc10">(</span><span class="sc11">lista_atleta</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// GetEnumerator()</span>
+</div>
+Retornamos um objeto da classe <b>Numerador()</b> que naturalmente recebe uma
+lista  de  objetos  com  jogadores  aos quais vai prover as funções de
+acesso para a instrução <b>foreach</b>.
+
+<b><u>3.3 Implementando a classe que representa o iterador</u></b>
+
+Abaixo está implementação do iterador utilizado por <b>foreach</b>. Siga os
+comentários para entender este esqueleto básico.
+
+<div class=niceview>
+<span class="sc2">// A interface IEumerator determina a implementação de
+// MoveNext(), Reset() e Current
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerator</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Uma lista local para se referir a lista do time
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">;</span><span class="sc0">
+
+ </span><span class="sc2">// Enumeradores devem apontar para antes do primeiro elemento 
+</span><span class="sc0"> </span><span class="sc2">// até a primeira chamada de MoveNext()    
+</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+ </span><span class="sc2">// Contrutor da classe Numerador
+</span><span class="sc0"> </span><span class="sc2">// Recebe uma lista externa e repassa a referência para a 
+</span><span class="sc0"> </span><span class="sc2">// lista local.
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">lista_local</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do contrutor Numerador(Jogador[])
+</span><span class="sc0">
+ </span><span class="sc2">// Método MoveNext()
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">MoveNext</span><span class="sc10">()</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">ndx</span><span class="sc10">++;</span><span class="sc0">
+  </span><span class="sc2">// Retorna verdadeiro enquanto o indíce é menor que o 
+</span><span class="sc0">  </span><span class="sc2">// tamanho da lista de jogadores
+</span><span class="sc0">  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">);</span><span class="sc0">    
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// MoveNext()
+</span><span class="sc0">
+ </span><span class="sc2">// Resseta a posição do índice para antes do primeiro elemento
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Reset</span><span class="sc10">()</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Reset().fim
+</span><span class="sc0">
+ </span><span class="sc2">// Current retorna o objeto apontado atualmente por ndx
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">Current</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">[</span><span class="sc11">ndx</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Current.fim
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Numerador</span>
+</div>
+
+<b><u>3.4 Classe-coleção: Time()</u></b>
+O foco da classe <b>Time</b> é gerenciar os objetos e cuidar para que o acesso
+à array  não ultrapasse as fronteiras permitidas. Esse cuidado não está
+da maneira como se deve em nosso programa para manter a simplicidade do
+código de exemplo mas lembre-se de tomar os cuidados necessários em um
+programa real.
+
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerable</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Uma array para estocar jogadores
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Um jogador 'vazio' para evitar valores nulos na array
+</span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg_nulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"vazio"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class=sc2>
+// O contador  acompanha  o  crescimento  da array e serve de índice
+// para controlar o posicionamento de entrada dos objetos na coleção.</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Esse construtor define um time com qualquer quantidade
+// de jogadores
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">jogador_qtd</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Alocamento do espaço para os jogadores
+</span><span class="sc0">  </span><span class="sc11">lista_atleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[</span><span class="sc11">jogador_qtd</span><span class="sc10">];</span><span class="sc0">
+        
+  </span><span class="sc2">// Inicializa a lista de jogadores para evitar 
+</span><span class="sc0">  </span><span class="sc2">// valores nulos na array
+</span><span class="sc0">  </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">jogador_qtd</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+   </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jg_nulo</span><span class="sc10">;</span><span class="sc0">
+   </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor    
+</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// fim do construtor Time(jogador_qtd)
+</span><span class="sc0">
+
+</span><span class="sc2">// Esse construtor define um time a partir de uma array externa
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">lista_atleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[</span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">];</span><span class="sc0">
+
+  </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+   </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">];</span><span class="sc0">
+   </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//  endfor
+</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor Time(Jogador[])
+</span><span class="sc0">
+
+ </span><span class="sc2">// Adiciona um jogador na lista do time
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ColocarJogador</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">contador</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">;</span><span class="sc0">
+   </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc10">++;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> 
+
+ </span><span class="sc2">// O indexer '[]' recupera um objeto jogador
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">[</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// get() retorna um objeto jogador
+</span><span class="sc0">  </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+  </span><span class="sc2">// set() recebe um objeto jogador e joga na posição dada
+</span><span class="sc0">  </span><span class="sc11">set</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">value</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// Indexer().fim
+</span><span class="sc0">
+ </span><span class="sc2">// Este aqui é o iterador implementação da interface IEnumerable
+</span><span class="sc0"> </span><span class="sc2">// que possui apenas a função GetEnumerator()
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerator</span><span class="sc0"> </span><span class="sc11">GetEnumerator</span><span class="sc10">()</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc10">(</span><span class="sc11">lista_atleta</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// GetEnumerator()
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Time</span>
+</div>
+
+<b><u>4. Código fonte do projeto de exemplo</u></b>
+
+<span class="sc15"><div class=prg-code>
+<img src=images\prj_Indexer.png>
+
+</span><span class="sc2">// Projeto prj_Indexer - Arquivo: Jogador.cs
+// Este programa mostra como elaborar indexer e iterador
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">Generic</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Indexer</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Atributos públicos do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// nome do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// idade do jogador
+</span><span class="sc0">    
+    </span><span class="sc2">// Construtor da classe
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">m_idade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe os dados básicos do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0"> 
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Jogador: ({0},{1})"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc15"></div>
+</span><span class="sc0">
+</span><span class="sc15"><div class=prg-code>
+</span><span class="sc2">// Projeto prj_Indexer - Arquivo: Time.cs (Time de futebol)
+// Este programa mostra como elaborar indexer e iterador
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">Generic</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Indexer</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerable</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Uma array para estocar jogadores
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Um jogador 'vazio' para evitar valores nulos na array
+</span><span class="sc0">    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg_nulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"vazio"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// O contador acompanha o crescimento da array e serve de índice
+</span><span class="sc0">    </span><span class="sc2">// para controlar o posicionamento de entrada dos objetos na coleção.
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Esse construtor define um time com qualquer quantidade
+</span><span class="sc0">    </span><span class="sc2">// de jogadores
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">jogador_qtd</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Alocamento do espaço para os jogadores
+</span><span class="sc0">      </span><span class="sc11">lista_atleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[</span><span class="sc11">jogador_qtd</span><span class="sc10">];</span><span class="sc0">
+            
+      </span><span class="sc2">// Inicializa a lista de jogadores para evitar 
+</span><span class="sc0">      </span><span class="sc2">// valores nulos na array
+</span><span class="sc0">      </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">jogador_qtd</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jg_nulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor    
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor Time(jogador_qtd)
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Esse construtor define um time a partir de uma array externa
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">lista_atleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[</span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">];</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//  endfor
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor Time(Jogador[])
+</span><span class="sc0">
+
+    </span><span class="sc2">// Adiciona um jogador na lista do time
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ColocarJogador</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">contador</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc10">++;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> 
+
+    </span><span class="sc2">// O indexer '[]' recupera um objeto jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">[</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// get() retorna um objeto jogador
+</span><span class="sc0">      </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+      </span><span class="sc2">// set() recebe um objeto jogador e joga na posição dada
+</span><span class="sc0">      </span><span class="sc11">set</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc11">lista_atleta</span><span class="sc10">[</span><span class="sc11">posicao</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">value</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Indexer().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Este aqui é o iterador implementação da interface IEnumerable
+</span><span class="sc0">    </span><span class="sc2">// que possui apenas a função GetEnumerator()
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerator</span><span class="sc0"> </span><span class="sc11">GetEnumerator</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc10">(</span><span class="sc11">lista_atleta</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// GetEnumerator()
+</span><span class="sc0"> 
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Time
+</span><span class="sc0">
+  </span><span class="sc2">// A interface IEumerator determina a impplementação de
+</span><span class="sc0">  </span><span class="sc2">// MoveNext(), Reset() e Current
+</span><span class="sc0">  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Collections</span><span class="sc10">.</span><span class="sc11">IEnumerator</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Uma lista local para se referir a lista do time
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Enumeradores devem apontar para antes do primeiro elemento 
+</span><span class="sc0">    </span><span class="sc2">// até a primeira chamada de MoveNext()    
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Contrutor da classe Numerador
+</span><span class="sc0">    </span><span class="sc2">// Recebe uma lista externa e repassa a referência para a 
+</span><span class="sc0">    </span><span class="sc2">// lista local.
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Numerador</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">lista_local</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">lista</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do contrutor Numerador(Jogador[])
+</span><span class="sc0">
+    </span><span class="sc2">// Método MoveNext()
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">MoveNext</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">ndx</span><span class="sc10">++;</span><span class="sc0">
+      </span><span class="sc2">// Retorna verdadeiro enquanto o indíce é menor que o 
+</span><span class="sc0">      </span><span class="sc2">// tamanho da lista de jogadores
+</span><span class="sc0">      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">);</span><span class="sc0">    
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// MoveNext()
+</span><span class="sc0">
+    </span><span class="sc2">// Resseta a posição do índice para antes do primeiro elemento
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Reset</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Reset().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Current retorna o objeto apontado atualmente por ndx
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">Current</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">lista_local</span><span class="sc10">[</span><span class="sc11">ndx</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Current.fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Numerador
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc15"></div>
+</span><span class="sc0">
+
+</span><span class="sc15"><div class=prg-code>
+</span><span class="sc2">// Projeto prj_Indexer - Arquivo: Program.cs
+// Este programa mostra como elaborar indexer e iterador
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Indexer</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">     
+
+      </span><span class="sc2">// Configuração da janela de trabalho
+</span><span class="sc0">      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Indexer"</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc2">// Vamos construir o elenco do time do Barcelona
+</span><span class="sc0">      </span><span class="sc11">Jogador</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">atletas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Neimar"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">23</span><span class="sc10">),</span><span class="sc0">
+            </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Messi"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">40</span><span class="sc10">),</span><span class="sc0">
+            </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Ronaldo"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">38</span><span class="sc10">),</span><span class="sc0">
+        </span><span class="sc10">};</span><span class="sc0">
+
+      </span><span class="sc2">// Constrói o Barcelona com o elenco acima
+</span><span class="sc0">      </span><span class="sc11">Time</span><span class="sc0"> </span><span class="sc11">barcelona</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc11">atletas</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc2">// Mostra o elenco do time Barcelona
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\n -------- Barcelona ---- "</span><span class="sc10">);</span><span class="sc0">
+       </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">barcelona</span><span class="sc10">)</span><span class="sc11">jg</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Vamos construir e mostrar o time do Palmeiras
+</span><span class="sc0">      </span><span class="sc11">Time</span><span class="sc0"> </span><span class="sc11">Palmeiras</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Time</span><span class="sc10">(</span><span class="sc4">4</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">marcos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Marcos"</span><span class="sc10">,</span><span class="sc4">45</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">edmundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Edmundo"</span><span class="sc10">,</span><span class="sc4">46</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">mazinho</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Mazinho"</span><span class="sc10">,</span><span class="sc4">48</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Palmeiras</span><span class="sc10">.</span><span class="sc11">ColocarJogador</span><span class="sc10">(</span><span class="sc11">marcos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Palmeiras</span><span class="sc10">.</span><span class="sc11">ColocarJogador</span><span class="sc10">(</span><span class="sc11">edmundo</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Palmeiras</span><span class="sc10">.</span><span class="sc11">ColocarJogador</span><span class="sc10">(</span><span class="sc11">mazinho</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\n -------- Palmeiras ---- "</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">Palmeiras</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Utilizando o indexer para recuperar e reconfigurar um objeto 
+</span><span class="sc0">      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">quarto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">];</span><span class="sc0">
+      </span><span class="sc11">quarto</span><span class="sc10">.</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" * Jair Pereira"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">quarto</span><span class="sc10">.</span><span class="sc11">m_idade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">42</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">quarto</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Utilizando o indexer para mudar o nome do segundo jogador
+</span><span class="sc0">      </span><span class="sc11">Palmeiras</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" * Romario"</span><span class="sc10">;</span><span class="sc0">      
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\n *** Alterado via indexer (Palmeiras) ***"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">Palmeiras</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">jg</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+    
+      </span><span class="sc2">// Pausa para a leitura    
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janel
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">    
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Indexer
+</span><span class="sc0">
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-5.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track11-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

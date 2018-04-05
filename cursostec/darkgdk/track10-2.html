@@ -1,0 +1,243 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase10.2</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10.2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">10.2 Texturizando o terreno</h3><pre>
+<b><u>10.1 Aspectos gerais</b></u>
+<img src="images\textura2x2.png">
+Para texturizar um terreno criado pela função <b>dbMakeMatrix()</b> é necessário os 
+seguintes passos:
+
+a) Preparar com um programa de manipulação de imagens uma imagem para servir de
+textura. Para melhor performance do programa é importante que o  tamanho  da 
+imagem seja múltiplo de 8 tipo <b>64x64, 128x128, 256x256</b> e assim sucessivamente.	
+
+b) Carregar a imagem dentro da sua aplicação com <b>dbLoadImage()</b>: <span class=prg>
+dbLoadImage ("c:\\gameprog\\gdkmedia\\bitmap\\textura2x2.bmp",1); </span>
+
+c) Preparar a textura com a função <b>dbPrepareMatrixTexture()</b>. Veja em nossa
+amostra de textura acima que a imagem está segmentada em 2x2 trazendo quatro
+texturas diferentes numeradas de 1 a 4. Essa ordem (1-4) é a ordem na qual a
+DarkGdk enxerga e acessa as texturas. Veja abaixo a  sintaxe  da  função  de
+preparação da textura: <b class=prg>
+
+dbPrepareMatrixTexture (nMatrix,nImagem, recorte-x, recorte-y);</b> <b class=sc2>
+void dbPrepareMatrixTexture ( int MatrixNumber, int ImageNumber, int Across, int Down )</b><b class=prg>
+dbPrepareMatrixTexture (1,1,2,2); </b>	
+Veja que você precisa indicar o terreno (<b>nMatrix</b>), indicar a imagem  fonte  da 
+textura (<b>nImagem</b>), indicar a segmentação horizontal (<b>recorte-x</b>), e segmentação
+vertical (<b>recorte-y</b>).
+
+d) Aplicar a textura com a função <b>dbFillMatrix():</b><b class=prg>
+dbFillMatrix ( nMatrix, nAltura, nTile); </b> <b class=sc2>
+void dbFillMatrix ( int MatrixNumber, float Height, int TileNumber ) </b><b class=prg>
+dbFillMatrix (1,10,nTile); </b>
+Nessa função você indica o terreno (<b>nMatrix</b>) e você pode definir a 
+altura de colocação do terreno no mundo 3D através de <b>nAltura</b>. 
+<b>nTile</b> refere-se ao 'azulejo', subtextura presente na sua imagem.
+
+e) Atualizar a visualização do terreno a função <b>dbUpdateMatrix(nMatrix):</b><b class=prg>
+dbUpdateMatrix (1); </b>		
+
+Veja nosso programa exemplo:
+<img src="images\matrix02tex.png">
+	
+<div class=prg-code><span class="sc2">// matrix02tex.cpp
+// Esse programa mostra como texturizar um terreno (matrix)
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">trocar_textura</span><span class="sc10">();</span><span class="sc0">      </span><span class="sc2">// Troca e atualiza a textura da matrix
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">              </span><span class="sc2">// Representa um tipo de textura numa imagem
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc2">// Criação básica de um terreno com o posicionamento da câmera para visualizá-lo
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap\\textura2x2.bmp"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1000</span><span class="sc10">,</span><span class="sc4">1000</span><span class="sc10">,</span><span class="sc4">4</span><span class="sc10">,</span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPrepareMatrixTexture</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbFillMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc11">nTile</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbUpdateMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">500</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">200</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+    </span><span class="sc11">trocar_textura</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"matrix02tex.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">trocar_textura</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"0"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Leitura do teclado
+</span><span class="sc0">    </span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0"> 
+
+    </span><span class="sc2">// Reconfigura a textura conforme a tecla pressionada
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc6">"1"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">stecla</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc6">"2"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">stecla</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc6">"3"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">stecla</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc6">"4"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">stecla</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc4">15</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Troca a textura e atualiza a matrix
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">       
+        </span><span class="sc11">dbFillMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nTile</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">dbUpdateMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">strcpy</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"0"</span><span class="sc10">);</span><span class="sc0">   </span><span class="sc2">// Neutraliza memória e efeito da tecla digitada
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Pressione 1-2-3-4 para mudar a textura"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// trocar_textura().fim</span></div>
+A função <b>strcpy(*sdestino, *sfonte)</b> é uma função de string que copia o conteúdo
+<b>sfonte</b> para </b>sdestino</b>. É equivalente a <b style="color:red">sdestino = sfonte</b> mas com linguagem c
+essa construção não é possível com strings.	
+
+No próximo capítulo vamos ver como texturizar individualmente cada polígono do
+terreno.
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

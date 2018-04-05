@@ -1,0 +1,1682 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase05-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.5 Timer de alta precisão</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais - Arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais - Arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 mostrarTempo() - Indicadores de performance da aplicação</a>
+<a href=#2.5>2.5 mostrarTempoEx() - Versão alternativa com timeGetTime()</a>
+<a href=#2.6>2.6 mostrarMensagemTemporizada() - Mensagens temporizadas</a>
+<a href=#2.7>2.7 atualizaMovimento() - Atualização de movimento do 'jogador'</a>
+<a href=#2.8>2.8 Renderizar() - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_TimerTeste</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_TimerTeste.png></div>
+Geralmente a melhor forma de produzir uma animação  é  estabelecer  o
+movimento em função do tempo decorrido.   Comumente  a  qualidade  da
+animação é dada em '<b>quadros por segundo</b>'  abreviada  geralmente  como
+<b>fps</b> da expressão inglesa  '<b>frames per second</b>'.  Outro uso do tempo em
+videogame envolve fazer ocorrer ou reprimir certos eventos em  função
+do tempo decorrido. Em resumo, na produção de um videogame existe uma
+grande necessidade de se obter um 'relógio'  para  produzir  estes  e
+outros controles temporizados.
+
+Em nossos exemplos anteriores temos usado a função <b class=prg>clock()</b> do arquivo
+<b class=prg>time.h</b> da biblioteca padrão da linguagem c. Entretanto, para melhores
+resultados é necessário utilizar funções  que  apresentam  uma  maior
+granularidade do valor de retorno e maior  precisão.  Há  uma  função
+interessante no arquivo <b class=prg>mmsystem.h</b>  chamada  <b class=prg>timeGetTime()</b>  que  pode
+oferecer resultados melhores de temporização.  Porém,  o  foco  desse
+capítulo é a utilização do  relógio  do  hardware  que  é  denominado
+<b>contador de performance</b> ou '<b>performance counter</b>' do inglês ou podemos
+chamá-lo ainda de '<b>relógio de alta precisão</b>'.
+
+A aplicação desse exemplo  vai  utilizar  o  relógio  de  precisão  e
+alternativamente a função <b class=prg>timeGetTime()</b>  para  produzir  uma  simples
+animação de uma string deslocando-se  horizontalmente  sobre  a  tela,
+uma mensagem temporizada e produzir estatísticas  de  performance  da
+aplicação  como  a  medida  de  frames por segundo (fps)  e  o  tempo 
+decorrido entre um frame e outro.  Durante a execução da aplicação, o
+pressionamento da tecla espaço alterna entre o uso do relógio de alta
+precisão e a temporização produzida por <b class=prg>timeGetTime()</b>.
+
+É importante saber que  por conta do sistema Windows ser multitarefa, 
+vários processos  estão  sendos  executados  ao  mesmo  tempo  e  vão
+se alternando aleatoriamente na atenção dada pelo  processador.  Esse
+fato ocasiona uma certa imprecisão aleatória na percepção  de  marcas
+temporárias que são melhores estabelecidas se a aplicação  fizer  uso
+de médias  para  computar  períodos  e  indicadores  de  performance.
+
+<u class=prg>DWORD timeGetTime(VOID);</u>
+Esta função retorna o tempo na forma de milesegundos decorridos desde
+que o Sistema Windows foi ligado.  O relevante no uso das  funções de
+tempo é a diferença medida entre um evento e outro;  portanto o valor 
+numérico retornado por essas funções não têm um significado em  si  e
+não são exibidos por esta aplicação. É comum  falar  que  esta função
+retorna o tempo em ticks e um segundo tem 1.000 ticks  valor este que
+é usado para converter os períodos medidos em segundos.
+ 
+<u>As funções do relógio de alta precisão</u>
+A utilização do relógio de alta precisão envolve  comumente o uso das
+duas funções dedicadas desse relógio:
+
+<b class=prg>BOOL QueryPerformanceFrequency(LARGE_INTEGER *lpFrequency);</b>
+Essa função retorna a frequência de precisão do relógio na  forma  de
+<b>contagens por segundo</b>. Esse valor de retorno é usado para converter o
+retorno da outra função desse relógio para segundos.
+
+<b class=prg>QueryPerformanceCounter(( LARGE_INTEGER* )  &tempoAtual ); </b>
+Essa função obtém a marca de tempo do  relógio  de  alta  precisão. O
+valor de retorno dessa função é muito grande sendo  representado  por
+um tipo inteiro de 64 bits ( <b class=prg>__int64</b> ) com os bits administrados  na
+estrutura <b class=prg>LARGE_INTEGER</b>. Repetimos que  o  valor  retornado  não  tem 
+isoladamente um valor relevante, o que interessa é a diferença  entre
+dois momentos medidos.  Visto que essa  função  retorna intervalos de
+tempo menores ou mais rápidos que o tick de <b class=prg>timeGetTime()</b> vamos chamar
+de microtick uma das medidas produzidas por essa função.  O microtick
+não é um termo oficial e foi forjado aqui  para  nomear  o  intervalo
+entre um frame e outro antes  desse  intervalo  ser  convertido  para
+milessegundos (ms). 
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+
+
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Aspectos globais - Arquivo motor.h </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_TimerTeste - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o timer de alta precisão</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+  <span class=prg>void </span>mostrarTempo();  
+  <span class=prg>void </span>mostrarTempoEx();  
+
+  <span class=sc2>// Exibe uma mensagem temporizada</span>
+  <span class=prg>void </span>mostrarMensagemTemporizada();  
+
+  <span class=sc2>// Atualiza posição do 'jogador' na tela</span>
+  <span class=prg>void </span>atualizaMovimento();  
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+    <span class=prg>void </span>inicializarTexto();  
+
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+    <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<b class=prg-code><span class=prg>void </span>mostrarTempo(); </b>
+Essa função, utilizando as funções do relógio de alta precisão, produz
+as estatísticas de performance da aplicação como os frames por segundo
+(fps), o período entre um frame e outro dado em milessegundos (ms), e
+uma unidade de  tempo ( <b class=prg>g_deltaTempo</b> )  para  pautar  os  eventos  do
+sistema como a mensagem temporizada e o 'jogador' animado. O 'jogador'
+animado é apenas uma string que se move horizontalmente.
+
+<b class=prg-code><span class=prg>void </span>mostrarTempoEx();</b>
+Essa função replica a mesma funcionalidade  da  função <b>mostrarTempo()</b>
+utilizando como base  a  função <b class=prg>timeGetTime()</b>  com  alterações  leves
+para se adaptar às particulares da função <b>timeGetTime()</b> como o tipo de
+dado retornado por ela e a granularidade desse valor.
+
+<b class=prg-code><span class=prg>void </span>mostrarMensagemTemporizada();</b>
+Essa função exibe  uma  mensagem  temporizada.  Ela  varia  a  string
+mostrada em função do tempo decorrido.
+
+<b class=prg-code><span class=prg>void </span>atualizaMovimento(); </b>
+Essa função atualiza o movimento  do  'jogador'  em  função  do tempo
+decorrido.
+
+<b class=prg-code><span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  </b>
+Além de  inicializar  o  motor  gráfico  essa  função  inicializa  as
+variáveis de suporte ao relógio de alta precisão.
+
+<b class=prg-code><span class=prg>void </span>Renderizar(); </b>
+Essa função coordena a renderização da cena chamando  as  funções  de
+apoio  para  atualizar  o  movimento  do  jogador, mostrar o jogador,
+mostrar a mensagem temporizada, mostrar os indicadores de performance
+e atualizar a temporização da aplicação.
+  
+  
+<u>Apoio de exibição de texto</u>
+<div class=prg-code><span class=prg>void </span>inicializarTexto();  
+<span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  </div>
+Estas funções vão dar o apoio na exibição  de  texto e vão ser usadas
+para renderizar o 'jogador' representativo.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais - Arquivo: motor.cpp </u></b>
+<div class=niceview><span class=sc2>// Preparação para o timer</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Taxa de microticks entre dois frames</span>
+<span class=prg>float </span>g_deltaTempo     = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Taxa de contagens por segundo</span>
+<span class=prg>__int64 </span>g_cntsPerSec  = <span class=sc4>0ULL</span>; 
+
+<span class=sc2>// Fator de conversão segundo por contagens</span>
+<span class=prg>float </span>g_secsPerCnt  = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Flag de mudança de timer</span>
+<span class=prg>bool </span>bHardwareTimer = <span class=prg>true</span>; 
+
+<span class=sc2>// Representação símbólica do jogador</span>
+<span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;</span>(<span class=sc6>-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-</span>) <span class=sc6>&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimentação</span>
+<span class=prg>int </span>xcol = <span class=sc4>0</span>; 
+<span class=prg>int </span>ylin = 240; 
+</div>
+
+<u>Preparação para o timer</u>
+
+<b class=prg-code><span class=prg>float </span>g_deltaTempo = <span class=sc4>0.0f</span>; </b>
+Essa variável representa um pequeno intervalo de tempo entre um frame
+e outro. Esse valor é acumulado por  outras  funções  para  compor  o
+tempo decorrido, a taxa  de  frames por segundo (fps)  e  a  taxa  de 
+renderização em milessegundos (ms) do frame.
+
+<u>Apoio para a conversão da marca de tempo para outras unidades</u>
+<div class=prg-code><span class=sc2>// Taxa de contagens por segundo</span>
+<span class=prg>__int64 </span>g_cntsPerSec  = <span class=sc4>0ULL</span>; 
+
+<span class=sc2>// Fator de conversão segundo por contagens</span>
+<span class=prg>float </span>g_secsPerCnt  = <span class=sc4>0.0f</span>;  </div>
+A finalidade destas variáveis é servir  de  apoio para a conversão da
+marcação do tempo pelas funções  do  relógio  de  alta  precisão para
+segundos e milessegundos. A variável <b>g_cntsPerSec</b>  recebe a quantidade
+de contagens por segundo e <b>g_secsPerCnt</b> transforma essa  contagem  em
+um fator multiplicativo.
+
+<b class=prg-code><span class=prg>bool </span>bHardwareTimer = <span class=prg>true</span>; </b>
+Esta variável alterna entre o relógio de alta  precisão  e  a  função
+<b class=prg>timeGetTime()</b> na realização da temporização da aplicação.
+Pressione a barra de espaço durante  a  execução  da  aplicação  para
+fazer esta alternância.
+
+<u>Representação simbólica do jogador</u>
+<div class=prg-code><span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;(-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimentação</span>
+<span class=prg>int </span>xcol = <span class=sc4>0</span>; 
+<span class=prg>int </span>ylin = 240; </div>
+Estas variáveis  representam  o  nosso  jogador  representativo  e  o
+controle sobre a movimentação dele.
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 Inicialização do motor gráfico </u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_direita; 
+
+  <span class=sc2>// Verifica a frequência do contador do relógio do hardware</span>
+  <span class=prg>QueryPerformanceFrequency</span>( (<span class=sc5>LARGE_INTEGER*</span>)  &g_cntsPerSec );  
+
+  <span class=sc2>// Obtém-se aqui um fator para traduzir a marca do relógio para</span>
+  <span class=sc2>// uma expressão em segundos.</span>
+  g_secsPerCnt = <span class=sc4>1.0f </span>/ (<span class=prg>float</span>)  g_cntsPerSec; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+
+<u>Verificação inicial do relógio de alta precisão</u>
+<div class=prg-code><span class=sc2>// Verifica a frequência do contador do relógio do hardware</span>
+<span class=prg>QueryPerformanceFrequency</span>( (<span class=sc5>LARGE_INTEGER*</span>)  &g_cntsPerSec );
+  
+<span class=sc2>// Obtém-se aqui um fator para traduzir a marca do relógio para</span>
+<span class=sc2>// uma expressão em segundos.</span>
+g_secsPerCnt = <span class=sc4>1.0f </span>/ (<span class=prg>float</span>)  g_cntsPerSec; </div>
+Na primeira linha <b>QueryPerformanceFrequency()</b> verifica  a  frequência
+de trabalho do relógio de alta precisão que é retornada na  forma  de
+contagens por segundo. A segunda linha transforma essa frequência  em
+um fator de multiplicação que vai permitir a expressão  do  tempo  em
+termos de segundos e milessegundos.
+
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 mostrarTempo() - Indicadores de performance da aplicação </u></b>
+<div class=niceview><span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+<span class=prg>void </span>mostrarTempo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Buffers para preparar exibição de informações</span>
+  <span class=sc16>static </span><span class=prg>char </span> info[128];  
+  <span class=sc16>static </span><span class=prg>char </span>deltainfo[128] = <span class=sc6>"g_deltaTempo: 0.10000 microtick"</span>; 
+
+  <span class=sc2>// Taxa de milessegundos por frame</span>
+  <span class=sc16>static </span><span class=prg>float </span>msFrame = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Taxa de frames por segundo</span>
+  <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Contador de frames</span>
+  <span class=sc16>static </span><span class=prg>float </span>nFrames = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Marca atual do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>__int64 </span>tempoAtual = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Marca anterior do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>__int64 </span>tempoAnterior = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a marca atual do relógio do hardware</span>
+  <span class=prg>QueryPerformanceCounter</span>(( <span class=sc5>LARGE_INTEGER*</span>)  &tempoAtual );   
+
+  <span class=sc2>// Verifica a diferença entre o tempo atual e o anterior</span>
+  <span class=sc2>// e transforma o valor em termos de segundos</span>
+  <span class=sc9>if</span>(tempoAnterior == <span class=sc4>0ULL</span>) tempoAnterior = tempoAtual; 
+  g_deltaTempo = (tempoAtual - tempoAnterior) * g_secsPerCnt; 
+
+  <span class=sc2>// Depois de calculado g_deltaTempo seria conveniente aqui</span>
+  <span class=sc2>// chamar as funções que atualizam e desenham a cena utilizando</span>
+  <span class=sc2>// esta marca de tempo como referência para avançar seus processos.</span>
+
+  <span class=sc2>// Incrementa o contador de frames</span>
+  nFrames += <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Acumula o tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Passou-se um segundo? Calculamos a taxa de frames uma vez</span>
+  <span class=sc2>// a cada segundo. Perceba que o tempo entre frames pode variar</span>
+  <span class=sc2>// então essa taxa é uma média por segundo</span>
+  <span class=sc9>if</span>( tempoDecorrido &gt;= <span class=sc4>1.0f</span>) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Frames por segundo (fps) = nFrames / tempoDecorrido</span>
+    <span class=sc2>// fps = nFrames (nFrames contados no segundo)</span>
+    fps = nFrames; 
+
+    <span class=sc2>// Tempo médio em milesegundos que o frame levou para ser renderizado</span>
+    msFrame = <span class=sc4>1000.0f </span>/ fps; 
+
+    <span class=sc2>// Resseta a variável do tempo decorrido para preparar para o cálculo</span>
+    <span class=sc2>// das taxas para o próximo segundo.</span>
+    tempoDecorrido = <span class=sc4>0.0f</span>; 
+    nFrames   = <span class=sc4>0.0f</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Preparação para a próximo frame</span>
+  <span class=sc2>// O tempoAtual se torna o tempoAnterior para o próximo frame</span>
+  tempoAnterior = tempoAtual; 
+
+  <span class=sc2>// Exibe as informações</span>
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Milessegundos por frame: %f </span>( ms )<span class=sc6>"</span>, msFrame);  
+  mostrarTexto (10, 10, info);  
+
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Frames por segundo: %f </span>( fps )<span class=sc6> "</span>, fps);  
+  mostrarTexto (10, 40, info);  
+
+  <span class=sc9>if </span>(tempoDecorrido == <span class=sc4>0.0f</span>)  
+  <span class=prg>sprintf</span>(deltainfo, <span class=sc6>"g_deltaTempo: %f microtick"</span>, g_deltaTempo);  
+  mostrarTexto (10, 70, deltainfo);  
+
+<span class=sc16>} <span class=sc2>// mostrarTempo().fim</span></span>
+</div>
+
+As variáveis de apoio estão definidas  como  estáticas por uma questão
+de eficiência, para evitar o código  oculto  que o compilador adiciona
+para gerar e exterminar variáveis locais.
+
+<u>Recipiente de strings</u>
+<div class=prg-code><span class=sc16>static </span><span class=prg>char </span>     info[128];  
+<span class=sc16>static </span><span class=prg>char </span>deltainfo[128] = <span class=sc6>"g_deltaTempo: 0.10000 microtick"</span>; </div>
+Estas  variáveis  são  buffers  ou  recipientes  de  memória  para  a
+preparação das strings de informações que serão exibidas na tela.
+
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>float </span>msFrame = <span class=sc4>0.0f</span>; </b>
+Esta variável é para expressar o custo de renderização de um frame em
+termos de milessegundos.  A intenção de uso dessa  taxa  é  servir de
+ponto de avaliação do 'peso' da cena verificando  o  tempo  que  cada
+quadro demora para ser produzido e assim dar uma base para tomada de
+atitudes para melhorar a fluência da aplicação.
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>float </span>nFrames = <span class=sc4>0.0f</span>; </b>
+Esta variável faz a contagem de  frames  renderizados  dentro  de  um
+segundo para a produção posterior da  taxa  de  frames  por  segundo.
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0.0f</span>; </b>
+Essa variável é para monitorar a taxa de  renderização  em  termos de
+frames por segundo.
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; </b>
+Esta variável vai acumular localmente o tempo decorrido  com  foco na
+ocorrência de cada segundo para cálculo  dos  indicadores  de  frames
+por  segundo (<b>fps</b>)  e  a  taxa  de renderização do frame em termos de
+milessegundos (<b>msFrame</b>).
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>__int64 </span>tempoAtual = <span class=sc4>0</span>; </b>
+Essa variável é para memorizar a marca de tempo atual do  relógio  de
+alta precisão. Esse valor é preservado na variável <b>tempoAnterior</b> e no 
+próximo frame esse valor é utilizado na produção da diferença de tempo
+entre um frame e outro.
+
+<b class=prg-code><span class=sc16>static </span><span class=prg>__int64 </span>tempoAnterior = <span class=sc4>0</span>; </b>
+Essa variável memoriza o tempo anterior  para a produção da diferença
+de tempo entre um frame e outro.  O  tempo  atual  torna-se  o  tempo 
+anterior para uso no próximo frame.   Esta  variável  teria  que  ser
+realmente estática ou  global  porque seu valor deve  ser  preservado
+entre as chamadas dessa função.
+
+<b class=prg-code><span class=prg>QueryPerformanceCounter</span>(( <span class=sc5>LARGE_INTEGER*</span>)  &tempoAtual );   </b>
+Aqui pegamos a marca de tempo atual ( <b>tempoAtual</b> ) do relógio de alta
+precisão. Esse valor é preservado  na  variável  <b>tempoAnterior</b>  e  no 
+próximo frame esse valor é utilizado na produção da diferença de tempo
+entre um frame e outro.
+
+<b class=prg-code><span class=sc9>if</span>(tempoAnterior == <span class=sc4>0ULL</span>) tempoAnterior = tempoAtual; </b>
+Aqui é um cuidado que se deve ter no frame inicial da aplicação. Aqui
+igualamos tempo atual e tempo anterior  para  zerar  a  diferença  de 
+tempo no primeiro frame.
+
+<b class=prg-code>g_deltaTempo = (tempoAtual - tempoAnterior) * g_secsPerCnt; </b>
+Aqui  é  a  linha  mais  importante  da  aplicação. Calculamos aqui a
+diferença  de  tempo  (  <b>g_deltaTempo</b>  )  entre  dois  frames  e pela
+multiplicação com o fator <b>g_secsPerCnt</b> o valor final  vai  permitir a
+a expressão do tempo em termos  de  segundos,  frames  por  segundo e 
+milessegundos. 
+
+Depois de calculado <b>g_deltaTempo</b> a aplicação neste momento particular
+da execução poderia chamar com este valor as funções  de  atualização 
+de outros processos da aplicação.   Tivemos  aqui  a  preferência  de 
+embutir o código de produção e exibição dos indicadores de performance
+e de manter inicialmente <b>g_deltaTempo</b> como global para o uso de outros
+processos no final dessa função.  Por  exemplo,  <b>atualizarMovimento()</b>
+vai usar esta variável ( g_deltaTempo ) para mover  o  'jogador'  e a
+função <b>mostrarMensagemTemporizada()</b> vai usá-la para variar  a  string
+exibida.
+
+<b class=prg-code>nFrames += <span class=sc4>1.0f</span>; </b>
+Aqui contamos a quantidade de frames e quando o tempo decorrido for um
+segundo essa variável passa a representar diretamente a taxa de frames
+por segundo ( <b>fps</b> ). Posteriormente no código a  cada  segundo  ocorre
+essa transformação nesta variável: <span class=prg>fps = nFrames; nFrames = 0.0f; </span>.
+
+<b class=prg-code>tempoDecorrido += g_deltaTempo; </b>
+Aqui acumulamos o tempo decorrido e quando ocorre um  segundo  passado
+representado pelo valor <b>1.0f</b> o bloco abaixo realiza  os  cálculos  dos
+indicadores de frames por segundo ( <b>fps</b> ) e  a  taxa  de  renderização
+de cada frame ( <b>msFrame</b> ).    A  variável  <b>g_deltaTempo</b>  é  global e a
+variável  <b>tempoDecorrido</b>  é   estática  local   de  cada  função; essa
+configuração permite cada função reagir de forma particular  em  algum
+intervalo particular de tempo de interesse de cada função.
+
+<b class=prg-code><span class=sc9>if</span> ( tempoDecorrido &gt;= <span class=sc4>1.0f</span>) <span class=sc16>{</span></b>
+Bem, ocorre aqui a percepção de que um segundo foi decorrido  e  isto
+pode ser apenas uma aproximação visto  que  outros  processos recebem
+atenção do processador mesmo que nossa aplicação esteja  na  'frente'
+da tela.
+
+<b class=prg-code>fps = nFrames; </b>
+Aqui produzimos os frames por segundo  visto que passou-se um segundo
+e pegamos a contagem dos frames  processados  estocados  em  <b>nFrames</b>.
+
+<b class=prg-code>msFrame = <span class=sc4>1000.0f </span>/ fps; </b>
+Essa conta produz a taxa de renderização de cada frame  em  termos de
+milessegundos ( ms ).
+
+<b class=prg-code>tempoDecorrido = <span class=sc4>0.0f</span>; nFrames   = <span class=sc4>0.0f</span>; <span class=sc16>}</span> </b>
+No final do bloco do if  estas variáveis são zeradas  para  deixá-las
+preparadas para os cálculos do próximo frame.
+
+<span class=sc2>// Preparação para a próximo frame</span>
+<span class=sc2>// O tempoAtual se torna o tempoAnterior para o próximo frame</span>
+<b class=prg-code>tempoAnterior = tempoAtual; </b>
+Em preparação para o próximo frame, o tempo atual ( <b>tempoAtual</b> ) deve
+ser visto como o tempo anterior ( <b>tempoAnterior</b> ) para  o  cálculo de
+<b>g_deltaTempo</b> no próximo frame.
+
+E na sequência vem o bloco de código que exibe os indicadores na tela:
+<div class=prg-code><span class=prg>sprintf</span>(info, <span class=sc6>"Milessegundos por frame: %f </span>( ms )<span class=sc6>"</span>, msFrame);  
+mostrarTexto (10, 10, info);  
+
+<span class=prg>sprintf</span>(info, <span class=sc6>"Frames por segundo: %f </span>( fps )<span class=sc6> "</span>, fps);  
+mostrarTexto (10, 40, info);  
+
+<span class=sc9>if </span>(tempoDecorrido == <span class=sc4>0.0f</span>)  
+<span class=prg>sprintf</span>(deltainfo, <span class=sc6>"g_deltaTempo: %f microtick"</span>, g_deltaTempo);  
+mostrarTexto (10, 70, deltainfo);  </div>
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 mostrarTempoEx() - Versão alternativa com timeGetTime() </u></b>
+
+Essa  função  não  será  explicada  detalhadamente  visto ter a mesma
+funcionalidade  da  função  <b>mostrarTempo()</b>.  Entretanto  mantemos  em
+negrito  o  código  que  foi  levemente  alterado  para  suportar  as
+características particulares da função <b class=prg>timeGetTime()</b>.
+
+Lembramos que o uso da função timeGetTime() deve ser precedido pela
+inclusão do arquivo <b class=prg>mmsystem.h</b>  e  o  ligamento  com  a  biblioteca
+<b class=prg>winmm.lib</b> que pode ser feito com essa linha no programa:
+<span class=prg>#pragma comment ( lib, "winmm.lib")</span>
+
+<div class=niceview><span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+<span class=prg>void </span>mostrarTempoEx(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Buffers para preparar exibição de informações</span>
+  <span class=sc16>static </span><span class=prg>char </span> info[128];  
+  <span class=sc16>static </span><span class=prg>char </span>deltainfo[128] = <span class=sc6>"g_deltaTempo: 0.10000 microtick"</span>; 
+
+  <span class=sc2>// Taxa de milessegundos por frame</span>
+  <span class=sc16>static </span><span class=prg>float </span>msFrame = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Taxa de frames por segundo</span>
+  <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Contador de frames</span>
+  <span class=sc16>static </span><span class=prg>float </span>nFrames = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+	<b>
+	
+   <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc2>// Marca atual do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>tempoAtual = <span class=sc4>0</span>; 
+  
+  <span class=sc2>// Marca anterior do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>tempoAnterior = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a marca atual do relógio do hardware</span>
+  tempoAtual = <span class=prg>timeGetTime</span>();  
+
+  <span class=sc2>// Verifica a diferença entre o tempo atual e o anterior</span>
+  <span class=sc2>// e transforma o valor em termos de segundos</span>
+  <span class=sc9>if </span>(tempoAnterior == <span class=sc4>0</span>)  tempoAnterior = tempoAtual; 
+  g_deltaTempo = ((<span class=prg>float</span>)  tempoAtual - tempoAnterior) / <b class=sc4>1000.0f</b>; 
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+
+	</b>
+  <span class=sc2>// Depois de calculado g_deltaTempo seria conveniente aqui</span>
+  <span class=sc2>// chamar as funções que atualizam e desenham a cena utilizando</span>
+  <span class=sc2>// esta marca de tempo como referência para avançar seus processos.</span>
+
+  <span class=sc2>// Incrementa o contador de frames</span>
+  nFrames += <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Acumula o tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Passou-se um segundo? Calculamos a taxa de frames uma vez</span>
+  <span class=sc2>// a cada segundo. Perceba que o tempo entre frames pode variar</span>
+  <span class=sc2>// então essa taxa é uma média por segundo</span>
+  <span class=sc9>if</span>( tempoDecorrido &gt;= <span class=sc4>1.0f</span>) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Frames por segundo (fps) = nFrames / tempoDecorrido</span>
+    <span class=sc2>// fps = nFrames (nFrames contados no segundo)</span>
+    fps = nFrames; 
+
+    <span class=sc2>// Tempo médio em milesegundos que o frame levou para ser renderizado</span>
+    msFrame = <span class=sc4>1000.0f </span>/ fps; 
+
+    <span class=sc2>// Resseta a variável do tempo decorrido para preparar para o cálculo</span>
+    <span class=sc2>// das taxas para o próximo segundo.</span>
+    tempoDecorrido = <span class=sc4>0.0f</span>; 
+    nFrames   = <span class=sc4>0.0f</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Preparação para a próximo frame</span>
+  <span class=sc2>// O tempoAtual se torna o tempoAnterior para o próximo frame</span>
+  tempoAnterior = tempoAtual; 
+
+  <span class=sc2>// Exibe as informações de performance da aplicação</span>
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Milessegundos por frame: %f </span>(ms) - timeGetTime()<span class=sc6>"</span>, msFrame);  
+  mostrarTexto (10, 10, info);  
+
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Frames por segundo: %f </span>( fps )<span class=sc6> "</span>, fps);  
+  mostrarTexto (10, 40, info);  
+
+  <span class=sc9>if </span>(tempoDecorrido == <span class=sc4>0.0f</span>)  
+  <span class=prg>sprintf</span>(deltainfo, <span class=sc6>"g_deltaTempo: %f microtick"</span>, g_deltaTempo);  
+  mostrarTexto (10, 70, deltainfo);  
+
+<span class=sc16>} <span class=sc2>// mostrarTempoEx().fim</span></span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 mostrarMensagemTemporizada() - Mensagens temporizadas </u></b>
+<div class=niceview><span class=prg>void </span>mostrarMensagemTemporizada() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// controle local de tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Controle de mudança de mensagem no intervalo [0, 3]</span>
+  <span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Acumulação do tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Gerando um valor aleatório no intervalo de 0 à 3</span>
+  dx = ( (<span class=prg>int</span>)  tempoDecorrido) % <span class=sc4>3</span>; 
+
+  <span class=sc2>// Bloco de mensagens para bHardwareTimer = true</span>
+  <span class=sc16>static </span><span class=prg>char* </span>mensagens[] = <span class=sc16>{</span>
+    <span class=sc6>"Testando QueryPerformanceCounter</span>()<span class=sc6>"</span>, 
+    <span class=sc6>"Produzido por Gameprog"</span>, 
+    <span class=sc6>"Visite www.gameprog.com.br"}</span>; 
+
+  <span class=sc2>// Bloco de mensagens para bHardwareTimer = false</span>
+  <span class=sc16>static </span><span class=prg>char* </span>mensagens_ex[] = <span class=sc16>{</span>
+    <span class=sc6>"Testando timeGetTime</span>()<span class=sc6>"</span>, 
+    <span class=sc6>"Produzido por Gameprog"</span>, 
+    <span class=sc6>"Visite www.gameprog.com.br"}</span>; 
+
+  <span class=sc2>// Mostra mensagem adequada de acordo com o tipo de timer selecionado</span>
+  <span class=sc9>if </span>(bHardwareTimer) 
+  mostrarTexto(100,280, mensagens[dx]);  
+  <span class=sc9>else</span>
+  mostrarTexto(100,280, mensagens_ex[dx]);  
+<span class=sc16>} <span class=sc2>// mostrarMensagemTemporizada().fim</span></span>
+</div>
+
+<u>Controle local do tempo decorrido</u>
+<div class=prg-code><span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+tempoDecorrido += g_deltaTempo; </div>
+O   tempo  decorrido  é  alimentado  por  <b>g_deltaTempo</b>  e  controlado
+localmente por <b>tempoDecorrido</b>.
+
+
+<u>Geração de um valor na faixa de 0 à 2</u>
+<div class=prg-code><span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+dx = ( (<span class=prg>int</span>)  tempoDecorrido) % <span class=sc4>3</span>; </div>
+Aqui geramos um valor de 0  à  2  que  representa  o  índice  de  uma
+mensagem nas arrays produzidas  abaixo.  A  variável  <b>dx</b>  é  estática
+porque precisa manter seu valor para sustentar a exibição  da  string
+enquanto o valor no intervalo pretendido não é produzido.
+
+<u>Bloco de mensagens para as duas condições da variável bHardwareTimer</u>
+<div class=prg-code><span class=sc2>// Bloco de mensagens para bHardwareTimer = true</span>
+<span class=sc16>static </span><span class=prg>char* </span>mensagens[] = <span class=sc16>{</span>
+<span class=sc6>"Testando QueryPerformanceCounter</span>()<span class=sc6>"</span>, 
+<span class=sc6>"Produzido por Gameprog"</span>, 
+<span class=sc6>"Visite www.gameprog.com.br"}</span>; 
+
+<span class=sc2>// Bloco de mensagens para bHardwareTimer = false</span>
+<span class=sc16>static </span><span class=prg>char* </span>mensagens_ex[] = <span class=sc16>{</span>
+<span class=sc6>"Testando timeGetTime</span>()<span class=sc6>"</span>, 
+<span class=sc6>"Produzido por Gameprog"</span>, 
+<span class=sc6>"Visite www.gameprog.com.br"}</span>; </div>
+
+<u>Seleção da mensagem de acordo com a condição da variável bHardwareTimer</u>
+<div class=prg-code><span class=sc9>if </span>(bHardwareTimer) 
+mostrarTexto(100,280, mensagens[dx]);  
+<span class=sc9>else</span>
+mostrarTexto(100,280, mensagens_ex[dx]);  </div>
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 atualizaMovimento() - Atualização de movimento do 'jogador' </u></b>
+<div class=niceview><span class=prg>void </span>atualizaMovimento() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// direção: 1 (direita) -1 (esquerda)</span>
+  <span class=sc16>static </span><span class=prg>int </span>direcao = <span class=sc4>1</span>; 
+
+  <span class=sc2>// controle local de tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// controle de deslocamento do jogador</span>
+  <span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+
+  <span class=sc2>// controle de velocidade do jogador</span>
+  <span class=sc16>static </span><span class=prg>float </span>velocidade = <span class=sc4>100.0f</span>; 
+
+  <span class=sc2>// acumulação do tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// cálculo de um valor para dx no intervalo [0, 640]</span>
+  dx = ((<span class=prg>int</span>)  (tempoDecorrido * velocidade)) % 640; 
+
+  <span class=sc2>// move jogador para direita se direção = 1</span>
+  <span class=sc9>if </span>(direcao == <span class=sc4>1</span>)  
+  <span class=sc16>{</span>
+  xcol = dx; 
+  sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// move jogador para a esquerda se direção = -1</span>
+  <span class=sc9>else</span>
+  <span class=sc16>{</span>
+  xcol = 640 - dx; 
+  sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+
+  <span class=sc2>// Inverte direção no encontro dos limites do intervalo</span>
+  <span class=sc9>if </span>(xcol &gt;= 640 || xcol &lt;= <span class=sc4>0</span>)  direcao = direcao * <span class=sc4>-1</span>; 
+
+<span class=sc16>} <span class=sc2>// atualizaMovimento().fim</span></span>
+</div>
+
+<u>Controle local do tempo decorrido</u>
+<div class=prg-code><span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+tempoDecorrido += g_deltaTempo; </div>
+O   tempo  decorrido  é  alimentado  por  <b>g_deltaTempo</b>  e  controlado
+localmente por <b>tempoDecorrido</b>.
+
+
+<u>Controle de velocidade e direção</u>
+<div class=prg-code><span class=sc2>// direção: 1 (direita) -1 (esquerda)</span>
+<span class=sc16>static </span><span class=prg>int </span>direcao = <span class=sc4>1</span>; 
+<span class=sc2>// controle de velocidade do jogador</span>
+<span class=sc16>static </span><span class=prg>float </span>velocidade = <span class=sc4>100.0f</span>; </div>
+Estas variáveis controlam a direção e velocidade do jogador.
+
+
+<u>controle de deslocamento do jogador</u>
+<div class=prg-code><span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+<span class=sc2>// cálculo de um valor para dx no intervalo [0, 640]</span>
+dx = ((<span class=prg>int</span>)  (tempoDecorrido * velocidade)) % 640; </div>
+Aqui é gerado um valor que cresce gradualmente na faixa de largura da
+janela.
+
+<u>Movimento para a direita</u>
+<div class=prg-code><span class=sc2>// move jogador para direita se direção = 1</span>
+<span class=sc9>if </span>(direcao == <span class=sc4>1</span>)  
+<span class=sc16>{</span>
+xcol = dx; 
+sjogador = smove_direita; 
+<span class=sc16>} <span class=sc2>// endif</span></span> </div>
+Esse bloco move o 'jogador' para a direita.
+
+<u>Movimento para a esquerda</u>
+<div class=prg-code><span class=sc2>// move jogador para a esquerda se direção = -1</span>
+<span class=sc9>else</span>
+<span class=sc16>{</span>
+xcol = 640 - dx; 
+sjogador = smove_esquerda; 
+<span class=sc16>} <span class=sc2>// end else</span></span> </div>
+Esse bloco move o 'jogador' para a esquerda.
+
+<b class=prg-code><span class=sc9>if </span>(xcol &gt;= 640 || xcol &lt;= <span class=sc4>0</span>)  direcao = direcao * <span class=sc4>-1</span>; </b>
+Essa linha mantém  a posição lateral  do  'jogador'  nos  limites  da
+janela invertendo a direção de movimento do 'jogador' quando este  se
+encontra com os limites definidos.
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 Renderizar() - Renderização da cena </u></b>
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+<b>
+    <span class=sc2>// Atualiza movimento do jogador</span>
+    atualizaMovimento();  
+
+    <span class=sc2>// Desenha o jogador na posição dada por (xcol, ylin)</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Mostra uma mensagem temporizada</span>
+    mostrarMensagemTemporizada();  
+
+    <span class=sc2>// Mostra as informações sobre o tempo</span>
+    <span class=sc9>if</span>(bHardwareTimer == <span class=prg>true</span>) mostrarTempo();  
+    <span class=sc9>if</span>(bHardwareTimer == <span class=prg>false</span>) mostrarTempoEx();  
+</b>
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b class=prg-code>atualizaMovimento(); </b>
+Atualizamos aqui o movimento do jogador com base no tempo decorrido. 
+
+<b class=prg-code>mostrarTexto (xcol, ylin, sjogador);  </b>
+Mostramos o jogador na posição dada por (<b>xcol, ylin</b>)
+
+<b class=prg-code>mostrarMensagemTemporizada();  </b>
+Aqui mostramos uma mensagem temporizada
+
+<b class=prg-code>
+<span class=sc9>if</span>(bHardwareTimer == <span class=prg>true</span>)    mostrarTempo();  
+<span class=sc9>if</span>(bHardwareTimer == <span class=prg>false</span>) mostrarTempoEx();  </b>
+E aqui de acordo com o estado da variável <b>bHardwareTimer</b> vamos usar o
+relógio de alta precisão ( <b class=prg>true</b> ) ou vamos usar <b>timeGetTime()</b> (<b class=prg>false</b>)
+para temporizar os eventos e produzir os indicadores da aplicação.
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_TimerTeste</u></b>
+<div class=prg-code><img src=images\prj_TimerTeste.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_TimerTeste - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o timer de alta precisão</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+  <span class=prg>void </span>mostrarTempo();  
+  <span class=prg>void </span>mostrarTempoEx();  
+
+  <span class=sc2>// Exibe uma mensagem temporizada</span>
+  <span class=prg>void </span>mostrarMensagemTemporizada();  
+
+  <span class=sc2>// Atualiza posição do 'jogador' na tela</span>
+  <span class=prg>void </span>atualizaMovimento();  
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+    <span class=prg>void </span>inicializarTexto();  
+
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+    <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+<span class=sc2>// fim do arquivo: motor.h</span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_TimerTeste - Arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o timer de alta precisão</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;mmsystem.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Localização do código do timer de alta precisão</span>
+<span class=sc2>// mmsystem.h - winmm.lib</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"winmm.lib"</span>)  
+
+<span class=sc2>// Desliga aviso de função de string antiquada</span>
+<span class=sc16>#pragma </span>warning (disable: 4996) 
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9 </span>      *g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+ID3DXFont        *gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+
+<span class=sc2>// Preparação para o timer</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Taxa de microticks entre dois frames</span>
+<span class=prg>float </span>g_deltaTempo     = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Taxa de contagens por segundo</span>
+<span class=prg>__int64 </span>g_cntsPerSec  = <span class=sc4>0ULL</span>; 
+
+<span class=sc2>// Fator de conversão segundo por contagens</span>
+<span class=prg>float </span>g_secsPerCnt  = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Flag de mudança de timer</span>
+<span class=prg>bool </span>bHardwareTimer = <span class=prg>true</span>; 
+
+<span class=sc2>// Representação símbólica do jogador</span>
+<span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;</span>(<span class=sc6>-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-</span>) <span class=sc6>&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimentação</span>
+<span class=prg>int </span>xcol = <span class=sc4>0</span>; 
+<span class=prg>int </span>ylin = 240; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_direita; 
+
+  <span class=sc2>// Verifica a frequência do contador do relógio do hardware</span>
+  <span class=prg>QueryPerformanceFrequency</span>( (<span class=sc5>LARGE_INTEGER*</span>)  &g_cntsPerSec );  
+
+  <span class=sc2>// Obtém-se aqui um fator para traduzir a marca do relógio para</span>
+  <span class=sc2>// uma expressão em segundos.</span>
+  g_secsPerCnt = <span class=sc4>1.0f </span>/ (<span class=prg>float</span>)  g_cntsPerSec; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+<span class=prg>void </span>mostrarTempo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Buffers para preparar exibição de informações</span>
+  <span class=sc16>static </span><span class=prg>char </span> info[128];  
+  <span class=sc16>static </span><span class=prg>char </span>deltainfo[128] = <span class=sc6>"g_deltaTempo: 0.10000 microtick"</span>; 
+
+  <span class=sc2>// Taxa de milessegundos por frame</span>
+  <span class=sc16>static </span><span class=prg>float </span>msFrame = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Taxa de frames por segundo</span>
+  <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Contador de frames</span>
+  <span class=sc16>static </span><span class=prg>float </span>nFrames = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Marca atual do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>__int64 </span>tempoAtual = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Marca anterior do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>__int64 </span>tempoAnterior = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a marca atual do relógio do hardware</span>
+  <span class=prg>QueryPerformanceCounter</span>(( <span class=sc5>LARGE_INTEGER*</span>)  &tempoAtual );   
+
+  <span class=sc2>// Verifica a diferença entre o tempo atual e o anterior</span>
+  <span class=sc2>// e transforma o valor em termos de segundos</span>
+  <span class=sc9>if</span>(tempoAnterior == <span class=sc4>0ULL</span>) tempoAnterior = tempoAtual; 
+  g_deltaTempo = (tempoAtual - tempoAnterior) * g_secsPerCnt; 
+
+  <span class=sc2>// Depois de calculado g_deltaTempo seria conveniente aqui</span>
+  <span class=sc2>// chamar as funções que atualizam e desenham a cena utilizando</span>
+  <span class=sc2>// esta marca de tempo como referência para avançar seus processos.</span>
+
+  <span class=sc2>// Incrementa o contador de frames</span>
+  nFrames += <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Acumula o tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Passou-se um segundo? Calculamos a taxa de frames uma vez</span>
+  <span class=sc2>// a cada segundo. Perceba que o tempo entre frames pode variar</span>
+  <span class=sc2>// então essa taxa é uma média por segundo</span>
+  <span class=sc9>if</span>( tempoDecorrido &gt;= <span class=sc4>1.0f</span>) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Frames por segundo (fps) = nFrames / tempoDecorrido</span>
+    <span class=sc2>// fps = nFrames (nFrames contados no segundo)</span>
+    fps = nFrames; 
+
+    <span class=sc2>// Tempo médio em milesegundos que o frame levou para ser renderizado</span>
+    msFrame = <span class=sc4>1000.0f </span>/ fps; 
+
+    <span class=sc2>// Resseta a variável do tempo decorrido para preparar para o cálculo</span>
+    <span class=sc2>// das taxas para o próximo segundo.</span>
+    tempoDecorrido = <span class=sc4>0.0f</span>; 
+    nFrames   = <span class=sc4>0.0f</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Preparação para a próximo frame</span>
+  <span class=sc2>// O tempoAtual se torna o tempoAnterior para o próximo frame</span>
+  tempoAnterior = tempoAtual; 
+
+  <span class=sc2>// Exibe as informações</span>
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Milessegundos por frame: %f </span>( ms )<span class=sc6>"</span>, msFrame);  
+  mostrarTexto (10, 10, info);  
+
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Frames por segundo: %f </span>( fps )<span class=sc6> "</span>, fps);  
+  mostrarTexto (10, 40, info);  
+
+  <span class=sc9>if </span>(tempoDecorrido == <span class=sc4>0.0f</span>)  
+  <span class=prg>sprintf</span>(deltainfo, <span class=sc6>"g_deltaTempo: %f microtick"</span>, g_deltaTempo);  
+  mostrarTexto (10, 70, deltainfo);  
+<span class=sc16>} <span class=sc2>// mostrarTempo().fim</span></span>
+
+
+
+<span class=sc2>// Mostra os indicadores de performance da aplicação</span>
+<span class=prg>void </span>mostrarTempoEx(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Buffers para preparar exibição de informações</span>
+  <span class=sc16>static </span><span class=prg>char </span> info[128];  
+  <span class=sc16>static </span><span class=prg>char </span>deltainfo[128] = <span class=sc6>"g_deltaTempo: 0.10000 microtick"</span>; 
+
+  <span class=sc2>// Taxa de milessegundos por frame</span>
+  <span class=sc16>static </span><span class=prg>float </span>msFrame = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Taxa de frames por segundo</span>
+  <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Contador de frames</span>
+  <span class=sc16>static </span><span class=prg>float </span>nFrames = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Marca atual do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>tempoAtual = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Marca anterior do relógio do hardware</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>tempoAnterior = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a marca atual do relógio do hardware</span>
+  tempoAtual = <span class=prg>timeGetTime</span>();  
+
+  <span class=sc2>// Verifica a diferença entre o tempo atual e o anterior</span>
+  <span class=sc2>// e transforma o valor em termos de segundos</span>
+  <span class=sc9>if </span>(tempoAnterior == <span class=sc4>0</span>)  tempoAnterior = tempoAtual; 
+  g_deltaTempo = ((<span class=prg>float</span>)  tempoAtual - tempoAnterior) / <b class=sc4>1000.0f</b>; 
+
+  <span class=sc2>// Depois de calculado g_deltaTempo seria conveniente aqui</span>
+  <span class=sc2>// chamar as funções que atualizam e desenham a cena utilizando</span>
+  <span class=sc2>// esta marca de tempo como referência para avançar seus processos.</span>
+
+  <span class=sc2>// Incrementa o contador de frames</span>
+  nFrames += <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Acumula o tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Passou-se um segundo? Calculamos a taxa de frames uma vez</span>
+  <span class=sc2>// a cada segundo. Perceba que o tempo entre frames pode variar</span>
+  <span class=sc2>// então essa taxa é uma média por segundo</span>
+  <span class=sc9>if</span>( tempoDecorrido &gt;= <span class=sc4>1.0f</span>) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Frames por segundo (fps) = nFrames / tempoDecorrido</span>
+    <span class=sc2>// fps = nFrames (nFrames contados no segundo)</span>
+    fps = nFrames; 
+
+    <span class=sc2>// Tempo médio em milesegundos que o frame levou para ser renderizado</span>
+    msFrame = <span class=sc4>1000.0f </span>/ fps; 
+
+    <span class=sc2>// Resseta a variável do tempo decorrido para preparar para o cálculo</span>
+    <span class=sc2>// das taxas para o próximo segundo.</span>
+    tempoDecorrido = <span class=sc4>0.0f</span>; 
+    nFrames   = <span class=sc4>0.0f</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Preparação para a próximo frame</span>
+  <span class=sc2>// O tempoAtual se torna o tempoAnterior para o próximo frame</span>
+  tempoAnterior = tempoAtual; 
+
+  <span class=sc2>// Exibe as informações de performance da aplicação</span>
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Milessegundos por frame: %f </span>(ms) - timeGetTime()<span class=sc6>"</span>, msFrame);  
+  mostrarTexto (10, 10, info);  
+
+  <span class=prg>sprintf</span>(info, <span class=sc6>"Frames por segundo: %f </span>( fps )<span class=sc6> "</span>, fps);  
+  mostrarTexto (10, 40, info);  
+
+  <span class=sc9>if </span>(tempoDecorrido == <span class=sc4>0.0f</span>)  
+  <span class=prg>sprintf</span>(deltainfo, <span class=sc6>"g_deltaTempo: %f microtick"</span>, g_deltaTempo);  
+  mostrarTexto (10, 70, deltainfo);  
+
+<span class=sc16>} <span class=sc2>// mostrarTempoEx().fim</span></span>
+
+
+
+<span class=prg>void </span>mostrarMensagemTemporizada() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// controle local de tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Controle de mudança de mensagem no intervalo [0, 3]</span>
+  <span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Acumulação do tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// Gerando um valor aleatório no intervalo de 0 à 3</span>
+  dx = ( (<span class=prg>int</span>)  tempoDecorrido) % <span class=sc4>3</span>; 
+
+  <span class=sc2>// Bloco de mensagens para bHardwareTimer = true</span>
+  <span class=sc16>static </span><span class=prg>char* </span>mensagens[] = <span class=sc16>{</span>
+    <span class=sc6>"Testando QueryPerformanceCounter</span>()<span class=sc6>"</span>, 
+    <span class=sc6>"Produzido por Gameprog"</span>, 
+    <span class=sc6>"Visite www.gameprog.com.br"}</span>; 
+
+  <span class=sc2>// Bloco de mensagens para bHardwareTimer = false</span>
+  <span class=sc16>static </span><span class=prg>char* </span>mensagens_ex[] = <span class=sc16>{</span>
+    <span class=sc6>"Testando timeGetTime</span>()<span class=sc6>"</span>, 
+    <span class=sc6>"Produzido por Gameprog"</span>, 
+    <span class=sc6>"Visite www.gameprog.com.br"}</span>; 
+
+  <span class=sc2>// Mostra mensagem adequada de acordo com o tipo de timer selecionado</span>
+  <span class=sc9>if </span>(bHardwareTimer) 
+  mostrarTexto(100,280, mensagens[dx]);  
+  <span class=sc9>else</span>
+  mostrarTexto(100,280, mensagens_ex[dx]);  
+<span class=sc16>} <span class=sc2>// mostrarMensagemTemporizada().fim</span></span>
+
+
+
+<span class=prg>void </span>atualizaMovimento() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// direção: 1 (direita) -1 (esquerda)</span>
+  <span class=sc16>static </span><span class=prg>int </span>direcao = <span class=sc4>1</span>; 
+
+  <span class=sc2>// controle local de tempo decorrido</span>
+  <span class=sc16>static </span><span class=prg>float </span>tempoDecorrido = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// controle de deslocamento do jogador</span>
+  <span class=sc16>static </span><span class=prg>int </span>dx = <span class=sc4>0</span>; 
+
+  <span class=sc2>// controle de velocidade do jogador</span>
+  <span class=sc16>static </span><span class=prg>float </span>velocidade = <span class=sc4>100.0f</span>; 
+
+  <span class=sc2>// acumulação do tempo decorrido</span>
+  tempoDecorrido += g_deltaTempo; 
+
+  <span class=sc2>// cálculo de um valor para dx no intervalo [0, 640]</span>
+  dx = ((<span class=prg>int</span>)  (tempoDecorrido * velocidade)) % 640; 
+
+  <span class=sc2>// move jogador para direita se direção = 1</span>
+  <span class=sc9>if </span>(direcao == <span class=sc4>1</span>)  
+  <span class=sc16>{</span>
+  xcol = dx; 
+  sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// move jogador para a esquerda se direção = -1</span>
+  <span class=sc9>else</span>
+  <span class=sc16>{</span>
+  xcol = 640 - dx; 
+  sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+
+  <span class=sc2>// Inverte direção no encontro dos limites do intervalo</span>
+  <span class=sc9>if </span>(xcol &gt;= 640 || xcol &lt;= <span class=sc4>0</span>)  direcao = direcao * <span class=sc4>-1</span>; 
+
+<span class=sc16>} <span class=sc2>// atualizaMovimento().fim</span></span>
+
+
+
+<span class=sc2>// inicializarTexto() - Inicialização da interface de texto</span>
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto()</span></span>
+
+
+<span class=sc2>// mostrarTexto(x, y, txt) - Exibição de texto na coordenada 2d indicada</span>
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc2>// Configura a área limite</span>
+  <span class=sc5>RECT </span>area_limite; 
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=sc2>// Desenha o texto</span>
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto(); </span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Atualiza movimento do jogador</span>
+    atualizaMovimento();  
+
+    <span class=sc2>// Desenha o jogador na posição dada por (xcol, ylin)</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Mostra uma mensagem temporizada</span>
+    mostrarMensagemTemporizada();  
+
+    <span class=sc2>// Mostra as informações sobre o tempo</span>
+    <span class=sc9>if</span>(bHardwareTimer == <span class=prg>true</span>) mostrarTempo();  
+    <span class=sc9>if</span>(bHardwareTimer == <span class=prg>false</span>) mostrarTempoEx();  
+
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=sc2>// Tratamento das mensagens da janela</span>
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc2>// Inverte o tipo de timer na barra de espaços</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_SPACE</span>)  
+      bHardwareTimer = !bHardwareTimer; 
+
+    <span class=sc6>break</span>; 
+
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+<span class=sc2>// fim do arquivo: motor.cpp
+</div>
+
+<div class=prg-code>
+﻿// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_TimerTeste - Arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o timer de alta precisão</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = 
+    <span class=sc6>"prj_TimerTeste - Barra de espaço: inversão do tipo de timer"</span>; 
+
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+<span class=sc2>// fim do arquivo: entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais - Arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais - Arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 mostrarTempo() - Indicadores de performance da aplicação</a>
+<a href=#2.5>2.5 mostrarTempoEx() - Versão alternativa com timeGetTime()</a>
+<a href=#2.6>2.6 mostrarMensagemTemporizada() - Mensagens temporizadas</a>
+<a href=#2.7>2.7 atualizaMovimento() - Atualização de movimento do 'jogador'</a>
+<a href=#2.8>2.8 Renderizar() - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_TimerTeste</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

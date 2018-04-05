@@ -1,0 +1,424 @@
+﻿<html>
+<head>
+<title>Gameprog_CPP_fase_23</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track23.html</b></center>
+<hr>
+<table border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track22.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track24.html" style="color:blue">&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track23"></a><h3 style="background-color:#80ff80">23. Exemplo de aplicação da fila simples em videogames</h3>
+<b><u>23.1 Sistema de troca de mensagens numéricas entre objetos</b></u> 
+<img src="images\head_hit.png">	
+	
+Se alguém pisar no seu pé, o seu sistema de percepção sensorial vai perceber
+a pressão e enviar para o seu cérebro a mensagem codificada em impulsos
+elétricos de que seu pé recebeu uma pressão, e desta forma você percebe que
+seu pé foi pisado e reage a esse evento. 
+
+De maneira semelhante, você pode implementar esse mecanismo de troca de mensagens
+entre os objetos do seu jogo avisando-os dos eventos que ocorrem sobre eles e
+implementar um tratamento adequado de acordo com o evento ocorrido e os objetos
+afetados. 
+
+Em um exemplo concreto, imagine  seu  personagem  passando  por  uma  certa 
+localização vantajosa em uma tela; seu sistema de perceção implementado pode
+avisar que seu jogador passou por cima de um <b>kit de saúde</b> ou de uma <b>vida extra</b>,
+e como <b>reação a esse evento</b>, o motor do seu jogo  soma  uma  certa  quantidade
+de pontos ao seu número de vidas ou de energia  do  personagem  que  você  está
+movendo na tela. Pode ocorrer vários outros eventos sobre seu personagem, ele
+pode ser atingido por um tiro, ele pode chegar a uma <b>região gatilho</b> da tela
+que pode acionar a exibição de um vídeo ou de uma música, seu jogador pode chegar
+na marca de final de estágio. Certos eventos podem estar condicionados ao
+alcance de certas posições do espaço ou decorrentes da passagem de certo período
+de tempo. Se seu jogador deu um tiro fatal em um inimigo, este inimigo deve
+ser avisado desse evento e reagir adequadamente rodando uma animação de
+morte e na sequência desaparecendo da tela.
+
+Você pode utilizar uma fila para implementar um subsistema semelhante no seu 
+jogo. A fila é importante porque você deve reagir aos eventos por ordem de
+chegada dos mesmos. As mensagens de eventos que podem ocorrer ficam codificadas
+numa fila de número inteiros. Você desenha uma função para processar essa fila 
+que despacha as mensagens para os objetos sobre os quais esses eventos ocorreram.
+Os objetos recebem essas mensagens e reagem adequadamente à elas. Os objetos
+podem ter um método para receber essas mensagens que pode simplesmente consistir 
+de uma função que recebe um ou dois números inteiros.
+
+Veja um pequeno exemplo para você visualizar melhor essa concepção do sistema
+de troca de mensagens numéricas entre objetos.
+<img src="images/queue_tst.png">
+
+Bem, o personagem Rambo de nosso jogo vai andar por uma espaço aonde ele
+pode encontrar kits de munição que lhe aumentam o número de tiros, kits
+de saúde que lhe aumentam o número de energia, vidas extras, e inimigos
+que lhe atacam e que reduzem sua energia. 
+
+<b><u>Mensagens numéricas do jogo:</b></u>		
+<table class=dados border="1" cellspacing="2" cellpadding="2" width="55%">
+<tr><th>Valor da mensagem</th>	<th>Evento ocorrido</th></tr>
+<tr><td><b>1</b><br>#define msg_jogador_atacado</td><td>O jogador foi atingido pelo tiro inimigo</td></tr>		
+<tr><td><b>2</b><br>#define msg_vida_extra_encontrada</td><td>Kit de vida extra encontrado</td></tr>		
+<tr><td><b>3</b><br>#define msg_municao_encontrada</td><td>Kit de munição encontrado</td></tr>
+<tr><td><b>4</b><br>#define msg_kitsaude_encontrado</td><td>Kit de saúde encontrado</td></tr>		
+<tr><td><b>5</b><br>#define msg_gatilho_video_encontrado</td><td>Zona de gatilho encontrado</center></td></tr>	
+</table>
+
+<b><u>Propriedades e métodos do objeto da classe Jogador.</b></u>
+<table class=dados border="1" cellspacing="2" cellpadding="2" width="55%" >
+<tr><th>Propriedades</th>	<th>Métodos</th></tr>
+<tr><td><b><center>m_vidas</center></b><br>número de vidas</td><td><b><center>.mostrar()</center></b>
+<br>Mostra dados de status do jogador: vida, energia, munição
+<br><br><b><center>.ganhar_vida ( int nqtd)</center></b>
+<br>Aumentar o número de vidas na ocorrência do evento <font color="darkblue">msg_vida_extra_encontrada</font>
+</td></tr>
+<tr><td><b><center>m_energia</center></b><br>quantidade de energia (saúde)</td><td><b><center>.perder_energia(int nqtd)</center></b>
+<br>Reduzir a energia na ocorrência do evento <font color="darkblue">msg_jogador_atacado</font>
+<br><br><b><center>.ganhar_energia( int nqtd)</center></b>
+<br>Aumentar a energia na ocorrência do evento <font color="darkblue">msg_kitsaude_encontrado</font> </td>
+</tr>	
+<tr><td><b><center>m_municao</center></b><br>quantidade de munição</td><td><b><center>.aumentar_municao( int nqtd )</center></b>
+<br>Aumentar a quantidade de munição na ocorrência do evento <font color="darkblue">msg_municao_encontrada</font>
+</td></tr>
+<tr><td><center>***</center></td><td><b><center>.tocar_video ( int nvideo)</center></b>
+<br>Exibir um video especificado na ocorrência do evento <font color="darkblue">msg_gatilho_video_encontrado</font> </td></tr></table>
+	
+<b><u>Roteador dos eventos</b></u><font color="darkblue">
+// --------------------- tratar_evento() -------------------------------------
+void tratar_evento ( int nEvento) {
+	
+switch (nEvento)  {
+case 	msg_jogador_atacado:         			
+rambo.perder_energia(10);
+break;
+
+case 	msg_vida_extra_encontrada:  		
+rambo.ganhar_vida(3);
+break;
+// (...) Veja o código completo abaixo
+			
+ } // fim do switch nEvento	
+} // ------------------ fim da funcao tratar_evento() </font>
+Acima está um exemplo rústico de função roteadora que recebe o tipo de evento
+ocorrido e despacha ela para o destino correto, isto é, chama o código que
+vai tratar adequadamente o evento ocorrido.	
+Pensando em um desenho melhor dessa função ela deveria ter outros argumentos
+como o tipo de objeto que sofreu o evento, o objeto que causou o evento e
+dados extras da mensagem em casos de mensagens mais complexas.
+
+Esse mecanismo de troca de mensagens entre objetos é o núcleo de funcionamento
+do sistema Windows. Por exemplo, quando você clica em uma janela com o botão
+direito, o sistema Windows envia uma mensagem à janela, dizendo que ela foi
+clicada com o botão direito e manda como informação extra as coordenadas
+(x,y) aonde ocorreu o click.
+
+<b><u>Conceito de gatilho (triggers)</b></u>
+Gatilhos ou triggers como são chamados em inglês são condições que disparam
+eventos. Como exemplo de gatilhos podemos citar a passagem do jogador por
+certas coordenadas do espaço ou passando perto de certos itens, ainda os
+eventos podem ser disparados por um timer, por certos períodos decorridos
+a partir do início do jogo ou de uma tela.
+Em nosso rústico programa exemplo, sorteamos os eventos, mas em um jogo 
+completo certamente você vai utilizar o conceito de gatilhos. 
+
+Agora dê uma olhada em nosso programa exemplo completo:	
+<div class=prg-code>
+<img src=images/queue_tst.png>
+
+<span class="sc2">// Programa: queue_tst.cpp 
+// Este programa ilustra o conceito de trocas de mensagens numéricas entre     
+// objetos utilizando filas para armazenar eventos ocorridos. 
+</span><span class="sc0">
+</span><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;ctime&gt;
+#include &lt;cstdlib&gt;
+#include &lt;queue&gt;
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Eventos de videogame
+</span><span class="sc9">#define     msg_jogador_atacado                     1
+#define     msg_vida_extra_encontrada               2
+#define     msg_municao_encontrada                  3
+#define     msg_kitsaude_encontrado                 4
+#define     msg_gatilho_video_encontrado            5
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratar_evento</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEvento</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// -------------------------- Classe Jogador ---------------------------------
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+    
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_vidas</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_municao</span><span class="sc10">;</span><span class="sc0">  
+
+</span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">99</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">municao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">m_vidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vidas</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_municao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">municao</span><span class="sc10">;</span><span class="sc0">        
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc6">"Situacao do jogador: ( vidas:%d energia:%d municao:%d )"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">m_vidas</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_municao</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método mostrar()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">perder_energia</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t*** Vc perdeu "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pontos energia *** \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do perder_energia()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ganhar_energia</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t*** Vc ganhou "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pontos de energia ***\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do ganhar_energia()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ganhar_vida</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">m_vidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">m_vidas</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t*** Vc ganhou "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" vidas extras. ***\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método ganhar_vida()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">aumentar_municao</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">m_municao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">m_municao</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t*** Vc ganhou "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" cargas de municao extra ***\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método aumentar_municao()  
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tocar_video</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nvideo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">        
+    </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t*** O video #"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nvideo</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" foi tocado e mostrou uma cena...***\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método tocar_video()
+</span><span class="sc0">    
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// ------------------ fim da classe Jogador ---------------------------------
+</span><span class="sc0">
+</span><span class="sc2">// Vamos criar um jogador publico
+</span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">rambo</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------- Nossa funcao principal comeca aqui ------------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color f0"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"title queue_tst.cpp"</span><span class="sc10">);</span><span class="sc0">
+  
+</span><span class="sc11">queue</span><span class="sc10">&lt;</span><span class="sc16">int</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">msgEventos</span><span class="sc10">;</span><span class="sc0">
+  
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"0 - reservado                    "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"1 - msg_jogador_atacado          "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"2 - msg_vida_extra_encontrada    "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"3 - msg_municao_encontrada       "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"4 - msg_kitsaude_encontrado      "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"5 - msg_gatilho_video_encontrado "</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">evento_surpresa</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">evento_ocorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Vamos sortear e mostrar os eventos
+</span><span class="sc11">srand</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">time</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\t *** Eventos enfileirados nesta ordem: ***\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">evento_surpresa</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">rand</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">%</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">msgEventos</span><span class="sc10">.</span><span class="sc11">push</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">evento_surpresa</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">legenda</span><span class="sc10">[</span><span class="sc11">evento_surpresa</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Mostrar o jogador antes dos eventos serem processados
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+     
+</span><span class="sc2">// Vamos processar os eventos ocorridos na sequência que aconteceram
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t--------------- Processando eventos -------------------------- \n"</span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">evento_ocorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">msgEventos</span><span class="sc10">.</span><span class="sc11">front</span><span class="sc10">();</span><span class="sc0"> 
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t"</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">legenda</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc11">evento_ocorrido</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t fila.tamanho:"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">msgEventos</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">tratar_evento</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">evento_ocorrido</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">msgEventos</span><span class="sc10">.</span><span class="sc11">pop</span><span class="sc10">();</span><span class="sc0">    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor
+</span><span class="sc0">      
+</span><span class="sc2">// Foi tratado todos os eventos?
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t--------------------------------------------------------------- \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">msgEventos</span><span class="sc10">.</span><span class="sc11">empty</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t --- A fila agora esta' vazia! ---\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"pause"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ---------------------- fim da funcao main() ------------------------------
+</span><span class="sc0">
+
+</span><span class="sc2">// --------------------- tratar_evento() -------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratar_evento</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEvento</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    
+</span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nEvento</span><span class="sc10">)</span><span class="sc0"> 
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">case</span><span class="sc0">    </span><span class="sc11">msg_jogador_atacado</span><span class="sc10">:</span><span class="sc0">                    
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">perder_energia</span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">case</span><span class="sc0">    </span><span class="sc11">msg_vida_extra_encontrada</span><span class="sc10">:</span><span class="sc0">          
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">ganhar_vida</span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">case</span><span class="sc0">    </span><span class="sc11">msg_municao_encontrada</span><span class="sc10">:</span><span class="sc0">                 
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">aumentar_municao</span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">      
+
+</span><span class="sc5">case</span><span class="sc0">    </span><span class="sc11">msg_kitsaude_encontrado</span><span class="sc10">:</span><span class="sc0">                
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">ganhar_energia</span><span class="sc10">(</span><span class="sc4">15</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">case</span><span class="sc0">    </span><span class="sc11">msg_gatilho_video_encontrado</span><span class="sc10">:</span><span class="sc0">
+</span><span class="sc11">rambo</span><span class="sc10">.</span><span class="sc11">tocar_video</span><span class="sc10">(</span><span class="sc4">7</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">default</span><span class="sc10">:</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"Esse evento nao existe: #"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nEvento</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">         
+            
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do switch nEvento 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ------------------ fim da função tratar_evento()
+</span></div>	
+	
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track22.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track24.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>

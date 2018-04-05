@@ -1,0 +1,493 @@
+﻿<html>
+<head>
+<title>mdx9_fase04-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+
+
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 04-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track04-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>04.5 Texto simples</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Texto01.png></div>
+O Direct3D apresenta  a  classe  <b class=prg>Font</b>  utilizada  para  mostrar  texto 
+simples. Para utilizar essa classe é necessário <b>adicionar</b> a biblioteca
+de  extensão  do  Direct3D  denominada  <b class=prg>Microsoft.DirectX.Direct3DX</b> no
+elenco de referências do projeto.  Depois de adicionar essa referência
+repare que não é necessário utilizar uma instrução <span class=prg>using</span> para utilizar
+as  classes  contidas  neste namespace que adiciona classes auxiliares
+ao namespace <b class=prg>Microsoft.DirectX.Direct3D.</b>
+
+Essa classe utiliza como apoio  um objeto da classe <b class=prg>Font</b> do namespace
+<b class=prg>System.Drawing</b>  que  lhe  dá o corpo e estilo da fonte para a escrita.
+
+Como as classes possuem o mesmo nome é necessário um  mecanismo  para
+diferenciar a declaração dos objetos. O primeiro caminho é qualificar
+a declaração com o namespace completo de ambos.  Mas o melhor caminho
+é definir um alias ou apelido para encurtar  a declaração de qualquer
+objeto  do  Direct3D.  Para produzir  um  alias a instrução  <span class=prg>using</span>  é 
+utilizada dessa forma:
+	<span class=prg>
+	using <b>Direct3D = Microsoft.DirectX.Direct3D;</b> </span>
+	
+Depois  dessa  declaração  é  só  utilizar  o  apelido Direct3D  para 
+declarar qualquer objeto desse namespace:
+	<span class=prg>
+	private <b>Direct3D.Font</b> dxfMensagem = null;
+	dxfMensagem = new <b>Direct3D.Font</b>(device, g_font);   </span>
+	
+Esse problema de conflito de nomes vai ocorrer com outras bibliotecas
+do DirectX  e  em todos os casos utilizaremos um apelido como solução.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Texto01.png></div>
+O foco dessa aplicação consiste apenas na exibição de texto,  e visto
+que  para  isso  não  é  necessário  luzes nem câmeras as funções que 
+tratam  estes  aspectos  não  estão presentes. O texto é posicionando 
+utilizando coordenadas finais de tela.
+
+A aplicação  fará  uso de dois objetos <b class=prg>Direct3D.Font</b>,  <b>dxfMensagem</b>  e
+<b>dxfTitulo</b>, configurados  de  forma  diferente  para mostrar títulos e
+mensagens na tela.  Esses objetos serão inicializados em  <b>initGfx()</b> e
+serão  completamente configurados  e  efetivamente usados nas funções 
+<b>MostrarTitulo()</b> e <b>MostrarTextoCentralizado()</b>.
+
+<b><u>2.1 Variáveis da classe</u></b><div class=niceview>
+<span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+
+<span class=sc2>// Para criação do dispositivo gráfico</span>
+<span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+<span class=sc2>// Branco cor de fundo para nossa janela</span>
+<span class=prg>private </span><span class=prg>int </span>cor_fundo = 0xFFFFFF; 
+
+<b><span class=sc2>// Objeto Font do DirectX para mostrar texto (mensagens)</span>
+<span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+
+<span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+<span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+
+<span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+<span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span></b>
+
+<span class=sc2>// (...)</span>
+
+<b class=prg>}</b> <span class=sc2>// fim da classe</span>
+</div>
+
+Depois  de  configurar  adequadamente  o  apelido  para  o  namespace 
+<b class=prg>Microsoft.DirectX.Direct3D</b>  conforme  foi  proposto, a declaração dos
+objetos que vão desenhar texto na tela é feito na forma abaixo:
+
+<b><span class=sc2>// Objeto Font do DirectX para mostrar texto (mensagens)</span>
+<span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+
+<span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+<span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+
+<span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+<span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span></b>
+
+<b><u>2.2 Inicialização dos objetos para mostrar texto</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice no</span>
+ <span class=sc2>// software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+ <b>
+ <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>16.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+ <span class=sc2>// Configuração das fontes para mostrar títulos</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold </span>| <span class=prg>FontStyle.Italic</span>);  
+ dxfTitulo  = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+</b>
+<span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</div>
+
+<b><span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>16.0f</span>, <span class=prg>FontStyle.Bold</span>); </b> 
+Aqui é definido um objeto  <span class=prg>System.Drawing.Font</span>  com  nome  da  fonte, 
+tamanho e estilo.
+
+<b>dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);</b>
+Aqui é definido um objeto  <span class=prg>Microsoft.DirectX.Direct3D.Font</span>  com  a
+configuração de fonte dada por <b>g_font</b> no dispositivo apontado pela
+variável <b>device</b>.  O método <b class=prg>DrawText()</b> desse objeto será usado para
+escrever mensagens comuns na tela. Na  sequência  criamos um outro 
+objeto para mostrar títulos grandes na tela:
+
+<span class=sc2>// Configuração das fontes para mostrar títulos</span>
+g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, 
+				<span class=prg>FontStyle.Bold </span>| <span class=prg>FontStyle.Italic</span>);  
+dxfTitulo  = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);</b>
+
+<b><u>2.3 Renderizando o texto na tela</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, cor_fundo, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+ <b><span class=sc2>// Mostra título do jogo</span>
+ MostrarTitulo(20,20,<span class=sc6>"SUPER NINJA GAIDEN"</span>, <span class=prg>Color.Red</span>);  
+
+ <span class=sc2>// Mostra mensagem na tela</span>
+ MostrarTextoCentralizado(320, 240, 
+ <span class=sc6>"Pressione START para começar"</span>, <span class=prg>Color.Blue</span>);  
+
+ <span class=sc2>// Mostra título do jogo</span>
+ MostrarTitulo(20, 380, <span class=sc6>"By Gameprog"</span>, <span class=prg>Color.YellowGreen</span>); </b>
+
+ <span class=prg>device.EndScene</span>();  
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+<b><span class=sc2>// Mostra título do jogo</span>
+MostrarTitulo(20,20, <span class=sc6>"SUPER NINJA GAIDEN"</span>, <span class=prg>Color.Red</span>);</b>
+A função  <b>MostrarTitulo()</b>  exibe efetivamente o texto passando para a
+função <b class=prg>dxfTitulo.DrawText()</b> a coordenada de tela, a string e a cor do
+texto a ser exibido.  Na  sequência  outras  mensagens  são  exibidas 
+utilizando o mesmo mecanismo de exibição de texto:
+
+<b><span class=sc2>// Mostra mensagem na tela</span>
+MostrarTextoCentralizado(320, 240, <span class=sc6>"Pressione START para começar"</span>, <span class=prg>Color.Blue</span>);</b>
+
+<b><span class=sc2>// Mostra título do jogo</span>
+MostrarTitulo(20, 380, <span class=sc6>"By Gameprog"</span>, <span class=prg>Color.YellowGreen</span>);</b>  
+
+<b><u>2.4 Conhecendo Direct3D.Font.DrawText()</u></b>
+<div class=niceview><span class=sc2>// Mostra texto centralizado</span>
+<span class=prg>private </span><span class=prg>void </span>MostrarTextoCentralizado(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt,<span class=sc5>Color </span>font_cor) 
+<span class=sc16>{</span>
+ <span class=sc2>// Configura posição</span>
+ <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+ <span class=sc2>// Mostra texto</span>
+ <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+ <span class=prg>DrawTextFormat.NoClip </span>| <span class=prg>DrawTextFormat.Center</span>, font_cor);  
+<span class=sc16>}</span></div>
+
+<div class=niceview>
+<span class=sc2>// Mostra texto com tamanho de fonte grande para títulos</span>
+<span class=prg>private </span><span class=prg>void </span>MostrarTitulo(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+<span class=sc16>{</span>
+ <span class=sc2>// Configura posição</span>
+ <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+ <span class=sc2>// Mostra texto</span>
+ <span class=prg>dxfTitulo.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, font_cor);  
+<span class=sc16>}</span></div>
+
+<b><span class=sc2>// Configura posição</span>
+<span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  </b>
+O  método  <b class=prg>DrawText()</b>  desenha  o  texto dentro de um retângulo que é
+montado  a partir da posição do retângulo no espaço <b>(xcol, ylin)</b> e do
+tamanho do retângulo  expressado por <b>(0,0)</b> no exemplo que implica que
+o texto não vai sofrer o constrangimento do tamanho do retângulo.
+
+<b><span class=sc2>// Mostra texto</span>
+<span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+<span class=prg>DrawTextFormat.NoClip </span>| <span class=prg>DrawTextFormat.Center</span>, font_cor);</b>
+O método <b class=prg>DrawText()</b> recebe opcionalmente um sprite (<b class=prg>null</b>), uma string
+de texto (<b>txt</b>), opções de formatação do texto expressadas pelos flags 
+<b class=prg>DrawTextFormat</b> e a cor da fonte (<b>font_cor</b>).
+
+A <b>sprite</b> é uma superfície retangular texturizada geralmente usada para
+animações 2D. Na  ausência  de  uma  sprite  como  foi  no caso acima 
+assinalado  por   <span class=prg>null</span>   neste   argumento,   o  Direct3D  monta  uma 
+internamente.  O objeto  <b>sprite</b>  será  melhor apresentado no capítulo
+sobre gráficos 2D.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Texto01</u></b>
+<div class=prg-code>
+<img src=images\prj_Texto01.png>
+
+<span class=sc2>// Prj_Texto01 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto exemplifica como mostrar textos na tela</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=prg>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_Texto01 
+<span class=sc16>{</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+
+  <span class=sc2>// Para criação do dispositivo gráfico</span>
+  <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+  <span class=sc2>// Branco cor de fundo para nossa janela</span>
+  <span class=prg>private </span><span class=prg>int </span>cor_fundo = 0xFFFFFF; 
+
+  <span class=sc2>// Objeto Font do DirectX para mostrar texto (mensagens)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Qualquer configuração em algum componente, faça depois dessa função!</span>
+      <span class=sc2>// Pois a geração automática de código pode suprimir algo que você</span>
+      <span class=sc2>// fizer antes dela</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+  <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice no</span>
+      <span class=sc2>// software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>16.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Configuração das fontes para mostrar títulos</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, 
+        <span class=prg>FontStyle.Bold </span>| <span class=prg>FontStyle.Italic</span>);  
+      dxfTitulo  = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, cor_fundo, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Mostra título do jogo</span>
+      MostrarTitulo(20,20,<span class=sc6>"SUPER NINJA GAIDEN"</span>, <span class=prg>Color.Red</span>);  
+
+      <span class=sc2>// Mostra mensagem na tela</span>
+      MostrarTextoCentralizado(320, 240, 
+        <span class=sc6>"Pressione START para começar"</span>, <span class=prg>Color.Blue</span>);  
+
+      <span class=sc2>// Mostra título do jogo</span>
+      MostrarTitulo(20, 380, <span class=sc6>"By Gameprog"</span>, <span class=prg>Color.YellowGreen</span>);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// render()</span></span>
+
+  <span class=sc2>// Mostra texto centralizado</span>
+  <span class=prg>private </span><span class=prg>void </span>MostrarTextoCentralizado(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+        <span class=prg>DrawTextFormat.NoClip </span>| <span class=prg>DrawTextFormat.Center</span>, font_cor);  
+    <span class=sc16>}</span>
+
+  <span class=sc2>// Mostra texto com tamanho de fonte grande para títulos</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarTitulo(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfTitulo.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, font_cor);  
+    <span class=sc16>}</span>
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span></div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track04-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

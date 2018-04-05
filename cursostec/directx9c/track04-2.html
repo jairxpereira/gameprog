@@ -1,0 +1,1319 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase04-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 04-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track04-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>04.2 Formas primitivas 3d</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\vg_prj_Meshes01.png></div>
+O directx apresenta a interface  <b class=prg>ID3DXMesh</b>  que  oferece  suporte  na
+criação e manipulação de objetos 3d e algumas funções auxiliares  que
+permitem  a  criação  de  formas  primitivas  3d  tais  como  as  que
+aparecem na ilustração acima.
+
+Segue abaixo a listagem dessas funções criadoras de  formas  simples:
+
+<span class=prg>D3DXCreateBox()</span>		- Criação de caixas e cubos 
+<span class=prg>D3DXCreateCylinder()</span>	- Cilindros 
+<span class=prg>D3DXCreatePolygon()</span>	- Polígonos 
+<span class=prg>D3DXCreateSphere()</span>	- Esferas
+<span class=prg>D3DXCreateTeapot()</span>	- Teapot
+<span class=prg>D3DXCreateText()</span>	- Texto 3d
+<span class=prg>D3DXCreateTorus()</span>	- Torus ou aros.
+
+As formas criadas possuem informação de normais para o uso de luz mas
+não apresentam coordenadas de textura. 
+
+* O termo mesh, traduzido como malha,  geralmente  é  utilizado  como
+sinônimo de objeto 3d ou modelo 3d.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=sc16>desenharObjeto()</b>
+	Esta função vai renderizar na tela o objeto da interface <b class=prg>ID3DXMesh</b>.
+	Isso envolve a configuração das matrizes parciais de rotação, posição
+	e escala; produzir a matriz final com as matrizes parciais;   jogar a
+	matriz final no dispositivo renderizador;  configurar  o  material  e
+	renderizar por final.	
+
+renderizar_Geometria()
+	<b class=sc16>O temporizador indica a cada dois segundos uma primitiva diferente
+	renderiza a primitiva 3d com desenharObjeto() 
+	libera o objeto desenhado	</b>
+
+initGfx()
+	chama configurar_cenaEstados() para preparação inicial da cena.
+	chama inicializar_Camera() para a configuração inicial da câmera
+	chama colocar_DirectionalLight() para configuração da iluminação	
+
+Renderizar()
+	Limpa a tela	
+	chama renderizar_Geometria() para desenhar as primitivas
+	Apresenta a cena
+
+Limpar()	
+	Libera o objeto da interface <b class=prg>ID3DXMesh</b>
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Meshes01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar as formas primitivas 3d</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Estrutura para auxiliar no posicionamento, rotação e cor do objeto 3d</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+  <span class=sc5>D3DCOLORVALUE </span>cor; 
+<span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura o texto da janela</span>
+  <span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto);  
+
+  <span class=sc2>// Renderiza um objeto 3d do tipo ID3DXMesh</span>
+  <span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>// Prepara o material do objeto 3d</span>
+  <span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor );  
+
+  <span class=sc2>// Coloca uma luz direcional na cena</span>
+  <span class=prg>void </span>colocar_DirectionalLight(<span class=sc5>D3DXVECTOR3 </span>direcao, <span class=sc5>D3DCOLORVALUE </span>cvCor);  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  <span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                         <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+<b><span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos;  <span class=sc5>D3DXVECTOR3 </span>rot; <span class=sc5>D3DCOLORVALUE </span>cor; 
+<span class=sc16>}</span>; </b>
+Esta  estrutura  auxilia  na  configuração  da  cor  do  material, no
+posicionamento e rotação do objeto no mundo 3d.
+
+<b><span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>); </b>
+Com  o auxílio do temporizador  e  da  função  <b>desenharObjeto()</b>  esta
+função vai renderizar periodicamente cada uma das primitivas 3d.  
+
+<b><span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  </b>
+Esta função vai renderizar um objeto 3d  encapsulado  pela  interface
+<b class=prg>ID3DXMesh</b>. Esse processo envolve configurar as matrizes  parciais  de
+rotação, posicionamento e escala. Depois estas matrizes parciais  são
+combinadas numa só e jogada na matriz  de  mundo  do  renderizador. O
+material é configurado e  por fim o objeto é renderizado com o método
+<span class=prg>DrawSubset(0)</span> da interface <b class=prg>ID3DXMesh</b>.
+
+<b><span class=prg>void </span>colocar_DirectionalLight(<span class=sc5>D3DXVECTOR3 </span>direcao, <span class=sc5>D3DCOLORVALUE </span>cvCor);  </b>
+Essa função coloca uma luz direcional na cena aceitando como argumentos
+de entrada uma cor e a direção da luz.
+
+<b><span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>);   </b>
+Essa função configura alguns estados da cena com  um  foco  maior  no
+uso do buffer de profundidade (zbuffer).
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// Material para o objeto 3d</span>
+<span class=sc5>D3DMATERIAL9 </span>g_material; 
+
+<span class=sc2>// Interface do objeto 3d</span>
+<span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+
+<span class=sc2>// Controla o ângulo de rotação do objeto 3d</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+</div>
+<b><span class=sc5>D3DMATERIAL9 </span>g_material; </b>
+Esta variável será usada para aplicar o material nos objetos.
+
+<b><span class=sc5>Propriedades3d </span>g_props; </b>
+Esta variável será utilizada para configurar a posição, rotação e cor
+do material do objeto 3d.
+
+<b><span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; </b>
+Esta  variável  será  usada  como  recipiente  do  objeto  3d  a  ser
+renderizado pelo método <span class=prg>DrawSubset()</span> dessa interface.  É interessante
+comentar que esta variável e suas auxiliares ( <b>g_material,  g_props</b> )
+serão utilizadas para renderizar cada um dos objetos  numa  sequência
+circular  dada  pelo laço criar-renderizar-liberar.
+
+<b><u>2.2 Inicializando o motor gráfico</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  configurar_cenaEstados();  
+
+  <span class=sc2>// Configura e coloca uma luz direcional na cena</span>
+  <span class=sc5>D3DXVECTOR3 </span>direcao(<span class=sc4>0.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);   
+  colocar_DirectionalLight (direcao, cvBranco);  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b><span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+<span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; </b>
+Estas  duas  linhas  fazem  o  trabalho  importante  de  habilitar  e
+selecionar o formato do buffer de  profundidade.  Isso  é  necessário 
+para   conseguir   um  bom  aspecto  visual  dos  objetos  3d  com  a 
+renderização  correta  da  geometria  que  fica  na frente das outras. 
+Geralmente  o  buffer  de profundidade e o stencil coexistem na mesma
+superfície com cada ponto dessa superfície correspondendo-se  com  um
+ponto na mesma posição do backbuffer.  O stencil determina se o pixel
+será renderizado ou não e será examinado exclusivamente no seu devido
+tópico no curso avançado de DirectX 9 da Gameprog.
+
+<b><span class=sc5>D3DXVECTOR3 </span>direcao(<span class=sc4>0.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);   
+colocar_DirectionalLight (direcao, cvBranco);  </b>
+Aqui  uma  luz direcional é configurada e acionada  na  cena.  O  uso
+desse tipo de luz melhora o aspecto geral da cena.
+
+<b><u>2.3.1 Renderização dos objetos 3d</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Mensagens para a barra de títulos da janela</span>
+  <span class=prg>char </span>*mensagem[] = 
+    <span class=sc16>{</span>
+    <span class=sc6>"prj_Meshes01: D3DXCreateBox </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreatePolygon </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateTeapot </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateSphere </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateTorus </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateCylinder </span>( )<span class=sc6>"</span>
+    <span class=sc16>}</span>; 
+
+  <span class=sc2>// Produz a cada dois segundos um valor de 0 a 5.</span>
+  temporizador = ( <span class=prg>clock</span>() / 2000 ) % <span class=sc4>6</span>; 
+
+  <span class=sc2>// Configura o texto da janela</span>
+  config_janelaTexto( mensagem[temporizador]);  
+
+  <span class=sc2>// Renderiza a primitiva 3d selecionada pelo tempo decorrido</span>
+    <span class=sc9>switch</span>( temporizador ) 
+  <span class=sc16>{</span>
+
+    <span class=sc9>case </span>0: 
+    <span class=sc2>// Cria e renderiza uma caixa</span>
+    <span class=prg>D3DXCreateBox </span>(g_device, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvVermelho; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>2.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>1: 
+    <span class=sc2>// Cria e renderiza um polígono</span>
+    <span class=prg>D3DXCreatePolygon </span>(g_device, <span class=sc4>2.0f</span>, <span class=sc4>8</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvVerde; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>2: 
+    <span class=sc2>// Cria e renderiza um teapot</span>
+    <span class=prg>D3DXCreateTeapot </span>(g_device, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAmarelo; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-1.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>3: 
+    <span class=sc2>// Cria e renderiza uma esfera</span>
+    <span class=prg>D3DXCreateSphere </span>(g_device, <span class=sc4>2.0f</span>, <span class=sc4>8</span>, <span class=sc4>8</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAzul; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_WIREFRAME</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_SOLID</span>);   
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>4: 
+    <span class=sc2>// Cria e renderiza um torus</span>
+    <span class=prg>D3DXCreateTorus </span>(g_device, <span class=sc4>0.1f</span>, <span class=sc4>2.0f</span>, 32, 32, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvRoxo; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-2.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>5: 
+    <span class=sc2>// Cria e renderiza um cilindro</span>
+    <span class=prg>D3DXCreateCylinder </span>(g_device, <span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>5.0f</span>, 32, 32, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAzul; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Libera o objeto criado</span>
+    <span class=prg>g_objeto3d-&gt;Release</span>();  
+    g_objeto3d = <span class=prg>NULL</span>; 
+
+  <span class=sc16>} <span class=sc2>// fim do switch</span></span>
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+<b><span class=prg>char </span>*mensagem[] = <span class=sc16>{</span>
+<span class=sc6>"prj_Meshes01: D3DXCreateBox</span>( )<span class=sc6>"</span>, <span class=sc6>"prj_Meshes01: D3DXCreatePolygon</span>( )<span class=sc6>"</span>, 
+<span class=sc6>"prj_Meshes01: D3DXCreateTeapot</span>( )<span class=sc6>"</span>, <span class=sc6>"prj_Meshes01: D3DXCreateSphere</span>( )<span class=sc6>"</span>, 
+<span class=sc6>"prj_Meshes01: D3DXCreateTorus</span>( )<span class=sc6>"</span>, <span class=sc6>"prj_Meshes01: D3DXCreateCylinder</span>( )<span class=sc6>"</span><span class=sc16>}</span>; </b>
+Definimos uma array de strings que é utilizada para destacar a função
+criativa em ação no momento.
+
+<b>temporizador = ( <span class=prg>clock</span>() / 2000 ) % <span class=sc4>6</span>; </b>
+Esse temporizador produz um valor de 0 a 5 utilizado  na  seleção  da
+primitiva a ser renderizada.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc9>case </span>5: 
+<span class=sc2>// Cria e renderiza um cilindro</span>
+<span class=prg>D3DXCreateCylinder </span>(g_device, <span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>5.0f</span>, 32, 32, &g_objeto3d, <span class=prg>NULL</span>);   
+<span class=prg>g_props.cor </span>= cvAzul; 
+<span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+<span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+desenharObjeto( g_objeto3d, &g_props);  
+<span class=sc6>break</span>; </b></div>
+Dentro do  <b class=prg>switch</b>  cada  <span class=sc9>case</span>  renderizará  uma  forma  primitiva  3d
+diferente fazendo a configuração de sua cor, posição e rotação.
+
+<b><span class=prg>g_objeto3d-&gt;Release</span>();  g_objeto3d = <span class=prg>NULL</span>; </b>
+O objeto representado por <b>g_objeto3d</b> começa como <span class=prg>NULL</span>, é inicializado
+com uma forma no <span class=sc9>case</span> selecionado e depois é liberado aqui para estar
+disponível para o mesmo trabalho no próximo frame.
+
+<b><u>2.3.2 Renderização do objeto ID3DXMesh</u></b>
+<div class=niceview><span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; 
+
+<span class=sc2>// Matriz para combinar todas as transformações do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>mtxCombinada; 
+
+<span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+<span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+<span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+<span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+<span class=sc2>// Atualiza ângulo de rotação</span>
+g_angulo += <span class=sc4>0.02f</span>; 
+
+<span class=sc2>// Configura rotação do objeto 3d</span>
+<span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+                 <span class=prg>props-&gt;rot.y </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.z</span>);   
+
+<span class=sc2>// Ajusta posição do objeto 3d; </span>
+<span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+               <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   
+
+<span class=sc2>// Tranfere posição e rotação para o mundo</span>
+<span class=prg>D3DXMatrixMultiply </span>(&mtxCombinada, &obj_rot, &obj_pos);  
+
+<span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+<span class=sc2>// Prepara e aplica uma material no objeto 3d</span>
+criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+<span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  
+
+<span class=sc2>// Renderiza o mesh</span>
+<span class=prg>obj3d-&gt;DrawSubset</span>(<span class=sc4>0</span>);   
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+</div>
+<b><span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; </b>
+Estas matrizes servem para armazenar e preparar  o  posicionamento  e
+rotação do objeto 3d.
+ 
+<b><span class=sc5>D3DXMATRIX </span>mtxCombinada; </b>
+Esta matriz representa a  matriz  final  do  objeto  3d  que  conterá
+rotação, posicionamento e escala em sua forma mais completa.
+
+<b><span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+<span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+<span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  </b>
+Aqui todas as matrizes são 'zeradas' ou inicializadas com  o elemento
+neutro do mundo das matrizes,  a matriz  identidade.  Qualquer matriz
+multiplicada  pela  matriz  identidade  é  igual a  si mesma.
+
+<b>g_angulo += <span class=sc4>0.02f</span>; </b>
+O valor dessa variável soma-se aos valores do eixo escolhido e produz
+a simples animação do objeto.
+
+<b><span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+                 <span class=prg>props-&gt;rot.y </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.z</span>);   </b>
+Essa função configura a rotação do objeto em cada  um  dos  eixos  na
+ordem (y, x, z).
+
+<b><span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+               <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   </b>
+Aqui a matriz de posição do objeto é preparada.
+
+<b><span class=prg>D3DXMatrixMultiply </span>(&mtxCombinada, &obj_rot, &obj_pos);  </b>
+Esta função combina rotação  e  posicionamento  na  matriz  final  do
+objeto 3d.  A  estrutura  <b class=prg>D3DXMATRIX</b>  aceita  o  uso  do  operador de 
+multiplicação (*).  Portanto  você pode produzir a matriz final dessa
+forma: <span class=prg>mtxCombinada = obj_rot * obj_pos * objeto_escala; </span>
+
+<b><span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  </b>
+Aqui a matriz de mundo do objeto é instalada na matriz  de  mundo  do
+dispositivo renderizador.
+
+<b>criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+<span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  </b>
+Aqui o material é preparado e configurado no dispositivo renderizador.
+
+<b><span class=prg>obj3d-&gt;DrawSubset</span>(<span class=sc4>0</span>);   </b>
+E  por fim  <span class=prg>DrawSubset</span>(<span class=sc4>0</span>) renderiza o mesh tomando todos os  cuidados
+internos de configuração do formato de vértice,  buffer  de  vértices
+e  outras  coisas  mais para conseguir um objeto renderizado na tela.
+
+<b><u>2.4 Luz direcional</u></b>
+<div class=niceview><span class=prg>void </span>colocar_DirectionalLight(<span class=sc5>D3DXVECTOR3 </span>direcao, <span class=sc5>D3DCOLORVALUE </span>cvCor) 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara a estrutura</span>
+  <span class=sc5>D3DLIGHT9 </span>luz; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &luz, <span class=sc16>sizeof</span>(<span class=sc5>D3DLIGHT9</span>)   );  
+
+  <span class=sc2>// Configura tipo</span>
+  <span class=prg>luz.Type </span>= <span class=sc4>D3DLIGHT_DIRECTIONAL</span>; 
+
+  <span class=sc2>// Configura cor</span>
+  <span class=prg>luz.Diffuse </span>= cvCor; 
+
+  <span class=sc2>// Configura direção da luz</span>
+  <span class=prg>luz.Direction </span>= direcao; 
+
+  <span class=sc2>// Instalação e acionamento da luz no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+  <span class=prg>g_device-&gt;SetLight</span>( <span class=sc4>0</span>, &luz );  
+  <span class=prg>g_device-&gt;LightEnable</span>( <span class=sc4>0</span>, <span class=prg>TRUE</span>);   
+
+<span class=sc16>} <span class=sc2>// colocar_DirectionalLight().fim</span></span>
+</div>
+<b><span class=sc5>D3DLIGHT9 </span>luz; 
+<span class=prg>ZeroMemory</span>( &luz, <span class=sc16>sizeof</span>(<span class=sc5>D3DLIGHT9</span>)   );  </b>
+Aqui ocorre a declaração e limpeza da estrutura  para configuração da
+fonte de luz direcional.
+
+<b><span class=prg>luz.Type </span>= <span class=sc4>D3DLIGHT_DIRECTIONAL</span>; </b>
+Aqui ocorre a definição do tipo da fonte de luz com seleção  do  tipo
+direcional.
+
+<b><span class=prg>luz.Diffuse </span>= cvCor;
+<span class=prg>luz.Direction </span>= direcao; </b> 
+Aqui ocorre a configuração da cor e da direção da luz.
+
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+<span class=prg>g_device-&gt;SetLight</span>( <span class=sc4>0</span>, &luz );  
+<span class=prg>g_device-&gt;LightEnable</span>( <span class=sc4>0</span>, <span class=prg>TRUE</span>);   </b>
+Aqui ocorre a habilitação do uso de iluminação pela aplicação; a luz é
+instalada  no  dispositivo  e  por  último  ela  é  ligada.
+
+<b><u>2.5 Estados de renderização</u></b>
+<div class=niceview><span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configura luz ambiente</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(80,80,80) );  
+
+  <span class=sc2>// Configura shading</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SHADEMODE</span>, <span class=sc4>D3DSHADE_GOURAUD</span>);  
+
+  <span class=sc2>// Habilita uso de buffer de profundidade</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_TRUE</span>);  
+
+  <span class=sc2>// Desliga o culling</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   
+
+<span class=sc16>} <span class=sc2>// configurar_cenaEstados().fim</span></span>
+</div>
+<b><span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(80,80,80) );  </b>
+Configuração da luz ambiente.
+
+<b><span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SHADEMODE</span>, <span class=sc4>D3DSHADE_GOURAUD</span>);  </b>
+Configuração do modo de shading definindo aqui que a renderização vai
+tender para uma forma suave.  A  imagem  abaixo  mostra  os  modos de
+shading que o directx apresenta:
+<img src=images/shading.png>
+
+
+<b><span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_TRUE</span>);  </b>
+Aqui o buffer criado em initGfx() tem o seu uso habilitado.  A imagem
+abaixo mostra o impacto visual desse buffer ligado e desligado:
+<img src=images/depth_buffers.png>
+
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   </b>
+O culling é desligado mas mesmo assim você não verá a  parte  interna
+da geometria devido a correção dada pelo buffer de profundidade.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Meshes01</u></b>
+<div class=prg-code><img src=images\prj_Meshes01.png>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Meshes01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar as formas primitivas 3d</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Estrutura para auxiliar no posicionamento, rotação e cor do objeto 3d</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+  <span class=sc5>D3DCOLORVALUE </span>cor; 
+<span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura o texto da janela</span>
+  <span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto);  
+
+  <span class=sc2>// Renderiza um objeto 3d do tipo ID3DXMesh</span>
+  <span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>// Prepara o material do objeto 3d</span>
+  <span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor );  
+
+  <span class=sc2>// Coloca uma luz direcional na cena</span>
+  <span class=prg>void </span>colocar_DirectionalLight(<span class=sc5>D3DXVECTOR3 </span>direcao, <span class=sc5>D3DCOLORVALUE </span>cvCor);  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  <span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                         <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Meshes01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar as formas primitivas 3d</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;string.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;time.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Material para o objeto 3d</span>
+<span class=sc5>D3DMATERIAL9 </span>g_material; 
+
+<span class=sc2>// Interface do objeto 3d</span>
+<span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+
+<span class=sc2>// Controla o ângulo de rotação do objeto 3d</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Handle (alça) da janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+
+<span class=sc2>// Constante para cores com rgba expressado como float's</span>
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvBranco   = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvVermelho = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvAmarelo  = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvVerde    = <span class=sc16>{ </span><span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvAzul     = <span class=sc16>{ </span> <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<span class=sc16>const </span><span class=sc5>D3DCOLORVALUE </span>cvRoxo     = <span class=sc16>{ </span> <span class=sc4>0.5f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.5f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Controla a mudança periódica da primitiva 3d</span>
+<span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; 
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  configurar_cenaEstados();  
+
+  <span class=sc2>// Configura e coloca uma luz direcional na cena</span>
+  <span class=sc5>D3DXVECTOR3 </span>direcao(<span class=sc4>0.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);   
+  colocar_DirectionalLight (direcao, cvBranco);  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Mensagens para a barra de títulos da janela</span>
+  <span class=prg>char </span>*mensagem[] = 
+    <span class=sc16>{</span>
+    <span class=sc6>"prj_Meshes01: D3DXCreateBox </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreatePolygon </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateTeapot </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateSphere </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateTorus </span>( )<span class=sc6>"</span>, 
+    <span class=sc6>"prj_Meshes01: D3DXCreateCylinder </span>( )<span class=sc6>"</span>
+    <span class=sc16>}</span>; 
+
+  <span class=sc2>// Produz a cada dois segundos um valor de 0 a 5.</span>
+  temporizador = ( <span class=prg>clock</span>() / 2000 ) % <span class=sc4>6</span>; 
+
+  <span class=sc2>// Configura o texto da janela</span>
+  config_janelaTexto( mensagem[temporizador]);  
+
+  <span class=sc2>// Renderiza a primitiva 3d selecionada pelo tempo decorrido</span>
+    <span class=sc9>switch</span>( temporizador ) 
+  <span class=sc16>{</span>
+
+    <span class=sc9>case </span>0: 
+    <span class=sc2>// Cria e renderiza uma caixa</span>
+    <span class=prg>D3DXCreateBox </span>(g_device, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvVermelho; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>2.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>1: 
+    <span class=sc2>// Cria e renderiza um polígono</span>
+    <span class=prg>D3DXCreatePolygon </span>(g_device, <span class=sc4>2.0f</span>, <span class=sc4>8</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvVerde; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>2: 
+    <span class=sc2>// Cria e renderiza um teapot</span>
+    <span class=prg>D3DXCreateTeapot </span>(g_device, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAmarelo; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-1.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>3: 
+    <span class=sc2>// Cria e renderiza uma esfera</span>
+    <span class=prg>D3DXCreateSphere </span>(g_device, <span class=sc4>2.0f</span>, <span class=sc4>8</span>, <span class=sc4>8</span>, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAzul; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_WIREFRAME</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_SOLID</span>);   
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>4: 
+    <span class=sc2>// Cria e renderiza um torus</span>
+    <span class=prg>D3DXCreateTorus </span>(g_device, <span class=sc4>0.1f</span>, <span class=sc4>2.0f</span>, 32, 32, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvRoxo; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-2.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span>5: 
+    <span class=sc2>// Cria e renderiza um cilindro</span>
+    <span class=prg>D3DXCreateCylinder </span>(g_device, <span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>5.0f</span>, 32, 32, &g_objeto3d, <span class=prg>NULL</span>);   
+    <span class=prg>g_props.cor </span>= cvAzul; 
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>);   
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Libera o objeto criado</span>
+    <span class=prg>g_objeto3d-&gt;Release</span>();  
+    g_objeto3d = <span class=prg>NULL</span>; 
+
+  <span class=sc16>} <span class=sc2>// fim do switch</span></span>
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                         <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o buffer de vértices</span>
+  <span class=sc9>if</span>( g_objeto3d != <span class=prg>NULL</span>)  <span class=prg>g_objeto3d-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+<span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Pega o texto atual da janela</span>
+  <span class=prg>char </span>temp_txt[80];  
+  <span class=prg>GetWindowText </span>(hJanela, temp_txt, 80);  
+
+  <span class=sc2>// Configura apenas se o texto de entrada for diferente</span>
+  <span class=sc2>// do texto que está na janela</span>
+  <span class=sc2>// Isto é para evitar um efeito visual desagradável na barra</span>
+  <span class=sc2>// de título da janela.</span>
+  <span class=sc9>if </span>(strcmp (temp_txt, texto)) 
+    <span class=prg>SetWindowText </span>(hJanela, texto);  
+
+<span class=sc16>} <span class=sc2>// config_janelaTexto().fim</span></span>
+
+<span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; 
+
+<span class=sc2>// Matriz para combinar todas as transformações do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>mtxCombinada; 
+
+<span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+<span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+<span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+<span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+<span class=sc2>// Atualiza ângulo de rotação</span>
+g_angulo += <span class=sc4>0.02f</span>; 
+
+<span class=sc2>// Configura rotação do objeto 3d</span>
+<span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+                 <span class=prg>props-&gt;rot.y </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+                 <span class=prg>props-&gt;rot.z</span>);   
+
+
+<span class=sc2>// Ajusta posição do objeto 3d; </span>
+<span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+               <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   
+
+<span class=sc2>// Tranfere posição e rotação para o mundo</span>
+<span class=prg>D3DXMatrixMultiply </span>(&mtxCombinada, &obj_rot, &obj_pos);  
+
+<span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+<span class=sc2>// Prepara e aplica uma material no objeto 3d</span>
+criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+<span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  
+
+<span class=sc2>// Renderiza o mesh</span>
+<span class=prg>obj3d-&gt;DrawSubset</span>(<span class=sc4>0</span>);   
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+<span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( mtl, <span class=sc16>sizeof</span>(<span class=sc5>D3DMATERIAL9</span>)   );  
+
+  <span class=sc2>// Configura cor ambiente e difusa</span>
+  <span class=prg>mtl-&gt;Ambient </span>=  cvCor; 
+  <span class=prg>mtl-&gt;Diffuse </span>=  cvCor; 
+
+<span class=sc16>} <span class=sc2>// criarMaterial().fim</span></span>
+
+<span class=prg>void </span>colocar_DirectionalLight(<span class=sc5>D3DXVECTOR3 </span>direcao, <span class=sc5>D3DCOLORVALUE </span>cvCor) 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara a estrutura</span>
+  <span class=sc5>D3DLIGHT9 </span>luz; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &luz, <span class=sc16>sizeof</span>(<span class=sc5>D3DLIGHT9</span>)   );  
+
+  <span class=sc2>// Configura tipo</span>
+  <span class=prg>luz.Type </span>= <span class=sc4>D3DLIGHT_DIRECTIONAL</span>; 
+
+  <span class=sc2>// Configura cor</span>
+  <span class=prg>luz.Diffuse </span>= cvCor; 
+
+  <span class=sc2>// Configura direção da luz</span>
+  <span class=prg>luz.Direction </span>= direcao; 
+
+  <span class=sc2>// Instalação e acionamento da luz no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+  <span class=prg>g_device-&gt;SetLight</span>( <span class=sc4>0</span>, &luz );  
+  <span class=prg>g_device-&gt;LightEnable</span>( <span class=sc4>0</span>, <span class=prg>TRUE</span>);   
+
+<span class=sc16>} <span class=sc2>// colocar_DirectionalLight().fim</span></span>
+
+
+<span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configura luz ambiente</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(80,80,80) );  
+
+  <span class=sc2>// Configura shading</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SHADEMODE</span>, <span class=sc4>D3DSHADE_GOURAUD</span>);  
+
+  <span class=sc2>// Habilita uso de buffer de profundidade</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_TRUE</span>);  
+
+  <span class=sc2>// Desliga o culling</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   
+
+<span class=sc16>} <span class=sc2>// configurar_cenaEstados().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Meshes01 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar as formas primitivas 3d</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// Handle (alça) da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Meshes01"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track04-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

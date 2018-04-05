@@ -1,0 +1,444 @@
+<html><head>
+<title>CVip_track14</title>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+-webkit-border-radius: 40px 40px 40px 40px;
+-moz-border-radius: 40px 40px 40px 40px;
+border-radius: 15px 15px 15px 15px;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('backdrop.jpg');
+}
+</style>
+</head>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track14.html</b></center>
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr>
+<td><a href=cvip.html style='color:blue'> index </a></td>
+<td><a href='track13.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track15.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track14"></a><h3 style="background-color:#80ff80">14. Ponteiros ou apontadores 1/5</h3>
+<b style="background-color:lightgreen">14.1 Retrospecto de endereçamento de memória</b>
+
+Cada byte  de  memória  tem  um  endereço  através  do  qual  podemos
+localizá-lo  para  modificá-lo  ou  lê-lo.
+Convém ainda descrever o endereçamento da memória como era  feito  no
+sistema MsDos que predominava antes do Windows. Isso vai possibilitar
+um melhor entendimento de  ponteiros  e  variáveis  de  maneira  mais
+profunda, além de possibilitar o  entendimento  de  código  fonte  de 
+programas antigos escritos na linguagem C/C++.
+
+No sistema MsDos a memória é gerenciada na forma de blocos  de  64kb,
+65536  bytes.   Cada  bloco é denominado segmento.   Dentro  de  cada
+<u>segmento</u>,  um  byte pode ocupar as posições disponíveis de 0 a 65535,
+esta posição é chamada de <u>deslocamento</u>.  Assim, o endereço de memória
+de cada byte é dado na forma  de  <b>segmento:deslocamento</b>.   A  sintaxe
+<b>0010:65535</b> indica o último byte do décimo segmento;  como  o  costume
+é representar este endereço  na  forma  hexadecimal, este  endereço é
+visualizado  como  <b>000A:FFFF.</b>
+
+A variável ou o nome da variável é uma referência conveniente  de  um
+endereço de memória; Vamos supor que  naquele  endereço  acima  vamos
+usá-lo para guardar a idade de uma pessoa, é muito  mais  fácil  você
+decorar  <b>nIdade</b>  do  quê  <b>000A:FFFF</b>,   mas  durante  a  compilação, o
+compilador substitui o nome da variável pelo  endereço  da  variável.
+
+O nosso programa é constituído de dados e  código  executável.  Ambos
+são estocados na memória e localizados pelos endereços.  Os dados e o
+código  executável  podem  estar  dentro  do  mesmo  segmento  ou  em
+segmentos separados, é este fato que dá origem ao modelo  de  memória
+usado pelo programa que geralmente  é  classificado  como  <b>huge</b>, <b>tiny</b>,
+ou  <b>medium</b>  conforme  a  acomodação  de  código  e  dados.
+
+Como o código executável também é localizado  da  mesma  maneira  que
+as variáveis de dados, resulta que o endereço citado acima, 000A:FFFF,
+pode muito bem conter o código inicial de  uma  função.   Desta forma
+quando você chama uma função, por exemplo, Multiplica(),  na  verdade
+isto provoca uma salto do programa para a área 000A:FFFF aonde reside
+o código inicial da função. O salto pode ser dentro do mesmo segmento
+ou em um outro segmento, este fato é o que dá origem a  classificação
+da função como <b>near</b> (perto - dentro do mesmo segmento) e <b>far</b> (longe -
+em outro segmento).   As  variáveis  de  dados  recebem  também  esta
+classificação de near ou far conforme estejam no mesmo ou  em  outros
+segmentos  daonde  é  feito  a  solicitação  dos  seus  dados.
+
+Hoje no Sistema Windows 7 a memória é gerenciada como um grande bloco
+sem divisões em segmentos como ocorria no sistema  MsDos.   Hoje  uma
+variável geralmente recebe um endereço de 32 bits, por exemplo, nosso
+valor  nIdade  pode  estar  armazenada  no  endereço  0x0022FF14.
+
+Em uma variável ao invés de guardamos um dos tipos básicos  de  dados
+podemos  guardar   <u>um endereço de memória de uma outra variável ou de</u>
+<u>uma função</u>;   neste caso nossa variável é denominada de  <b>ponteiro</b>  ou
+<b>apontador</b> que pode apontar para uma função ou geralmente para um tipo
+de dado. No nível interno o ponteiro é simplesmente  um  endereço  de
+memória  que  guarda  como  dado  outro  endereço  de  memória.
+
+O uso de ponteiros permite e agiliza o uso da memória,  a manipulação
+de variáveis arrays de forma mais rápida, permite o  uso  de  funções
+tendo outras funções como argumentos, e  é  usado  nos  processos  de
+alocação  de  memória.
+
+<b style="background-color:lightgreen">14.2 Ponteiro de dados</b>
+
+Vimos que o ponteiro de dados nada mais é do  que  uma  variável  que
+guarda o endereço de memória de uma outra variável aonde um dado está
+estocado. A variável e o ponteiro desta variável se referem ao  mesmo
+dado; através da variável você manipula o dado  diretamente,  através 
+do ponteiro desta variável o mesmo dado é  manipulado  indiretamente.
+
+A classificação do ponteiro é feita de acordo com o tipo de dado para
+o qual o ponteiro aponta, desta forma temos o  ponteiro  de  inteiros,
+ponteiro de floats, ponteiro dos outros tipos básicos e ponteiro para
+estruturas.
+
+<b style="background-color:lightgreen">14.3 Declarando e inicializando ponteiros</b>
+
+<u>DECLARANDO O PONTEIRO</u><b style="color:green">
+tipo *Nome;</b><font color="darkblue">
+int *np;
+float *fp;</font>
+
+A declaração de um ponteiro, como visto acima,  é semelhante ao mesmo
+processo das variáveis, exceto que o nome  do  ponteiro  é  precedido
+pelo asterísco ( * ).
+
+<u>INICIALIZANDO O PONTEIRO</u><b style="color:green">
+pPonteiro = &vVar;</b><font color="darkblue">
+np = &nIdade;
+fp = &nSalario;</font>
+
+Este processo inicializa o ponteiro,  estabelecendo  nele  o endereço
+da  variável  precedida  pelo  operador  de  endereço  ( & ).
+O uso de um ponteiro não-inicializado pode trazer problemas  críticos
+ao seu programa e ao sistema operacional, desde que  é  possível  com
+ele escrever na região de memória do sistema  operacional  e  noutras
+áreas que não tem ligação com nosso programa.
+
+<u>VISUALIZANDO O DADO VIA PONTEIRO</u>
+
+Desde que inicializado corretamente, genericamente o dado para o qual
+o  ponteiro  aponta  pode  ser  visto  com  esta  sintaxe  <span class = 'prg'>*pPonteiro</span>.
+Noutras palavras,  <span class = 'prg'>*pPonteiro</span>,  é a sintaxe pela qual o dado pode ser
+acessado. Exemplo:
+
+<div class=prg-saida>
+ <img src=images\pointer.png>
+<br></div>
+
+<div class=prg-code>
+<span class="sc1">/* Programa: pointer.c - track 14 */</span><span class="sc0">
+</span><span class="sc1">/* Começando com ponteiros */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipo de initSys() */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* -------------------- Função main() --------------- */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nIdade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">18</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">nSalario</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">900.45</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc1">/* -------------------- Criando ponteiros------------- */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">np</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">fp</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc1">/* -------------------- Inicializando ponteiros------- */</span><span class="sc0">
+</span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">nIdade</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">fp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">nSalario</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title pointer.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" nIdade:                %i \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nIdade</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" nSalario:              %.2f \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nSalario</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* -- Mostrando endereços e dados dos ponteiros ----- */</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Endereco de nIdade:    %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">np</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Endereco de nSalario   %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">fp</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" nIdade via ponteiro:   %i = *np \n"</span><span class="sc10">,*</span><span class="sc11">np</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" nSalario via ponteiro: %.2f = *fp \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">fp</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc3">/*************** Função initSys()  */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+
+No nosso  exemplo, os diferente tipos de dados  dos  ponteiros  foram
+acessados  pela  sintaxe  geral  <b>*pPonteiro</b>, porém o tipo de dado foi
+previamente identificado  respectivamente  pela  formatação  <b class = 'prg'>%i</b> e <b class = 'prg'>%f</b>.
+
+Usando printf()  o endereço da variável pode ser obtido usando <b class=prg>%p</b> que
+é o código de formatação que  identifica os ponteiros e usando o nome
+pPonteiro sem o asterísco pois que não queremos o  dado  neste ponto.
+O endereço é exibido na forma hexadecimal, e indica o deslocamento da
+variável dentro  do  segmento  de  dados,  podendo  ser  um  segmento 
+particular nos antigos sistemas ou um  ponto  de  memória  dentro  do
+grande bloco de memória do Sistema.
+
+
+<b style="background-color:lightgreen">14.4 Manipulando indiretamente o dado via ponteiro</b>
+
+<u>vVAR = *pPONTEIRO</u><font color="darkblue">
+int nIdade = 18, nAnos = 25;
+int *np; np = &nIdade;
+nAnos = *np; printf("%i",nAnos);</font>
+Resultas em: 18
+Aqui nAnos recebe o valor de nIdade
+
+<u>*pPONTEIRO = vVAR</u><font color="darkblue">
+int nIdade = 18, nAnos = 25; np = &nIdade;
+*np = nAnos; prinft("%i",nIdade);</font>
+Resulta em: 25
+Aqui nIdade, recebe via *np, o valor de nAnos.
+
+<u>(*pPONTEIRO)++  INCREMENTADO O DADO VIA PONTEIRO</u><font color="darkblue">
+int nIdade = 18;
+np = &nIdade;
+(*np)++; prinft("%i",nIdade);</font>
+Resulta em: 19
+Aqui nIdade, via *np, tem o seu valor incrementado em 1.
+
+Quando você for alterar os dados usando os o peradores  unários  você
+deve colocar a referência ao dado  "(*pPonteiro)"  entre  parêntesis.
+Na omissão dos parêntesis, o efeito é sobre o endereço  do  ponteiro,
+fazendo este apontar para outro endereço de memória.
+
+<u>*pPonteiro = *pPonteiro + vVar  OPERAÇÕES MATEMÁTICAS INDIRETAS SOBRE O DADO</u><font color="darkblue">
+int nIdade = 18;
+np = &nIdade;
+*np = *np + 10; prinft("%i",nIdade);</font>
+Resulta em: 28
+Aqui nIdade, via *np, tem o seu valor aumentado para 28.
+
+Veja o programa exemplo:
+
+<div class=prg-saida>
+ <img src=images\ptr01.png>
+<br></div>
+<div class=prg-code>
+<span class="sc1">/* Programa: ptr01.c - track 14 */</span><span class="sc0">
+</span><span class="sc1">/* Manipulando dados indiretamente via ponteiros */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função main()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nIdade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">18</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">np</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">nIdade</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title ptr01.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores originais:"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" int *np; np = &amp;nIdade; \n"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">nAnos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">np</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores alterados via nAnos = *np:"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">nIdade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">18</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores originais:"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">*</span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores alterados via *np = nAnos"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">(*</span><span class="sc11">np</span><span class="sc10">)++;</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores alterados via (*np)++ "</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">*</span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">np</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Valores alterados via *np = *np + 10 "</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função mostrar()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\t nIdade: %i \t nAnos: %i \n\n"</span><span class="sc10">,</span><span class="sc11">nIdade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAnos</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função falar()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"%s \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"></span></div>
+
+<b style="background-color:lightgreen">14.5 Operações válidas com ponteiro</b>
+
+<u>pPonteirox = pPonteiroy  IGUALANDO DOIS PONTEIROS</u>
+
+Você pode copiar o endereço de um ponteiro para um outro  através  de
+uma  atribuição  de  igualdade,  alterando  o  endereço  do  primeiro 
+ponteiro para o endereço do segundo ponteiro, ocasionando logicamente
+acesso a outro dado.
+<font color="darkblue">
+int nIdade = 18;
+int nAnos = 25;
+int *np, *npAnos;
+
+np = &nIdade;
+npAnos = &nAnos;
+
+np = npAnos;</font>
+Nesta linha acima, <b>np</b> passa a apontar  para  o  endereço  de  <b>npAnos</b>.
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cvip.html style='color:blue'> index </a></td><td><a href='track13.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track15.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></hr></body></html>

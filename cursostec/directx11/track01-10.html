@@ -1,0 +1,342 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-10</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-10</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-9.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-11.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.10 Câmera básica - Shader ( prj_Camera.fx ) </h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Estrutura global do shader: cbuffer vsConstantbuffer  </a>
+<a href=#2.2>2.2 A função de entrada do vertexshader: gpVertexShader()</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Camera</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Camera.png></div>
+
+Os  dois  pontos  chaves  deste  programa hlsl consistem na estrutura
+<b>vsConstanbuffer</b>  que recebe os  dados  do  constantbuffer  gerado  na
+aplicação e do processo de transformações ou multiplicações sucessivas
+que ocorre sobre esses dados na função <b>gpVertexShader()</b>.
+
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+
+<div class=prg-code>Arquivo: prj_Camera.fx
+<div class=niceview style="border-style:dashed;">
+<b class=sc16>cbuffer vsConstantbuffer  : register( b0 )</b>
+Esta é a linha de definição inicial do constantbuffer do shader.  Ele
+vai receber os dados do constantbuffer que foi definido na aplicação. 
+
+
+<b class=sc2>// Estrutura para receber os dados advindos da aplicação</b>
+<b class=prg>struct</b> <b class=prg>vsInput_PositionColored</b>
+
+<b class=sc2>// Estrutura para transmitir dados do vertexshader para o pixelshader</b>
+<b class=prg>struct</b>  <b class=prg>vsOutput_PositionColored</b>
+
+<b class=sc16><b class=prg>vsOutput_PositionColored</b> gpVertexShader( <b class=prg>vsInput_PositionColored</b> vs_entrada )</b> 
+Esta função do vertexshader recebe cor e posição através da estrutura
+de entrada e devolve esses argumentos na estrutura de saída.<b class=sc16>
+Antes de devolver a posição para o pixelshader ela é transformada por
+sucessivas multiplicações pelas matrizes  de  mundo,  visualização  e
+projeção advindas da aplicação. </b>
+
+<b class=sc16><b class=prg>float4</b> gpPixelShader( <b class=prg>vsOutput_PositionColored</b> ps_entrada ) : SV_Target</b>
+Essa função recebe do vertexshader cor e posição e retorna para os
+processos do directx a cor do pixel.
+</div> </div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Estrutura global do shader: cbuffer vsConstantbuffer   </u></b>
+<div class=niceview>
+
+<span class=sc2>// Estrutura para receber os dados advindos do constantbuffer da aplicação</span>
+<span class=sc16>cbuffer </span>vsConstantbuffer  : <span class=sc16>register</span>( b0 ) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>matrix </span>vsWorld; 
+
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>matrix </span>vsView; 
+
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>matrix </span>vsProject; 
+<span class=sc16>}</span>
+<span class=sc2>// fim da estrutura vsConstantbuffer</span>
+</div>
+<b class=prg-code><span class=sc16>cbuffer </span>vsConstantbuffer  : <span class=sc16>register</span>( b0 ) </b>
+Esta é a linha de definição inicial do constantbuffer do shader.  Ele
+vai receber os dados do constantbuffer  que foi definido na aplicação
+A  palavra  chave  <b class=prg>cbuffer</b>  define  que  esta  estrutura  vai  ser um
+constantbuffer.  A semântica <b class=prg>register ( b0 )</b> define que o registrador
+de  guarda  dessa  estrutura  vai ser o <b>b0</b> que é próprio para guardar
+dados de constantbuffer advindos da aplicação.
+
+<u>Matrizes do shader para receber as matrizes da aplicação</u>
+<div class=prg-code>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>matrix </span>vsWorld; 
+
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>matrix </span>vsView; 
+
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>matrix </span>vsProject; </div>
+Aqui estamos no constantbuffer do shader e aqui está a contraparte que
+recebe   as   matrizes   respectivas   advindas   da  aplicação  para
+na sequência produzir dentro do shader os cálculos  e  transformações
+da câmera da aplicação.
+
+ 
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 A função de entrada do vertexshader: gpVertexShader() </u></b>
+<div class=niceview><span class=sc5>vsOutput_PositionColored </span>gpVertexShader( <span class=sc5>vsInput_PositionColored </span>vs_entrada ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação da estrutura de saída</span>
+  <span class=sc5>vsOutput_PositionColored </span>ps_saida = ( <span class=sc5>vsOutput_PositionColored</span>) <span class=sc4>0</span>; 
+
+  <span class=sc2>// Caminho de transformação dos vértices mundo -- visão -- projeção</span>
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>vs_entrada.pos</span>, vsWorld   );  
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsView    );  
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsProject );  
+
+  <span class=sc2>// Repassando cor e posição transformada para o pixelshader</span>
+  <span class=prg>ps_saida.color </span>= <span class=prg>vs_entrada.color</span>; 
+  <span class=sc6>return </span>ps_saida; 
+<span class=sc16>}</span>
+<span class=sc2>// gpVertexShader().fim</span>
+</div>
+
+<u>Caminho de transformação dos vértices local --&gt; mundo --&gt; visão --&gt; projeção</u>
+<div class=prg-code><span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>vs_entrada.pos</span>, vsWorld   );  
+<span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsView    );  
+<span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsProject );  </div>
+Este bloco realiza a conversão sucessiva do espaço local ou espaço de
+modelo no qual os vértices do quadrado estão  inicialmente  definidos
+para o espaço de projeção. Note que a sequência  de  multiplicação  é
+matriz de mundo, depois matriz de visualização  e  finalmente  vem  a
+multiplicação pela matriz de projeção.
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Camera</u></b>
+<div class=prg-code><img src=images\prj_Camera.png>
+<span class=sc2>// prj_Camera.fx - Código fonte do vertexshader\pixelshader</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Camera - Arquivo: prj_Camera.fx</span>
+<span class=sc2>// Exemplo de uso de câmera (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+
+<span class=sc2>// Estrutura para receber os dados advindos do constantbuffer da aplicação</span>
+<span class=sc16>cbuffer </span>vsConstantbuffer  : <span class=sc16>register</span>( b0 ) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>matrix </span>vsWorld; 
+
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>matrix </span>vsView; 
+
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>matrix </span>vsProject; 
+<span class=sc16>}</span>
+<span class=sc2>// fim da estrutura vsConstanbuffer</span>
+
+
+<span class=sc2>// Estrutura global do shader: vsInput_PositionColored</span>
+<span class=sc2>// Estrutura para receber os dados advindos da aplicação</span>
+<span class=prg>struct </span><span class=sc5>vsInput_PositionColored</span>
+<span class=sc16>{</span>
+
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float4 </span>pos:POSITION; 
+
+  <span class=sc2>// Cor do vértice</span>
+  <span class=prg>float4 </span>color:COLOR; 
+
+<span class=sc16>}</span>; 
+<span class=sc2>// endstruct: vsInput_PositionColored</span>
+
+
+<span class=sc2>// Estrutura global do shader: vsOutput_PositionColored</span>
+<span class=sc2>// --------------------------------------------------------------------------------------</span>
+<span class=sc2>// Estrutura para transmitir dados do vertexshader para o pixelshader</span>
+<span class=prg>struct </span> <span class=sc5>vsOutput_PositionColored</span>
+<span class=sc16>{</span>
+    <span class=prg>float4 </span>pos : <span class=sc16>SV_POSITION</span>; 
+    <span class=prg>float4 </span>color : <span class=sc16>COLOR0</span>; 
+<span class=sc16>}</span>; 
+<span class=sc2>// endstruct: vsOutput_PositionColored</span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc5>vsOutput_PositionColored </span>gpVertexShader( <span class=sc5>vsInput_PositionColored </span>vs_entrada ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação da estrutura de saída</span>
+  <span class=sc5>vsOutput_PositionColored </span>ps_saida = ( <span class=sc5>vsOutput_PositionColored</span>) <span class=sc4>0</span>; 
+
+  <span class=sc2>// Caminho de transformação dos vértices mundo -- visão -- projeção</span>
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>vs_entrada.pos</span>, vsWorld   );  
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsView    );  
+  <span class=prg>ps_saida.pos </span>= <span class=sc16>mul</span>( <span class=prg>ps_saida.pos</span>,   vsProject );  
+
+  <span class=sc2>// Repassando cor e posição transformada para o pixelshader</span>
+  <span class=prg>ps_saida.color </span>= <span class=prg>vs_entrada.color</span>; 
+  <span class=sc6>return </span>ps_saida; 
+<span class=sc16>}</span>
+<span class=sc2>// gpVertexShader().fim</span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// A função de entrada do pixelshader: gpPixelShader()</span>
+<span class=prg>float4 </span>gpPixelShader( <span class=sc5>vsOutput_PositionColored </span>ps_entrada ) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+ <span class=sc6>return </span><span class=prg>ps_entrada.color</span>; 
+<span class=sc16>}</span>
+<span class=sc2>// gpPixelShader().fim</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-9.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-11.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Estrutura global do shader: cbuffer vsConstantbuffer  </a>
+<a href=#2.2>2.2 A função de entrada do vertexshader: gpVertexShader()</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Camera</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

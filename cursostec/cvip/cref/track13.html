@@ -1,0 +1,415 @@
+<html><head>
+<title>cbiblioteca_track13_time</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track13.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track12.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track14.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="13.00">
+<CENTER><H2>13.00 time.h</H2></CENTER>
+<A HREF="#13.01">13.01</a> asctime...........Converte data e tempo, de uma struct tm, para string
+<A HREF="#13.02">13.02</a> clock.............Retorna o nro de clock ticks decorridos desde o inicio do programa
+<A HREF="#13.03">13.03</a> ctime.............Converte data e tempo, a partir de nSeconds, para string
+<A HREF="#13.04">13.04</a> difftime..........Calcula a diferença em segundos entre dois pontos
+<A HREF="#13.05">13.05</a> gmtime............Converte data e tempo para o padrão GMT
+
+<A HREF="#13.06">13.06</a> localtime.........Converte data e tempo para o padrão local
+<A HREF="#13.07">13.07</a> stime.............Configura a data e hora do sistema
+<A HREF="#13.08">13.08</a> time..............Obtém o nro de segundos que transcorreu desde 01/01/1970
+<A HREF="#13.09">13.09</a> tzset.............Cria ambiente para compatibilidade com UNIX na formatação de tempo
+
+<A NAME="13.01"><B>13.01 asctime</B></a>
+        Esta função converte data e tempo, estocados numa struct tm, para string.
+        <b style="color:green">
+        char *asctime(const struct tm *tblock);
+        sMsg = asctime(&xGmt);</b>
+
+        sMsg......A função retorna um ponteiro para a string obtida
+
+        Veja este exemplo de uso:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "time.h"
+
+        int main(void) {
+        struct tm xGmt;
+        char str[80];
+        char *sMsg;
+
+        clrscr();
+
+        xGmt.tm_sec    = 1;   /* Segundos                                      */
+        xGmt.tm_min    = 30;  /* Minutos                                       */
+        xGmt.tm_hour   = 9;   /* Horas                                         */
+        xGmt.tm_mday   = 1;   /* Dia do mês                                    */
+        xGmt.tm_mon    = 2;   /* Mês                                           */
+        xGmt.tm_year   = 105; /* Ano (Este valor será somado com 1900)         */
+        xGmt.tm_wday   = 5;   /* Dia da semana                                 */
+        xGmt.tm_yday   = 0;   /* Não utilizado por asctime()                   */
+        xGmt.tm_isdst  = 0;   /* Horário de verão, não utilizado por asctime() */
+
+        sMsg = asctime(&xGmt);
+        printf("%s\n", sMsg);
+
+        puts("End of Program.");
+        getch();
+        return 0;}</font>
+
+        Saída:
+        Fri Mar 01 09:30:01 2005
+        End of Program.
+
+.......................................................................................
+<A NAME="13.02"><B>13.02 clock</B></a>
+        Esta função retorna o número de clock ticks decorridos desde o início
+        do programa. Para converter o valor de retorno para segundos basta
+        dividir este valor pela constante CLK_TCK.
+        <b style="color:green">
+        clock_t clock(void);
+        nTicks = clock();</b>
+
+        Ex.:    clock_t nTicks;
+                nTics = clock();
+
+        Veja este exemplo:<font color="darkblue">
+        #include "time.h"
+        #include "stdio.h"
+        #include "dos.h"
+        #include "conio.h"
+
+        int main(void) {
+        clock_t start, end;
+
+        clrscr();
+
+        start = clock();
+
+        delay(2000);
+
+        end = clock();
+        printf("O tempo decorrido foi %f segundos.\n", (end - start) / CLK_TCK);
+        getch();
+        return 0; }</font>
+
+        O tempo decorrido foi 0.109890 segundos.
+
+.......................................................................................
+<A NAME="13.03"><B>13.03 ctime</B></a>
+        Esta função converte data e tempo para string a partir de nSeconds
+        que é o retorno da funçao time().
+        <b style="color:green">
+        char *ctime(const time_t *time);
+        sHoras = ctime(&nSeconds);</b>
+
+        Ex.:    char *sHoras;
+                time_t nSeconds;
+                nSeconds = time();
+                sHoras = ctime(&nSeconds);
+                printf("%s\n",sHoras);
+                /* Resulta em   Sat Jan 22 10:54:17 2005 */
+
+.......................................................................................
+<A NAME="13.04"><B>13.04 difftime</B></a>
+        Esta função calcula a diferença em segundos entre dois pontos.
+        <b style="color:green">
+        double difftime(time_t time2, time_t time1);
+        nDeltaTempo = difftime(nFinal,nInicial);</b>
+
+        Ex.:    double nDeltaTempo;
+                time_t nFinal;
+                time_t nInicial;
+                nInicial = time(NULL);
+                sleep(2);
+                nFinal = time(NULL);
+                nDeltaTempo = difftime(nFinal, nInicial);
+                printf("A diferença é %f segundos.\n",nDeltaTempo);
+                /* Resulta em A diferença é 2.000000 segundos. */
+
+.......................................................................................
+<A NAME="13.05"><B>13.05 gmtime</B></a>
+        Esta função converte data e tempo para o padrão GMT (GreenWich Mean Time).
+        A entrada para esta conversão é nSeconds retornado por time(), a saída
+        desta função é um ponteiro para uma estrutura tm.
+        <b style="color:green">
+        struct tm *gmtime(const time_t *timer);
+        xGmt = gmtime(&nSeconds);</b>
+
+        Elementos da struct tm:
+        --------------------------------------------------------------
+        int xGmt.tm_hour.....horas
+        int xGmt.tm_min......minutos
+        int xGmt.tm_sec......segundos
+        int xGmt.tm_mday.....dia do mês
+        int xGmt.tm_mon......mês (-1)
+        int xGmt.tm_year.....ano (-1900)
+        int xGmt.tm_wday.....dia da semana (-1)
+        int xGmt.tm_isdst....Indica horário de verão
+
+        Ex.:    struct tm *xGmt;
+                time_t nSeconds;
+                time(&nSeconds);
+                xGmt = gmtime(&nSeconds);
+
+        Veja programa exemplo:<font color="darkblue">
+        #include "time.h"
+        #include "stdio.h"
+        #include "conio.h"
+
+        int main(void) {
+
+        struct tm *xGmt;
+        time_t nSeconds;
+
+        clrscr();
+
+        nSeconds = time(&nSeconds);
+
+        printf ("%li\n",nSeconds);
+        xGmt = gmtime(&nSeconds);
+
+        printf ("xGmt.tm_hour: %d\n",xGmt->tm_hour);
+        printf ("xGmt.tm_min: %d\n",xGmt->tm_min);
+        printf ("xGmt.tm_sec: %d\n",xGmt->tm_sec);
+        printf ("xGmt.tm_mday: %d\n",xGmt->tm_mday);
+        printf ("xGmt.tm_mon: %d\n",xGmt->tm_mon+1);
+        printf ("xGmt.tm_year: %d\n",xGmt->tm_year+1900);
+        printf ("xGmt.tm_wday: %d\n",xGmt->tm_wday+1);
+        printf ("xGmt.tm_isdst: %d\n",xGmt->tm_isdst);
+
+        getch();
+
+        puts("End of Program");
+        getch(); }</font>
+
+        Saída:
+        1106413483
+        xGmt.tm_hour: 17
+        xGmt.tm_min: 4
+        xGmt.tm_sec: 43
+        xGmt.tm_mday: 22
+        xGmt.tm_mon: 1
+        xGmt.tm_year: 2005
+        xGmt.tm_wday: 7
+        xGmt.tm_isdst: 0
+
+.......................................................................................
+<A NAME="13.06"><B>13.06 localtime</B></a>
+        Esta função converte data e tempo para o padrão local.
+        A entrada para esta conversão é nSeconds retornado por time(), a saída
+        desta função é um ponteiro para uma estrutura tm.
+        <b style="color:green">
+        struct tm *localtime(const time_t *timer);
+        xGmt = localtime(&nSeconds);</b>
+
+        Elementos da struct tm:
+        --------------------------------------------------------------
+        int xGmt.tm_hour.....horas
+        int xGmt.tm_min......minutos
+        int xGmt.tm_sec......segundos
+        int xGmt.tm_mday.....dia do mês
+        int xGmt.tm_mon......mês (-1)
+        int xGmt.tm_year.....ano (-1900)
+        int xGmt.tm_wday.....dia da semana (-1)
+        int xGmt.tm_isdst....Indica horário de verão
+
+        Ex.:    struct tm *xGmt;
+                time_t nSeconds;
+                time(&nSeconds);
+                xGmt = localtime(&nSeconds);
+
+        Veja programa exemplo:<font color="darkblue">
+        #include "time.h"
+        #include "stdio.h"
+        #include "conio.h"
+
+        int main(void) {
+
+        struct tm *xGmt;
+        time_t nSeconds;
+
+        clrscr();
+
+        nSeconds = time(&nSeconds);
+
+        printf ("%li\n",nSeconds);
+        xGmt = localtime(&nSeconds);
+
+        printf ("xGmt.tm_hour: %d\n",xGmt->tm_hour);
+        printf ("xGmt.tm_min: %d\n",xGmt->tm_min);
+        printf ("xGmt.tm_sec: %d\n",xGmt->tm_sec);
+        printf ("xGmt.tm_mday: %d\n",xGmt->tm_mday);
+        printf ("xGmt.tm_mon: %d\n",xGmt->tm_mon+1);
+        printf ("xGmt.tm_year: %d\n",xGmt->tm_year+1900);
+        printf ("xGmt.tm_wday: %d\n",xGmt->tm_wday+1);
+        printf ("xGmt.tm_isdst: %d\n",xGmt->tm_isdst);
+
+        getch();
+
+        puts("End of Program");
+        getch(); }</font>
+
+        Saída:
+        1106413483
+        xGmt.tm_hour: 12
+        xGmt.tm_min: 11
+        xGmt.tm_sec: 43
+        xGmt.tm_mday: 22
+        xGmt.tm_mon: 1
+        xGmt.tm_year: 2005
+        xGmt.tm_wday: 7
+        xGmt.tm_isdst: 0
+
+.......................................................................................
+<A NAME="13.07"><B>13.07 stime</B></a>
+        Esta função configura data e hora do sistema em termos de nSegundos
+        depois do dia 01/01/1970 0:00hs.
+        <b style="color:green">
+        int stime(time_t *p);
+        stime(&nSeconds);</b>
+
+        Ex.:    time_t nSeconds;
+                nSeconds = time(NULL):
+                nSeconds += 24L*60L*60L
+                stime(&nSeconds);
+                /* Avançamos aqui a data em um dia */
+
+        Veja este programa:<font color="darkblue">
+        #include "time.h"
+        #include "stdio.h"
+        #include "conio.h"
+
+        int main(void) {
+        time_t nSeconds,nMem;
+
+        clrscr();
+
+        nSeconds = time(NULL);
+        nMem = nSeconds;
+        printf("Hoje é %s", ctime(&nSeconds));
+
+        nSeconds -= 24L*60L*60L;  /* Vamos retroceder a data em um dia */
+        stime(&nSeconds);
+        printf("\nA nova data é %s", ctime(&nSeconds));
+
+        puts("End of Program");
+        stime(&nMem);
+        getch();}</font>
+
+        Saída:
+        Hoje é Sat Jan 22 15:05:09 2005
+
+        A nova data é Fri Jan 21 15:05:09 2005
+        End of Program
+
+.......................................................................................
+<A NAME="13.08"><B>13.08 time</B></a>
+        Esta função obtém o número de segundos que transcorreu desde
+        01/01/1970.
+        <b style="color:green">
+        time_t time(time_t *timer);
+        nSeconds = time(&nSeconds);</b>
+
+        nSeconds.....A função retorna um ponteiro para nSeconds
+
+        Ex.:    time_t nSeconds;
+                time(&nSeconds);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdlib.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "time.h"
+        #include "stdio.h"
+        #include "dos.h"
+
+        int main(void){
+        time_t nSeconds;
+
+        time(&nSeconds);
+
+        clrscr();
+        printf("Número de segundos desde 01/01/1970 é %ld\n",nSeconds);
+
+        puts("End of Program.");
+        getch();
+        return 0;}</font>
+
+        Saída:
+        Número de segundos desde 01/01/1970 é 1106274725
+        End of Program.
+
+.......................................................................................
+<A NAME="13.09"><B>13.09 tzset</B></a>
+        Esta função cria um ambiente para compatibilidade com UNIX
+        na formatação de tempo.
+        <b style="color:green">
+        void tzset(void);
+        tzset();</b>
+
+        Ex.:    tzset();
+
+        *** Para uso desta função você deve criar uma variável de ambiente
+        nomeada TZ que tzset() utilizará para seus processos de compatibilização
+        com o sistema UNIX. Consulte documentação do Turbo C++ da Borland para
+        uma descrição detalhada de como configurar TZ.
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "time.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+
+        int main(void){
+        time_t td;
+        clrscr();
+
+        putenv("TZ=PST8PDT");
+        tzset();
+        time(&td);
+        printf("Data corrente = %s\n", asctime(localtime(&td)));
+        getch();
+        return 0;}</font>
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track12.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track14.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

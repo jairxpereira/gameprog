@@ -1,0 +1,720 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase04.1</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 4.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track03-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">04.1 Tratamento de entrada: teclado & mouse</h3><pre>
+<b><u>4.1 Visão geral</b></u>
+No trabalho com o teclado há dois conceitos importantes:
+
+<u>código ascii</u>
+O código ascii é um código americano padrão para intercâmbio de informações.
+O conjunto é formado por 256 caracteres aonde  apenas  os  primeiros  128
+caracteres formam o padrão de fato. Após os 128 primeiros não há um padrão
+estabelecido tendo assim variações conforme vários fatores (país, aplicação,
+sistema, etc.).	O código ascii abarca o alfabeto  de 26  letras,  números  e 
+sinais gráficos. A função <b>dbInKey()</b> faz a leitura do teclado e retorna a
+tecla digitada tendo como limite os caracteres da tabela ascii.
+
+<u>Código scan ou scancode</u>
+O scancode está ligado ao sinal elétrico gerado pelo teclado, sinal este que
+o sistema ou a aplicação tem a liberdade de processar como quiser. O scancode
+abarca todas as teclas do teclado e  geralmente  você  vai  utilizá-lo  para 
+acessar as teclas especiais como as F2 ou F3 que não  produzem  uma  saída 
+gráfica. O acesso ao scancode é dado pela função <b>dbScancode()</b> que faz a
+leitura do teclado e retorna um número inteiro peculiar a cada tecla digitada.
+
+Em nossa aplicação de exemplo ilustramos como você pode utilizar o mouse e o
+teclado para permitir ao usuário o controle de sua aplicação. Fizemos um
+pequeno programa de desenho aonde você pode usar o mouse e as teclas de 
+direção. Teste os caracteres 'a' e 'c' e depois F2, F3, e os botões do
+mouse.	
+
+<img src="images/teclado01.png">	
+<div class=prg-code><span class="sc2">// teclado01.cpp
+// Esse programa ilustra o tratamento do teclado
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_teclado01</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Cores
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Coordenadas básicas de posicionamento (xpos, ypos) para desenho
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">160</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">120</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">   
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc11">tst_teclado01</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Estabelecendo a configuração de vídeo
+</span><span class="sc11">dbSetWindowOn</span><span class="sc10">();</span><span class="sc0">                
+</span><span class="sc11">dbSetDisplayMode</span><span class="sc10">(</span><span class="sc4">640</span><span class="sc10">,</span><span class="sc4">480</span><span class="sc10">,</span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">   
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Configurando a janela
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"teclado01.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowSize</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">640</span><span class="sc10">,</span><span class="sc4">480</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowPosition</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">320</span><span class="sc10">,</span><span class="sc4">20</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_teclado01</span><span class="sc0"> </span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Esta função ilustra uso do teclado
+</span><span class="sc0">
+</span><span class="sc2">// Usando teclas especiais
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_F3</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">61</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_F4</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">62</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nscancode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">nscancode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbScanCode</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nscancode</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">tecla_F3</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"F3 pressionado..."</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nscancode</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">tecla_F4</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">40</span><span class="sc10">,</span><span class="sc4">40</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"F4 pressionado..."</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Usando teclas normais do teclado
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"c"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">250</span><span class="sc10">,</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"'c' pressionado..."</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"a"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">270</span><span class="sc10">,</span><span class="sc4">40</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"'a' pressionado..."</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Repare nesta sintaxe...
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbUpKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">      </span><span class="sc2">// Movimento para cima
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbDownKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// Movimento par abaixo
+</span><span class="sc0">
+</span><span class="sc2">// Repara nesta sintaxe simplificada
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbRightKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc0"> </span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// Movimento para a direita
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbLeftKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// Movimento para a esquerda
+</span><span class="sc0">
+</span><span class="sc2">// Testando o mouse
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">btnDireito</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">btnEsquerdo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">btnDireito</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseX</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">dbMouseY</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc6">"Botao direito pressionado"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenhando com o botão esquerdo do mouse
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()==</span><span class="sc0"> </span><span class="sc11">btnEsquerdo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbMouseX</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbMouseY</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc2">// Desenha efetivamente o 'o' na tela
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"o"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim tst_janela01()
+</span></div>
+
+<b><u>Usando o scancode</u></b> <span class=prg>
+// Usando teclas especiais
+<b>const int tecla_F3 = 61;</b>
+const int tecla_F4 = 62;
+int nscancode = 0;
+<b>nscancode = dbScanCode();</b>
+if (nscancode == tecla_F3) dbText (20,20, "F3 pressionado...");
+<b>if (nscancode == tecla_F4) dbText (40,40, "F4 pressionado...");</b> </span>
+O bloco de código acima ilustra como fazer a leitura das teclas especiais e
+tomar outros caminhos conforme a tecla pressionada. 
+
+Como questão de estilo ou mesmo 'melhores práticas' colocamos o  valor  de 
+scancode da  tecla  F3  e  F4  numa constante. Isso melhora a  leitura  do
+programa do que utilizar o valor direto. Por exemplo, na leitura  da  linha
+<b class=prg>if (nscancode == 99)</b> você não consegue identificar rapidamente qual a tecla
+pressionada e isso retarda a correção ou implementação dos recursos que seu
+programa oferece até você pesquisar e localizar a que tecla corresponde esse
+valor de scancode.
+
+<b><u>Usando as teclas normais</u></b> <span class=prg>
+// Usando teclas normais do teclado
+<b>char *stecla = dbInKey();</b>
+if (!strcmp(stecla,"c")) dbText (250,20, "'c' pressionado...");
+<b>if (!strcmp(stecla,"a")) dbText (270,40, "'a' pressionado..."); </b></span>
+O bloco de código acima ilustra como fazer a leitura das teclas normais e
+tomar outros caminhos conforme a tecla pressionada. 
+
+Repare que você não pode fazer uma comparação natural usando a linha de
+código <b class=sc6>if (stecla == "a")</b> porque a linguagem c não permite. Você tem
+que usar a função <b>strcmp()</b> para comparar a igualdade de duas strings
+e você ainda tem que inverter com o <b>not(!)</b> o resultado visto que <b>strcmp()</b>
+retorna zero quando as strings são iguais.
+
+<u><b>Usando funções de leitura do teclado</u></b> <span class=prg>
+<b>if (dbUpKey()==1) ypos = ypos - 5;      // Movimento para cima</b>
+if (dbDownKey()==1) ypos = ypos + 5;    // Movimento par abaixo	
+if (dbRightKey()) xpos = xpos + 5 ;     // Movimento para a direita
+<b>if (dbLeftKey()) xpos = xpos - 5;       // Movimento para a esquerda</b></span>
+
+A função <b>dbUpKey()</b> retorna 1 caso a tecla seta-para-cima seja pressionada.
+Como qualquer número positivo é interpretado como verdadeiro você pode
+omitir, dentro dos parêntesis do if, a comparação de igualdade <b>( == 1)</b>. 
+
+Veja abaixo a tabela de funções de leitura do teclado:
+
+
+<table align='bottom' border='1' cellspacing='0' cellpadding='5' width='60%'>
+<tr><td><b><center>Função</center></b></td>
+<td><b><center>Descrição</center></b></td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbUpKey()</span><br>
+int dbUpKey (void)</td>
+<td>Retorna 1 se a <b>tecla seta-cima</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbDownKey()</span><br>
+int dbDownKey (void)</td>
+<td>Retorna 1 se a <b>tecla seta-baixo</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbLeftKey()</span><br>
+int dbLeftKey (void)</td>
+<td>Retorna 1 se a <b>tecla seta-esquerda</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbRightKey()</span><br>
+int dbRightKey (void)</td>
+<td>Retorna 1 se a <b>tecla seta-direita</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbControlKey()</span><br>
+int dbControlKey (void)
+</td>
+
+<td>Retorna 1 se a <b>tecla control</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbShiftKey()</span><br>
+int dbShiftKey (void)</td>
+<td>Retorna 1 se a <b>tecla shift</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbReturnKey()</span><br>
+int dbReturnKey (void)</td>
+<td>Retorna 1 se a <b>tecla enter\return</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbEscapeKey()</span><br>
+int dbEscapeKey (void)</td>
+<td>Retorna 1 se a <b>tecla esc</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbSpaceKey()</span><br>
+int dbSpaceKey (void)</td>
+<td>Retorna 1 se a <b>tecla espaço</b> estiver pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nscancode = dbScanCode()</span><br>
+int dbScanCode (void)
+</td>
+<td>Retorna o valor do <b>código scancode da  tecla</b>  pressionada</td>
+</tr>
+
+<tr><td><span style="color:blue">nsts = dbKeyState(nscancode)</span><br>
+int dbKeyState (int iScanCode)
+</td>
+<td>Retorna 1 se a <b>tecla com o scancode especificado</b> estiver pressionada</td>
+</tr>
+</table>
+
+<u><b>Fazendo a leitura de estados do mouse</u></b> <span class=prg>
+<b>const int btnDireito = 2;</b>
+const int btnEsquerdo = 1;
+<b>if (dbMouseClick() == btnDireito)</b>
+	dbText (dbMouseX(), dbMouseY(), "Botao direito pressionado");
+
+// Desenhando com o botão esquerdo do mouse
+if (dbMouseClick()== btnEsquerdo) {
+	<b>xpos = dbMouseX();
+	ypos = dbMouseY();</b>
+ } // fim do if </span>
+ 
+<b class=sc2>nBotao = dbMouseClick()</b>
+Essa função informa o botão pressionado do mouse, retornando um valor inteiro
+para cada botão e para a combinação dos botões. 
+	  <b class=sc2>
+xpos = dbMouseX()
+ypos = dbMouseY()</b>
+Estas funções retornam respectivamente a posição x e y do mouse.
+   <b class=sc2>
+dbPositionMouse (xpos, ypos) 
+void dbPositionMouse ( int iX, int iY ) </b>
+A função acima posiciona o mouse na posição (xpos, ypos) especificada.
+
+
+<hr><hr>
+
+<b><u>Tabela de códigos scancode</b></u>
+A tabela abaixo foi adaptada do link abaixo acessado dia 22/04/2012:
+
+http://wiki.tesnexus.com/index.php/DirectX_Scancodes_And_How_To_Use_Them
+
+(*) Essa informação não foi testada em sua totalidade para verificar sua 
+acurácia sendo assim oferecida como está sem garantias.
+
+<table border='1' cellspacing='0' cellpadding='3' width='60%'>
+
+<tr><td><b><center>Tecla</center></b></td>
+<td><b><center>Código</center></b></td>
+<td><b><center>Tecla</center></b></td>
+<td><b><center>Código</center></b></td>
+</tr>
+
+<tr><td><b>Escape</b></td>
+<td>1</td>
+<td><b>barra de espaço</b></td>
+<td>57</td>
+</tr>
+
+<tr><td><b>1</b></td>
+<td>2</td>
+<td><b>Caps Lock</b></td>
+<td>58</td>
+</tr>
+
+<tr><td><b>2</b></td>
+<td>3</td>
+<td><b>F1</b></td>
+<td>59</td>
+</tr>
+
+<tr><td><b>3</b></td>
+<td>4</td>
+<td><b>F2</b></td>
+<td>60</td>
+</tr>
+
+<tr><td><b>5</b></td>
+<td>6</td>
+<td><b>F3</b></td>
+<td>61</td>
+</tr>
+
+<tr><td><b>7</b></td>
+<td>8</td>
+<td><b>F4</b></td>
+<td>62</td>
+</tr>
+
+<tr><td><b>9</b></td>
+<td>10</td>
+<td><b>F5</b></td>
+<td>63</td>
+</tr>
+
+<tr><td><b>0</b></td>
+<td>11</td>
+<td><b>F6</b></td>
+<td>64</td>
+</tr>
+
+<tr><td><b>menos (-)</b></td>
+<td>12</td>
+<td><b>F7</b></td>
+<td>65</td>
+</tr>
+
+<tr><td><b>igual (=)</b></td>
+<td>13</td>
+<td><b>F8</b></td>
+<td>66</td>
+</tr>
+
+<tr><td><b>Backspace &lt==</b></td>
+<td>14</td>
+<td><b>F9</b></td>
+<td>67</td>
+</tr>
+
+<tr><td><b>Tab</b></td>
+<td>15</td>
+<td><b>F10</b></td>
+<td>68</td>
+</tr>
+
+<tr><td><b>Q</b></td>
+<td>16</td>
+<td><b>Num Lock</b></td>
+<td>69</td>
+</tr>
+
+<tr><td><b>W</b></td>
+<td>17</td>
+<td><b>Scroll Lock</b></td>
+<td>70</td>
+</tr>
+
+<tr><td><b>E</b></td>
+<td>18</td>
+<td><b>Numpad 7</b></td>
+<td>71</td>
+</tr>
+
+<tr><td><b>R</b></td>
+<td>19</td>
+<td><b>Numpad 8</b></td>
+<td>72</td>
+</tr>
+
+<tr><td><b>T</b></td>
+<td>20</td>
+<td><b>Numpad 9</b></td>
+<td>73</td>
+</tr>
+
+<tr><td><b>Y</b></td>
+<td>21</td>
+<td><b>Numpad -</b></td>
+<td>74</td>
+</tr>
+
+<tr><td><b>U</b></td>
+<td>22</td>
+<td><b>Numpad 4</b></td>
+<td>75</td>
+</tr>
+
+<tr><td><b>I</b></td>
+<td>23</td>
+<td><b>Numpad 5</b></td>
+<td>76</td>
+</tr>
+
+<tr><td><b>O</b></td>
+<td>24</td>
+<td><b>Numpad 6</b></td>
+<td>77</td>
+</tr>
+
+<tr><td><b>P</b></td>
+<td>25</td>
+<td><b>Numpad +</b></td>
+<td>78</td>
+</tr>
+
+<tr><td><b>Left Bracket ( '(' )</b></td>
+<td>26</td>
+<td><b>Numpad 1</b></td>
+<td>79</td>
+</tr>
+
+<tr><td><b>Right Bracket ( ')' )</b></td>
+<td>27</td>
+<td><b>Numpad 2</b></td>
+<td>80</td>
+</tr>
+
+<tr><td><b>Enter</b></td>
+<td>28</td>
+<td><b>Numpad 3</b></td>
+<td>81</td>
+</tr>
+
+<tr><td><b>Left Control</b></td>
+<td>29</td>
+<td><b>Numpad 0</b></td>
+<td>82</td>
+</tr>
+
+<tr><td><b>A</b></td>
+<td>30</td>
+<td><b>Numpad .</b></td>
+<td>83</td>
+</tr>
+
+<tr><td><b>S</b></td>
+<td>31</td>
+<td><b>F11</b></td>
+<td>87</td>
+</tr>
+
+<tr><td><b>D</b></td>
+<td>32</td>
+<td><b>F12</b></td>
+<td>88</td>
+</tr>
+
+<tr><td><b>F</b></td>
+<td>33</td>
+<td><b>Numpad Enter</b></td>
+<td>156</td>
+</tr>
+
+<tr><td><b>G</b></td>
+<td>34</td>
+<td><b>Control lado direito</b></td>
+<td>157</td>
+</tr>
+
+<tr><td><b>H</b></td>
+<td>35</td>
+<td><b>Numpad /</b></td>
+<td>181</td>
+</tr>
+
+<tr><td><b>J</b></td>
+<td>36</td>
+<td><b>Alt - lado diretiro</b></td>
+<td>184</td>
+</tr>
+
+<tr><td><b>K</b></td>
+<td>37</td>
+<td><b>Home</b></td>
+<td>199</td>
+</tr>
+
+<tr><td><b>L</b></td>
+<td>38</td>
+<td><b>Seta p/cima</b></td>
+<td>200</td>
+</tr>
+
+<tr><td><b>Semicolon (; :)</b></td>
+<td>39</td>
+<td><b>Page Up</b></td>
+<td>201</td>
+</tr>
+
+<tr><td><b>Apostrophe (')</b></td>
+<td>40</td>
+<td><b>seta p/esquerda</b></td>
+<td>203</td>
+</tr>
+
+<tr><td><b>Tilde (~)</b></td>
+<td>41</td>
+<td><b>seta p/direita</b></td>
+<td>205</td>
+</tr>
+
+<tr><td><b>Shift - lado esquerdo</b></td>
+<td>42</td>
+<td><b>End</b></td>
+<td>207</td>
+</tr>
+
+<tr><td><b>Back Slash \</b></td>
+<td>43</td>
+<td><b>seta p/baixo</b></td>
+<td>208</td>
+</tr>
+
+<tr><td><b>Z</b></td>
+<td>44</td>
+<td><b>Page Down</b></td>
+<td>209</td>
+</tr>
+
+<tr><td><b>X</b></td>
+<td>45</td>
+<td><b>Insert</b></td>
+<td>210</td>
+</tr>
+
+<tr><td><b>C</b></td>
+<td>46</td>
+<td><b>Delete</b></td>
+<td>211</td>
+</tr>
+
+<tr><td><b>V</b></td>
+<td>47</td>
+<td><b>botão esquerdo do mouse</b></td>
+<td>256</td>
+</tr>
+
+<tr><td><b>B</b></td>
+<td>48</td>
+<td><b>botão direito do mouse</b></td>
+<td>257</td>
+</tr>
+
+<tr><td><b>N</b></td>
+<td>49</td>
+<td><b>botão do meio/roda do mouse</b></td>
+<td>258</td>
+</tr>
+
+<tr><td><b>M</b></td>
+<td>50</td>
+<td><b>botão do mouse #3</b></td>
+<td>259</td>
+</tr>
+
+<tr><td><b>Comma (,)</b></td>
+<td>51</td>
+<td><b>botão do mouse #4</b></td>
+<td>260</td>
+</tr>
+
+<tr><td><b>Period (.)</b></td>
+<td>52</td>
+<td><b>botão do mouse #5</b></td>
+<td>261</td>
+</tr>
+
+<tr><td><b>Forward Slash (/)</b></td>
+<td>53</td>
+<td><b>botão do mouse #6</b></td>
+<td>262</td>
+</tr>
+
+<tr><td><b>Shift - lado direito</b></td>
+<td>54</td>
+<td><b>botão do mouse #7</b></td>
+<td>263</td>
+</tr>
+
+<tr><td><b>Numpad *</b></td>
+<td>55</td>
+<td><b>roda do mouse pra cima</b></td>
+<td>264</td>
+</tr>
+
+<tr><td><b>Left Alt</b></td>
+<td>56</td>
+<td><b>roda do mouse pra baixo</b></td>
+<td>265</td></tr></table>	
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track03-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

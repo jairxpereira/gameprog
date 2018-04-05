@@ -1,0 +1,216 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-11</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:400pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-11</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-10.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-12.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style="background-color:#80ff80">1.11 Compreendendo o backbuffer</h3><pre>
+
+<b><u>1.1 Visão geral</u></b>
+Na melhor ordem das coisas os gráficos nunca são renderizados na tela 
+do monitor diretamente. Primeiro  a  cena é totalmente preparada numa
+estrutura de memória chamada <b>backbuffer</b> e depois disso  o  backbuffer
+pronto é transferido ou <b>virado</b> rapidamente para a  tela  do  monitor.
+
+Em nossos programas até o momento  primeiro ocorre a renderização  da 
+cena e depois do <span class=prg>g_device->EndScene()</span>  ocorre a <b>apresentação</b> na  tela
+da imagem montada no backbuffer feita por <span class=prg>g_device->Present().</span>
+
+Normalmente   pode   ocorrer   a  utilização  de  uma fila com vários
+backbuffers antecipando vários quadros de animação e eles são virados
+sequencialmente  um  após o outro sobre a tela  ocasionando animações
+rápidas e suaves. Geralmente  essa  fila  de backbuffers é chamada de
+<b>corrente de trocas</b>,  <b class=prg>swap chains</b>   no  termo inglês do vocabulário do
+directx.
+
+A corrente de trocas  é implementada como uma fila circular  e  assim 
+os  backbuffers vão ocupando  os  próximos  lugares  desocupados  dos 
+backbuffers que  são  apresentados  ocorrendo  um  ciclo  contínuo de
+escrita nos backbuffers esvaziados e apresentando os que estão prontos.
+
+
+<div class=prg-code><center><img src=images\ms_swapchain.png></center></div>* Diagrama adaptado da documentação original do directx.
+
+
+Uma  vez  que a renderização pode ocorrer diretamente na tela ou pode
+ocorrer em qualquer backbuffer existente na memória do computador ou
+na memória da placa de vídeo surge o conceito do <b>alvo da renderização</b>
+que pode apontar para essas formas que foram apresentadas.
+
+Temos usado como último alvo da renderização uma janela  mas  podemos
+escolher um outro controle do Windows como tela final ou ainda podemos
+rodar nossa aplicação em modo fullscreen ou tela cheia.
+
+Em contraste,  aplicações gráficas que não fazem  uso  de  backbuffer
+apresentam efeitos visuais desagradáveis como  a visão da formação da
+cena,  piscagens  e  flashes na tela, pedaços  da  cena  anterior  na
+cena nova, animações travadas ou rápidas demais.
+
+A implementação do processo de virar o backbuffer para  o  backbuffer 
+da frente ou para a tela imediata pode ocorrer através de uma simples
+troca de endereço de memória que indica aonde a placa de  vídeo  deve 
+buscar os dados atuais de apresentação da cena.  Com  a  aplicação em
+modo janela a transferência de conteúdo pode consistir numa  cópia de
+conteúdo de um backbuffer para a área visível da janela.
+
+Agora com essa compreensão do backbuffer é possível compreender melhor
+a propriedade SwapEffect dos parâmetros de apresentação da cena, essa
+propriedade  está  diretamente ligada com o gerenciamento da corrente 
+de trocas do dispositivo:
+<div class=prg-code><b class=prg><b class=sc2>// Declara  a variável para os parâmetros de apresentação</b>
+<b>D3DPRESENT_PARAMETERS</b> pps; 
+<b class=sc2>// (...)</b>
+pps.SwapEffect = <b class=sc4>D3DSWAPEFFECT_DISCARD</b>;
+pps.SwapEffect = <b class=sc4>D3DSWAPEFFECT_FLIP</b>;
+pps.SwapEffect = <b class=sc4>D3DSWAPEFFECT_COPY</b></b>;
+</div>
+
+A opção <b class=prg>Flip</b> permuta conteúdo entre os backbuffers fazendo uma virada
+de endereços;  a  opção  <b class=prg>Copy</b>  copia conteúdo de uma área para outra. 
+Quando selecionamos <b class=prg>Discard</b> o directx fica livre para tomar o  melhor
+caminho  que  seja o mais produtivo ao contexto  de gerenciamento  da
+corrente de trocas no momento.
+
+Pode ser criado correntes de trocas adicionais  e  isso  geralmente é 
+necessário   em   aplicações   que  apresentam  várias  visualizações 
+diferentes de uma cena 3d no mesmo monitor.
+
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="dx9cpp.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-10.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track01-12.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

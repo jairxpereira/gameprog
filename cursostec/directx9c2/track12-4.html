@@ -1,0 +1,1634 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.4 Projeto Hierarquia Animada: Parte 3 - O coração da hierarquia</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe CMeshHierarchy</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo Hierarquia.h</a>
+<a href=#2.2>2.2 A estrutura MESHPACK: public D3DXMESHCONTAINER</a>
+<a href=#2.3>2.3 A estrutura OSSO: public D3DXFRAME</a>
+<a href=#2.4>2.4 A estrutura da classe CMeshHierarchy</a>
+<a href=#2.5>2.5 Aspectos globais: arquivo Hierarquia.cpp</a>
+<a href=#2.6>2.6 CMeshHierarchy::CreateFrame()          - Carregando o osso</a>
+<a href=#2.7>2.7 CMeshHierarchy::DestroyFrame()         - Destruindo o osso</a>
+<a href=#2.8>2.8 CMeshHierarchy::CreateMeshContainer()  - Carregando o mesh container</a>
+<a href=#2.9>2.9 CMeshHierarchy::DestroyMeshContainer() - Destruindo o mesh container</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png></div>
+No capítulo 4.3 vimos que para carregar um modelo 3D para uso estático
+temos  que  utilizar  a  função  nativa   <b class=prg>D3DXLoadMeshFromX()</b>.   Para
+carregar um modelo 3d animado e  hierarquizado  a  função  apropriada 
+para isso é  <b class=prg>D3DXLoadMeshHierarchyFromX()</b>  e  esta  função  exige  um
+ponteiro de uma classe de usuário que processe a criação e destruição
+de meshes e ossos. Esta classe de usuário, <b>CMeshHierarchy</b>, deve herdar
+e seguir os moldes da interface  <b class=prg>ID3DXAllocateHierarchy</b>  que  obriga a
+criação de quatro (4)  métodos:
+	
+  <b class=prg><u>CreateFrame()</u></b>
+  É chamado para elaborar cada  novo  osso ( frame )  encontrado no
+  modelo 3d animado. Em termos práticos esse método  inicializa  os 
+  membros de uma estrutura <b>OSSO</b>  e os membros herdados da estrutura
+  <b class=prg>D3DXFRAME</b>.
+
+  <b class=prg><u>DestroyFrame()</u></b>
+  É chamada para destruir o osso ( frame ) no final  da  aplicação.
+
+  <b class=prg><u>CreateMeshContainer()</u></b>
+  Esse método é chamado para tratar cada pacote de  dados  de  mesh
+  localizado. Esse método tem uma grande  lista  de  argumentos  de
+  entrada e tem uma grande quantidade de código para  tratar  estes
+  argumentos que representam a  malha  3d  do  mesh  com  texturas,
+  materiais, informações de  skinning  e  outros  dados  atrelados.
+  Em termos práticos esse  método  inicializa  os  membros  de  uma
+  estrutura   <b>MESHPACK</b>   e   os   membros   herdados  da  estrutura 
+  <b class=prg>D3DXMESHCONTAINER</b>   com   os   dados   carregados   pela   função
+  <b class=prg>D3DXLoadMeshHierarchyFromX()</b> do arquivo do modelo 3d.
+
+  <b class=prg><u>DestroyMeshContainer()</u></b>
+  É chamado no final da aplicação para liberar a memória alocada de
+  cada mesh container, <b>MESHPACK,</b> criado.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da classe CMeshHierarchy</b></u>
+<div class=prg-code>
+<img src=images\chierarquia_diagrama.png></div>
+Nós apresentamos na introdução  a finalidade de cada método da classe
+<b>CMeshHierachy</b> e agora para melhor entendimento destes métodos devemos
+focar nas estruturas de apoio.
+
+<u>A estrutura OSSO</u>
+A estrutura <b>OSSO</b> é derivada da estrutura <b class=prg>D3DXFRAME</b>  e possui o membro
+<b>exCombinedTransformationMatrix</b> que é  uma  matriz  que  vai  acumular
+a  influência  combinada  que  o  osso  sofre  dos  outros  ossos  da 
+hierarquia 3d. A matriz  <b>exCombinedTransformationMatrix</b>  estabelece a
+posição e orientação final do osso utilizada na renderização da parte
+do mesh atrelada ao osso.  Agora  vamos  rever  abaixo  o  texto  que
+descreve a estrutura <b class=prg>D3DXFRAME</b>:
+
+<div class=prg-code>
+<b class=prg>typedef struct</b> _D3DXFRAME
+{
+    <b class=prg>LPSTR</b>                   Name;
+    <b class=prg>D3DXMATRIX</b>              TransformationMatrix;
+    <b class=prg>LPD3DXMESHCONTAINER</b>     pMeshContainer;
+
+    <b class=prg>struct _D3DXFRAME</b>       *pFrameSibling;
+    <b class=prg>struct _D3DXFRAME</b>       *pFrameFirstChild;
+	
+} <b class=prg>D3DXFRAME</b>, <b class=prg>*LPD3DXFRAME</b>;
+</div>
+<b class=prg-code><b class=prg>D3DXMATRIX</b> TransformationMatrix; </b>
+Essa estrutura traz o membro <b>TransformationMatrix</b> que é a  matriz  do
+osso com sua posição e orientação própria. 
+
+<b class=prg-code><b class=prg>LPSTR</b> Name;</b>
+Se não for NULL, essa string representa o nome do osso.
+
+<b class=prg-code><b class=prg>LPD3DXMESHCONTAINER</b> pMeshContainer; </b>
+Esse membro representa uma conexão com um outro meshcontainer.
+
+<b class=prg-code><b class=prg>struct _D3DXFRAME</b>      *pFrameSibling; </b>
+Se não for NULL, esse membro aponta para um osso irmão.
+
+<b class=prg-code><b class=prg>struct _D3DXFRAME</b>       *pFrameFirstChild;</b>
+Se não for NULL, esse membro aponta para um osso filho.	
+
+
+<u>A estrutura MESHPACK</u>
+A estrutura <b>MESHPACK</b> é derivada da estrutura <b class=prg>DXMESHCONTAINER</b> e possui
+os seguintes membros extras:
+<b class=prg-code>
+<b class=prg>IDirect3DTexture9</b>	**exTextures;	
+<b class=prg>D3DMATERIAL9</b>		*exMaterials;	</b>
+Estas variáveis são arrays de ponteiros para  segurar  as  texturas e
+materiais encontrados no modelo 3d.				
+
+<b class=prg-code><b class=prg>ID3DXMesh</b> *exSkinMesh; </b>
+Esta variável vai segurar  a  malha  renderizável  do modelo 3d. Esta
+variável vai ser cercada  pelo  suporte  ao  skinning  provido  pelos
+outros membros da estrutura <b>MESHPACK</b>.
+
+<b class=prg-code><b class=prg>D3DXMATRIX</b> *exBoneOffsets; </b>
+Este ponteiro representa uma array de  matrizes  que  dará  acesso  a
+a matriz de deslocamento de cada osso. Ele é usado principalmente  na
+fase  de  atualização da  movimentação  do  modelo  3d  animado  para
+transformar o espaço de osso para o espaço de figura deixando o  mesh
+preparado para ser renderizado.
+
+<b class=prg-code><b class=prg>D3DXMATRIX</b>  **exFrameCombinedMatrixPointer;</b>
+De maneira semelhante ao ponteiro <b>exBoneOffsets</b>  que permite o acesso
+a matriz individual de cada osso,  esse ponteiro representa uma array
+que dá acesso a  cada  uma  das  matrizes  finais  de  cada  osso  que
+sintetiza a influência de todos os ossos anteriores coligados na mesma
+linha hierárquica.
+
+Agora vamos relembrar a finalidade de cada membro nativo da estrutura
+<b class=prg>D3DXMESHCONTAINER</b>:
+
+<div class=prg-code>
+<b class=prg>typedef struct</b> _D3DXMESHCONTAINER
+{
+    <b class=prg>LPSTR</b>                   Name;
+    <b class=prg>D3DXMESHDATA</b>            MeshData;
+    <b class=prg>LPD3DXMATERIAL</b>          pMaterials;
+	
+    <b class=prg>LPD3DXEFFECTINSTANCE</b>    pEffects;
+	
+    <b class=prg>DWORD</b>                   NumMaterials;
+    <b class=prg>DWORD</b>                  *pAdjacency;
+    <b class=prg>LPD3DXSKININFO</b>          pSkinInfo;
+    <b class=prg>struct _D3DXMESHCONTAINER</b> *pNextMeshContainer;
+	
+} <b class=prg>D3DXMESHCONTAINER</b>, <b class=prg>*LPD3DXMESHCONTAINER</b>;
+</div>
+
+<b class=prg-code><b class=prg>LPSTR</b> Name; </b>
+Se não for NULL, aqui recebemos o nome do meshcontainer.
+
+<b class=prg-code><b class=prg>DWORD</b> NumMaterials; <b class=prg>LPD3DXMATERIAL</b> pMaterials; </b>
+Aqui recebemos a indicação da quantidade de materiais e  o  acesso  a
+eles pelo ponteiro <b>pMaterials</b>.
+
+<b class=prg-code><b class=prg>DWORD</b> *pAdjacency; </b>
+Aqui recebemos acesso a uma array com dados de adjacências que indica
+qual triângulo é vizinho de quem.
+
+<b class=prg-code><b class=prg>D3DXMESHDATA</b> MeshData; </b>
+Aqui recebemos acesso aos dados da malha do mesh que pode ser do tipo
+normal ( <b class=prg>LPD3DXMESH</b> ), mesh  progressivo ( <b class=prg>LPD3DXPMESH</b> )  ou  o  tipo
+mais incomum conhecido  como  patch  mesh ( <b class=prg>LPD3DXPATCHMESH</b> ).  Nossa
+aplicação carregará apenas o tipo comum ( <b class=prg>LPD3DXMESH</b> ).
+
+<b class=prg-code><b class=prg>LPD3DXEFFECTINSTANCE</b> pEffects; </b>
+Aqui se trata de configurações particulares de  efeitos  hlsl  que  o
+meshcontainer possa ter. O modelo 3d que vamos utilizar não traz essa
+informação e portanto esse valor será <b class=prg>NULL</b>.
+
+<b class=prg-code><b class=prg>LPD3DXSKININFO</b> pSkinInfo; </b>
+Aqui temos  acesso  a  uma  interface  <b class=prg>ID3DXSkinInfo</b>  que  sustenta e
+manipula as informações de skinning  do  mesh  tais  como  os  ossos,
+suas matrizes e pesos de influência.
+
+<b class=prg-code><b class=prg>struct _D3DXMESHCONTAINER</b> *pNextMeshContainer; </b>
+Como se trata de uma hierarquia ou uma lista ligada de objetos,  esse
+membro aponta qual é o próximo meshcontainer conectado com este sendo
+tratado.
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Aspectos globais: arquivo Hierarquia.h </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Hierarquia.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+</b></div>
+
+<b class=prg><span class=sc16>#pragma </span><span class=sc16>once</span></b>
+Aqui não tem nada especial digno de comentário entretanto esclarecemos
+que esta diretiva é para garantir que o arquivo seja  incluído apenas
+uma vez na compilação.  Ela  é  mais  efetiva  e  econômica  do que a
+construção comum com <b class=sc16>#if\#endif</b>.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 A estrutura MESHPACK: public D3DXMESHCONTAINER </u></b>
+
+Essa estrutura foi bem descrita no tópico  <b>1.2 Estrutura principal da
+aplicação.</b>   Acompanhe os comentários para mais algum esclarecimento.
+
+<div class=niceview><b><span class=sc2>// MESHPACK - Essa estrutura é derivada da estrutura base D3DXMESHCONTAINER e</span>
+<span class=sc2>// foi estendida com dados específicos para a aplicação que vão ser estocados</span>
+<span class=sc2>// com cada mesh. Para ajudar na distinção de qual dado é  estendido  e  qual</span>
+<span class=sc2>// é da base cada membro estendido vai começar com o prefixo ex.</span>
+<span class=prg>struct </span>MESHPACK: <span class=prg>public </span><span class=sc5>D3DXMESHCONTAINER</span>
+<span class=sc16>{</span>
+  <span class=sc2>// A base D3DXMESHCONTAINER tem um ponteiro pMaterials que  é  uma  estrutura</span>
+  <span class=sc2>// D3DXMATERIAL que contém um nome de textura e dados de material.    É fácil</span>
+  <span class=sc2>// ignorar isso e no lugar estocar os dados em arrays de texturas e materiais</span>
+  <span class=sc2>// nesta estrutura estendida:</span>
+
+  <span class=sc2>// Array de ponteiros para as texturas</span>
+  <span class=sc5>IDirect3DTexture9 </span> **exTextures; 
+
+  <span class=sc2>// Array de ponteiros para os materiais</span>
+  <span class=sc5>D3DMATERIAL9</span>  *exMaterials; 
+
+
+  <span class=sc2>// Variáveis de skinning</span>
+  <span class=no_fmt><span class=sc2>//O skin mesh</span></span>
+  <span class=sc5>ID3DXMesh</span> *exSkinMesh; 
+
+  <span class=sc2>// As matrizes offset de ossos, uma por osso</span>
+  <span class=sc5>D3DXMATRIX</span> *exBoneOffsets; 
+
+  <span class=sc2>// Array dos ponteiros das matrizes dos frames</span>
+  <span class=sc5>D3DXMATRIX</span> **exFrameCombinedMatrixPointer; 
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da estrutura MESHPACK : D3DXMESHCONTAINER</span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 A estrutura OSSO: public D3DXFRAME </u></b>
+
+Essa estrutura foi bem descrita no tópico  <b>1.2 Estrutura principal da
+aplicação.</b>   Acompanhe os comentários para mais algum esclarecimento.
+
+<div class=niceview><b><span class=sc2>// A estrutura OSSO é derivada da estrutura base D3DXFRAME e foi estendida com</span>
+<span class=sc2>// dados específicos para a aplicação que vão ser  estocados  com  cada  frame.</span>
+<span class=sc2>// Para ajudar na distinção do membro estendido das variáveis da base o membro</span>
+<span class=sc2>// estendido vai ser prefixado com ex</span>
+<span class=prg>struct </span>OSSO: <span class=prg>public </span><span class=sc5>D3DXFRAME</span>
+<span class=sc16>{</span>
+    <span class=sc5>D3DXMATRIX </span>exCombinedTransformationMatrix; 
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da estrutura OSSO : D3DXFRAME</span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 A estrutura da classe CMeshHierarchy </u></b>
+<div class=niceview><b><span class=sc2>// Classe CMeshHierarchy</span>
+<span class=sc2>// Esta classe define as funções callback obrigatórias requeridas pela função</span>
+<span class=sc2>// D3DXLoadMeshHierarchyFromX(). Estas funções estão definidas como abstratas</span>
+<span class=sc2>// pela interface ID3DXAllocateHierarchy()</span>
+<span class=prg>class </span>CMeshHierarchy : <span class=prg>public </span><span class=sc5>ID3DXAllocateHierarchy</span>
+<span class=sc16>{</span>
+<span class=sc16>public:</span>
+
+    <span class=sc2>// função para criar e inicializar o objeto D3DXFRAME estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>CreateFrame</span>)(<span class=prg>LPCSTR </span>_nome, <span class=sc5>D3DXFRAME </span>**_outNovoOsso);  
+
+    <span class=sc2>// função para liberar o objeto D3DXFRAME estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>DestroyFrame</span>)(<span class=sc5>D3DXFRAME </span>*frameToFree );  
+
+    <span class=sc2>// função para criar e inicializar o objeto D3DXMESHCONTAINER estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>CreateMeshContainer</span>)( 
+    <span class=prg>LPCSTR</span>			_nome, 
+    <span class=sc16>CONST</span> <span class=sc5>D3DXMESHDATA </span>  	*_meshData, 
+    <span class=sc16>CONST</span> <span class=sc5>D3DXMATERIAL </span>  	*_materials, 
+    <span class=sc16>CONST</span> <span class=sc5>D3DXEFFECTINSTANCE </span>*_effectInstances, 
+    <span class=prg>DWORD</span> 			_numMaterials, 
+    <span class=sc16>CONST</span> <span class=prg>DWORD</span>		*_adjacency, 
+    <span class=sc5>ID3DXSkinInfo</span>		*_pSkinInfo, 
+    <span class=sc5>D3DXMESHCONTAINER</span>		**_outNewMeshPack 
+    );  
+
+    <span class=sc2>// função para liberar o objeto D3DXMESHCONTAINER estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>DestroyMeshContainer</span>)( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerToFree );  
+
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CMeshHierarchy</span>
+</b></div>
+
+<u>A classe CMeshHierarchy</u>
+Esta classe de usuário foi  desenvolvida  para  carregar um modelo 3d
+animado hierarquizado e para isso ela deve  herdar  seus  métodos  da
+interface base <b class=prg>ID3DXAllocateHierarchy</b> que define os métodos  virtuais
+e abstratos que devem  ser  implementados.  Para carregar o modelo 3d
+animado   a   função  <b class=prg>D3DXLoadMeshHierarchyFromX()</b>  necessita  de  um
+ponteiro para uma instância  dessa  classe.  Basicamente  os  métodos
+dessa classe recebe os dados do modelo 3d carregado  e  embute  estes
+dados nas instâncias das estruturas já discutidas.
+
+<b class=prg-code><span class=prg>class </span>CMeshHierarchy : <span class=prg>public </span><span class=sc5>ID3DXAllocateHierarchy</span> <span class=sc16>{</span> <span class=sc16>public:</span> </b>
+Nesta linha é visto que a  classe  <b>CMeshHierarchy</b>  herda  os  métodos
+públicos da interface  base  <b class=prg>ID3DXAllocateHierarchy</b>  e  mantem  estes
+métodos ainda públicos para que   possam  ser  chamados  pela  função
+<b class=prg>D3DXLoadMeshHierarchyFromX()</b>.
+
+
+<b class=prg-code><span class=sc16>STDMETHOD</span>( <span class=prg>CreateFrame</span>)(<span class=prg>LPCSTR </span>_nome, <span class=sc5>D3DXFRAME </span>**_outNovoOsso);  </b>
+Esta é a assinatura obrigatória do método <b class=prg>CreateFrame()</b> que é chamado
+a cada 'osso' encontrado durante o carregamento do modelo 3d animado.
+A formatação dessa assinatura não  é  a  rotineira  da  linguagem C++
+visto que aqui trata-se de herança de uma interface da tecnologia COM
+da Microsoft. O exatamente correto dizer desse método é que ele faz a
+preparação inicial de cada 'frame' encontrado porém  fizemos  questão
+de utilizar a palavra 'osso' pois é mais rapidamente  compreensível e
+sem a propensão da confusão que tem a palavra 'frame' visto  ela  ter
+vários significados. Entretanto o uso da palavra 'frame' não seria de
+todo inapropriado visto  que cada 'osso' é  um  'frame de referência'
+para os demais ossos e os correspondentes vértices do mesh  coligados
+na hierarquia de objetos 3d.
+Eventualmente cada osso é nomeado com uma correspondência nominal com
+a parte que ele influência no mesh, por exemplo, o osso do pé direito
+pode ter o nome conveniente de 'right foot'. O argumento <b>_nome</b> recebe
+a string encontrada que traz o nome do osso. O argumento <b>_outNovoOsso</b>
+é um ponteiro  que  vai  receber  o  endereço  do  osso  inicialmente
+preparado pela aplicação. 
+
+Informamos desde já que  os  argumentos de entrada foram nomeados com
+um underline ('_') para facilitar a distinção no código da função com
+as variáveis locais e membros das classes  da  aplicação;  isso também
+vale para <b class=prg>CreateMeshContainer()</b> que tem uma lista grande de argumentos
+de entrada. Infelizmente o underline tira muito da beleza estética do
+código mas nesse momento do aprendizado é importante você  saber  com
+clareza quais são os dados que estão vindo de fora da aplicação.
+A função <b class=prg>CreateFrame()</b> trabalha nativamente com a estrutura <b class=prg>D3DXFRAME</b>
+mas visto que esta estrutura tem carência de um membro importante nós
+vamos utilizar a estrutura <b>OSSO</b> derivada dela.
+
+<b class=prg-code><span class=sc16>STDMETHOD</span>( <span class=prg>DestroyFrame</span>)(<span class=sc5>D3DXFRAME </span>*frameToFree );</b>
+No  final  da  aplicação  esse  método  libera a memória de cada osso
+criado. No método <b class=prg>CreateFrame()</b>  a  memória  de  cada  osso  vai  ser 
+alocada com a instrução <b class=prg>new</b> e isso gera a  contrapartida  da  memória 
+ser liberada com <b class=prg>delete</b> em <b class=prg>DestroyFrame()</b>.
+
+
+De maneira  semelhante,  o  método  <b class=prg>DestroyMeshContainer()</b>  libera  a
+memória   utilizada   na   elaboração  de  cada  recipiente  de mesh: 
+
+<b class=prg-code><span class=sc16>STDMETHOD</span>( <span class=prg>DestroyMeshContainer</span>)( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerToFree ); </b>
+
+O ponteiro <b>meshContainerToFree</b> apontará na realidade para a estrutura
+do tipo <b>MESHPACK</b> que deve ser liberada.
+
+
+<u>O método CreateMeshContainer()</u>
+<div class=prg-code><span class=sc16>STDMETHOD</span>( <span class=prg>CreateMeshContainer</span>)( 
+<span class=prg>LPCSTR</span>				_nome, 
+<span class=sc16>CONST</span> <span class=sc5>D3DXMESHDATA </span>  		*_meshData, 
+<span class=sc16>CONST</span> <span class=sc5>D3DXMATERIAL </span>  		*_materials, 
+<span class=sc16>CONST</span> <span class=sc5>D3DXEFFECTINSTANCE </span>	*_effectInstances, 
+<span class=prg>DWORD</span> 				_numMaterials, 
+<span class=sc16>CONST</span> <span class=prg>DWORD </span> 			*_adjacency, 
+<span class=sc5>ID3DXSkinInfo</span> 			*_pSkinInfo, 
+<span class=sc5>D3DXMESHCONTAINER </span> 		**_outNewMeshPack );  </div>
+Esse método recebe um grande volume de dados proveniente  do  arquivo
+do modelo 3d e deve providenciar o compartimento de memória para cada
+tipo ou classe de dado encontrado.  Nesta aplicação todos esses dados
+são empacotados em uma estrutura <b>MESHPACK</b>.  Vamos analisar agora cada
+argumento de entrada desse método: 
+
+<b class=prg-code><span class=prg>LPCSTR</span> _nome</b>
+Se não for <b class=prg>NULL</b> aqui é a string de  nome  do  mesh  container  ou  em
+outras palavras é o nome do modelo 3d como um todo.
+
+<b class=prg-code><span class=sc16>CONST</span> <span class=sc5>D3DXMESHDATA </span> *_meshData </b>
+Esse ponteiro aponta para os dados da malha de vértices do mesh que
+é representado por um objeto da interface <b class=prg>ID3DXMesh</b>.
+
+<b class=prg-code><span class=prg>DWORD</span> _numMaterials </b>
+Este argumento recebe o número de materiais presentes  no  modelo  3d
+e via de regra esse número corresponde com a quantidade  de texturas.
+
+<b class=prg-code><span class=sc16>CONST</span> <span class=sc5>D3DXMATERIAL </span> *_materials</b>
+Esse ponteiro dá acesso aos materiais  carregados  e  aos  nomes  das 
+texturas que são carregadas em um bloco de código dessa função.
+
+<b class=prg-code><span class=sc5>ID3DXSkinInfo</span> *_pSkinInfo</b> 
+Esse objeto recebe e concentra os dados  de  skinning  do  modelo 3d. 
+Esses dados se referem aos  ossos:  quantidade,  peso ( influência ),
+matrizes de posicionamento\orientação etc.
+
+<b class=prg-code><span class=sc5>D3DXMESHCONTAINER </span> **_outNewMeshPack </b>
+Depois de empacotar  todos  os  dados  em  uma  estrutura  <b>MESHPACK</b> a
+aplicação vai  liberar  o  acesso  a  esta  estrutura  através  deste
+ponteiro ( <b>outNewMeshPack</b> ).
+
+Os próximos argumentos não têm muita importância para esta aplicação:
+
+<b class=prg-code><span class=sc16>CONST</span> <span class=sc5>D3DXEFFECTINSTANCE </span> *_effectInstances</b>
+Este ponteiro dá acesso a informações de efeitos que eventualmente o
+modelo 3d  possa  trazer.  Nosso  modelo  de  teste  não  traz  essa
+informação e portanto o valor desse ponteiro vai ser <b>NULL</b>.  Em  caso
+de haver esta informação no modelo ela não será tratada.
+
+<b class=prg-code><span class=sc16>CONST</span> <span class=prg>DWORD </span> *_adjacency</b> 
+Esses são dados de adjacências  que informa os triângulos vizinhos de
+cada triângulo. Esse dado é importante para outras funções nativas do
+directx que faz procedimentos de limpeza  e optimização no modelo 3d.
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 Aspectos globais: arquivo Hierarquia.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Hierarquia.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+</b></div>
+
+<b class=prg-code><span class=sc16>#include </span><span class=sc6>"Tools.h"</span></b>
+É interessante informar que a classe <b class=prg>CMeshHierarchy</b> vai utilizar
+as funções da classe <b>Tools</b> para processar strings e  os arquivos
+de textura.
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 CMeshHierarchy::CreateFrame() - Carregando o osso </u></b>
+<div class=niceview><b><span class=sc2>// CMeshHierarchy::CreateFrame() - Esse  método é chamado sempre que</span>
+<span class=sc2>// um novo frame é encontrado durante o carregamento do modelo 3d (x).</span>
+<span class=sc2>// _nome é o nome do frame</span>
+<span class=sc2>// **_outNovoOsso - é o ponteiro de retorno aonde assinalamos o frame</span>
+<span class=sc2>// recém-criado.</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::CreateFrame(<span class=prg>LPCSTR </span>_nome, <span class=sc5>D3DXFRAME </span>**_outNovoOsso) 
+<span class=sc16>{</span>
+
+ <span class=sc2>// É sempre uma boa idéia inicializar o ponteiro de retorno antes de avançar</span>
+ *_outNovoOsso = <span class=sc4>0</span>; 
+
+ <span class=sc2>// Cria o novo frame utilizando a versão derivada da estrutura nativa</span>
+ OSSO *novoOsso = <span class=prg>new </span>OSSO; 
+ <span class=prg>ZeroMemory</span>(novoOsso, <span class=sc16>sizeof</span>(OSSO));  
+
+ <span class=sc2>// Agora vamos preencher os membros na estrutura de frame</span>
+ <span class=sc2>// Vamos inicializar outros membros para valores default</span>
+ <span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;TransformationMatrix</span>);  
+ <span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;exCombinedTransformationMatrix</span>);  
+
+ <span class=sc2>// Zerando os ponteiros</span>
+ <span class=prg>novoOsso-&gt;pMeshContainer </span>= <span class=sc4>0</span>; 
+ <span class=prg>novoOsso-&gt;pFrameSibling </span> = <span class=sc4>0</span>; 
+ <span class=prg>novoOsso-&gt;pFrameFirstChild </span>= <span class=sc4>0</span>; 
+
+ <span class=sc2>// Assinalação do ponteiro de retorno para nosso recém-criado frame</span>
+ *_outNovoOsso = novoOsso; 
+
+ <span class=sc2>// Nome do frame (ele pode ser 0 ou ter tamanho zero)</span>
+ <span class=sc9>if </span>(_nome && <span class=prg>strlen</span>(_nome)) 
+ <span class=sc16>{</span>
+ <span class=prg>novoOsso-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::CreateFrame().fim</span></span>
+</b></div>
+
+De forma geral essa função realiza  apenas  uma  limpeza  básica  dos
+membros da estrutura OSSO  e  configura-os  para  valores  neutros:
+<div class=prg-code><b><span class=sc2>// Inicialização básica da estrutura</span>
+OSSO *novoOsso = <span class=prg>new </span>OSSO; 
+<span class=prg>ZeroMemory</span>(novoOsso, <span class=sc16>sizeof</span>(OSSO));  
+
+<span class=sc2>// Vamos inicializar outros membros para valores default</span>
+<span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;TransformationMatrix</span>);  
+<span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;exCombinedTransformationMatrix</span>);  
+
+<span class=sc2>// Zerando os ponteiros</span>
+<span class=prg>novoOsso-&gt;pMeshContainer </span>	= <span class=sc4>0</span>; 
+<span class=prg>novoOsso-&gt;pFrameSibling </span> 	= <span class=sc4>0</span>; 
+<span class=prg>novoOsso-&gt;pFrameFirstChild </span>	= <span class=sc4>0</span>; 
+
+<span class=sc2>// Zerando inicialmente o ponteiro de saída</span>
+*_outNovoOsso = <span class=sc4>0</span>; 
+</b></div>
+
+Aqui é o trabalho mais volumoso  dessa  função  que  se  consiste  no
+estabelecimento do nome do osso encontrado:
+<div class=prg-code><b><span class=sc2>// Nome do frame (ele pode ser 0 ou ter tamanho zero)</span>
+<span class=sc9>if </span>(_nome && <span class=prg>strlen</span>(_nome)) 
+<span class=sc16>{</span>
+<span class=prg>novoOsso-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+<span class=sc16>} <span class=sc2>// endif</span></span>
+</b></div>
+
+<b class=prg-code>*_outNovoOsso = novoOsso; </b>
+Aqui retornamos para a aplicação o  acesso  ao  osso  recém-criado. O
+objeto  da  interface   <b class=prg>ID3DXSkinInfo</b>  manterá  um  volume  maior  de
+informação sobre cada osso carregado.
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 CMeshHierarchy::DestroyFrame() - Destruindo o osso </u></b>
+
+Essa função não será mais comentada  pois  apenas utiliza os recursos
+padrões da linguagem C++ para fazer  seu  trabalho  de  liberação  de
+memória que são de fácil entendimento.
+
+<div class=niceview><b><span class=sc2>// CMeshHierarchy::DestroyFrame() - Esse método desaloca dados de frame</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::DestroyFrame(<span class=sc5>D3DXFRAME </span>*frameToFree) 
+<span class=sc16>{</span>
+  <span class=sc2>// Converte para nosso tipo estendido. OK para fazer isso porque temos</span>
+  <span class=sc2>// certeza de que temos um OSSO aqui</span>
+  OSSO *frame = (OSSO*) frameToFree; 
+
+  <span class=sc2>// Deleta a memória do nome</span>
+  <span class=sc9>if </span>(<span class=prg>frame-&gt;Name</span>)  
+    <span class=prg>delete</span>[] <span class=prg>frame-&gt;Name</span>; 
+    <span class=prg>delete </span>frame; 
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::DestroyFrame().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 CMeshHierarchy::CreateMeshContainer() - Carregando o mesh container </u></b>
+<div class=niceview><b><span class=sc2>// CMeshHierarchy::CreateMeshContainer() Esse método é  chamado  sempre  que um</span>
+<span class=sc2>// 'mesh data' ou dados de mesh  são  encontrados  durante  o  carregamento  do</span>
+<span class=sc2>//  modelo 3d( .x ),</span>
+<span class=sc2>// *_nome - nome  do Mesh (const char*)</span>
+<span class=sc2>// *_meshData - dados do mesh</span>
+<span class=sc2>// *_materials - array de materiais</span>
+<span class=sc2>// *_effectInstances - arquivos e configurações de efeito</span>
+<span class=sc2>// _numMaterials - número de materiais no mesh</span>
+<span class=sc2>// *_adjacency - array de informação de adjacência</span>
+<span class=sc2>// *_pSkinInfo - informação de skinning</span>
+<span class=sc2>// **__outNewMeshPack - ponteiro externo para assinalar o mesh container récem</span>
+<span class=sc2>// criado</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::CreateMeshContainer( 
+    <span class=prg>LPCSTR </span>     		_nome, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMESHDATA </span>  	*_meshData, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMATERIAL </span>  	*_materials, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXEFFECTINSTANCE </span>	*_effectInstances, 
+    <span class=prg>DWORD </span>     			_numMaterials, 
+    <span class=sc16>CONST </span><span class=prg>DWORD </span>    		*_adjacency, 
+    <span class=sc5>ID3DXSkinInfo </span>   		*_pSkinInfo, 
+    <span class=sc5>D3DXMESHCONTAINER </span>     	**_outNewMeshPack) 
+<span class=sc16>{</span>
+  <span class=sc2>// A) Preparação inicial das estruturas</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Criação da estrutura mesh container e inicialização dela para  os  zeros</span>
+  <span class=sc2>// iniciais. Perceba que a estrutura mesh container é uma versão estendida</span>
+  <span class=sc2>// que foi definida no arquivo Hierarquia.h (MESHPACK)</span>
+  MESHPACK *newMeshPack = <span class=prg>new </span>MESHPACK; 
+  <span class=prg>ZeroMemory</span>(newMeshPack, <span class=sc16>sizeof</span>(MESHPACK));  
+  <span class=sc2>// Inicialização de segurança do ponteiro de retorno</span>
+  *_outNewMeshPack = <span class=sc4>0</span>; 
+
+
+  <span class=sc2>// B) Copiando o nome do meshcontainer</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Nome do mesh (que pode ser 0) necessita ser copiado</span>
+  <span class=sc9>if</span> (_nome && <span class=prg>strlen</span>(_nome) ) 
+  <span class=sc16>{</span>
+    <span class=prg>newMeshPack-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+  <span class=sc16>}</span>
+
+
+  <span class=sc2>// C) Preparação dos dados básicos do objeto ID3DMESH</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Tipo de mesh ( D3DXMESHTYPE_MESH, D3DXMESHTYPE_PMESH ou</span>
+  <span class=sc2>// D3DXMESHTYPE_PATCHMESH )</span>
+  <span class=sc9>if </span>(<span class=prg>_meshData-&gt;Type </span>!= <span class=sc4>D3DXMESHTYPE_MESH</span>)  
+  <span class=sc16>{</span>
+    <span class=sc2>// Esta app apenas manipula mesh padrão. Esta app não manipula outros</span>
+    <span class=sc2>// tipos   de  mesh  como  D3DXMESHTYPE_PMESH ( progressive mesh )  e</span>
+    <span class=sc2>// D3DXMESHTYPE_PATCHMESH (patch mesh)</span>
+    <span class=prg>DestroyMeshContainer</span>(newMeshPack);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Estabelece o tipo de mesh como o mesh padrão</span>
+  <span class=prg>newMeshPack-&gt;MeshData.Type </span>= <span class=sc4>D3DXMESHTYPE_MESH</span>; 
+
+  <span class=sc2>// Informação de adjacência. É requerida pelo objeto ID3DMESH</span>
+  <span class=prg>DWORD </span>dwFaces   = <span class=prg>_meshData-&gt;pMesh-&gt;GetNumFaces</span>();  
+  <span class=prg>newMeshPack-&gt;pAdjacency </span>= <span class=prg>new </span><span class=prg>DWORD</span>[dwFaces*3];  
+  <span class=prg>memcpy</span>(<span class=prg>newMeshPack-&gt;pAdjacency</span>, _adjacency, <span class=sc16>sizeof</span>(<span class=prg>DWORD</span>)  * dwFaces * <span class=sc4>3</span>);   
+
+
+  <span class=sc2>// Não precisa clonar. Basta apenas assinalar o ponteiro e adicionar uma</span>
+  <span class=sc2>// referência.</span>
+  <span class=prg>newMeshPack-&gt;MeshData.pMesh </span>= <span class=prg>_meshData-&gt;pMesh</span>; 
+  <span class=prg>newMeshPack-&gt;MeshData.pMesh-&gt;AddRef</span>();  
+
+
+  <span class=sc2>// D) Carregando texturas e materiais</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Dispositivo renderizador Direct3D. Esse dado é mantido no próprio mesh mas</span>
+  <span class=sc2>// deve ser liberado quando o mesh tiver sido utilizado.</span>
+  <span class=sc5>IDirect3DDevice9 </span>*pd3dDevice = <span class=sc4>0</span>; 
+  <span class=prg>_meshData-&gt;pMesh-&gt;GetDevice</span>(&pd3dDevice);  
+
+
+  <span class=sc2>// Criação da array de texturas e materiais. Perceba que queremos ter ao</span>
+  <span class=sc2>// menos um material</span>
+  <span class=prg>newMeshPack-&gt;NumMaterials </span>= max(_numMaterials, <span class=sc4>1</span>);   
+  <span class=prg>newMeshPack-&gt;exMaterials </span>= <span class=prg>new </span><span class=sc5>D3DMATERIAL9</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+  <span class=prg>newMeshPack-&gt;exTextures </span> = <span class=prg>new </span><span class=sc5>IDirect3DTexture9*</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+
+  <span class=sc2>// Limpando a memória para texturas</span>
+  <span class=prg>ZeroMemory</span>(<span class=prg>newMeshPack-&gt;exTextures</span>, 
+    <span class=sc16>sizeof</span>(<span class=sc5>IDirect3DTexture9*</span>)  * <span class=prg>newMeshPack-&gt;NumMaterials</span>);   
+
+
+  <span class=sc2>// Se tiver materiais e texturas vamos carregá-los.</span>
+  <span class=sc9>if </span>( _numMaterials &gt; <span class=sc4>0</span> )  
+  <span class=sc16>{</span>
+    <span class=sc2>// Carregamento de todas as texturas e cópia do material</span>
+    <span class=prg>for</span>(<span class=prg>DWORD </span>i = <span class=sc4>0</span>; i &lt; _numMaterials; ++i) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Copia o material</span>
+      <span class=prg>newMeshPack-&gt;exMaterials</span>[i] = _materials[i]<span class=prg>.MatD3D</span>; 
+
+      <span class=sc2>// Copia as texturas</span>
+      <span class=prg>newMeshPack-&gt;exTextures</span>[i] = <span class=sc4>0</span>; 
+      <span class=sc9>if</span> ( _materials[i]<span class=prg>.pTextureFilename</span> )  
+      <span class=sc16>{</span>
+        <span class=sc2>// Pega o nome do arquivo da textura</span>
+        std::string texturePath( _materials[i]<span class=prg>.pTextureFilename</span> );  
+
+        <span class=sc2>// Encontre o arquivo e carregue a textura</span>
+        <span class=sc9>if </span>( Tools::FindFile(&texturePath) ) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carregamento da textura com a função do directx (D3DX)</span>
+          <span class=sc9>if</span> ( <span class=prg>FAILED</span>(<span class=prg>D3DXCreateTextureFromFile</span>(pd3dDevice, <span class=prg>texturePath.c_str</span>(), 
+            <span class=prg>&newMeshPack-&gt;exTextures</span>[i])) ) 
+          <span class=sc16>{</span>
+
+            <span class=prg>MessageBox </span>(<span class=sc4>0</span>, <span class=sc6>"Falha no carregamento da textura"</span>, 
+              <span class=sc6>"CMeshHierarchy::CreateMeshContainer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+          <span class=sc16>} <span class=sc2>// endif ( Carregamento da textura )</span></span>
+
+        <span class=sc16>} <span class=sc2>// endif ( Tools::FindFile(&texturePath) )</span></span>
+
+      <span class=sc16>} <span class=sc2>// endif ( materials[i].pTextureFilename )</span></span>
+
+    <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc16>} <span class=sc2>// endif ( (numMaterials &gt; 0) )</span></span>
+
+  <span class=sc9>else</span>
+
+    <span class=sc2>// Criação de um material default caso o mesh não tenha um</span>
+  <span class=sc16>{</span>
+    <span class=prg>ZeroMemory</span>(<span class=prg>&newMeshPack-&gt;exMaterials</span>[<span class=sc4>0 </span>], <span class=sc16>sizeof</span>( <span class=sc5>D3DMATERIAL9</span>) );  
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.r </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.g </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.b </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Specular </span>= <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse</span>; 
+
+    <span class=sc2>// Não vai ter textura</span>
+    <span class=prg>newMeshPack-&gt;exTextures</span>[<span class=sc4>0</span>] = <span class=sc4>0</span>; 
+    <span class=sc16>}</span>
+
+  <span class=sc2>//  Quando pegamos o dispositivo, nós causamos a incrementação do contador de</span>
+  <span class=sc2>//  referências então agora precisamos liberá-lo.</span>
+  <span class=prg>pd3dDevice-&gt;Release</span>();  
+
+
+  <span class=sc2>// E) Carregando dados de skinning</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Se tem dados de skinning associados com o mesh, vamos copiá-lo</span>
+  <span class=sc9>if </span>(_pSkinInfo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Salve os dados de skin</span>
+      <span class=prg>newMeshPack-&gt;pSkinInfo </span>= _pSkinInfo; 
+      <span class=prg>_pSkinInfo-&gt;AddRef</span>();  
+
+    <span class=sc2>// Precisamos de uma array de 'matrizes de offset' para mover os vértices do</span>
+    <span class=sc2>// espaço de figura para o espaço de osso</span>
+    <span class=prg>UINT </span>numBones = <span class=prg>_pSkinInfo-&gt;GetNumBones</span>();  
+      <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=prg>new </span><span class=sc5>D3DXMATRIX</span>[numBones];  
+
+    <span class=sc2>// Criação de arrays para os ossos e as matrizes de frames</span>
+    <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=prg>new </span>D3DXMATRIX*[numBones];  
+
+    <span class=sc2>// Pegue cada matriz de offset de osso para não precisarmos pegá-las mais</span>
+    <span class=sc2>// tarde</span>
+      <span class=prg>for </span>(<span class=prg>UINT </span>i = <span class=sc4>0</span>; i &lt; numBones; i++) <span class=prg>newMeshPack-&gt;exBoneOffsets</span>[i] = 
+      *(<span class=prg>newMeshPack-&gt;pSkinInfo-&gt;GetBoneOffsetMatrix</span>(i));  
+
+    <span class=sc2>// Nota importante:  Nos exemplos da Microsoft a função GenerateSkinnedMesh()</span>
+    <span class=sc2>// é chamada aqui para preparar os dados de skinning do mesh para  obter  uma</span>
+    <span class=sc2>// ótima performance de aceleração de hardware. Como mencionado anteriormente,</span>
+    <span class=sc2>// este exemplo não realiza o skinning em hardware mas  ao  invés  utiliza  o</span>
+    <span class=sc2>// skinning feito em software que é mais fácil de entender.</span>
+  <span class=sc16>} <span class=sc2>// endif (_pSkinInfo)</span></span>
+  <span class=sc9>else</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Não tem informação de skin, então vamos zerar os ponteiros relativos</span>
+    <span class=prg>newMeshPack-&gt;pSkinInfo </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exSkinMesh </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+
+
+  <span class=sc2>// F) Carregando configurações de efeitos</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// O mesh pode conter referência a arquivos de efeito</span>
+  <span class=sc9>if </span>(_effectInstances) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Não faça nada. O arquivo de efeito localizado não é tratado</span>
+    <span class=sc2>// por esta aplicação.</span>
+    <span class=sc9>if </span>(<span class=prg>_effectInstances-&gt;pEffectFilename</span>)  <span class=prg>int </span>dummy = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// G) Retornando o meshcontainer carregado</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Configure o ponteiro de saída para o nosso recém-criado mesh container</span>
+  *_outNewMeshPack = newMeshPack; 
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::CreateMeshContainer().fim</span></span>
+</b></div>
+
+Bem, agora vamos ver como a função <b class=prg>CreateMeshContainer()</b>  faz  o  seu
+trabalho de receber os  dados  do  modelo  3d animado  hierarquizado.
+Basicamente esse trabalho  se  divide  em  7  blocos  que  podem  ser 
+identificados dessa forma:
+
+ <u>A) Preparação inicial das estruturas</u>
+ Aqui ocorre o costumeiro trabalho de limpar estruturas e ponteiros.
+
+ <u>B) Copiando o nome do mesh container</u>
+ Nesta parte o nome do mesh container é estabelecido.
+
+ <u>C) Preparação dos dados básicos do objeto <b>ID3DMESH</b></u>
+ Aqui ocorre o trabalho de identificar o tipo de mesh e de produzir
+ os dados de adjacências que são importantes para outros processos.
+
+ <u>D) Carregando texturas e materiais</u>
+ Nessa etapa carregamos os materiais e texturas. Essa etapa
+ obtém acesso a um  ponteiro  do  dispositivo  renderizador
+ ( <b class=prg>IDirect3DDevice9</b> ) para fazer seu trabalho  de  carregar
+ a textura.
+
+ <u>E) Carregando dados de skinning</u>
+ Nessa etapa importante é verificado a quantidade de ossos e
+ carregado o posicionamento\orientação deles.  Esse processo
+ preenche   as   arrays   de    matrizes    <b>exBoneOffsets</b>  e
+ <b>exFrameCombinedMatrixPointer</b>   para   apontar  para   essas
+ informações importantes de cada osso.
+
+ <u>F) Carregando configurações de efeitos</u>
+ Essa etapa mostra de maneira rudimentar como se poderia
+ carregar as configurações de efeitos ( código hlsl) que
+ poderiam existir no arquivo do modelo 3d.
+
+ <u>G) Retornando o meshcontainer carregado</u>
+ Essa etapa configura o ponteiro <b>_outNewMeshPack</b> para retornar
+ o acesso ao <b>MESHPACK</b> elaborado.
+ 
+Agora depois dessa explicação geral e de todas  as  anteriores você
+está pronto para encarar e entender  cada  bloco  de  código  dessa
+função:
+
+<u>A) Preparação inicial das estruturas</u>
+<div class=prg-code><b><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Criação da estrutura mesh container e inicialização dela para  os  zeros</span>
+<span class=sc2>// iniciais. Perceba que a estrutura mesh container é uma versão estendida</span>
+<span class=sc2>// que foi definida no arquivo Hierarquia.h (MESHPACK)</span>
+MESHPACK *newMeshPack = <span class=prg>new </span>MESHPACK; 
+
+<span class=prg>ZeroMemory</span>(newMeshPack, <span class=sc16>sizeof</span>(MESHPACK));  
+
+<span class=sc2>// Inicialização de segurança do ponteiro de retorno</span>
+*_outNewMeshPack = <span class=sc4>0</span>; 
+</b></div>
+
+<u>B) Copiando o nome do meshcontainer</u>
+<div class=prg-code><b><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Nome do mesh (que pode ser 0) necessita ser copiado</span>
+<span class=sc9>if</span> ( _nome && <span class=prg>strlen</span>(_nome) ) 
+<span class=sc16>{</span>
+<span class=prg>newMeshPack-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+<span class=sc16>}</span>
+</b></div>
+
+
+<u>C) Preparação dos dados básicos do objeto <b>ID3DMESH</b></u>
+<div class=prg-code><b><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Tipo de mesh ( D3DXMESHTYPE_MESH, D3DXMESHTYPE_PMESH ou</span>
+<span class=sc2>// D3DXMESHTYPE_PATCHMESH )</span>
+<span class=sc9>if </span>(<span class=prg>_meshData-&gt;Type </span>!= <span class=sc4>D3DXMESHTYPE_MESH</span>)  
+<span class=sc16>{</span>
+ <span class=sc2>// Esta app apenas manipula mesh padrão. Esta app não manipula outros</span>
+ <span class=sc2>// tipos   de  mesh  como  D3DXMESHTYPE_PMESH ( progressive mesh )  e</span>
+ <span class=sc2>// D3DXMESHTYPE_PATCHMESH (patch mesh)</span>
+ <span class=prg>DestroyMeshContainer</span>(newMeshPack);  
+ <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>}</span>
+
+<span class=sc2>// Estabelece o tipo de mesh como o mesh padrão</span>
+<span class=prg>newMeshPack-&gt;MeshData.Type </span>= <span class=sc4>D3DXMESHTYPE_MESH</span>; 
+
+<span class=sc2>// Informação de adjacência. É requerida pelo objeto ID3DMESH</span>
+<span class=prg>DWORD </span>dwFaces   = <span class=prg>_meshData-&gt;pMesh-&gt;GetNumFaces</span>();  
+<span class=prg>newMeshPack-&gt;pAdjacency </span>= <span class=prg>new </span><span class=prg>DWORD</span>[dwFaces*3];  
+<span class=prg>memcpy</span>(<span class=prg>newMeshPack-&gt;pAdjacency</span>, _adjacency, <span class=sc16>sizeof</span>(<span class=prg>DWORD</span>)  * dwFaces * <span class=sc4>3</span>);   
+// (*) Cada face é um triângulo, e cada triângulo tem 3 lados e pode ter
+// (*) até 3 vizinhos. Isso explica o '3' nesse processo de alocação de
+// (*) memória.
+
+<span class=sc2>// Não precisa clonar. Basta apenas assinalar o ponteiro e adicionar uma</span>
+<span class=sc2>// referência.</span>
+<span class=prg>newMeshPack-&gt;MeshData.pMesh </span>= <span class=prg>_meshData-&gt;pMesh</span>; 
+<span class=prg>newMeshPack-&gt;MeshData.pMesh-&gt;AddRef</span>();  
+</b></div>
+
+
+<u>D) Carregando texturas e materiais</u>
+<div class=prg-code><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Dispositivo renderizador Direct3D. Esse dado é mantido no próprio mesh mas</span>
+<span class=sc2>// deve ser liberado quando o mesh tiver sido utilizado.</span>
+<span class=sc5>IDirect3DDevice9 </span>*pd3dDevice = <span class=sc4>0</span>; 
+<span class=prg>_meshData-&gt;pMesh-&gt;GetDevice</span>(&pd3dDevice);  
+
+<span class=sc2>// Criação da array de texturas e materiais. Perceba que queremos ter ao</span>
+<span class=sc2>// menos um material</span>
+<span class=prg>newMeshPack-&gt;NumMaterials </span>= max(_numMaterials, <span class=sc4>1</span>);   
+<span class=prg>newMeshPack-&gt;exMaterials </span>= <span class=prg>new </span><span class=sc5>D3DMATERIAL9</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+<span class=prg>newMeshPack-&gt;exTextures </span> = <span class=prg>new </span><span class=sc5>IDirect3DTexture9*</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+
+<span class=sc2>// Limpando a memória para texturas</span>
+<span class=prg>ZeroMemory</span>(<span class=prg>newMeshPack-&gt;exTextures</span>, 
+<span class=sc16>sizeof</span>(<span class=sc5>IDirect3DTexture9*</span>)  * <span class=prg>newMeshPack-&gt;NumMaterials</span>);   
+
+<span class=sc2>// Se tiver materiais e texturas vamos carregá-los.</span>
+<span class=sc9>if </span>( _numMaterials &gt; <span class=sc4>0</span> )  
+<span class=sc16>{</span>
+<span class=sc2>// Carregamento de todas as texturas e cópia do material</span>
+<span class=prg>for</span> ( <span class=prg>DWORD </span>i = <span class=sc4>0</span>; i &lt; _numMaterials; ++i ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Copia o material</span>
+  <span class=prg>newMeshPack-&gt;exMaterials</span>[i] = _materials[i]<span class=prg>.MatD3D</span>; 
+
+  <span class=sc2>// Copia as texturas</span>
+  <span class=prg>newMeshPack-&gt;exTextures</span>[i] = <span class=sc4>0</span>; 
+  <span class=sc9>if</span> ( _materials[i]<span class=prg>.pTextureFilename</span> )  
+  <span class=sc16>{</span>
+	<span class=sc2>// Pega o nome do arquivo da textura</span>
+	std::string texturePath( _materials[i]<span class=prg>.pTextureFilename</span>);  
+
+	<span class=sc2>// Encontre o arquivo e carregue a textura</span>
+	<span class=sc9>if </span>( Tools::FindFile(&texturePath) ) 
+	<span class=sc16>{</span>
+	  <span class=sc2>// Carregamento da textura com a função do directx (D3DX)</span>
+	  <span class=sc9>if</span> ( <span class=prg>FAILED</span>(<span class=prg>D3DXCreateTextureFromFile</span>(pd3dDevice, <span class=prg>texturePath.c_str</span>(), 
+		<span class=prg>&newMeshPack-&gt;exTextures</span>[i])) ) 
+	  <span class=sc16>{</span>
+		<span class=prg>MessageBox </span>(<span class=sc4>0</span>, <span class=sc6>"Falha no carregamento da textura"</span>, 
+		  <span class=sc6>"CMeshHierarchy::CreateMeshContainer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+	  <span class=sc16>} <span class=sc2>// endif ( Carregamento da textura )</span></span>
+	<span class=sc16>} <span class=sc2>// endif ( Tools::FindFile(&texturePath) )</span></span>
+  <span class=sc16>} <span class=sc2>// endif ( materials[i].pTextureFilename )</span></span>
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=sc16>} <span class=sc2>// endif ( (numMaterials &gt; 0) )</span></span>
+
+<span class=sc9>else</span>
+<span class=sc2>// Criação de um material default caso o mesh não tenha um</span>
+<span class=sc16>{</span>
+ <span class=prg>ZeroMemory</span>(<span class=prg>&newMeshPack-&gt;exMaterials</span>[<span class=sc4>0 </span>], <span class=sc16>sizeof</span>( <span class=sc5>D3DMATERIAL9</span>) );  
+ <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.r </span>= <span class=sc4>0.5f</span>; 
+ <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.g </span>= <span class=sc4>0.5f</span>; 
+ <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.b </span>= <span class=sc4>0.5f</span>; 
+ <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Specular </span>= <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse</span>; 
+ <span class=sc2>// Não vai ter textura</span>
+ <span class=prg>newMeshPack-&gt;exTextures</span>[<span class=sc4>0</span>] = <span class=sc4>0</span>; 
+<span class=sc16>}</span>
+
+<span class=sc2>//  Quando pegamos o dispositivo, nós causamos a incrementação do contador de</span>
+<span class=sc2>//  referências então agora precisamos liberá-lo.</span>
+<span class=prg>pd3dDevice-&gt;Release</span>();  
+</div>
+
+<u>E) Carregando dados de skinning</u>
+<div class=prg-code><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Se tem dados de skinning associados com o mesh, vamos copiá-lo</span>
+<span class=sc9>if </span>(_pSkinInfo) 
+<span class=sc16>{</span>
+  <span class=sc2>// Salve os dados de skinning</span>
+  <span class=prg>newMeshPack-&gt;pSkinInfo </span>= _pSkinInfo; 
+  <span class=prg>_pSkinInfo-&gt;AddRef</span>();  
+
+  <span class=sc2>// Precisamos de uma array de 'matrizes de offset' para mover os vértices do</span>
+  <span class=sc2>// espaço de figura para o espaço de osso</span>
+  <span class=prg>UINT </span>numBones = <span class=prg>_pSkinInfo-&gt;GetNumBones</span>();  
+  <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=prg>new </span><span class=sc5>D3DXMATRIX</span>[numBones];  
+  <span class=sc2>// Criação de arrays para os ossos e as matrizes de frames</span>
+  <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=prg>new </span>D3DXMATRIX*[numBones];  
+
+  <span class=sc2>// Pegue cada matriz de offset de osso para não precisarmos pegá-las mais</span>
+  <span class=sc2>// tarde</span>
+  <span class=prg>for </span>(<span class=prg>UINT </span>i = <span class=sc4>0</span>; i &lt; numBones; i++) 
+  <span class=prg>newMeshPack-&gt;exBoneOffsets</span>[i] = *(<span class=prg>newMeshPack-&gt;pSkinInfo-&gt;GetBoneOffsetMatrix</span>(i));  
+  // (*) Aqui é uma cópia do ponteiro da matriz de posicionamento\orientação
+  // (*) existente no arquivo do modelo 3d de cada osso.
+
+   <span class=sc2>// Nota importante:  Nos exemplos da Microsoft a função GenerateSkinnedMesh()</span>
+   <span class=sc2>// é chamada aqui para preparar os dados de skinning do mesh para  obter  uma</span>
+   <span class=sc2>// ótima performance de aceleração de hardware. Como mencionado anteriormente,</span>
+   <span class=sc2>// este exemplo não realiza o skinning em hardware mas  ao  invés  utiliza  o</span>
+   <span class=sc2>// skinning feito em software que é mais fácil de entender.</span>
+<span class=sc16>} <span class=sc2>// endif (_pSkinInfo)</span></span>
+
+<span class=sc9>else</span>
+<span class=sc16>{</span>
+    <span class=sc2>// Não tem informação de skinning, então vamos zerar os ponteiros relativos</span>
+    <span class=prg>newMeshPack-&gt;pSkinInfo </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exSkinMesh </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// end else</span></span>
+</b></div>
+
+<u>F) Carregando configurações de efeitos</u>
+<div class=prg-code><b><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// O mesh pode conter referência a arquivos de efeito</span>
+<span class=sc9>if </span>(_effectInstances) 
+<span class=sc16>{</span>
+<span class=sc2>// Não faça nada. O arquivo de efeito localizado não é tratado</span>
+<span class=sc2>// por esta aplicação.</span>
+<span class=sc9>if </span>(<span class=prg>_effectInstances-&gt;pEffectFilename</span>)  <span class=prg>int </span>dummy = <span class=sc4>0</span>; 
+ // (*) O bloco com a variável dummy nada faz. Ele apenas assinala o ponto
+ // (*) a partir do qual deveria ser  tratado  a  eventual  existência  de
+ // (*) configurações de efeito no arquivo do modelo 3d.
+<span class=sc16>} <span class=sc2>// endif</span></span>
+</b></div>
+
+<u>G) Retornando o meshcontainer carregado</u>
+<div class=prg-code><b><span class=sc2>// ---------------------------------------------------------------------------</span>
+<span class=sc2>// Configure o ponteiro de saída para o nosso recém-criado mesh container</span>
+
+*_outNewMeshPack = newMeshPack; 
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; <span class=sc16>} <span class=sc2>// CMeshHierarchy::CreateMeshContainer().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 CMeshHierarchy::DestroyMeshContainer() - Destruindo o mesh container </u></b>
+
+Essa função não será mais comentada  pois  apenas utiliza os recursos
+padrões da linguagem C++ para fazer  seu  trabalho  de  liberação  de
+memória que são de fácil entendimento.
+
+<div class=niceview><b><span class=sc2>// CMeshHierarchy::DestroyMeshContainer() - Esse método desaloca dados</span>
+<span class=sc2>// de mesh container</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::DestroyMeshContainer( <span class=sc5>D3DXMESHCONTAINER</span>
+                       *meshContainerBase) 
+<span class=sc16>{</span>
+  <span class=sc2>// Converte para nosso tipo estendido. OK para fazer isso porque</span>
+  <span class=sc2>// sabemos com certeza o que temos aqui</span>
+  MESHPACK* meshContainer = (MESHPACK*) meshContainerBase; 
+  <span class=sc9>if </span>(!meshContainer) 
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Nome</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;Name</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;Name</span>; 
+    <span class=prg>meshContainer-&gt;Name=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// array de materiais</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exMaterials</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exMaterials</span>; 
+    <span class=prg>meshContainer-&gt;exMaterials=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Liberação das texturas depois de deletar a array</span>
+  <span class=sc9>if</span>(<span class=prg>meshContainer-&gt;exTextures</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>for</span>(<span class=prg>UINT </span>i = <span class=sc4>0</span>; i &lt; <span class=prg>meshContainer-&gt;NumMaterials</span>; ++i) 
+    <span class=sc16>{</span>
+      <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exTextures</span>[i]) 
+        <span class=prg>meshContainer-&gt;exTextures</span>[i]<span class=prg>-&gt;Release</span>();  
+    <span class=sc16>}</span>
+  <span class=sc16>}</span>
+
+  <span class=sc2>// array de texturas</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exTextures</span>)  
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exTextures</span>; 
+
+  <span class=sc2>// informação de adjacência</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;pAdjacency</span>)  
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;pAdjacency</span>; 
+
+  <span class=sc2>// peças dos ossos</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exBoneOffsets</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exBoneOffsets</span>; 
+    <span class=prg>meshContainer-&gt;exBoneOffsets=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// matrizes dos ossos</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer</span>; 
+    <span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação do skin mesh</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exSkinMesh</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;exSkinMesh-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;exSkinMesh=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação do mesh principal</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;MeshData.pMesh</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;MeshData.pMesh-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;MeshData.pMesh=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação da informação de skin</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;pSkinInfo</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;pSkinInfo-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;pSkinInfo=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Finalmente deletamos o container</span>
+  <span class=prg>delete </span>meshContainer; 
+  meshContainer=0; 
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::DestroyMeshContainer().fim</span></span>
+</b></div>
+
+Bem, até esse ponto carregamos os dados do  modelo  3d  e  no próximo
+capítulo vamos ver  como  utilizá-los  para  renderizar  o  modelo 3d 
+animado.
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</u></b>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Hierarquia.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// MESHPACK - Essa estrutura é derivada da estrutura base D3DXMESHCONTAINER e</span>
+<span class=sc2>// foi estendida com dados específicos para a aplicação que vão ser estocados</span>
+<span class=sc2>// com cada mesh. Para ajudar na distinção de qual dado é  estendido  e  qual</span>
+<span class=sc2>// é da base cada membro estendido vai começar com o prefixo ex.</span>
+<span class=prg>struct </span>MESHPACK: <span class=prg>public </span><span class=sc5>D3DXMESHCONTAINER</span>
+<span class=sc16>{</span>
+  <span class=sc2>// A base D3DXMESHCONTAINER tem um ponteiro pMaterials que  é  uma  estrutura</span>
+  <span class=sc2>// D3DXMATERIAL que contém um nome de textura e dados de material.    É fácil</span>
+  <span class=sc2>// ignorar isso e no lugar estocar os dados em arrays de texturas e materiais</span>
+  <span class=sc2>// nesta estrutura estendida:</span>
+
+  <span class=sc2>// Array de ponteiros para as texturas</span>
+  <span class=sc5>IDirect3DTexture9</span> **exTextures; 
+
+  <span class=sc2>// Array de ponteiros para os materiais</span>
+  <span class=sc5>D3DMATERIAL9</span> *exMaterials; 
+
+
+  <span class=sc2>// Variáveis de skinning</span>
+  <span class=no_fmt><span class=sc2>//O skin mesh</span></span>
+  <span class=sc5>ID3DXMesh</span> *exSkinMesh; 
+
+  <span class=sc2>// As matrizes offset de ossos, uma por osso</span>
+  <span class=sc5>D3DXMATRIX</span> *exBoneOffsets; 
+
+  <span class=sc2>// Array dos ponteiros das matrizes dos frames</span>
+  <span class=sc5>D3DXMATRIX</span> **exFrameCombinedMatrixPointer; 
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da estrutura MESHPACK : D3DXMESHCONTAINER</span>
+
+
+
+<span class=sc2>// A estrutura OSSO é derivada da estrutura base D3DXFRAME e foi estendida com</span>
+<span class=sc2>// dados específicos para a aplicação que vão ser  estocados  com  cada  frame.</span>
+<span class=sc2>// Para ajudar na distinção do membro estendido das variáveis da base o membro</span>
+<span class=sc2>// estendido vai ser prefixado com ex</span>
+<span class=prg>struct </span>OSSO: <span class=prg>public </span><span class=sc5>D3DXFRAME</span>
+<span class=sc16>{</span>
+    <span class=sc5>D3DXMATRIX </span>exCombinedTransformationMatrix; 
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da estrutura OSSO : D3DXFRAME</span>
+
+
+
+<span class=sc2>// Classe CMeshHierarchy</span>
+<span class=sc2>// Esta classe define as funções callback obrigatórias requeridas pela função</span>
+<span class=sc2>// D3DXLoadMeshHierarchyFromX(). Estas funções estão definidas como abstratas</span>
+<span class=sc2>// pela interface ID3DXAllocateHierarchy()</span>
+<span class=prg>class </span>CMeshHierarchy : <span class=prg>public </span><span class=sc5>ID3DXAllocateHierarchy</span>
+<span class=sc16>{</span>
+<span class=sc16>public:</span>
+
+    <span class=sc2>// função para criar e inicializar o objeto D3DXFRAME estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>CreateFrame</span>)(<span class=prg>LPCSTR </span>_nome, <span class=sc5>D3DXFRAME </span>**_outNovoOsso);  
+
+    <span class=sc2>// função para liberar o objeto D3DXFRAME estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>DestroyFrame</span>)(<span class=sc5>D3DXFRAME </span>*frameToFree );  
+
+    <span class=sc2>// função para criar e inicializar o objeto D3DXMESHCONTAINER estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>CreateMeshContainer</span>)( 
+    <span class=prg>LPCSTR </span>     		_nome, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMESHDATA </span>  	*_meshData, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMATERIAL </span>  	*_materials, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXEFFECTINSTANCE </span>	*_effectInstances, 
+    <span class=prg>DWORD </span>     			_numMaterials, 
+    <span class=sc16>CONST </span><span class=prg>DWORD </span>    		*_adjacency, 
+    <span class=sc5>ID3DXSkinInfo </span>   		*_pSkinInfo, 
+    <span class=sc5>D3DXMESHCONTAINER </span>     	**_outNewMeshPack) 
+    );  
+
+
+    <span class=sc2>// função para liberar o objeto D3DXMESHCONTAINER estendido</span>
+    <span class=sc16>STDMETHOD</span>( <span class=prg>DestroyMeshContainer</span>)( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerToFree );  
+
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CMeshHierarchy</span>
+<span class=sc2>// fim do arquivo Hierarquia.h</span>
+</div>
+
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Hierarquia.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+
+<span class=sc2>// CMeshHierarchy::CreateFrame() - Esse  método é chamado sempre que</span>
+<span class=sc2>// um novo frame é encontrado durante o carregamento do modelo 3d (x).</span>
+<span class=sc2>// _nome é o nome do frame</span>
+<span class=sc2>// **_outNovoOsso - é o ponteiro de retorno aonde assinalamos o frame</span>
+<span class=sc2>// recém-criado.</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::CreateFrame(<span class=prg>LPCSTR </span>_nome, <span class=sc5>D3DXFRAME </span>**_outNovoOsso) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// É sempre uma boa idéia inicializar o ponteiro de retorno antes de avançar</span>
+  *_outNovoOsso = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cria o novo frame utilizando a versão derivada da estrutura</span>
+  OSSO *novoOsso = <span class=prg>new </span>OSSO; 
+  <span class=prg>ZeroMemory</span>(novoOsso, <span class=sc16>sizeof</span>(OSSO));  
+
+  <span class=sc2>// Agora vamos preencher os membros na estrutura de frame</span>
+  <span class=sc2>// Vamos inicializar outros membros para valores default</span>
+  <span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;TransformationMatrix</span>);  
+  <span class=prg>D3DXMatrixIdentity</span>( <span class=prg>&novoOsso-&gt;exCombinedTransformationMatrix</span>);  
+
+  <span class=sc2>// Zerando os ponteiros</span>
+  <span class=prg>novoOsso-&gt;pMeshContainer </span>= <span class=sc4>0</span>; 
+  <span class=prg>novoOsso-&gt;pFrameSibling </span> = <span class=sc4>0</span>; 
+  <span class=prg>novoOsso-&gt;pFrameFirstChild </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Assinalação do ponteiro de retorno para nosso recém-criado frame</span>
+    *_outNovoOsso = novoOsso; 
+
+  <span class=sc2>// Nome do frame (ele pode ser 0 ou ter tamanho zero)</span>
+  <span class=sc9>if </span>(_nome && <span class=prg>strlen</span>(_nome)) 
+  <span class=sc16>{</span>
+    <span class=prg>novoOsso-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::CreateFrame().fim</span></span>
+
+
+
+<span class=sc2>// CMeshHierarchy::DestroyFrame() - Esse método desaloca dados de frame</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::DestroyFrame(<span class=sc5>D3DXFRAME </span>*frameToFree) 
+<span class=sc16>{</span>
+  <span class=sc2>// Converte para nosso tipo estendido. OK para fazer isso porque temos</span>
+  <span class=sc2>// certeza de que temos um frame aqui</span>
+  OSSO *frame = (OSSO*) frameToFree; 
+
+  <span class=sc2>// Deleta a memória do nome</span>
+  <span class=sc9>if </span>(<span class=prg>frame-&gt;Name</span>)  
+    <span class=prg>delete</span>[] <span class=prg>frame-&gt;Name</span>; 
+  <span class=prg>delete </span>frame; 
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::DestroyFrame().fim</span></span>
+
+
+
+<span class=sc2>// CMeshHierarchy::CreateMeshContainer() Esse método é  chamado  sempre  que um</span>
+<span class=sc2>// 'mesh data' ou dados de mesh  são  encontrados  durante  o  carregamento  do</span>
+<span class=sc2>//  modelo 3d( .x ),</span>
+<span class=sc2>// *_nome - nome  do Mesh (const char*)</span>
+<span class=sc2>// *_meshData - dados do mesh</span>
+<span class=sc2>// *_materials - array de materiais</span>
+<span class=sc2>// *_effectInstances - arquivos e configurações de efeito</span>
+<span class=sc2>// _numMaterials - número de materiais no mesh</span>
+<span class=sc2>// *_adjacency - array de informação de adjacência</span>
+<span class=sc2>// *_pSkinInfo - informação de skin</span>
+<span class=sc2>// **__outNewMeshPack - ponteiro externo para assinalar o mesh container récem</span>
+<span class=sc2>// criado</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::CreateMeshContainer( 
+    <span class=prg>LPCSTR </span>     		_nome, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMESHDATA </span>  	*_meshData, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXMATERIAL </span>  	*_materials, 
+    <span class=sc16>CONST </span><span class=sc5>D3DXEFFECTINSTANCE </span>	*_effectInstances, 
+    <span class=prg>DWORD </span>     			_numMaterials, 
+    <span class=sc16>CONST </span><span class=prg>DWORD </span>    		*_adjacency, 
+    <span class=sc5>ID3DXSkinInfo </span>   		*_pSkinInfo, 
+    <span class=sc5>D3DXMESHCONTAINER </span>     	**_outNewMeshPack) 
+<span class=sc16>{</span>
+  <span class=sc2>// A) Preparação inicial das estruturas</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Criação da estrutura mesh container e inicialização dela para  os  zeros</span>
+  <span class=sc2>// iniciais. Perceba que a estrutura mesh container é uma versão estendida</span>
+  <span class=sc2>// que foi definida no arquivo Hierarquia.h (MESHPACK)</span>
+  MESHPACK *newMeshPack = <span class=prg>new </span>MESHPACK; 
+  <span class=prg>ZeroMemory</span>(newMeshPack, <span class=sc16>sizeof</span>(MESHPACK));  
+  <span class=sc2>// Inicialização de segurança do ponteiro de retorno</span>
+  *_outNewMeshPack = <span class=sc4>0</span>; 
+
+
+  <span class=sc2>// B) Copiando o nome do meshcontainer</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Nome do mesh (que pode ser 0) necessita ser copiado</span>
+  <span class=sc9>if</span>(_nome && <span class=prg>strlen</span>(_nome)) 
+  <span class=sc16>{</span>
+    <span class=prg>newMeshPack-&gt;Name </span>= Tools::DuplicateCharString(_nome);  
+  <span class=sc16>}</span>
+
+
+  <span class=sc2>// C) Preparação dos dados básicos do objeto ID3DMESH</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Tipo de mesh ( D3DXMESHTYPE_MESH, D3DXMESHTYPE_PMESH ou</span>
+  <span class=sc2>// D3DXMESHTYPE_PATCHMESH )</span>
+  <span class=sc9>if </span>(<span class=prg>_meshData-&gt;Type </span>!= <span class=sc4>D3DXMESHTYPE_MESH</span>)  
+  <span class=sc16>{</span>
+    <span class=sc2>// Esta app apenas manipula mesh padrão. Esta app não manipula outros</span>
+    <span class=sc2>// tipos   de  mesh  como  D3DXMESHTYPE_PMESH ( progressive mesh )  e</span>
+    <span class=sc2>// D3DXMESHTYPE_PATCHMESH (patch mesh)</span>
+    <span class=prg>DestroyMeshContainer</span>(newMeshPack);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Estabelece o tipo de mesh como o mesh padrão</span>
+  <span class=prg>newMeshPack-&gt;MeshData.Type </span>= <span class=sc4>D3DXMESHTYPE_MESH</span>; 
+
+  <span class=sc2>// Informação de adjacência. É requerida pelo objeto ID3DMESH</span>
+  <span class=prg>DWORD </span>dwFaces   = <span class=prg>_meshData-&gt;pMesh-&gt;GetNumFaces</span>();  
+  <span class=prg>newMeshPack-&gt;pAdjacency </span>= <span class=prg>new </span><span class=prg>DWORD</span>[dwFaces*3];  
+  <span class=prg>memcpy</span>(<span class=prg>newMeshPack-&gt;pAdjacency</span>, _adjacency, <span class=sc16>sizeof</span>(<span class=prg>DWORD</span>)  * dwFaces * <span class=sc4>3</span>);   
+
+
+  <span class=sc2>// Não precisa clonar. Basta apenas assinalar o ponteiro e adicionar uma</span>
+  <span class=sc2>// referência.</span>
+  <span class=prg>newMeshPack-&gt;MeshData.pMesh </span>= <span class=prg>_meshData-&gt;pMesh</span>; 
+  <span class=prg>newMeshPack-&gt;MeshData.pMesh-&gt;AddRef</span>();  
+
+
+  <span class=sc2>// D) Carregando texturas e materiais</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Dispositivo renderizador Direct3D. Esse dado é mantido no próprio mesh mas</span>
+  <span class=sc2>// deve ser liberado quando o mesh tiver sido utilizado.</span>
+  <span class=sc5>IDirect3DDevice9 </span>*pd3dDevice = <span class=sc4>0</span>; 
+  <span class=prg>_meshData-&gt;pMesh-&gt;GetDevice</span>(&pd3dDevice);  
+
+
+  <span class=sc2>// Criação da array de texturas e materiais. Perceba que queremos ter ao</span>
+  <span class=sc2>// menos um material</span>
+  <span class=prg>newMeshPack-&gt;NumMaterials </span>= max(_numMaterials, <span class=sc4>1</span>);   
+  <span class=prg>newMeshPack-&gt;exMaterials </span>= <span class=prg>new </span><span class=sc5>D3DMATERIAL9</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+  <span class=prg>newMeshPack-&gt;exTextures </span> = <span class=prg>new </span><span class=sc5>IDirect3DTexture9*</span>[<span class=prg>newMeshPack-&gt;NumMaterials </span>];   
+
+  <span class=sc2>// Limpando a memória para texturas</span>
+  <span class=prg>ZeroMemory</span>(<span class=prg>newMeshPack-&gt;exTextures</span>, 
+    <span class=sc16>sizeof</span>(<span class=sc5>IDirect3DTexture9*</span>)  * <span class=prg>newMeshPack-&gt;NumMaterials</span>);   
+
+
+  <span class=sc2>// Se tiver materiais e texturas vamos carregá-los.</span>
+  <span class=sc9>if </span>(_numMaterials &gt; <span class=sc4>0</span>)  
+  <span class=sc16>{</span>
+    <span class=sc2>// Carregamento de todas as texturas e cópia do material por cima</span>
+    <span class=prg>for</span>(<span class=prg>DWORD </span>i = <span class=sc4>0</span>; i &lt; _numMaterials; ++i) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Copia o material</span>
+      <span class=prg>newMeshPack-&gt;exMaterials</span>[i] = _materials[i]<span class=prg>.MatD3D</span>; 
+
+      <span class=sc2>// Copia as texturas</span>
+      <span class=prg>newMeshPack-&gt;exTextures</span>[i] = <span class=sc4>0</span>; 
+      <span class=sc9>if</span>(_materials[i]<span class=prg>.pTextureFilename</span>)  
+      <span class=sc16>{</span>
+        <span class=sc2>// Pega o nome do arquivo da textura</span>
+        std::string texturePath( _materials[i]<span class=prg>.pTextureFilename</span>);  
+
+        <span class=sc2>// Encontre o arquivo e carregue a textura</span>
+        <span class=sc9>if </span>(Tools::FindFile(&texturePath)) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carregamento da textura com a função do directx (D3DX)</span>
+          <span class=sc9>if</span>(<span class=prg>FAILED</span>(<span class=prg>D3DXCreateTextureFromFile</span>(pd3dDevice, <span class=prg>texturePath.c_str</span>(), 
+            <span class=prg>&newMeshPack-&gt;exTextures</span>[i]))) 
+          <span class=sc16>{</span>
+
+            <span class=prg>MessageBox </span>(<span class=sc4>0</span>, <span class=sc6>"Falha no carregamento da textura"</span>, 
+              <span class=sc6>"CMeshHierarchy::CreateMeshContainer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+          <span class=sc16>} <span class=sc2>// endif ( Carregamento da textura )</span></span>
+
+        <span class=sc16>} <span class=sc2>// endif ( Tools::FindFile(&texturePath) )</span></span>
+
+      <span class=sc16>} <span class=sc2>// endif ( materials[i].pTextureFilename )</span></span>
+
+    <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc16>} <span class=sc2>// endif ( (numMaterials &gt; 0) )</span></span>
+
+  <span class=sc9>else</span>
+
+    <span class=sc2>// Criação de um material default caso o mesh não tenha um</span>
+  <span class=sc16>{</span>
+    <span class=prg>ZeroMemory</span>(<span class=prg>&newMeshPack-&gt;exMaterials</span>[<span class=sc4>0 </span>], <span class=sc16>sizeof</span>( <span class=sc5>D3DMATERIAL9</span>) );  
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.r </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.g </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse.b </span>= <span class=sc4>0.5f</span>; 
+    <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Specular </span>= <span class=prg>newMeshPack-&gt;exMaterials</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse</span>; 
+
+    <span class=sc2>// Não vai ter textura</span>
+    <span class=prg>newMeshPack-&gt;exTextures</span>[<span class=sc4>0</span>] = <span class=sc4>0</span>; 
+    <span class=sc16>}</span>
+
+  <span class=sc2>//  Quando pegamos o dispositivo, nós causamos a incrementação do contador de</span>
+  <span class=sc2>//  referências então agora precisamos liberá-lo.</span>
+  <span class=prg>pd3dDevice-&gt;Release</span>();  
+
+
+  <span class=sc2>// E) Carregando dados de skin</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Se tem dados de skin associados com o mesh, vamos copiá-lo</span>
+  <span class=sc9>if </span>(_pSkinInfo) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Salve os dados de skin</span>
+      <span class=prg>newMeshPack-&gt;pSkinInfo </span>= _pSkinInfo; 
+      <span class=prg>_pSkinInfo-&gt;AddRef</span>();  
+
+    <span class=sc2>// Precisamos de uma array de 'matrizes de offset' para mover os vértices do</span>
+    <span class=sc2>// espaço de figura para o espaço de osso</span>
+    <span class=prg>UINT </span>numBones = <span class=prg>_pSkinInfo-&gt;GetNumBones</span>();  
+      <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=prg>new </span><span class=sc5>D3DXMATRIX</span>[numBones];  
+
+    <span class=sc2>// Criação de arrays para os ossos e as matrizes de frames</span>
+    <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=prg>new </span>D3DXMATRIX*[numBones];  
+
+    <span class=sc2>// Pegue cada matriz de offset de osso para não precisarmos pegá-las mais</span>
+    <span class=sc2>// tarde</span>
+      <span class=prg>for </span>(<span class=prg>UINT </span>i = <span class=sc4>0</span>; i &lt; numBones; i++) <span class=prg>newMeshPack-&gt;exBoneOffsets</span>[i] = 
+      *(<span class=prg>newMeshPack-&gt;pSkinInfo-&gt;GetBoneOffsetMatrix</span>(i));  
+
+    <span class=sc2>// Nota importante:  Nos exemplos da Microsoft a função GenerateSkinnedMesh()</span>
+    <span class=sc2>// é chamada aqui para preparar os dados de skinning do mesh para  obter  uma</span>
+    <span class=sc2>// ótima performance de aceleração de hardware. Como mencionado anteriormente,</span>
+    <span class=sc2>// este exemplo não realiza o skinning em hardware mas  ao  invés  utiliza  o</span>
+    <span class=sc2>// skinning feito em software que é mais fácil de entender.</span>
+  <span class=sc16>} <span class=sc2>// endif (_pSkinInfo)</span></span>
+  <span class=sc9>else</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Não tem informação de skin, então vamos zerar os ponteiros relativos</span>
+    <span class=prg>newMeshPack-&gt;pSkinInfo </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exBoneOffsets </span>= <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exSkinMesh </span> = <span class=sc4>0</span>; 
+    <span class=prg>newMeshPack-&gt;exFrameCombinedMatrixPointer </span>= <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+
+
+  <span class=sc2>// F) Carregando configurações de efeitos</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// O mesh pode conter referência a arquivos de efeito</span>
+  <span class=sc9>if </span>(_effectInstances) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Não faça nada. O arquivo de efeito localizado não é tratado</span>
+    <span class=sc2>// por esta aplicação.</span>
+    <span class=sc9>if </span>(<span class=prg>_effectInstances-&gt;pEffectFilename</span>)  <span class=prg>int </span>dummy = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// G) Retornando o meshcontainer carregado</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Configure o ponteiro de saída para o nosso recém-criado mesh container</span>
+  *_outNewMeshPack = newMeshPack; 
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::CreateMeshContainer().fim</span></span>
+
+
+<span class=sc2>// CMeshHierarchy::DestroyMeshContainer() - Esse método desaloca dados</span>
+<span class=sc2>// de mesh container</span>
+<span class=sc16>HRESULT </span>CMeshHierarchy::DestroyMeshContainer( <span class=sc5>D3DXMESHCONTAINER</span>
+                       *meshContainerBase) 
+<span class=sc16>{</span>
+  <span class=sc2>// Converte para nosso tipo estendido. OK para fazer isso porque</span>
+    <span class=sc2>// sabemos com certeza o que temos aqui</span>
+    MESHPACK* meshContainer = (MESHPACK*) meshContainerBase; 
+  <span class=sc9>if </span>(!meshContainer) 
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Nome</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;Name</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;Name</span>; 
+    <span class=prg>meshContainer-&gt;Name=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// array de materiais</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exMaterials</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exMaterials</span>; 
+    <span class=prg>meshContainer-&gt;exMaterials=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Liberação das texturas depois de deletar a array</span>
+  <span class=sc9>if</span>(<span class=prg>meshContainer-&gt;exTextures</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>for</span>(<span class=prg>UINT </span>i = <span class=sc4>0</span>; i &lt; <span class=prg>meshContainer-&gt;NumMaterials</span>; ++i) 
+    <span class=sc16>{</span>
+      <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exTextures</span>[i]) 
+        <span class=prg>meshContainer-&gt;exTextures</span>[i]<span class=prg>-&gt;Release</span>();  
+    <span class=sc16>}</span>
+  <span class=sc16>}</span>
+
+  <span class=sc2>// array de texturas</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exTextures</span>)  
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exTextures</span>; 
+
+  <span class=sc2>// informação de adjacência</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;pAdjacency</span>)  
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;pAdjacency</span>; 
+
+  <span class=sc2>// peças dos ossos</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exBoneOffsets</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exBoneOffsets</span>; 
+    <span class=prg>meshContainer-&gt;exBoneOffsets=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// matrizes dos ossos</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] <span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer</span>; 
+    <span class=prg>meshContainer-&gt;exFrameCombinedMatrixPointer=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação do skin mesh</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;exSkinMesh</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;exSkinMesh-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;exSkinMesh=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação do mesh principal</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;MeshData.pMesh</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;MeshData.pMesh-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;MeshData.pMesh=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// liberação da informação de skin</span>
+  <span class=sc9>if </span>(<span class=prg>meshContainer-&gt;pSkinInfo</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>meshContainer-&gt;pSkinInfo-&gt;Release</span>();  
+    <span class=prg>meshContainer-&gt;pSkinInfo=0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Finalmente deletamos o container</span>
+  <span class=prg>delete </span>meshContainer; 
+  meshContainer=0; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// CMeshHierarchy::DestroyMeshContainer().fim</span></span>
+
+<span class=sc2>// fim da classe CMeshHierarchy</span>
+<span class=sc2>// fim do arquivo Hierarquia.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe CMeshHierarchy</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo Hierarquia.h</a>
+<a href=#2.2>2.2 A estrutura MESHPACK: public D3DXMESHCONTAINER</a>
+<a href=#2.3>2.3 A estrutura OSSO: public D3DXFRAME</a>
+<a href=#2.4>2.4 A estrutura da classe CMeshHierarchy</a>
+<a href=#2.5>2.5 Aspectos globais: arquivo Hierarquia.cpp</a>
+<a href=#2.6>2.6 CMeshHierarchy::CreateFrame()          - Carregando o osso</a>
+<a href=#2.7>2.7 CMeshHierarchy::DestroyFrame()         - Destruindo o osso</a>
+<a href=#2.8>2.8 CMeshHierarchy::CreateMeshContainer()  - Carregando o mesh container</a>
+<a href=#2.9>2.9 CMeshHierarchy::DestroyMeshContainer() - Destruindo o mesh container</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

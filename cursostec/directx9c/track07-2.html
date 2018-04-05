@@ -1,0 +1,1453 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase07-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 07-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track08-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>07.2 Renderização da cena na textura</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Superficie.png></div>
+É possível renderizar a cena na textura e isso permite a  criação  de
+vários efeitos visuais  interessantes;  entre  muitas  possibilidades
+podemos  citar a  simulação  de  um  espelho retrovisor em um jogo de
+corrida,  um mapa ou um radar na tela,  uma simulação de um raio-x, a
+visualização de  uma  segunda câmera focando uma outra parte do mundo
+virtual  ou  simplesmente a  colocação de informações do jogo na tela.
+
+Neste processo de renderizar na textura, a textura se transforma numa
+segunda tela e isso envolve o mesmo trabalho que se tem de  fazer  na
+renderização comum configurando cameras, luzes e outros detalhes para
+produzir a imagem final que vai para a textura.  Por  fim a textura é
+<b>colocada numa sprite</b> para ser exibida na tela primária.
+
+
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=sc16>inicializar_texRenderizador()</b>
+	cria o objeto da interface <b class=prg>ID3DXRenderToSurface</b> que renderiza em textura
+	cria a textura alvo
+	cria o objeto <b class=prg>IIDirect3DSurface9</b> para acessar a superfície da textura alvo
+	pinta a superfície da textura alvo de vermelho
+	cria uma sprite para receber a textura alvo
+
+<b class=sc16>renderizar_naTextura()</b>
+	configura uma janela de visualização
+	inicia a renderização com o objeto da interface <b class=prg>ID3DXRenderToSurface</b>
+	renderiza o modelo 3d em forma de pontos
+	finaliza a renderização com  o objeto da interface <b class=prg>ID3DXRenderToSurface</b>	
+
+<b class=sc16>renderizarSprite()</b>
+	 configura cor difusa da sprite como branco
+	 inicializa a renderização da sprite
+	 configura posição da sprite na tela
+	 renderiza a sprite com a textura que recebeu a cena
+	 finaliza renderização da sprite
+
+desenharObjeto()
+	Esta função vai renderizar na tela o objeto da interface <b class=prg>ID3DXMesh</b>.
+	Isso envolve a configuração das matrizes parciais de rotação, posição
+	e escala; produzir a matriz final com as matrizes parciais;   jogar a
+	matriz final no dispositivo renderizador; 	
+		
+	configurar o material e textura
+	renderizar o subset zero(0)
+
+initGfx()
+	chama configurar_cenaEstados() para preparação inicial da cena.
+	chama inicializar_Camera() para a configuração inicial da câmera
+	chama CarregarModeloTiny() para carregar o modelo 3d.
+	
+	<b class=sc16>chama inicializar_texRenderizador() para inicializar  os  objetos
+	envolvidos no processo de renderizar na textura. </b>
+
+Renderizar()
+	Limpa a tela
+	<b class=sc16>chama renderizar_naTextura() para renderizar a cena na textura</b>
+	chama desenharObjeto() para renderizar o modelo 3d. </b>
+	<b class=sc16>chama renderizarSprite() para apresentar a textura que recebeu a cena</b>
+	Apresenta a cena
+
+Limpar()	
+	Libera a interface de textura utilizada do modelo 3d
+	Libera a memória alocada para o material
+	
+	<b class=sc16>Libera o objeto da interface de sprite
+	Libera o objeto da interface que renderiza na textura
+	Libera o objeto da textura alvo
+	Libera o objeto da superfície alvo </b>
+	
+	Libera o objeto da interface <b class=prg>ID3DXMesh</b>
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+	Anula todos os ponteiros utilizados
+</div></div>
+
+
+<b><u>2.1.1. Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Superficie - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar a cena na textura</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Desliga aviso de 'função insegura' devido ao uso das</span>
+<span class=sc2>// funções de string ( strcat etc... )</span>
+<span class=sc16>#pragma </span>warning( disable:4996 ) 
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Estrutura para controle de rotação e posição do objeto</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+<span class=sc16>}</span>; 
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Monta a câmera da aplicação</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>// Desenha o modelo 3d</span>
+<span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+<span class=sc2>// Carrega o modelo tiny.x</span>
+<span class=prg>void </span>CarregarModeloTiny(<span class=prg>void</span>);   
+
+<span class=sc2>// Configura alguns estados da cena</span>
+<span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>);   
+
+<span class=sc2>// Inicializa os objetos envolvidos na renderização</span>
+<span class=sc2>// da cena na textura</span>
+<span class=prg>void </span>inicializar_texRenderizador(<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza a cena na textura</span>
+<span class=prg>void </span>renderizar_naTextura(<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza a sprite na tela</span>
+<span class=prg>void </span>renderizarSprite();  
+
+<span class=sc2>// Salva o backbuffer como arquivo de imagem no disco</span>
+<span class=prg>void </span>salvarImagem(<span class=prg>void</span>);   
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+  <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+
+</div>
+<b><span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela); </b>
+Além de inicializar o motor gráfico  <b>initGfx()</b> chama as funções   que
+fazem a preparação inicial do ambiente como a configuração da câmera,
+a configuração inicial da cena e  o  carregamento do  modelo  3d.  Na
+sequência da preparação inicial vem <b>inicializar_texRenderizador()</b> que
+inicializa todos os objetos envolvidos no processo  de  renderizar  a
+cena textura.
+
+<b><span class=prg>void </span>Limpar();  </b>
+A cada nova interface explorada essa função ganha respectivamente  um
+novo objeto para ser liberado. 
+
+<b><span class=prg>void </span>Renderizar(); </b>
+Essa função coordena a renderização da cena e  esse  processo  começa
+primeiro com a renderização da cena na textura.  A textura que sofreu
+a renderização vai para dentro de uma sprite para poder  ser  exibida.
+Na sequência essa função renderiza  o  modelo  3d,  mostra  a  sprite
+texturizada e apresenta a cena finalmente.
+
+<b><span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props); </b>
+Essa função renderiza o objeto 3d. Essa função é chamada primeiro por
+<b>renderizar_naTextura()</b>  e  depois  por  <b>Renderizar()</b>  respectivamente 
+ocorrendo a renderização da cena na textura e  depois  no  backbuffer.
+
+<b><span class=prg>void </span>inicializar_texRenderizador(<span class=prg>void</span>);  </b>
+Essa função inicializa os objetos envolvidos  na renderização da cena
+na textura. Isso envolve criar o objeto da interface que renderiza na
+textura via <span class=prg>D3DXCreateRenderToSurface()</span>, a criação da textura alvo da
+renderização, o objeto que representa a superfície  da  textura  e  a
+sprite que recebe a textura com a cena renderizada.
+
+<b><span class=prg>void </span>renderizar_naTextura(<span class=prg>void</span>);   </b>
+Essa função renderiza a cena na textura. Essa função clona o universo
+da função <b>Renderizar()</b>  uma vez que ela  replica todos os processos e
+cuidados envolvidos na renderização da cena na textura.
+
+<b><span class=prg>void </span>renderizarSprite();  </b>
+Essa função renderiza no  backbuffer  a  sprite  com  a  textura  que
+recebeu a cena.
+
+<b><span class=prg>void </span>salvarImagem(<span class=prg>void</span>);   </b>
+Essa função mostra como salvar o backbuffer como arquivo de imagem no
+disco.
+
+<b><span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <b class=sc2>// (...)</b> )</span></b>
+Essa função, no pressionamento da tecla espaço, vai executar a função
+<b>salvarImagem()</b>   para   gravar  uma  foto  do  backbuffer  no  disco.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// Objetos para o contexto de renderizar na textura</span>
+<span class=sc5>IDirect3DTexture9  </span>  *g_texturaAlvo   	= <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXRenderToSurface </span>*g_texRenderizador = <span class=prg>NULL</span>; 
+<span class=sc5>IDirect3DSurface9  </span>  *g_superficieAlvo  = <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite     </span>     *g_radar      	= <span class=prg>NULL</span>; 
+
+<span class=sc2>// Tamanho da textura desejada 256x256</span>
+<span class=prg>UINT </span>g_texTam = 256; 
+</div>
+
+<b><span class=sc5>ID3DXRenderToSurface</span> *g_texRenderizador = <span class=prg>NULL</span>; </b>
+Essa variável equivale ao dispositivo renderizador com a diferença de
+que opera sobre a superfície de uma textura.
+
+<b><span class=sc5>IDirect3DTexture9</span> *g_texturaAlvo = <span class=prg>NULL</span>; </b>
+Essa é a textura da qual a superfície vai ser aproveitada para receber
+a renderização da cena. Essa textura vai ser criada pela aplicação  e
+vai ter uma superfície quadrada com o tamanho dado por <b>g_texTam</b> (256).
+
+<b><span class=sc5>IDirect3DSurface9</span>  *g_superficieAlvo = <span class=prg>NULL</span>; </b>
+Esse objeto vai dar acesso à superfície da textura que vai receber  a
+renderização da cena.
+
+<b><span class=sc5>ID3DXSprite</span> *g_radar = <span class=prg>NULL</span>; </b>
+Essa é a  sprite  que  vai  ser  utilizada  para  mostrar  a  textura
+renderizada na tela.
+
+<b><span class=prg>UINT </span>g_texTam = 256; </b>
+Esse é o tamanho da textura que vai operar como um 'backbuffer'.
+
+<b><u>2.2 Inicializando o processo de renderizar na textura</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_texRenderizador(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Inicializa o Renderizador</span>
+  <span class=sc4>D3DFORMAT </span>texFormato = <span class=sc4>D3DFMT_X8R8G8B8</span>; 
+  g_hr = <span class=prg>D3DXCreateRenderToSurface</span>(g_device, g_texTam, g_texTam, 
+    texFormato, <span class=prg>true</span>, <span class=sc4>D3DFMT_D16</span>, &g_texRenderizador );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_texRenderizador"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Cria uma textura alvo da renderização</span>
+  g_hr = <span class=prg>D3DXCreateTexture</span>(g_device, g_texTam, g_texTam, <span class=sc4>1</span>, 
+    <span class=sc4>D3DUSAGE_RENDERTARGET</span>, texFormato, <span class=sc4>D3DPOOL_DEFAULT</span>, &g_texturaAlvo);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_texturaAlvo"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Acessa a superficie de dados da textura</span>
+  g_hr = <span class=prg>g_texturaAlvo-&gt;GetSurfaceLevel </span>(<span class=sc4>0</span>, &g_superficieAlvo);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_superficieAlvo"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pinta a superficie da textura de vermelho</span>
+  <span class=prg>g_device-&gt;ColorFill </span>(g_superficieAlvo, <span class=prg>NULL</span>, <span class=sc4>0xFFFF0000</span>);   
+
+
+  <span class=sc2>// Cria uma sprite para a textura</span>
+  g_hr = <span class=prg>D3DXCreateSprite</span>(g_device, &g_radar);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateSprite</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// inicializar_texRenderizador().fim</span></span>
+</div>
+
+<b><span class=sc4>D3DFORMAT </span>texFormato = <span class=sc4>D3DFMT_X8R8G8B8</span>; </b>
+Este formato de superfície vai servir para  configurar o renderizador
+de texturas.
+
+<b>g_hr = <span class=prg>D3DXCreateRenderToSurface</span>(g_device, g_texTam, g_texTam, 
+texFormato, <span class=prg>true</span>, <span class=sc4>D3DFMT_D16</span>, &g_texRenderizador );  </b>
+Esta linha cria o objeto que renderiza em texturas.  Os argumentos de
+entrada  estão  dispostos  nesta  ordem:   dispositivo  renderizador, 
+largura, altura,  formato da superfície,  habilitação  do  buffer  de
+profundidade\stencil (  <span class=prg>true</span> ), formato  do  buffer de profundidade e
+finalmente a variável que recebe o ponteiro para o objeto  criado  da
+interface <b class=prg>ID3DXRenderToSurface</b>.
+
+<b>g_hr = <span class=prg>D3DXCreateTexture</span>(g_device, g_texTam, g_texTam, <span class=sc4>1</span>, 
+<span class=sc4>D3DUSAGE_RENDERTARGET</span>, texFormato, <span class=sc4>D3DPOOL_DEFAULT</span>, &g_texturaAlvo);  </b>
+Aqui é criado a textura alvo da renderização.  Veja  que  o  <b>uso</b>  foi
+declarado como <b>D3DUSAGE_RENDERTARGET</b> para preparar a textura para ser
+alvo da renderização.
+
+<b>g_hr = <span class=prg>g_texturaAlvo-&gt;GetSurfaceLevel </span>(<span class=sc4>0</span>, &g_superficieAlvo);  </b>
+Nesta linha obtemos acesso ao nível <b>zero(0)</b> da textura que representa
+a superfície sobre a qual queremos renderizar.   Lembramos  que  pode
+ocorrer  de  um  mesma  textura  possuir  várias  cópias  da  textura
+principal em tamanhos diversos que são aplicadas quando o objeto está
+longe ou perto da câmera.  Esse  recurso  é  chamado  de  <u>mipmapping</u>.
+
+<b><span class=prg>g_device-&gt;ColorFill </span>(g_superficieAlvo, <span class=prg>NULL</span>, <span class=sc4>0xFFFF0000</span>);   </b>
+Com esta linha pintamos a superfície da textura de vermelho.
+
+<b>g_hr = <span class=prg>D3DXCreateSprite</span>(g_device, &g_radar);  </b>
+Aqui é criado o objeto sprite. O nome <b>g_radar</b> veio da intenção inicial
+de criar um radar que mostra a posição do objeto no mundo 3d.
+
+<b><u>2.3 Renderização na textura</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_naTextura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Prepara a configuração da janela de visualização</span>
+  <span class=sc5>D3DVIEWPORT9 </span>visao; 
+  <span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f</span>; 
+  <span class=prg>visao.MinZ </span>= <span class=sc4>0.0f</span>; 
+  <span class=prg>visao.X </span>= 10; 
+  <span class=prg>visao.Y </span>= 10; 
+  <span class=prg>visao.Width </span> =  g_texTam - 20; 
+  <span class=prg>visao.Height </span>=  g_texTam - 20; 
+
+  <span class=sc2>// Inicia a renderização da cena</span>
+  g_hr = <span class=prg>g_texRenderizador-&gt;BeginScene</span>(g_superficieAlvo, &visao);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Falha: g_texRenderizador-&gt;BeginScene</span>()<span class=sc6>"</span>, <span class=sc6>"renderizar_naTextura"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>}	<span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_POINT</span>);   
+
+  <span class=sc2>// Vamos renderizar a geometria</span>
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);   
+  desenharObjeto( g_objeto3d, &g_props);  
+
+  <span class=sc2>// Finaliza a cena no Renderizador</span>
+  <span class=prg>g_texRenderizador-&gt;EndScene</span>(<span class=sc4>D3DX_FILTER_NONE</span>);   
+
+<span class=sc16>} <span class=sc2>// renderizar_naTextura(void); </span></span>
+</div>
+
+<b><span class=sc5>D3DVIEWPORT9 </span>visao; </b>
+Essa variável representa uma janela de visualização,  isto é,  a área
+da textura  que vai ser utilizada  para  a  renderização.   Em  nossa
+configuração vamos suprimir 20 pixels de cada lado dessa janela  para
+manter uma borda vermelha ao redor da cena na textura.
+
+<b><span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f</span>;
+<span class=prg>visao.MinZ </span>= <span class=sc4>0.0f</span>; </b>
+Isso representa os limites do buffer de profundidade.
+
+<b><span class=prg>visao.X </span>= 10; <span class=prg>visao.Y </span>= 10; 
+<span class=prg>visao.Width </span>=  g_texTam - 20; <span class=prg>visao.Height </span>=  g_texTam - 20; </b>
+Aqui é a definição da área renderizável.
+
+<b>g_hr = <span class=prg>g_texRenderizador-&gt;BeginScene</span>(g_superficieAlvo, &visao);  </b>
+Aqui começa a renderização da cena na textura. Veja que o renderizador
+recebeu como argumentos a superfície da textura alvo e  as definições
+da janela de visualização.
+
+<div class=niceview style="border-style:dashed"><b><span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+<span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_POINT</span>);   
+<span class=sc2>// Vamos renderizar a geometria</span>
+<span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+<span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);   
+desenharObjeto( g_objeto3d, &g_props);  </b></div>
+Aqui não tem novidade. Estas  linhas  são  partes  já  conhecidas  do
+processo comum  de  renderização.   Porém  tudo  ocorre  na  textura.
+
+<b><span class=prg>g_texRenderizador-&gt;EndScene</span>(<span class=sc4>D3DX_FILTER_NONE</span>);   </b>
+Aqui finalizamos o processo de renderizar na textura. <b>D3DX_FILTER_NONE</b>
+informa que nenhum filtro vai ser aplicado na textura produzida.
+
+<b><u>2.4 Renderização da sprite</u></b>
+<div class=niceview><span class=prg>void </span>renderizarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Cor difusa da sprite</span>
+  <span class=prg>DWORD </span>cor_difusa = branco; 
+
+  <span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+  <span class=prg>g_radar-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);   
+
+  <span class=sc2>// Configura posição da sprite na tela</span>
+  <span class=prg>D3DXMatrixTranslation</span>(&g_mtxMundo, <span class=sc4>10.0f</span>, <span class=sc4>10.0f</span>, <span class=sc4>1.0f</span>);   
+  <span class=prg>g_radar-&gt;SetTransform </span>(&g_mtxMundo);  
+
+  <span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+  <span class=prg>g_radar-&gt;Draw</span>(g_texturaAlvo, <span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, cor_difusa);  
+
+  <span class=sc2>// Finaliza processo de renderização de sprites</span>
+  <span class=prg>g_radar-&gt;End</span>();  
+
+<span class=sc16>} <span class=sc2>// renderizarSprite().fim</span></span>
+</div>
+
+<b><span class=prg>DWORD </span>cor_difusa = branco; </b>
+Aqui está a cor difusa da sprite.
+
+<b><span class=prg>g_radar-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);   </b>
+Aqui começa a renderização da sprite com a habilitação dos efeitos de
+mistura de cor (alpha blending).
+
+<b><span class=prg>D3DXMatrixTranslation</span>(&g_mtxMundo, <span class=sc4>10.0f</span>, <span class=sc4>10.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=prg>g_radar-&gt;SetTransform </span>(&g_mtxMundo);  </b>
+Aqui é a configuração do posicionamento da sprite.
+
+<b><span class=prg>g_radar-&gt;Draw</span>(g_texturaAlvo, <span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, cor_difusa);  </b>
+Aqui a sprite renderiza na tela a textura em sua totalidade.
+
+<b><span class=prg>g_radar-&gt;End</span>();  </b>
+O processo de renderização da sprite é finalizado nesta linha.
+
+<b><u>2.5 Gravação da imagem da tela no disco</u></b>
+<div class=niceview><span class=prg>void </span>salvarImagem(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Cria uma superfície para receber o backbuffer</span>
+  <span class=sc5>IDirect3DSurface9 </span>*backbuffer; 
+
+  <span class=sc2>// Obtém os dados de cor do backbuffer</span>
+  <span class=prg>g_device-&gt;GetBackBuffer </span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>D3DBACKBUFFER_TYPE_MONO</span>, &backbuffer);  
+
+  <span class=sc2>// Salva o backbuffer como imagem jpg no disco</span>
+  <span class=prg>D3DXSaveSurfaceToFile</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=sc4>D3DXIFF_JPG</span>, backbuffer, <span class=sc4>0</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Libera a superfície criada</span>
+  <span class=prg>backbuffer-&gt;Release</span>();  
+
+  <span class=sc2>// Notifica o salvamento na barra de títulos</span>
+  <span class=prg>SetWindowText</span>(hJanela, <span class=sc6>"prj_Superficie: Ok. Imagem salva no disco"</span>);   
+
+  <span class=sc2>// Aguarda um segundo para alertar melhor usuário</span>
+  <span class=prg>Sleep</span>(1000);  
+
+<span class=sc16>} <span class=sc2>// void salvarImagem().fim</span></span>
+</div>
+
+<b><span class=sc5>IDirect3DSurface9 </span>*backbuffer; </b>
+Criamos aqui uma superfície  temporária  para  receber  os  dados  do
+backbuffer.
+
+<b><span class=prg>g_device-&gt;GetBackBuffer </span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>D3DBACKBUFFER_TYPE_MONO</span>, &backbuffer);  </b>
+Com esta linha  jogamos  uma cópia do backbuffer dentro da superfície
+temporária.
+
+<b><span class=prg>D3DXSaveSurfaceToFile</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=sc4>D3DXIFF_JPG</span>, backbuffer, <span class=sc4>0</span>, <span class=sc4>0</span>);   </b>
+Aqui o backbuffer é gravado como uma imagem jpg no disco.
+
+<b><span class=prg>backbuffer-&gt;Release</span>();  </b>
+Aqui liberamos a superfície temporária.
+
+<b><span class=prg>SetWindowText</span>(hJanela, <span class=sc6>"prj_Superficie: Ok. Imagem salva no disco"</span>); </b>
+Avisamos aqui o usuário que a imagem foi salva.
+
+<span class=sc2>// Aguarda um segundo para alertar melhor usuário</span>
+<b><span class=prg>Sleep</span>(1000);  </b>
+Aqui damos uma pequena pausa no programa para alertar  o  usuário  de
+que alguma coisa aconteceu.
+
+<b><u>2.6 Inicialização do motor gráfico</u></b>
+Segue abaixo a listagem de <b>initGfx()</b>.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta a câmera da aplicação</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  configurar_cenaEstados();  
+
+  <span class=sc2>// Carrega o modelo tiny.x</span>
+  CarregarModeloTiny();  
+
+  <span class=sc2>// Inicializa os objetos envolvidos na renderização</span>
+  <span class=sc2>// da cena na textura</span>
+  inicializar_texRenderizador();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.7 Renderização da cena</u></b>
+Segue abaixo a listagem da função <b>Renderizar()</b>.  Perceba que primeiro
+é feito a  renderização  na  textura  com  a  função  apropriada  que
+já  foi discutida, o modelo 3d é renderizado no processo principal  e
+depois a textura  produzida  é  renderizada  por  <b>renderizarSprite()</b>.
+
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Renderiza na textura primeiro</span>
+  renderizar_naTextura();  
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_SOLID</span>);   
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, azul, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Renderiza o modelo 3d</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+
+    <span class=sc2>// Mostra a textura preparada anteriormente</span>
+    renderizarSprite();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+  <span class=prg>Sleep</span>(<span class=sc4>0</span>);   
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Superficie</u></b>
+<div class=prg-code><img src=images\prj_Superficie.png>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Superficie - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar a cena na textura</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Desliga aviso de 'função insegura' devido ao uso das</span>
+<span class=sc2>// funções de string ( strcat etc... )</span>
+<span class=sc16>#pragma </span>warning( disable:4996 ) 
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Estrutura para controle de rotação e posição do objeto</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+<span class=sc16>}</span>; 
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Monta a câmera da aplicação</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>// Desenha o modelo 3d</span>
+<span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+<span class=sc2>// Carrega o modelo tiny.x</span>
+<span class=prg>void </span>CarregarModeloTiny(<span class=prg>void</span>);   
+
+<span class=sc2>// Configura alguns estados da cena</span>
+<span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>);   
+
+<span class=sc2>// Inicializa os objetos envolvidos na renderização</span>
+<span class=sc2>// da cena na textura</span>
+<span class=prg>void </span>inicializar_texRenderizador(<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza a cena na textura</span>
+<span class=prg>void </span>renderizar_naTextura(<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza a sprite na tela</span>
+<span class=prg>void </span>renderizarSprite();  
+
+<span class=sc2>// Salva o backbuffer como arquivo de imagem no disco</span>
+<span class=prg>void </span>salvarImagem(<span class=prg>void</span>);   
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+  <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Superficie - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar a cena na textura</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;string.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipientes de materiais e texturas do mesh</span>
+<span class=sc5>D3DMATERIAL9 </span>  *g_meshMtl = <span class=prg>NULL</span>; 
+<span class=sc5>IDirect3DTexture9 </span>*g_meshTex = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Objetos para o contexto de renderizar na textura</span>
+<span class=sc5>IDirect3DTexture9</span>    *g_texturaAlvo	= <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXRenderToSurface</span> *g_texRenderizador = <span class=prg>NULL</span>; 
+<span class=sc5>IDirect3DSurface9</span>    *g_superficieAlvo	= <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite</span>          *g_radar		= <span class=prg>NULL</span>; 
+
+<span class=sc2>// Tamanho da textura desejada 256x256</span>
+<span class=prg>UINT </span>g_texTam = 256; 
+
+
+<span class=sc2>// Quantidade de materiais do modelo 3d</span>
+<span class=prg>DWORD </span>g_mtlQtd = <span class=sc4>0</span>; 
+
+<span class=sc2>// Interface do objeto 3d</span>
+<span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+
+<span class=sc2>// Controla o ângulo de rotação do objeto 3d</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul   = <span class=sc4>0xFF0000FF</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+
+<span class=prg>void </span>inicializar_texRenderizador(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Inicializa o Renderizador</span>
+  <span class=sc4>D3DFORMAT </span>texFormato = <span class=sc4>D3DFMT_X8R8G8B8</span>; 
+  g_hr = <span class=prg>D3DXCreateRenderToSurface</span>(g_device, g_texTam, g_texTam, 
+    texFormato, <span class=prg>true</span>, <span class=sc4>D3DFMT_D16</span>, &g_texRenderizador );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_texRenderizador"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Cria uma textura alvo da renderização</span>
+  g_hr = <span class=prg>D3DXCreateTexture</span>(g_device, g_texTam, g_texTam, <span class=sc4>1</span>, 
+    <span class=sc4>D3DUSAGE_RENDERTARGET</span>, texFormato, <span class=sc4>D3DPOOL_DEFAULT</span>, &g_texturaAlvo);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_texturaAlvo"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Acessa a superficie de dados da textura</span>
+  g_hr = <span class=prg>g_texturaAlvo-&gt;GetSurfaceLevel </span>(<span class=sc4>0</span>, &g_superficieAlvo);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: g_superficieAlvo"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pinta a superficie da textura de vermelho</span>
+  <span class=prg>g_device-&gt;ColorFill </span>(g_superficieAlvo, <span class=prg>NULL</span>, <span class=sc4>0xFFFF0000</span>);   
+
+
+  <span class=sc2>// Cria uma sprite para a textura</span>
+  g_hr = <span class=prg>D3DXCreateSprite</span>(g_device, &g_radar);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateSprite</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_texRenderizador</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// inicializar_texRenderizador().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_naTextura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Prepara a configuração da janela de visualização</span>
+  <span class=sc5>D3DVIEWPORT9 </span>visao; 
+  <span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f</span>; 
+  <span class=prg>visao.MinZ </span>= <span class=sc4>0.0f</span>; 
+  <span class=prg>visao.X </span>= 10; 
+  <span class=prg>visao.Y </span>= 10; 
+  <span class=prg>visao.Width </span>=  g_texTam - 20; 
+  <span class=prg>visao.Height </span>=  g_texTam - 20; 
+
+  <span class=sc2>// Inicia a renderização da cena</span>
+  g_hr = <span class=prg>g_texRenderizador-&gt;BeginScene</span>(g_superficieAlvo, &visao);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Falha: g_texRenderizador-&gt;BeginScene</span>()<span class=sc6>"</span>, <span class=sc6>"renderizar_naTextura"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>}	<span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_POINT</span>);   
+
+  <span class=sc2>// Vamos renderizar a geometria</span>
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);   
+  desenharObjeto( g_objeto3d, &g_props);  
+
+  <span class=sc2>// Finaliza a cena no Renderizador</span>
+  <span class=prg>g_texRenderizador-&gt;EndScene</span>(<span class=sc4>D3DX_FILTER_NONE</span>);   
+
+<span class=sc16>} <span class=sc2>// renderizar_naTextura(void); </span></span>
+
+
+<span class=prg>void </span>renderizarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Cor difusa da sprite</span>
+  <span class=prg>DWORD </span>cor_difusa = branco; 
+
+  <span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+  <span class=prg>g_radar-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);   
+
+  <span class=sc2>// Configura posição da sprite na tela</span>
+  <span class=prg>D3DXMatrixTranslation</span>(&g_mtxMundo, <span class=sc4>10.0f</span>, <span class=sc4>10.0f</span>, <span class=sc4>1.0f</span>);   
+  <span class=prg>g_radar-&gt;SetTransform </span>(&g_mtxMundo);  
+
+  <span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+  <span class=prg>g_radar-&gt;Draw</span>(g_texturaAlvo, <span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, cor_difusa);  
+
+  <span class=sc2>// Finaliza processo de renderização de sprites</span>
+  <span class=prg>g_radar-&gt;End</span>();  
+
+<span class=sc16>} <span class=sc2>// renderizarSprite().fim</span></span>
+
+
+<span class=prg>void </span>salvarImagem(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Cria uma superfície para receber o backbuffer</span>
+  <span class=sc5>IDirect3DSurface9 </span>*backbuffer; 
+
+  <span class=sc2>// Obtém os dados de cor do backbuffer</span>
+  <span class=prg>g_device-&gt;GetBackBuffer </span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>D3DBACKBUFFER_TYPE_MONO</span>, &backbuffer);  
+
+  <span class=sc2>// Salva o backbuffer como imagem jpg no disco</span>
+  <span class=prg>D3DXSaveSurfaceToFile</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=sc4>D3DXIFF_JPG</span>, backbuffer, <span class=sc4>0</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Libera a superfície criada</span>
+  <span class=prg>backbuffer-&gt;Release</span>();  
+
+  <span class=sc2>// Notifica o salvamento na barra de títulos</span>
+  <span class=prg>SetWindowText</span>(hJanela, <span class=sc6>"prj_Superficie: Ok. Imagem salva no disco"</span>);   
+
+  <span class=sc2>// Aguarda um segundo para alertar melhor usuário</span>
+  <span class=prg>Sleep</span>(1000);  
+
+<span class=sc16>} <span class=sc2>// void salvarImagem().fim</span></span>
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta a câmera da aplicação</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configura alguns estados da cena</span>
+  configurar_cenaEstados();  
+
+  <span class=sc2>// Carrega o modelo tiny.x</span>
+  CarregarModeloTiny();  
+
+  <span class=sc2>// Inicializa os objetos envolvidos na renderização</span>
+  <span class=sc2>// da cena na textura</span>
+  inicializar_texRenderizador();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+  <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+
+    <span class=sc2>// Salva imagem no pressionamento da tecla espaço</span>
+    <span class=sc9>if </span>(wParam == VK_SPACE) salvarImagem();  
+
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera a memória de materiais e textura</span>
+  <span class=sc9>if </span>(g_meshTex != <span class=prg>NULL</span>)   <span class=prg>g_meshTex-&gt;Release</span>();  
+  <span class=sc9>if </span>(g_meshMtl != <span class=prg>NULL</span>)   <span class=prg>delete </span>g_meshMtl; 
+
+  <span class=sc2>// Libera objetos do processo de renderizar na textura</span>
+  <span class=sc9>if </span>(g_radar != <span class=prg>NULL</span>)       <span class=prg>g_radar-&gt;Release</span>();  
+  <span class=sc9>if </span>(g_texturaAlvo != <span class=prg>NULL</span>)    <span class=prg>g_texturaAlvo-&gt;Release</span>();  
+  <span class=sc9>if </span>(g_texRenderizador != <span class=prg>NULL</span>)  <span class=prg>g_texRenderizador-&gt;Release</span>();  
+  <span class=sc9>if </span>(g_superficieAlvo != <span class=prg>NULL</span>)   <span class=prg>g_superficieAlvo-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o objeto mesh</span>
+  <span class=sc9>if</span>( g_objeto3d != <span class=prg>NULL</span>)  <span class=prg>g_objeto3d-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Anula os ponteiros</span>
+  g_radar      = <span class=prg>NULL</span>; 
+  g_texturaAlvo   = <span class=prg>NULL</span>; 
+  g_texRenderizador = <span class=prg>NULL</span>; 
+  g_superficieAlvo = <span class=prg>NULL</span>; 
+
+  g_objeto3d = <span class=prg>NULL</span>; 
+  g_device  = <span class=prg>NULL</span>; 
+  g_Direct3d = <span class=prg>NULL</span>; 
+  g_meshTex  = <span class=prg>NULL</span>; 
+  g_meshMtl  = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Renderiza na textura primeiro</span>
+  renderizar_naTextura();  
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_FILLMODE</span>, <span class=sc4>D3DFILL_SOLID</span>);   
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, azul, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Renderiza o modelo 3d</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto( g_objeto3d, &g_props);  
+
+    <span class=sc2>// Mostra a textura preparada anteriormente</span>
+    renderizarSprite();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+  <span class=prg>Sleep</span>(<span class=sc4>0</span>);   
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>700.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// Pega o tamanho da área cliente</span>
+  <span class=sc5>RECT </span>area_cliente; 
+  <span class=prg>GetWindowRect </span>(hJanela, &area_cliente);  
+  g_xtela = <span class=prg>area_cliente.right</span>; 
+  g_ytela = <span class=prg>area_cliente.bottom</span>;  
+
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props) 
+<span class=sc16>{</span>
+  <span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+  <span class=sc5>D3DXMATRIX </span>obj_rot; 
+  <span class=sc5>D3DXMATRIX </span>obj_pos; 
+
+  <span class=sc2>// Matriz para combinar todas as transformações do objeto 3d</span>
+  <span class=sc5>D3DXMATRIX </span>mtxCombinada; 
+
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+  <span class=sc2>// Atualiza ângulo de rotação</span>
+  g_angulo += <span class=sc4>0.02f</span>; 
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+    <span class=prg>props-&gt;rot.z</span>);   
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   
+
+  <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+  <span class=prg>D3DXMatrixMultiply </span>(&mtxCombinada, &obj_rot, &obj_pos);  
+
+  <span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+  <span class=prg>g_device-&gt;SetMaterial</span>(&g_meshMtl[<span class=sc4>0</span>] );  
+  <span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_meshTex );  
+  <span class=prg>obj3d-&gt;DrawSubset</span>(<span class=sc4>0</span>);   
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+<span class=prg>void </span>configurar_cenaEstados(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configuração de iluminação</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(255,255,255) );  
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+
+  <span class=sc2>// Configura modo de shading</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SHADEMODE</span>, <span class=sc4>D3DSHADE_GOURAUD</span>);  
+
+  <span class=sc2>// Habilita uso de buffer de profundidade</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>, <span class=sc4>D3DZB_TRUE</span>);  
+
+  <span class=sc2>// Desliga o culling</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   
+
+<span class=sc16>} <span class=sc2>// configurar_cenaEstados().fim</span></span>
+
+
+<span class=prg>void </span>CarregarModeloTiny() 
+<span class=sc16>{</span>
+  <span class=sc2>// Nome final do arquivo do modelo 3d</span>
+  <span class=prg>char </span>arquivo_x[] = <span class=sc6>"\\gameprog\\gdkmedia\\Modelos\\Tiny\\tiny.x"</span>; 
+
+  <span class=sc2>// Buffer para o pacote de materiais e texturas do modelo 3d</span>
+  <span class=sc5>ID3DXBuffer </span>*mtlPack; 
+
+  <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+  g_hr = <span class=prg>D3DXLoadMeshFromX</span>(arquivo_x, <span class=sc4>D3DXMESH_SYSTEMMEM</span>, 
+    g_device, <span class=prg>NULL</span>, &mtlPack, <span class=prg>NULL</span>, &g_mtlQtd, &g_objeto3d );  
+
+  <span class=sc2>// Verifica falha no carregamento do modelo 3d</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha no carregamento do modelo"</span>, <span class=sc6>"CarregarModeloTiny</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pacote de materiais da biblioteca auxiliar d3dx</span>
+  <span class=sc5>D3DXMATERIAL </span>*xMtl = (<span class=sc5>D3DXMATERIAL </span>*) <span class=prg>mtlPack-&gt;GetBufferPointer</span>();  
+
+  <span class=sc2>// Inicializa a array de materiais</span>
+  g_meshMtl  = <span class=prg>new </span><span class=sc5>D3DMATERIAL9</span>[<span class=sc4>1 </span>];   
+
+  <span class=sc2>// Copia o ponteiro do material</span>
+  g_meshMtl[<span class=sc4>0</span>] = xMtl[<span class=sc4>0</span>]<span class=prg>.MatD3D</span>; 
+
+  <span class=sc2>// Configura a cor ambiente do material</span>
+  g_meshMtl[<span class=sc4>0</span>]<span class=prg>.Ambient </span>= g_meshMtl[<span class=sc4>0</span>]<span class=prg>.Diffuse</span>; 
+
+  <span class=sc2>// Nome completo da textura do modelo 3d</span>
+  <span class=prg>char </span>*arquivo_textura = <span class=sc6>"\\gameprog\\gdkmedia\\Modelos\\Tiny\\Tiny_skin.bmp"</span>; 
+
+  <span class=sc2>// Carrega a textura do disco</span>
+  g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, arquivo_textura, &g_meshTex);  
+
+  <span class=sc2>// Verifica falha no carregamento ou criação das texturas</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação da textura"</span>, <span class=sc6>"CarregarModeloTiny</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>mtlPack-&gt;Release</span>();  
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Libera o buffer do pacote de materiais</span>
+  <span class=prg>mtlPack-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// CarregarModeloTiny().fim﻿</span>
+</div>
+
+<div class=prg-code><span class=sc2>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Superficie - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar a cena na textura</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain</span>(<span class=sc16>HINSTANCE </span>app_instancia, 
+  <span class=sc16>HINSTANCE </span>app_anterior, <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = 
+    <span class=sc6>"prj_Superficie - Pressione espaço para salvar a imagem"</span>; 
+
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track08-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

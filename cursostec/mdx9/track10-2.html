@@ -1,0 +1,1087 @@
+﻿<html>
+<head>
+<title>mdx9_fase10-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>10.2 Renderização simples</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+
+Neste tópico  vamos  mostrar  como  estruturar  a  aplicação  para  a
+utilização de HLSL e vamos explicar a estrutura básica de um programa
+simples escrito com esta linguagem.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src="images\prj_HLSL01.png" align=left>
+<img src="images\esquema_prj_HLSL01.png" >
+</div>
+Esta aplicação foi baseada no projeto <b>prj_VertexBuffer</b> do tópico 03.2
+e vai mostrar um quadrado girando no eixo z, com uma pequena animação
+de cor e escala, renderizado com HLSL .
+
+A  aplicação faz uso  do buffer de vértices  <b>vbQuadrado</b>  inicializado
+pelas  funções  <b>montar_triangulos()</b>  e <b>inicializarVertexBuffer</b>.  Este
+buffer de vértices é remontando na função  <b>quandoVertexBufferCriado()</b>
+sempre que necessário.
+
+Com o uso de HLSL é necessário criar um objeto <b class=prg>VertexDeclaration</b>  que
+vai levar para a placa de vídeo informação sobre os vértices e outros
+elementos que vão seguir para a linha programável da placa. A função
+<b>DeclararVértices()</b> faz este trabalho.
+
+A configuração de camera não é mais feita no  dispositivo,  ao  invés
+disso é configurada e introjetada na linha programável pelas  funções
+<b>inicializarCamera()</b> e <b>AtualizarCamera()</b>.  Estas funções vão fazer uso
+das matrizes <b>visao, mundo</b> e <b>projecao</b> para compor a camera.
+
+A  aplicação  e  gerenciamento  dos efeitos do HLSL na aplicação são 
+feitos pelo objeto da classe <b class=prg>Effect</b> que carrega, compila e transfere
+o programa HLSL para a placa de vídeo. Esse objeto é inicializado na
+função  <b>inicializarEfeito()</b>  que  carrega  o  arquivo <b class=prg>simples.fx</b> que 
+contém o código  hlsl.  Os  efeitos  possuem  módulos  selecionáveis 
+chamado <b>técnicas</b>  ( <b class=prg>Technique</b> ) que aplicam efeitos particulares nos
+vértices e nos pixels. 
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+<b>
+ <span class=sc2>// Esse objeto aplica o efeito produzido com HLSL</span>
+ <span class=prg>private </span><span class=sc5>Effect </span>efeito = <span class=prg>null;</span>
+
+ <span class=sc2>// O VertexShader precisa saber como cada vértice está estruturado</span>
+ <span class=prg>private </span><span class=sc5>VertexDeclaration </span>decl = <span class=prg>null;</span>
+
+ <span class=sc2>// Nossas matrizes para compor a Camera no Vertexshader</span>
+ <span class=prg>private </span><span class=sc5>Matrix </span>mundo; 
+ <span class=prg>private </span><span class=sc5>Matrix </span>visao; 
+ <span class=prg>private </span><span class=sc5>Matrix </span>projecao; 
+
+ <span class=sc2>// Variável para provocar mudanças de cor no VertexShader</span>
+ <span class=prg>private </span><span class=prg>float </span>nMovimento = <span class=sc4>0.0f;</span>
+ <span class=prg>private </span><span class=prg>float </span>nPasso = <span class=sc4>0.01f;</span>
+</b>
+ <span class=sc2>// Recipiente para os vértices dos triângulos</span>
+ <span class=sc2>// SetPosition() desse formato de vértice aceita uma</span>
+ <span class=sc2>// estrutura Vector3 com uma posição (x, y, z)</span>
+ <span class=prg>private </span><span class=prg>CustomVertex.PositionOnly</span>[] triangulo; 
+
+ <span class=sc2>// Memória ou buffer de vértices para o quadrado</span>
+ <span class=prg>private </span><span class=sc5>VertexBuffer </span>vbQuadrado = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do quadrado</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+ 
+ <span class=sc2>// (...)</span>
+ 
+} <span class=sc2>// fim da classe</span>
+</div><b>
+<span class=sc2>// Esse objeto aplica o efeito produzido com HLSL</span>
+<span class=prg>private </span><span class=sc5>Effect </span>efeito = <span class=prg>null;</span></b>
+Esse é o objeto principal para a aplicação e gerenciamento dos efeitos
+produzidos com HLSL. Esse objeto da classe <b class=prg>Effect</b> assume  o comando da
+aplicação tanto quanto o objeto da classe <b class=prg>Device</b>.
+
+<b><span class=sc2>// O VertexShader precisa saber como cada vértice está estruturado</span>
+<span class=prg>private </span><span class=sc5>VertexDeclaration </span>decl = <span class=prg>null;</span></b>
+Esse  objeto é usado para enviar informações para a linha programável
+da placa de vídeo.
+
+<b><span class=sc2>// Nossas matrizes para compor a Camera no Vertexshader</span>
+<span class=prg>private </span><span class=sc5>Matrix </span>mundo; 
+<span class=prg>private </span><span class=sc5>Matrix </span>visao; 
+<span class=prg>private </span><span class=sc5>Matrix </span>projecao; </b>
+Essas matrizes serão usadas para inicializar a  camera  que  vai  ser
+introjetada na linha programável na função <b>AtualizarCamera().</b>
+
+<b><span class=sc2>// Variável para provocar mudanças de cor no VertexShader</span>
+<span class=prg>private </span><span class=prg>float </span>nMovimento = <span class=sc4>0.0f;</span>
+<span class=prg>private </span><span class=prg>float </span>nPasso = <span class=sc4>0.01f;</span>
+<span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span></b>
+A modificação  cíclica destas variáveis vai provocar alteração de cor
+e movimento no quadrado renderizado. A variável  <b>nMovimento</b>  vai  ser
+introjetada  na  linha  programável  na  função  <b>AtualizarCamera().</b>
+
+<b><span class=sc2>// Recipiente para os vértices dos triângulos</span>
+<span class=sc2>// SetPosition() desse formato de vértice aceita uma</span>
+<span class=sc2>// estrutura Vector3 com uma posição (x, y, z)</span>
+<span class=prg>private </span><span class=prg>CustomVertex.PositionOnly</span>[] triangulo; </b>
+Destacamos que  a linha programável da placa recebeu apenas a posição
+inicial  dos  vértices  e  no  entanto  o  quadrado  recebeu  uma cor
+que foi produzida e animada no pixelshader que programamos em HLSL.
+
+<b><u>2.2 Inicializando a aplicação</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+<b>
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no hardware, janela (this), parâmetros de apresentação (pps)</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.HardwareVertexProcessing </span>| <span class=prg>CreateFlags.PureDevice</span>, pps);  
+</b>
+ <span class=sc2>// Montamos inicialmente nossos triângulos</span>
+ montar_triangulos();  
+
+ <span class=sc2>// Inicializamos o buffer de vértices</span>
+ inicializarVertexBuffer();  
+
+ <span class=sc2>// Inicializa o efeito</span>
+ inicializarEfeito();  
+
+ <span class=sc2>// Declara o uso dos vértices</span>
+ DeclararVertices();  
+
+ <span class=sc2>// Inicializa a Camera para o VertexShader</span>
+ inicializarCamera();  
+
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div><b>
+device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+<span class=prg>CreateFlags.HardwareVertexProcessing </span>| <span class=prg>CreateFlags.PureDevice</span>, pps); </b>
+As coisas ficaram diferentes na criação do dispositivo que agora envia
+todo o  processamento de transformação dos vértices para o hardware da
+placa de  video. Essa é a configuração necessária para a utilização do
+HLSL em sua melhor performance. 
+
+<b><span class=sc2>// Montamos inicialmente nossos triângulos</span>
+montar_triangulos();  </b>
+Esta função inicializa o posicionamento dos vértices que na sequência
+vão servir como conteúdo do buffer de vértices.
+
+<b>inicializarVertexBuffer();</b>
+Inicializamos aqui o buffer de vértices.</span>
+
+<b><span class=sc2>// Inicializa o efeito</span>
+inicializarEfeito();</b>
+Nesta função inicializamos o objeto <b>efeito</b> carregando um arquivo hlsl
+e selecionamos  uma  <b>técnica</b> para transformar os vértices do quadrado
+e  produzir uma cor para o mesmo.
+
+<b><span class=sc2>// Declara o uso dos vértices</span>
+DeclararVertices();  </b>
+Essa função declara informações de todos os  elementos  que  vão  ser 
+enviados para  a  linha  programável  da  placa.  Ela  é  regida pela 
+necessidade  semelhante  do dispositivo das informações do formato de
+vértice a ser renderizado pelo dispositivo.
+
+<b><span class=sc2>// Inicializa a Camera para o VertexShader</span>
+inicializarCamera();  </b>
+Esta função inicializa as matrizes de composição da camera que vai ser
+introjetada na linha programável. É notável nesta função o fato de que
+a camera não é introjetada no objeto <b>device</b> criado. 
+
+<b><u>2.3 Declarando os vértices</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>DeclararVertices() 
+<span class=sc16>{</span>
+ <span class=sc2>// Cria os elementos que informam a estruturação dos vértices</span>
+ <span class=sc5>VertexElement</span>[] Elementos; 
+ <span class=sc5>VertexElement </span>elemento; 
+
+ <span class=sc2>// Configura a informação de um elemento</span>
+ elemento = <span class=prg>new </span><span class=sc5>VertexElement</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>DeclarationType.Float3</span>, 
+ <span class=prg>DeclarationMethod.Default</span>, <span class=prg>DeclarationUsage.Position</span>, <span class=sc4>0</span>);  
+
+ <span class=sc2>// Configura a informação de todos os elementos</span>
+ Elementos = <span class=prg>new </span><span class=sc5>VertexElement</span>[] <span class=sc16>{ </span>elemento, <span class=prg>VertexElement.VertexDeclarationEnd </span><span class=sc16>};</span>
+
+ <span class=sc2>// Configura finalmente a declação de dados</span>
+ decl = <span class=prg>new </span><span class=sc5>VertexDeclaration</span>(device, Elementos);  
+<span class=sc16>} <span class=sc2>// DeclararVertices().fim</span></span>
+</div><b>
+<span class=sc2>// Cria os elementos que informam a estruturação dos vértices</span>
+<span class=sc5>VertexElement</span>[] Elementos; 
+<span class=sc5>VertexElement </span>elemento; </b>
+Como  único  elemento a declarar temos apenas um conjunto de vértices
+sem cor, sem textura, com posição apenas expressa em termos de [x,y,z]
+em tipo float.   Essa informação desse nosso primeiro elemento vai na
+variável <b>elemento</b>. A informação de todos  os elementos utilizados vai
+na array <b>Elementos</b>.
+
+<b><span class=sc2>// Configura a informação de um elemento</span>
+elemento = <span class=prg>new </span><span class=sc5>VertexElement</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>DeclarationType.Float3</span>, 
+<span class=prg>DeclarationMethod.Default</span>, <span class=prg>DeclarationUsage.Position</span>, <span class=sc4>0</span>);  </b>
+Essa  linha  reune  informações  sobre nossos vértices: eles estão no
+<b>stream 0</b>, começam no <b>deslocamento 0</b> desse stream; eles estão na forma
+de  uma  array  float[3]  por isso utiliza-se <span class=prg>DeclarationType.Float3</span>;
+<span class=prg>DeclarationMethod.Default</span> quer dizer que eles devem ser copiados para
+sofrer  transformações na placa; <span class=prg>DeclarationUsage.Position</span> quer dizer
+que estes floats é uma posição;  o último zero (0)  dessa função quer
+dizer que  a  posição  não  está  transformada.    Na  composição  do
+deslocamento deve-se levar em consideração a quantidade e  o  tamanho
+do tipo de dado. O float tem 4 bytes, com cada coordenada 3d ocupando
+12 bytes que seria então o deslocamento inicial do próximo  elemento
+caso ele fosse declarado.
+
+<b><span class=sc2>// Configura a informação de todos os elementos</span>
+Elementos = <span class=prg>new </span><span class=sc5>VertexElement</span>[] <span class=sc16>{ </span>elemento, <span class=prg>VertexElement.VertexDeclarationEnd </span><span class=sc16>};</span></b>
+Aqui é montado a array de informações de todos os elementos que estão
+no vertexbuffer.   O  item   <span class=prg>VertexElement.VertexDeclarationEnd</span>  deve 
+fechar a array.
+
+<b><span class=sc2>// Configura finalmente a declação de dados</span>
+decl = <span class=prg>new </span><span class=sc5>VertexDeclaration</span>(device, Elementos); </b>
+Aqui é criado o objeto <span class=prg>VertexDeclaration</span> que posteriormente  vai  ser
+passado para o dispositivo que despacha-o  para  a  placa  de  vídeo.
+
+
+<b><u>2.4 Inicializando o efeito</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+ <span class=sc2>// Carrega o efeito do disco</span>
+ efeito = <span class=prg>Effect.FromFile</span>(device, <span class=sc6>@"c:\gameprog\gdkmedia\shader\simples.fx"</span>, 
+ <span class=prg>null</span>, <span class=prg>ShaderFlags.None</span>, <span class=prg>null</span>);  
+
+ <span class=sc2>// Seleciona a técnica de renderização</span>
+ <span class=prg>efeito.Technique </span>= <span class=sc6>"MovimentoCor";</span>
+
+<span class=sc16>} <span class=sc2>// InicializarEfeito().fim</span></span>
+</div>
+<b><span class=sc2>// Carrega o efeito do disco</span>
+efeito = <span class=prg>Effect.FromFile</span>(device, <span class=sc6>@"c:\gameprog\gdkmedia\shader\simples.fx"</span>, 
+<span class=prg>null</span>, <span class=prg>ShaderFlags.None</span>, <span class=prg>null</span>);  </b>
+Essa  linha  carrega e compila um efeito a partir de um  arquivo  com
+código hlsl; a extensão deste arquivo geralmente  é  fx.   O  arquivo
+precisa  estar  salvo em  modo texto com codificação ASCII  ou  ANSI;
+em outro formato ocorre uma exceção na aplicação  que  não  esclarece
+nada a causa  do  problema.  Aliás,  qualquer  exceção  ocorrida  por 
+conta  de  falhas  no  código  hlsl não  é acompanhada de informações
+adequadas.  Por isso, a melhor ferramenta para editar e testar código
+hlsl é a aplicação RenderMonkey produzida pela AMD.
+
+
+<b><span class=sc2>// Seleciona a técnica de renderização</span>
+<span class=prg>efeito.Technique </span>= <span class=sc6>"MovimentoCor";</span></b>
+Com esta linha selecionamos uma técnica presente no arquivo de efeito.
+Através  da  mudança  das  técnicas  presentes  no efeito consegue-se 
+renderizações diferentes da mesma cena.  Quando entrarmos  direto  em
+hlsl vamos aprender melhor o que é uma técnica, o que faz e como faz. 
+
+<b><u>2.5 Inicializando a camera</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarCamera() 
+<span class=sc16>{</span>
+ <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+ <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+ <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+ <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+ <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+ <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+ <span class=prg>float </span>corte_longe = <span class=sc4>100.0f;</span>
+
+ <span class=sc2>// Configura a matriz de projeção</span>
+ projecao = <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+  aspecto, corte_perto, corte_longe);  
+
+ <span class=sc2>// Rotaciona o triangulo indiretamente através da rotação dos</span>
+ <span class=sc2>// eixos da matriz mundial.</span>
+ mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  
+
+ <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+ <span class=sc5>Vector3 cam_pos = new Vector3(0, 0, 5.0f);  <span class=sc2>// Posição da camera</span></span>
+ <span class=sc5>Vector3 cam_alvo = new Vector3(0, 0.0f, 0);  <span class=sc2>// Alvo da câmera</span></span>
+ <span class=sc5>Vector3 cam_orientacao = new Vector3(0, 1.0f, 0);  <span class=sc2>// Orientação da câmera</span></span>
+
+ <span class=sc2>// Configura a matriz de visualização</span>
+ visao = <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+
+<span class=sc16>}  <span class=sc2>// inicializarCamera().fim</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Configura as matrizes</span>
+mundo    = <span class=prg>Matrix.RotationZ</span>(angulo);  
+visao    = <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+projecao = <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, aspecto, corte_perto, corte_longe);</b></div>
+Aqui  não há nada novo para explicar.  Destacamos que estas  matrizes
+foram inicializadas para compor a camera na função  <b>AtualizarCamera()</b>
+que finaliza  a configuraçao da matriz final de camera e introjeta-a
+na linha programável.
+
+<b><u>2.6 Atualizando variáveis efeito</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+<span class=sc16>{</span>
+ <span class=sc2>// Atualiza cor</span>
+ nMovimento += nPasso; 
+ <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)  nPasso *= <span class=sc4>-1;</span>
+ <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)  nPasso *= <span class=sc4>-1;</span>
+
+ <span class=sc2>// Atualiza ângulo</span>
+ angulo += <span class=sc4>0.05f;</span>
+ mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  
+
+ <span class=sc2>// Atualiza variáveis do efeito</span>
+ <span class=sc5>Matrix </span>camera = mundo * visao * projecao; 
+ <span class=prg>efeito.SetValue</span>(<span class=sc6>"nMovimento"</span>, nMovimento);  
+ <span class=prg>efeito.SetValue</span>(<span class=sc6>"Camera"</span>, camera);  
+
+<span class=sc16>} <span class=sc2>// AtualizarCamera().fim</span></span>
+</div><b>
+<span class=sc2>// Atualiza cor e escala dos vértices</span>
+nMovimento += nPasso; 
+<span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)  nPasso *= <span class=sc4>-1;</span>
+<span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)  nPasso *= <span class=sc4>-1;</span></b>
+Este pequeno bloco de código atualizado em cada ciclo de renderização
+ocasiona a animação de cor e de escala  que  estão  condicionadas  ao
+valor da variável <b>nMovimento</b>  que  aumenta  e  diminui  ciclicamente.
+
+<b><span class=sc2>// Atualiza ângulo</span>
+angulo += <span class=sc4>0.05f;</span>
+mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  </b>
+Este bloco de código atualiza a matriz de mundo e  ocasiona a rotação
+do quadrado em cada ciclo de renderização.
+
+<b><span class=sc2>// Atualiza variáveis do efeito</span>
+<span class=sc5>Matrix </span>camera = mundo * visao * projecao; </b>
+Aqui a matriz de camera é finalmente configurada.
+
+<b><span class=prg>efeito.SetValue</span>(<span class=sc6>"nMovimento"</span>, nMovimento);  
+<span class=prg>efeito.SetValue</span>(<span class=sc6>"Camera"</span>, camera);  </b>
+Esta é a maneira de introjetar valores da aplicação para o código hlsl
+que está rodando na placa de video.   Dentro  do  código  hlsl  estas
+variáveis também são declaradas  no  escopo  global  para  permitirem
+serem alteradas desta forma.
+
+<b><u>2.7 Aplicando o efeito na renderização</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Atualiza a Camera no VertexShader</span>
+ AtualizarCamera();  
+
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.DarkGreen</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+
+ <span class=sc2>// O renderizador é informado da origem dos dados</span>
+ <span class=prg>device.SetStreamSource</span>(<span class=sc4>0</span>, vbQuadrado, <span class=sc4>0</span>);  
+
+ <span class=sc2>// O VertexShader é informado da estruturação dos vértices</span>
+ <span class=prg>device.VertexDeclaration </span>= decl; 
+
+ <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+ <span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+ <span class=prg>efeito.Pass</span>(ncx);  
+
+ <span class=sc2>// Renderiza a primitiva</span>
+ <span class=prg>device.DrawPrimitives</span>(<span class=prg>PrimitiveType.TriangleList</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);  
+
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+ <span class=sc2>// Finaliza o efeito</span>
+ <span class=prg>efeito.End</span>();  
+
+ <span class=sc2>// Finaliza a cena</span>
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div><b>
+<span class=sc2>// Atualiza a Camera no VertexShader</span>
+AtualizarCamera();  </b>
+Aqui nesse ponto o código hlsl é atualizado com  novos  valores  para
+<b>camera</b>  e  outras variáveis de nosso interesse,  <b>nMovimento</b>  no  caso.
+
+
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+<span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.DarkGreen</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+<span class=prg>device.BeginScene</span>();  
+<span class=sc2>// O renderizador é informado da origem dos dados</span>
+<span class=prg>device.SetStreamSource</span>(<span class=sc4>0</span>, vbQuadrado, <span class=sc4>0</span>);  </b></div>
+Este bloco de código é familiar: o dispositivo é limpo, a renderização
+é iniciada com <span class=prg>device.BeginScene()</span>,  a  fonte dos vértices é informada
+com <span class=prg>device.SetStreamSource().</span>
+
+<b><span class=sc2>// O VertexShader é informado da estruturação dos vértices</span>
+<span class=prg>device.VertexDeclaration </span>= decl; </b>
+Com esta linha o dispositivo recebe a declaração dos vértices cuja
+descrição  deve  bater  com  o  formato de vértices  utilizados no
+vertexbuffer.  Nossa declaração informa <b>posição</b> do vértice que vai
+ser  o  argumento  de  entrada  na função inicial do  VertexShader
+que retorna como saida uma posição transformada.
+
+
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Renderiza o quadrado usando o efeito</span>
+<span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+<span class=sc16>{</span>
+<span class=sc2>// Renderiza uma etapa no VertexShader</span>
+<span class=prg>efeito.Pass</span>(ncx);  
+<span class=sc2>// Renderiza a primitiva</span>
+<span class=prg>device.DrawPrimitives</span>(<span class=prg>PrimitiveType.TriangleList</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);  
+<span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=sc2>// Finaliza o efeito</span>
+<span class=prg>efeito.End</span>();  </b></div>
+Este bloco de código renderiza a cena utilizando o efeito. O argumento
+de valor 0 em  <span class=prg>efeito.Begin()</span> indica para  não  ocorrer  processos de 
+salvamento  ou  restauração de  estados  do Shader nem do dispositivo. 
+Ainda,  <span class=prg>efeito.Begin()</span>  retorna  o  número  de  passos que são etapas 
+necessárias que o Shader precisa para renderizar a cena completamente.
+Por fim, as coisas são finalizadas com <span class=prg>efeito.End()</span> e <span class=prg>device.EndScene()</span>:
+<b><span class=sc2>// Finaliza a cena</span>
+<span class=prg>device.EndScene</span>(); </b>
+
+Para entender a questão dos passos do Shader, podemos compará-lo como
+o processo de produzir parcialmente a imagem por camadas até se chegar
+a  imagem  final.   Por exemplo,  em  uma  cena  com  vários  objetos
+renderiza-se cada objeto em passos individuais do shader.
+
+<b><u>3.0 O primeiro programa em HLSL</u></b>
+<div class=prg-code>
+<span class=sc2>// Gameprog: Introdução a programação em HLSL</span>
+<span class=sc2>// Arquivo: simples.fx - prj_HSL01</span>
+
+<span class=sc2>// Matriz de projeção e visualização</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=prg>float </span>nMovimento; 
+
+<span class=sc2>// Transforma coordenadas 3d em espaço de tela</span>
+<span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara variável de saída</span>
+ <span class=prg>float4 </span>saida_pos; 
+
+ <span class=sc2>// Transforma posição</span>
+ <span class=prg>Pos.z </span>+= nMovimento * 2; 
+ saida_pos = <b class=prg>mul</b>(Pos, Camera);  
+
+ <span class=sc2>// Retorna posição transformada</span>
+ <span class=sc6>return </span>saida_pos; 
+<span class=sc16>} <span class=sc2>// vs_Main().fim</span></span>
+
+
+<span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+ <span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+ <span class=sc2>// Configura individualmente os canais de cor</span>
+ <span class=prg>cor.r  </span>= nMovimento; 
+ <span class=prg>cor.b  </span>= <span class=sc4>1 </span>- nMovimento; 
+ <span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span>
+
+ <span class=sc6>return </span>cor; 
+<span class=sc16>} <span class=sc2>// ps_Main().fim</span></span>
+
+
+
+<span class=sc5>technique </span>MovimentoCor 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+  <span class=sc16>{</span>
+  <span class=sc2>// Configura alguns estados do dispositivo</span>
+  <span class=sc6>CullMode </span>= None; 
+  <span class=sc6>FillMode </span>= Solid; 
+
+  <span class=sc2>// Compila o VertexShader e o PixelShader</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_Main();  
+
+  <span class=sc16>} <span class=sc2>// fim do passo P0</span></span>
+<span class=sc16>} <span class=sc2>// fim da técnica</span></span>
+</div>
+
+<b><u>3.1 Variáveis globais</u></b>
+<div class=niceview>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=prg>float </span>nMovimento; </div>
+
+<b><span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span></b>
+Esta é uma variável global que representa a camera. Esse tipo de float
+<span class=prg>float4x4</span> é um conjunto de 16 floats na forma de uma array 4x4. Depois
+dos dois pontos (:)  vem a <b>semântica</b> da variável global.   A semântica
+indica  o  significado  e o uso particular de uma variável global para
+o Shader.  Neste caso,  o  Shader fica sabendo que <b>Camera</b> é uma matriz
+de mundo-visualização-projeção indicado por <span class=prg>WORLDVIEWPROJECTION</span>.
+O uso da semântica é obrigatório nas variáveis globais de  entrada  e
+saída.
+
+<b><span class=prg>float </span>nMovimento; </b>
+Esta é outra variável global modificável a partir de nossa aplicação.
+
+
+<b><u>3.2 A função de entrada do VertexShader: vs_Main()</u></b>
+<div class=niceview><span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara variável de saída</span>
+ <span class=prg>float4 </span>saida_pos; 
+
+ <span class=sc2>// Transforma a posição do vértice</span>
+ <span class=prg>Pos.z </span>+= nMovimento * 2; 
+  saida_pos = mul(Pos, Camera);  
+
+ <span class=sc2>// Retorna a posição transformada</span>
+ <span class=sc6>return </span>saida_pos; 
+<span class=sc16>} <span class=sc2>// vs_Main().fim</span></span>
+</div>
+
+
+<u>Assinatura da função vs_Main()</u>
+<b><span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span></b>
+Essa é a assinatura da função de entrada do  nosso  VertexShader.  Ela
+recebe um argumento <span class=prg>float4</span> que representa cada vértice do modelo sendo
+renderizado, trabalha sobre esse argumento, e o retorna  modificado  e
+transformado para a aplicação. Da mesma forma que <span class=prg>float4x4</span> quer dizer
+<b>float[4][4]</b>, <span class=prg>float4</span> quer dizer <b>float[4]</b> para guardar  as  coordenadas
+<b>[x, y, z, w]</b>.  O  <b>w</b>  é  um  truque  matemático  chamado   'coordenada 
+homogenada' para permitir o movimento de translação do modelo com uma
+operação de multiplicação no final do ciclo das transformações.  Esse
+argumento de entrada tem ligação direta com  o processo de declaração
+de vértices.
+
+<b><span class=sc2>// Declara variável de saída</span>
+<span class=prg>float4 </span>saida_pos; </b>
+Essa é a variável de saida que  vai  receber  o  resultado  final  do
+trabalho realizado individualmente em cada vértice.
+
+<b><span class=prg>Pos.z </span>+= nMovimento * 2; </b>
+Essa  expressão  matemática  foi  adicionada apenas  para  mostrar  a
+a liberdade  de  realizar  qualquer manipulação sobre os vértices que
+entram no VertexShader.  Aqui os vértices vão pra frente ou para trás
+em seu eixo Z conforme o valor de nMovimento. Outro destaque do <span class=prg>Pos.z</span>
+aqui é que os elementos [x, y, z, w] podem ser acessados naturalmente
+como se fossem elementos de uma estrutura.
+
+<b>saida_pos = <span class=prg>mul</span>(Pos, Camera); </b>
+Esta linha realiza a multiplicação  da  <b>Pos</b>ição  de  entrada  que  já
+sofreu uma modificação no meio do caminho pela <b>Camera</b> para produzir a
+posição final transformada para a aplicação. É apenas  uma  linha  de
+de  código  mas  realiza nos bastidores uma extensa multiplicação com
+20  elementos do tipo float ao multiplicar um <span class=prg>float4</span> por um <span class=prg>float4x4</span>.
+
+<b><span class=sc6>return </span>saida_pos; </b>
+Aqui ocorre o retorno da posição transformada via <b>saida_pos</b>.  Tirando
+algumas coisas como a semântica e os  tipos  específicos  é  como  um
+programa escrito em linguagem C++.
+
+<b><u>3.3 A função de entrada do VertexShader: ps_Main()</u></b>
+<div class=niceview><span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+ <span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+ <span class=sc2>// Configura individualmente os canais de cor</span>
+ <span class=prg>cor.r  </span>= nMovimento; 
+ <span class=prg>cor.b  </span>= <span class=sc4>1 </span>- nMovimento; 
+ <span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span>
+
+ <span class=sc6>return </span>cor; 
+ <span class=sc16>} <span class=sc2>// ps_Main().fim</span></span>
+</div><b>
+<span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span></b>
+Esta  é  a  assinatura  da  função  ps_Main()  do  nosso  pixelshader
+particular. O valor de retorno é um float4 que representa uma cor no
+formato <b>rgba</b> com estes canais da cor sendo acessados individualmente
+por estas letras. COLOR0 é a semântica de cor.
+
+<b><span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+<span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  </b>
+Esta é uma forma alternativa de inicializar os componentes individuais
+das variáveis.
+
+<b><span class=sc2>// Configura individualmente os canais de cor</span>
+<span class=prg>cor.r </span>= nMovimento; 
+<span class=prg>cor.b </span>= <span class=sc4>1 </span>- nMovimento; </b>
+Aqui  nestas  linhas  os  canais  vermelho (r) e azul (b) ganham  uma
+pequena animação.
+
+<b><span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span></b>
+Preste atenção atenção nesta linha. Aqui está outro recurso exclusivo
+da linguagem do shader. Configuramos simultaneamente o canal verde (g)
+e alfa (a) da cor na mesma instrução. Esse formato de assinalação de
+valores é chamado de swizzle.
+
+<span class=sc6>return </span>cor; 
+A função retorna a cor para o dispositivo.
+
+<b><u>3.4 Estabelecendo uma técnica</u></b>
+<div class=niceview><span class=sc5>technique </span>MovimentoCor 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+  <span class=sc16>{</span>
+  <span class=sc2>// Configura alguns estados do dispositivo</span>
+  <span class=sc6>CullMode </span>= None; 
+  <span class=sc6>FillMode </span>= Solid; 
+
+  <span class=sc2>// Compila o VertexShader e o PixelShader</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_Main();  
+
+  <span class=sc16>} <span class=sc2>// fim do passo P0</span></span>
+<span class=sc16>} <span class=sc2>// fim da técnica</span></span>
+</div>
+<b><span class=sc5>technique </span>MovimentoCor { <span class=sc2>// (...)</span> }</b>
+O bloco da técnica declarado pela instrução do shader <span class=prg>technique</span>  pode
+enquadrar  vários  blocos  de  passos  identificados  pela  instrução
+<span class=prg>pass</span>.
+
+<b><span class=sc5>pass </span>P0 { <span class=sc2>// (...)</span> }</b>
+Em cada passo pode ser aplicado  um  pixelshader  e  um  vertexshader
+particular no modelo sendo renderizado.   Em cada passo os estados do 
+dispositivo  também  podem  ser  alterados  conforme  mostrado  neste 
+exemplo.
+
+<b><span class=sc2>// Configura alguns estados do dispositivo</span>
+<span class=sc6>CullMode </span>= None; <span class=sc6>FillMode </span>= Solid; </b>
+Aqui foi alterado os estados do dispositivo renderizador apenas para 
+mostrar essa possibilidade dentro do shader.
+
+<b><span class=sc2>// Compila o VertexShader e o PixelShader</span>
+<span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+<span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_Main();  </b>
+Este é o código padrão que finaliza um passo.  Tanto  o  VertexShader
+como o PixelShader são compilados  no  modelo  versão   1.1  indicado
+respectivamente pelas instruções <span class=prg>compile, vs_1_1</span> e <span class=prg>ps_1_1</span>.  Uma coisa
+para  esclarecer  agora  é  que  o  nome de qualquer função dentro do
+shader  não  possui   padrão  de  nomeação  obrigatório.   Escolhemos 
+livremente  <b>vs_Main()</b>  para  indicar  a  função  principal  de  nosso
+VertexShader  e  o  mesmo  ocorrendo  com  <b>ps_Main()</b>  em  relação  ao 
+PixelShader.
+
+<b><u>4. Código fonte do projeto de exemplo:prj_HLSL01</u></b>
+
+<div class=prg-code>
+<img src=images\prj_HLSL01.png>
+
+<span class=sc2>// prj_HLSL01 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como renderizar um quadrado com HLSL</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_HLSL01 
+<span class=sc16>{</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Esse objeto aplica o efeito produzido com HLSL</span>
+    <span class=prg>private </span><span class=sc5>Effect </span>efeito = <span class=prg>null;</span>
+
+    <span class=sc2>// O VertexShader precisa saber como cada vértice está estruturado</span>
+    <span class=prg>private </span><span class=sc5>VertexDeclaration </span>decl = <span class=prg>null;</span>
+
+    <span class=sc2>// Nossas matrizes para compor a Camera no Vertexshader</span>
+    <span class=prg>private </span><span class=sc5>Matrix </span>mundo; 
+    <span class=prg>private </span><span class=sc5>Matrix </span>visao; 
+    <span class=prg>private </span><span class=sc5>Matrix </span>projecao; 
+
+    <span class=sc2>// Variável para provocar mudanças de cor no VertexShader</span>
+    <span class=prg>private </span><span class=prg>float </span>nMovimento = <span class=sc4>0.0f;</span>
+    <span class=prg>private </span><span class=prg>float </span>nPasso = <span class=sc4>0.01f;</span>
+
+
+    <span class=sc2>// Recipiente para os vértices dos triângulos</span>
+    <span class=sc2>// SetPosition() desse formato de vértice aceita uma</span>
+    <span class=sc2>// estrutura Vector3 com uma posição (x, y, z)</span>
+    <span class=prg>private </span><span class=prg>CustomVertex.PositionOnly</span>[] triangulo; 
+
+    <span class=sc2>// Memória ou buffer de vértices para o quadrado</span>
+    <span class=prg>private </span><span class=sc5>VertexBuffer </span>vbQuadrado = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do quadrado</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+    <span class=sc2>// (...)</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+         device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.HardwareVertexProcessing </span>| <span class=prg>CreateFlags.PureDevice</span>, 
+        pps);  
+
+      <span class=sc2>// Montamos inicialmente nossos triângulos</span>
+      montar_triangulos();  
+
+      <span class=sc2>// Inicializamos o buffer de vértices</span>
+      inicializarVertexBuffer();  
+
+      <span class=sc2>// Inicializa o efeito</span>
+      inicializarEfeito();  
+
+      <span class=sc2>// Declara o uso dos vértices</span>
+      DeclararVertices();  
+
+      <span class=sc2>// Inicializa a Camera para o VertexShader</span>
+      inicializarCamera();  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>DeclararVertices() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria os elementos que informam a estruturação dos vértices</span>
+      <span class=sc5>VertexElement</span>[] Elementos; 
+      <span class=sc5>VertexElement </span>elemento; 
+
+      <span class=sc2>// Configura a informação de um elemento</span>
+      elemento = <span class=prg>new </span><span class=sc5>VertexElement</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>DeclarationType.Float3</span>, 
+        <span class=prg>DeclarationMethod.Default</span>, <span class=prg>DeclarationUsage.Position</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a informação de todos os elementos</span>
+      Elementos = <span class=prg>new </span><span class=sc5>VertexElement</span>[] <span class=sc16>{ </span>elemento, <span class=prg>VertexElement.VertexDeclarationEnd </span><span class=sc16>};</span>
+
+      <span class=sc2>// Configura finalmente a declação de dados</span>
+      decl = <span class=prg>new </span><span class=sc5>VertexDeclaration</span>(device, Elementos);  
+    <span class=sc16>} <span class=sc2>// DeclararVertices().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarEfeito() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Carrega o efeito do disco</span>
+      efeito = <span class=prg>Effect.FromFile</span>(device, <span class=sc6>@"c:\gameprog\gdkmedia\shader\simples.fx"</span>, 
+    <span class=prg>null</span>, <span class=prg>ShaderFlags.None</span>, <span class=prg>null</span>);  
+
+      <span class=sc2>// Seleciona a técnica de renderização</span>
+      <span class=prg>efeito.Technique </span>= <span class=sc6>"MovimentoCor";</span>
+
+    <span class=sc16>} <span class=sc2>// InicializarEfeito().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>100.0f;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      projecao = <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Rotaciona o triangulo indiretamente através da rotação dos</span>
+      <span class=sc2>// eixos da matriz mundial.</span>
+      mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc5>Vector3 cam_pos = new Vector3(0, 0, 5.0f);  <span class=sc2>// Posição da camera</span></span>
+      <span class=sc5>Vector3 cam_alvo = new Vector3(0, 0.0f, 0);  <span class=sc2>// Alvo da câmera</span></span>
+      <span class=sc5>Vector3 cam_orientacao = new Vector3(0, 1.0f, 0);  <span class=sc2>// Orientação da câmera</span></span>
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      visao = <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+
+    <span class=sc16>}  <span class=sc2>// inicializarCamera().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Atualiza cor</span>
+      nMovimento += nPasso; 
+      <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)  nPasso *= <span class=sc4>-1;</span>
+      <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)  nPasso *= <span class=sc4>-1;</span>
+
+      <span class=sc2>// Atualiza ângulo</span>
+      angulo += <span class=sc4>0.05f;</span>
+      mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  
+
+      <span class=sc2>// Atualiza variáveis do efeito</span>
+      <span class=sc5>Matrix </span>camera = mundo * visao * projecao; 
+      <span class=prg>efeito.SetValue</span>(<span class=sc6>"nMovimento"</span>, nMovimento);  
+      <span class=prg>efeito.SetValue</span>(<span class=sc6>"Camera"</span>, camera);  
+
+    <span class=sc16>} <span class=sc2>// AtualizarCamera().fim</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Atualiza a Camera no VertexShader</span>
+      AtualizarCamera();  
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.DarkGreen</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+
+      <span class=sc2>// O renderizador é informado da origem dos dados</span>
+      <span class=prg>device.SetStreamSource</span>(<span class=sc4>0</span>, vbQuadrado, <span class=sc4>0</span>);  
+
+      <span class=sc2>// O VertexShader é informado da estruturação dos vértices</span>
+      <span class=prg>device.VertexDeclaration </span>= decl; 
+
+      <span class=sc2>// Render our triangle using an effect</span>
+      <span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+        <span class=prg>efeito.Pass</span>(ncx);  
+
+        <span class=sc2>// Renderiza a primitiva</span>
+        <span class=prg>device.DrawPrimitives</span>(<span class=prg>PrimitiveType.TriangleList</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);  
+
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+      <span class=sc2>// Finaliza o efeito</span>
+      <span class=prg>efeito.End</span>();  
+
+      <span class=sc2>// Finaliza a cena</span>
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>montar_triangulos() 
+    <span class=sc16>{</span>
+      <span class=sc2>// É necessário 3 vértices para compor cada triângulo</span>
+      triangulo = <span class=prg>new </span><span class=prg>CustomVertex.PositionOnly</span>[<span class=sc4>6 </span>];  
+
+      <span class=sc2>// Vetores para guardar a posição (x,y,z) dos vértices</span>
+      <span class=sc5>Vector3 </span>p0, p1, p2, p3, p4, p5; 
+
+      <span class=sc2>// Os vértices estão alinhados na mesma posição de profundidade</span>
+      <span class=prg>float </span>zpos = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Posições para os 3 vértices do triangulo</span>
+      p0 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, zpos);  
+      p1 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos);  
+      p2 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos);  
+
+      <span class=sc2>// Posições para os 3 vértices do segundo triangulo</span>
+      p3 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, zpos);  
+      p4 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos);  
+      p5 = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, zpos);  
+
+      <span class=sc2>// Posição do primeiro vértice</span>
+      triangulo[<span class=sc4>0</span>]<span class=prg>.SetPosition</span>(p0);  
+      triangulo[<span class=sc4>1</span>]<span class=prg>.SetPosition</span>(p1);  
+      triangulo[<span class=sc4>2</span>]<span class=prg>.SetPosition</span>(p2);  
+
+      triangulo[<span class=sc4>3</span>]<span class=prg>.SetPosition</span>(p3);  
+      triangulo[<span class=sc4>4</span>]<span class=prg>.SetPosition</span>(p4);  
+      triangulo[<span class=sc4>5</span>]<span class=prg>.SetPosition</span>(p5);  
+
+    <span class=sc16>} <span class=sc2>// montar_triangulos().fim</span></span>
+
+    <span class=sc2>// Remonta o buffer de vértice no evento onCreate</span>
+    <span class=prg>private </span><span class=prg>void </span>quandoVertexBufferCriado(<span class=sc5>object </span>sender, EventArgs e) 
+    <span class=sc16>{</span>
+      <span class=prg>int </span>nInicioDeslocamentoTrancado = 0; 
+      <span class=sc5>VertexBuffer </span>buffer = (<span class=sc5>VertexBuffer</span>) sender; 
+      <span class=prg>buffer.SetData</span>(triangulo, nInicioDeslocamentoTrancado, <span class=prg>LockFlags.None</span>);  
+
+    <span class=sc16>} <span class=sc2>// quandoVertexBufferCriado().fim</span></span>
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarVertexBuffer() 
+    <span class=sc16>{</span>
+      <span class=sc2>// O buffer de vértices vbQuadrado é criado.</span>
+      vbQuadrado = <span class=prg>new </span><span class=sc5>VertexBuffer</span>(<span class=sc16>typeof</span>(<span class=prg>CustomVertex.PositionOnly</span>), 
+         <span class=sc4>6</span>, device, <span class=prg>Usage.Dynamic </span>| <span class=prg>Usage.WriteOnly</span>, 
+         <span class=prg>CustomVertex.PositionOnly.Format</span>, 
+         <span class=prg>Pool.Default</span>);  
+
+      <span class=sc2>// O buffer de vértices recebe os vértices da forma geométrica</span>
+      <span class=prg>vbQuadrado.SetData</span>(triangulo, <span class=sc4>0</span>, <span class=prg>LockFlags.None</span>);  
+
+      <span class=sc2>// O buffer de vértices recebe a função quandoVertexBufferCriado()</span>
+      <span class=sc2>// para responder ao evento onCreate() gerado pelo dispositivo</span>
+      <span class=prg>vbQuadrado.Created </span>+= <span class=prg>new </span><span class=sc5>EventHandler</span>(<span class=prg>this.quandoVertexBufferCriado</span>);  
+    <span class=sc16>} <span class=sc2>// inicializarVertexBuffer().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

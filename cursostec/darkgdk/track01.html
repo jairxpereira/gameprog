@@ -1,0 +1,248 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase01</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+
+
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="darkgdk.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">01. A estrutura básica do programa DarkGdk</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<img src="images/gdk-basicao.png">	
+O desenho acima ilustra o esqueleto mínimo de um programa com a biblioteca
+DarkGdk:
+
+---------------------------------------------------------------------------
+1) Você precisa incluir o arquivo de cabeçalho <b class=prg>#include "DarkGDK.h"</b>
+	<span class=sc16>
+   Esse arquivo permite o acesso completo a todos os recursos da
+   biblioteca: luz, cameras, objetos 3D, som, video etc. </span>
+
+
+---------------------------------------------------------------------------
+2) O ponto de entrada do programa é a função <b class=prg>void DarkGDK () { // prg }</b>
+			<span class=sc16>
+   Essa função equivale a função main() de c/c++ e equivale a função WinMain() 
+   de um programa windows padrão. O que ocorre aqui é que a biblioteca DarkGdk
+   implementa sua própria função WinMain() provendo o seu programa dessa
+   obrigatoriedade. A função DarkGDK engloba o núcleo da sua aplicação.</span>	
+
+---------------------------------------------------------------------------
+3) Dentro da função <b>DarkGDK()</b> tem uma estrutura <b>while()</b> aonde deve ficar o
+núcleo do seu jogo ou aplicação 3D: <span class=prg>
+	
+<b>while ( LoopGDK ( ) ) {     </b>	
+ suaLogica() // atualização da sua lógica	
+ dbSync ( ); // Atualizando a tela	
+<b>} // fim do while principal</b> </span>
+				<span class=sc16>
+   Dentro deste bloco você deve colocar a lógica de atualização do seu jogo
+   ou da sua aplicação 3D: atualização do posicionamento da personagem,
+   atualização dos inimigos, detecção de colisão, etc.
+   Esse bloco necessariamente deve terminar com <b>dbSync()</b> que joga os
+   gráficos que foram atualizados na memória em sua tela. </span>
+   
+Vimos acima que a biblioteca DarkGdk implementa nos bastidores a função
+obrigatória WinMain(), a biblioteca não só implementa essa  função  mas
+também arca com muitos aspectos primários de um programa  Windows  tal
+como processar as mensagens que sua janela recebe,  mensagens  como  a 
+digitação da tecla ESC que termina a execução do seu programa. A função
+<b>LoopGDK()</b> é que permite o motor DarkGdk tomar conta dessas  atividades
+primárias.
+
+Veja abaixo nosso programa exemplo aonde mostramos a string 'DarkGdk' na 
+posição (50,50) da janela. Antes de mostrar a string pintamos o fundo da
+janela de branco e colocamos o preto como a cor de frente do texto.
+
+<pre><div class=prg-code><img src="images/esqueleto-gdk.png"><pre>
+<div style="background:aliceblue; width:490pt">	
+<span class="sc2">// Sempre que usar a Dark GDK você deve garantir a inclusão desse arquivo 
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">//  Eis aqui o ponto de entrada da sua aplicação
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc2">// Nosso looping principal
+</span><span class="sc0"></span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+</span><span class="sc11">   dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"DarkGdk"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">   // Atualize a tela. 
+</span><span class="sc0"></span><span class="sc11">   dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10"> }</span><span class="sc0"> </span><span class="sc2">// fim do while principal 
+</span><span class="sc0">    
+</span><span class="sc2">// Retorne ao Sistema Windows
+</span><span class="sc0"></span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0"></span> </div>
+
+<span class="sc2">// -------------- initsys(): Inicialização básica do sistema ------------
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"esqueleto-gdk.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Configurando o video para a máxima performance a 60 fps
+</span><span class="sc0"></span><span class="sc11">dbSyncOn</span><span class="sc0">   </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">60</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()</span></div>
+
+<b><u>Explicando initsys()</b></u>
+<img src="images/esqueleto-gdk-explain.png">
+Estas linhas abaixo configuram duas inteiras uma com o valor da cor branca
+e a outra com o valor do preto: <span class=prg>
+int nBranco = 0xFFFFFF;
+int nPreto = 0; </span>
+
+A função abaixo limpa a tela pintando-a toda de branco.
+<span class=prg>dbCLS(nBranco);</span>
+
+A função abaixo configura a cor de frente para preto e a cor do fundo para
+branco.<span class=prg>
+dbInk(nPreto, nBranco); </span>
+
+<span class=prg>dbSetWindowTitle ("esqueleto-gdk.cpp"); </span>
+<b>dbSetWindowTitle()</b> configura o texto da barra de título da janela.
+
+As funções abaixo configuram o video para a máxima performance:	<span class=prg>
+dbSyncOn();	
+dbSyncRate(60); </span>
+
+<b>dbSyncOn()</b> define que a atualização do vídeo será manual. Isto implica em que
+os processos gráficos ocorrerão primeiro nos bastidores da memória, e para
+mostrar o resultado final, depois de todos os processos ocorridos você deve
+usar a função <b>dbSync().</b>
+
+<b>dbSyncRate(60)</b> configura a taxa de atualização de vídeo para 60 quadros por segundo.
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="darkgdk.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

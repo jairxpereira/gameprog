@@ -1,0 +1,487 @@
+﻿<html>
+<head>
+<title>mdx9_fase04-3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 04-3</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track04-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">04.3 Buffers de profundidade</h3><pre>
+
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\depth_buffers.png>
+</div>
+No tópico anterior aprendemos a renderizar formas primitivas, porém a
+imagem  final  não  ficou  muito  boa.  A  deficiência  apresentada é 
+corrigida  com  a  adição  de <b>buffers de profundidade</b> que indica quem
+está  na  frente  de  quem  e ocultando adequadamente as  formas  que 
+estão atrás das outras.
+
+Em inglês o buffer de profundidade é denominado <b>depth buffer</b> ou ainda
+<b class=prg>zbuffer</b>.   Há um outro tipo de buffer de profundidade chamado <b class=prg>Stencil
+Buffer</b>. A finalidade de ambos é  fazer  cortes  na  renderização para
+corrigir a imagem ou produzir efeitos visuais interessantes.
+
+Nas próprias  coordenadas dos vértices segue sempre uma informação de
+profundidade  expressada pelo valor do eixo z,  porém essa informação
+se  perde  na  transformação  do  ponto  tridimensional para um ponto
+bidimensional da tela do computador. Devido a essa perda de informação
+existe a necessidade da utilização de um buffer extra para  conservar
+ou  produzir  informação  extra  sobre profundidade que vai servir de
+base para cortes de itens que seriam normalmente renderizados.
+
+Para adicionar um buffer de profundidade  construído  automaticamente 
+pelo DirectX  bastará  configurar duas propriedades dos parâmetros de
+configuração  e acrescentar  um  flag de limpeza de zbuffer no método
+<b class=prg>device.Clear()</b> na função <b>Renderizar()</b>. 
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Meshes01.png></div>
+O projeto de exemplo desse tópico  utiliza o projeto <b>prj_Meshes01</b> com
+com poucas modificações que serão explicadas abaixo.
+
+Acrescente estas linhas em <b>initGfx()</b> antes do código de inicialização
+do dispositivo para criar um buffer de profundidade:
+
+<div class=niceview><b class=sc2>
+// Ativando o buffer de profundidade</b><span class=prg>
+<b>pps.EnableAutoDepthStencil</b> = true;
+<b>pps.AutoDepthStencilFormat</b> = DepthFormat.D16; 
+</span> </div>
+
+<span class=prg>pps.EnableAutoDepthStencil = true; </span>
+Esta linha  habilita o uso do buffer de profundidade que é criado
+pelo DirectX.
+
+<span class=prg>pps.AutoDepthStencilFormat = DepthFormat.D16; </span>
+Esta linha define o formato de dado  desse  buffer  de  profundidade,
+estabelecendo valores de 16 bits.
+
+O acréscimo destas linhas sem o devido complemento em <b class=prg>device.Clear()</b>
+não gera imagem nenhuma na renderização.
+
+
+No método <b class=prg>device.Clear()</b> na função <b>Renderizar()</b> da aplicação adicione
+o flag de limpeza de zbuffer para que este método fique com essa forma:
+
+<div class=niceview><span class=prg>
+device.Clear(ClearFlags.Target | <b>ClearFlags.ZBuffer,</b> 
+					Color.White.ToArgb(), 1.0f, 0); </span> </div>
+				
+O  acréscimo  destas  linhas sem o devido complemento em <b style="color:black;">initGfx()</b>
+derruba a execução da aplicação por tentar executar uma limpeza em 
+um buffer que não existe.
+
+<b><u>2. Código fonte do projeto exemplo: prj_Meshes01x</u></b>
+<div class=prg-code>
+<img src=images\prj_Meshes01x.png>
+
+<span class="sc2">// prj_Meshes01x - Arquivo: Tela.cs
+// Esse projeto mostra como renderizar primitivas 3D
+// utilizando um buffer de profundidade para melhorar
+// a imagem final. Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Meshes01x</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc2">// Estrutura para propriedades 3d do objeto
+</span><span class="sc0">  </span><span class="sc2">// posição, rotação e cor
+</span><span class="sc0">  </span><span class="sc16">struct</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">position</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">rotation</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc11">color</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">rot</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">position</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">pos</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">rotation</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">rot</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+  </span><span class="sc10">};</span><span class="sc0">
+
+
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Pega o tempo marcado no relógio do sistema 
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">InitialTickCount</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">TickCount</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Essa variável atualizada a cada ciclo ocasionará 
+</span><span class="sc0">    </span><span class="sc2">// a animação do objeto
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Variável para guardar uma malha 3d
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc0"> </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Vetores para a posição e rotação do objeto 3d
+</span><span class="sc0">    </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Variável global para propriedade dos objetos
+</span><span class="sc0">    </span><span class="sc11">Propriedades3D</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Inicialização dos componentes.
+</span><span class="sc0">      </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Toda renderização deverá ocorrer dentro do evento onPaint()
+</span><span class="sc0">      </span><span class="sc2">// Isso evita interferência estrangeira de processamento default
+</span><span class="sc0">      </span><span class="sc2">// do sistema Windows
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc0">      </span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Ativando o buffer de profundidade
+</span><span class="sc0">      </span><span class="sc5">pps.EnableAutoDepthStencil</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">pps.AutoDepthStencilFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">DepthFormat</span><span class="sc10">.</span><span class="sc11">D16</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice 
+</span><span class="sc0">      </span><span class="sc2">// no software, janela (this), parâmetros de apresentação (pps)
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">AtualizarCamera</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Dados para a configuração da matriz de projeção
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza angulo para dar movivento
+</span><span class="sc0">      </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">0.05f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Mostra a parte interna do polígono
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário      
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">CullMode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Cull</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0">
+          </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Dados para a configuração da matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// AtualizarCamera()
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Limpa os dispositivos e os buffers de apoio
+</span><span class="sc0">      </span><span class="sc5">device.Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc5">ClearFlags.ZBuffer</span><span class="sc10">,
+					</span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">.</span><span class="sc11">ToArgb</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc2">// (...) Todo o código de desenhar vai aqui   
+</span><span class="sc0">
+      </span><span class="sc2">// Aguarda um momento e gera um número de 0 a 5. 
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">index</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">TickCount</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">InitialTickCount</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">2000</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">%</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza a câmera
+</span><span class="sc0">      </span><span class="sc11">AtualizarCamera</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">AtualizarLuz</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">index</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Box</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">Brown</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  box"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Polygon</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">8</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkGreen</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  Polygon"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Teapot</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">2.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">Red</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  Teapot"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Sphere</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkOrange</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  Sphere"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Torus</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkRed</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  Torus"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">objeto3D</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Mesh</span><span class="sc10">.</span><span class="sc11">Cylinder</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">posicao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">rotacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc10">(</span><span class="sc11">posicao</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">rotacao</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc11">g_props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkViolet</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">objeto3D</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g_props</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" prj_Meshes01x:  Cylinder"</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// end switch 
+</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Apresenta a cena renderizada na tela
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Libera a janela para processar outros eventos
+</span><span class="sc0">      </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">desenharObjeto</span><span class="sc10">(</span><span class="sc11">Mesh</span><span class="sc0"> </span><span class="sc11">obj</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Propriedades3D</span><span class="sc0"> </span><span class="sc11">props</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Ajusta rotação da caixa
+</span><span class="sc0">      </span><span class="sc11">Matrix</span><span class="sc0"> </span><span class="sc11">obj_rot</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationX</span><span class="sc10">(</span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">rotation</span><span class="sc10">.</span><span class="sc11">X</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0">
+        </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationY</span><span class="sc10">(</span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">rotation</span><span class="sc10">.</span><span class="sc11">Y</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0">
+        </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationZ</span><span class="sc10">(</span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">rotation</span><span class="sc10">.</span><span class="sc11">Z</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Ajusta posição da caixa
+</span><span class="sc0">      </span><span class="sc11">Matrix</span><span class="sc0"> </span><span class="sc11">obj_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">Translation</span><span class="sc10">(</span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">position</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Tranfere posição e rotação para o mundo
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">World</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">obj_rot</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">obj_pos</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Prepara e aplica uma material na caixa
+</span><span class="sc0">      </span><span class="sc11">Material</span><span class="sc0"> </span><span class="sc11">obj_mtl</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Material</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">obj_mtl</span><span class="sc10">.</span><span class="sc11">Diffuse</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">obj_mtl</span><span class="sc10">.</span><span class="sc11">Ambient</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">props</span><span class="sc10">.</span><span class="sc11">color</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Informa ao dispositivo o material a ser utilizado
+</span><span class="sc0">      </span><span class="sc2">// na renderização
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Material</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">obj_mtl</span><span class="sc10">;</span><span class="sc0">
+
+
+      </span><span class="sc2">// Renderiza o mesh
+</span><span class="sc0">      </span><span class="sc11">obj</span><span class="sc10">.</span><span class="sc11">DrawSubset</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// desenharObjeto()
+</span><span class="sc0">
+
+    </span><span class="sc2">// Configuração de luz
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">AtualizarLuz</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Ambient</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">DarkGray</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Lighting</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Type</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">LightType</span><span class="sc10">.</span><span class="sc11">Directional</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Diffuse</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Color</span><span class="sc10">.</span><span class="sc11">Yellow</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Direction</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Commit</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Lights</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Enabled</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// AtualizarLuz().fim
+</span><span class="sc0">
+    </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Trate outros processos padrões
+</span><span class="sc0">      </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Renderize a cena
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Invalide para chamar novamente onPaint()
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc0">
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track04-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,712 @@
+﻿<html>
+<head>
+<title>mdx9_fase11-8</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 11-8</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-7.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-9.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>11.8 Explodindo o mesh</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Explodir.png></div>
+Há momentos nos quais  o que mais queremos é que tudo ou alguma coisa
+se exploda.   Nestes  momentos  o método para usar é <b class=prg>Mesh.Split()</b> que
+quebra o mesh original  em vários pedaços menores com um tamanho dado
+em um <b>número máximo de vértices</b> que podemos determinar.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Explodir.png></div>
+Esta aplicação mostra nosso costumeiro modelo 3d, o <b>tiny.x</b>, explodido
+em dezenas de pedaços que têm um volume máximo de 40 vértices. A base
+dessa aplicação é o <b>prj_Modelo3d</b> do <b>tópico 4.4</b>  que foi alterado para
+este exemplo.
+
+Cada pedaço do mesh original é em si um mesh, então por  conta  disso
+cada  pedaço  vai  participar  de uma variável array do tipo  <b class=prg>Mesh</b>  e
+ter suas próprias coordernadas de posicionamento que serão  estocadas
+em  <b>g_props</b>  agora  transformada  numa  array  do tipo <b>Propriedades3D</b>.
+
+Através de nossos testes percebemos que as partes do mesh conservaram
+as  respectivas  coordenadas  de  textura  conservando  assim a mesma 
+aparência  que  tinham  quando  estavam  soldadas no mesh original. 
+
+A posição de cada parte sofreu um deslocamento aleatório em relação a
+sua  posição original. Se a posição de cada peça tivesse sido mantida
+o  mesh  teria  conservado  sua  aparência  original.   Esse  pequeno 
+deslocamento  aleatório  foi  chamado  de  ruído e foi produzido pelo
+objeto <b>sorteio</b> da classe <b class=prg>Random</b> que gera números aleatórios.
+
+<b><u>2.1 Campos da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+ <b>
+ <span class=sc2>// Variáveis para guardar a malha 3d original e seus pedaços</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Mesh</span>[] pedacos = <span class=prg>null;</span>
+ </b>
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+ <b>
+ <span class=sc2>// Variável global para o posicionamento dos objetos 3d</span>
+ Propriedades3D[] g_props; 
+
+ <span class=sc2>// Este objeto Random será utilizado para produzir valores</span>
+ <span class=sc2>// para o posicionamento (x,y,z) dos sub-objetos 3d criados</span>
+ <span class=sc5>Random </span>sorteio; </b> 
+ <span class=sc2>// (...)</span>
+</div><b>
+<span class=sc2>// Variáveis para guardar a malha 3d original e seus pedaços</span>
+<span class=prg>private </span><span class=sc5>Mesh</span>[] pedacos = <span class=prg>null;</span></b>
+Cada pedaço do mesh original gerado é um mesh em si e vai ser estocado
+nesta array.
+
+<b><span class=sc2>// Recipiente de materiais do mesh</span>
+<span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+<span class=sc2>// Recipiente de texturas do mesh</span>
+<span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span></b>
+Estas variáveis serão importantes na renderização uma  vez  que  cada
+parte  conserva  sua  informação respectiva  de  material  e textura.
+
+<b><span class=sc2>// Variável global para o posicionamento dos objetos 3d</span>
+Propriedades3D[] g_props; </b>
+Cada pedaço terá seu próprio controle de posicionamento.
+
+<b><span class=sc2>// Este objeto Random será utilizado para produzir valores</span>
+<span class=sc2>// para o posicionamento (x,y,z) dos sub-objetos 3d criados</span>
+<span class=sc5>Random </span>sorteio; </b>
+Este objeto será usado  para  produzir  pequenos  valores  que  serão
+adicionados  na  posição  original  da  peça  3d  produzindo assim um 
+pequeno deslocamento da peça em relação a sua antiga posição original.
+
+<b><u>2.2 Inicializando a aplicação</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+ <span class=sc2>// Ativando o buffer de profundidade</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>( <span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Carrega o modelo</span>
+ diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+ CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+ <b>
+ <span class=sc2>// Inicializa o objeto Random</span>
+ sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+
+ <span class=sc2>// O modelo é quebrado em muitos pedaços nesta função.</span>
+ explodirModelo(); </b>  
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div><b>
+<span class=sc2>// Inicializa o objeto Random</span>
+sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  </b>
+Inicializamos o gerador de números aleatórios.
+
+<b><span class=sc2>// O modelo é quebrado em muitos pedaços nesta função.</span>
+explodirModelo(); </b>
+Essa função explode o modelo em vários pedaços  e  reposiciona  esses
+pedaços  em  torno  da  posição  original  que  tinham  no  modelo. 
+
+<b><u>2.3 Explodindo o modelo</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>explodirModelo() 
+<span class=sc16>{</span>
+ <span class=sc2>// Os valores destas variáveis serão sorteados</span>
+ <span class=prg>float </span>xruido, yruido, zruido; 
+
+ <span class=sc2>// Tamanho máximo em vértices do sub-mesh gerado</span>
+ <span class=prg>int </span>nVerticesMax = 40; 
+
+ <span class=sc2>// Quebra o objeto 3d em pedaços menores</span>
+ pedacos = <span class=prg>Mesh.Split</span>(objeto3D, <span class=prg>null</span>, nVerticesMax, <span class=prg>objeto3D.Options.Value</span>);  
+
+ <span class=sc2>// Inicializa a array de posicionamento conforme a quantidade</span>
+ <span class=sc2>// de pedaços gerada</span>
+ g_props = <span class=prg>new </span>Propriedades3D[<span class=prg>pedacos.Length </span>];  
+
+ <span class=sc2>// Sorteia para cada pedaço seu respectivo posicionamento (x,y,z)</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 1; ncx &lt; <span class=prg>g_props.Length; </span>ncx++) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Sorteia (x, y, z) para cada pedaço</span>
+  xruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+  yruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+  zruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+
+  <span class=sc2>// Configura posicionamento para cada pedaço</span>
+  g_props[ncx]<span class=prg>.position.X </span>= xruido; 
+  g_props[ncx]<span class=prg>.position.Y </span>= yruido; 
+  g_props[ncx]<span class=prg>.position.Z </span>= zruido; 
+
+  <span class=sc2>// A rotação de cada um será zerada</span>
+  g_props[ncx]<span class=prg>.rotation </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+ <span class=sc2>// Dispensa o objeto 3d original</span>
+ <span class=prg>objeto3D.Dispose</span>();  
+
+<span class=sc16>} <span class=sc2>// explodirModelo().fim</span></span>
+</div><b>
+<span class=sc2>// Os valores destas variáveis serão sorteados</span>
+<span class=prg>float </span>xruido, yruido, zruido; </b>
+Estas variáveis recebem valores aleatórios e participam  da  formação
+do posicionamento 3d de cada sub-mesh gerado. 
+
+<b><span class=sc2>// Tamanho máximo em vértices do sub-mesh gerado</span>
+<span class=prg>int </span>nVerticesMax = 40; </b>
+Esta variável é argumento do método <span class=prg>Mesh.Split()</span>  e indica  o tamanho
+máximo em vértices que o sub-mesh pode ter.
+
+<b><span class=sc2>// Quebra o objeto 3d em pedaços menores</span>
+pedacos = <span class=prg>Mesh.Split</span>(objeto3D, <span class=prg>null</span>, nVerticesMax, <span class=prg>objeto3D.Options.Value</span>);  </b>
+Esta função retorna uma array de meshes construídos a partir do modelo
+3d original.   Conforme está configurada aqui (<span class=prg>objeto3D.Options.Value</span>) 
+a  função  conserva formatos de vértices,  coordenadas de  textura  do
+modelo original. O argumento que está como <b class=prg>null</b> refere-se a informação
+de adjacências mas você não precisa se preocupar com isso aqui.
+
+<b><span class=sc2>// Inicializa a array de posicionamento conforme a quantidade</span>
+<span class=sc2>// de pedaços gerada</span>
+g_props = <span class=prg>new </span>Propriedades3D[<span class=prg>pedacos.Length</span>]; </b>
+Com a informação de quantos pedaços foram  gerados  (<span class=prg>pedacos.Length</span>),
+conseguimos inicializar a array <b>g_props</b> adequadamente.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Sorteia para cada pedaço seu respectivo posicionamento (x,y,z)</span>
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 1; ncx &lt; <span class=prg>g_props.Length; </span>ncx++) 
+<span class=sc16>{</span>
+<span class=sc2>// Sorteia (x, y, z) para cada pedaço</span>
+xruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+yruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+zruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>(); 
+
+<span class=sc2>// Configura posicionamento para cada pedaço</span>
+g_props[ncx]<span class=prg>.position.X </span>= xruido; 
+g_props[ncx]<span class=prg>.position.Y </span>= yruido; 
+g_props[ncx]<span class=prg>.position.Z </span>= zruido;
+<span class=sc16>} <span class=sc2>// endfor</span></span></b></div>
+Este bloco sorteia valores aleatórios e configura os valores de ruído.
+Aqui para cada sub-mesh gerado haverá  um posicionamento independente
+que será usado no método <b>desenharModelo()</b>. 
+
+<b><u>2.4 Renderizando a cena</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=sc2>// Verifica quantos pedaços foram produzidos a partir do objeto original</span>
+ <span class=prg>int </span>nTam = <span class=prg>pedacos.Length;</span>
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+ <span class=sc2>// Atualiza luz e câmera</span>
+ AtualizarCamera();  
+ <span class=prg>device.RenderState.Lighting </span>= <span class=prg>false;</span>
+
+ <span class=sc2>// Desenha cada pedaço do objeto</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+ <span class=sc16>{</span>
+ desenharObjeto(pedacos[ncx], g_props[ncx]);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+</div>
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Verifica quantos pedaços foram produzidos a partir do objeto original</span>
+<span class=prg>int </span>nTam = <span class=prg>pedacos.Length;</span>
+
+<span class=sc2>// Desenha cada pedaço do objeto</span>
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+<span class=sc16>{</span>
+desenharObjeto(pedacos[ncx], g_props[ncx]);  
+<span class=sc16>} <span class=sc2>// endfor</span></span> </b></div>
+Neste bloco é identificado quantos pedaços foram gerados (<b>nTam</b>)  e na
+posicionamento no espaço (<b>g_props[ncx]</b>).
+
+<b><u>2.5 Desenhando o objeto 3d</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+<span class=sc16>{</span>
+ <span class=sc2>// Ajusta rotação do objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+ <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+ <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+ <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+ <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+ <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+ <span class=prg>device.Material </span>= g_meshMtl[<span class=sc4>0 </span>];  
+ <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[<span class=sc4>0</span>]);  
+
+ <span class=sc2>// Renderiza o mesh</span>
+ <span class=prg>obj.DrawSubset</span>(<span class=sc4>0</span>);  
+
+ <span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+</div>
+<b><span class=prg>device.Material </span>= g_meshMtl[<span class=sc4>0 </span>];  
+<span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[<span class=sc4>0</span>]);</b>
+O modelo tiny.x  apresenta um só material e textura que são estocados
+respectivamente em <b>g_meshMtl[0]</b> e <b>g_meshTex[0]</b>. Com relação a textura
+cada pedaço do mesh conservou suas coordenadas de textura conservando
+sua aparência individual que já mantinha no modelo.
+
+<span class=sc2>// Renderiza o mesh</span>
+<span class=prg>obj.DrawSubset</span>(<span class=sc4>0</span>); 
+Aqui cada pedaço é renderizado normalmente como um mesh independente. 
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Explodir</u></b>
+<div class=prg-code>
+<img src=images\prj_Explodir.png>
+
+<span class=sc2>// prj_Explodir - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como explodir em vários pedaços</span>
+<span class=sc2>// um modelo 3d.</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_Explodir 
+<span class=sc16>{</span>
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição e rotação</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variáveis para guardar a malha 3d original e seus pedaços</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Mesh</span>[] pedacos = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Variável global para o posicionamento dos objetos 3d</span>
+    Propriedades3D[] g_props; 
+
+    <span class=sc2>// Este objeto Random será utilizado para produzir valores</span>
+    <span class=sc2>// para o posicionamento (x,y,z) dos sub-objetos 3d criados</span>
+    <span class=sc5>Random </span>sorteio; 
+    <span class=sc2>// (...)</span>
+
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      device = <span class=prg>new </span><span class=sc5>Device</span>( <span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Carrega o modelo</span>
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+
+      <span class=sc2>// Inicializa o objeto Random</span>
+      sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+
+      <span class=sc2>// O modelo é quebrado em muitos pedaços nesta função.</span>
+      explodirModelo();  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>explodirModelo() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Os valores destas variáveis serão sorteados</span>
+      <span class=prg>float </span>xruido, yruido, zruido; 
+
+      <span class=sc2>// Tamanho máximo em vértices do sub-mesh gerado</span>
+      <span class=prg>int </span>nVerticesMax = 40; 
+
+      <span class=sc2>// Quebra o objeto 3d em pedaços menores</span>
+      pedacos = <span class=prg>Mesh.Split</span>(objeto3D, <span class=prg>null</span>, nVerticesMax, <span class=prg>objeto3D.Options.Value</span>);  
+
+      <span class=sc2>// Inicializa a array de posicionamento conforme a quantidade</span>
+      <span class=sc2>// de pedaços gerada</span>
+      g_props = <span class=prg>new </span>Propriedades3D[<span class=prg>pedacos.Length </span>];  
+
+      <span class=sc2>// Sorteia para cada pedaço seu respectivo posicionamento (x,y,z)</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 1; ncx &lt; <span class=prg>g_props.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Sorteia (x, y, z) para cada pedaço</span>
+        xruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+        yruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+        zruido = <span class=sc4>100.0f </span>* (<span class=prg>float</span>) <span class=prg>sorteio.NextDouble</span>();  
+
+        <span class=sc2>// Configura posicionamento para cada pedaço</span>
+        g_props[ncx]<span class=prg>.position.X </span>= xruido; 
+        g_props[ncx]<span class=prg>.position.Y </span>= yruido; 
+        g_props[ncx]<span class=prg>.position.Z </span>= zruido; 
+
+        <span class=sc2>// A rotação de cada um será zerada</span>
+        g_props[ncx]<span class=prg>.rotation </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+      <span class=sc2>// Dispensa o objeto 3d original</span>
+      <span class=prg>objeto3D.Dispose</span>();  
+
+    <span class=sc16>} <span class=sc2>// explodirModelo().fim</span></span>
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Essa variável foi modificada para acomodar o tamanho</span>
+      <span class=sc2>// do modelo</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f;</span>
+
+      <span class=sc2>// Atualiza ângulo para dar movimento ao objeto 3d</span>
+      angulo += <span class=sc4>0.04f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc2>// O eixo z foi modificado para comportar o tamanho do modelo</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>600.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera().fim</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Verifica quantos pedaços foram produzidos a partir do objeto original</span>
+      <span class=prg>int </span>nTam = <span class=prg>pedacos.Length;</span>
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Atualiza luz e câmera</span>
+      AtualizarCamera();  
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>false;</span>
+
+      <span class=sc2>// Desenha cada pedaço do objeto</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+      <span class=sc16>{</span>
+        desenharObjeto(pedacos[ncx], g_props[ncx]);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Ajusta rotação do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+        <span class=prg>device.Material </span>= g_meshMtl[<span class=sc4>0 </span>];  
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[<span class=sc4>0</span>]);  
+
+        <span class=sc2>// Renderiza o mesh</span>
+        <span class=prg>obj.DrawSubset</span>(<span class=sc4>0</span>);  
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+      <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+        device, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Carrega texturas</span>
+          arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+          <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+          <span class=sc16>{</span>
+            g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+              diretorioBase + arquivo_textura);  
+          <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-7.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-9.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

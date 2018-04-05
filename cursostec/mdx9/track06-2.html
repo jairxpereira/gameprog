@@ -1,0 +1,690 @@
+﻿<html>
+<head>
+<title>mdx9_fase06-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 06-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track06-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>06.2 Sprite via DirectDraw</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Sprite02.png></div>
+O <b class=prg>DirectDraw</b> é um antigo componente do DirectX que  permite  utilizar
+gráficos 2D.  É  considerado  obsoleto visto que o Direct3D permite o
+trabalho com gráficos 2D com muito mais  vantagens.   No  entanto,  o 
+DirectDraw ainda está presente no DirectX gerenciado e é interessante
+compreender essa tecnologia que predominou no passado  principalmente
+para   entender   o  código  fonte  de  aplicações antigas com o qual 
+podemos nos deparar no caminho do aprendizado de programação de jogos.
+
+O DirectDraw é uma biblioteca mais leve e facilmente roda em hardware
+antigo mesmo  na  ausência  de placas de aceleração gráfica o que não
+ocorre com o Direct3D.  Um conceito chave dentro do DirectDraw é o de 
+<b>superfície</b>, <b class=prg>surface</b> em inglês, termo este aplicado à qualquer imagem,
+à sprites,  ao  backbuffer  e à própria tela de visualização final da
+cena renderizada.  A superfície  é então qualquer área retangular que
+pode  ser  uma  imagem ou até mesmo o destino para o qual copiá-la ou 
+renderizá-la.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Sprite02.png></div>
+Nesta aplicação o usuário utiliza as setas do teclado para movimentar
+uma superfície  retangular  pela  tela,  a   sprite  ( <b>g_sprite</b>).  Na
+renderização da sprite existe um retângulo (<b>g_recorte</b>)  que determina
+qual parte da superfície vai  ser  renderizada.   Na  aplicação  esse 
+retângulo  vai  apontar  para  o  tamanho  total da imagem,  mas para
+animações ele pode apontar para quadros individuais dentro dela.
+
+Além  da  superfície com a imagem e do  retângulo da área desenhável,
+o  processo de renderizar a sprite precisa saber de sua posição e da
+indicação da cor transparente da imagem geralmente chamada <b class=prg>ColorKey</b>;
+estes aspectos são configurados em <b>initGfx()</b> e <b>inicializarSprite()</b>.
+
+A tecla ESC ou escape finaliza a aplicação e a tecla shift resseta a 
+coordenada da sprite para a localização (320, 240).
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+
+ <span class=sc2>// Variável para criação do dispositivo de gerenciamento teclado</span>
+ <span class=prg>private </span><span class=prg>DirectInput.Device </span>teclado = <span class=prg>null;</span>
+
+ <span class=sc2>// Para criação do dispositivo gráfico DirectDraw.Device</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// A tecla Escape terminará a aplicação</span>
+ <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+<b>
+ <span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+ <span class=prg>int </span>xtela = 0; 
+ <span class=prg>int </span>ytela = 0; 
+
+ <span class=sc2>// Coordenadas (xcol, ylin) para movimentação da sprite</span>
+ <span class=prg>int </span>xcol = 0; 
+ <span class=prg>int </span>ylin = 0; 
+
+ <span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+ <span class=sc2>// na tela</span>
+ <span class=sc2>// O objeto sprite em si</span>
+ <span class=prg>private </span><span class=sc5>Surface </span>g_sprite = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Surface </span>tela = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Surface </span>backBuffer = <span class=prg>null;</span>
+
+ <span class=sc2>// Esse retângulo indica a área a ser desenhada da sprite</span>
+ <span class=sc2>// Isso permite produzir animações recortando partes diferentes da</span>
+ <span class=sc2>// sprite</span>
+ <span class=prg>private </span><span class=sc5>Rectangle </span>g_recorte; 
+</b>
+ <span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div><b>
+<span class=sc2>// Para criação do dispositivo gráfico DirectDraw.Device</span>
+<span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span></b>
+Esta variável vai segurar o dispositivo gráfico do DirectDraw.
+<b>
+<span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+<span class=prg>int </span>xtela = 0; 
+<span class=prg>int </span>ytela = 0; </b>
+Estas variáveis vão ser usadas para coletar os aspectos  do  modo  de
+vídeo atual e depois serão usadas para configurar o modo de tela cheia
+no dispositivo gráfico criado.
+
+<b><span class=sc2>// Coordenadas (xcol, ylin) para movimentação da sprite</span>
+<span class=prg>int </span>xcol = 0; 
+<span class=prg>int </span>ylin = 0;</b>
+Estas variáveis controlam a movimentação da sprite pela tela.
+
+<b><span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+<span class=sc2>// na tela</span>
+<span class=prg>private </span><span class=sc5>Surface </span>g_sprite = <span class=prg>null;</span>
+<span class=prg>private </span><span class=sc5>Surface </span>tela = <span class=prg>null;</span>
+<span class=prg>private </span><span class=sc5>Surface </span>backBuffer = <span class=prg>null;</span></b>
+Veja  que  tudo é superfície: a sprite, o backbuffer e a tela alvo da
+renderização. A sprite é a superfície a ser desenhada inicialmente no
+backubuffer que depois vai ser virado na superfície primária, a tela.
+
+<b><u>2.2 Inicializando o dispositivo gráfico</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+<b>
+ <span class=sc2>// Cria o dispositivo DirectDraw.Device</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>();  
+
+ <span class=sc2>// Configurando o nível de configuração: tela cheia exclusiva</span>
+ <span class=prg>device.SetCooperativeLevel</span>(<span class=prg>this</span>, <span class=prg>CooperativeLevelFlags.FullscreenExclusive</span>);  
+
+ <span class=sc2>// Verifica configuração atual do vídeo e reaplica-o em tela cheia</span>
+ <span class=sc5>SurfaceDescription </span>video_atual_descricao = <span class=prg>device.DisplayMode;</span>
+ xtela = <span class=prg>video_atual_descricao.Width;</span>
+ ytela = <span class=prg>video_atual_descricao.Height;</span>
+ <span class=prg>device.SetDisplayMode</span>(xtela, ytela, 32, <span class=sc4>0</span>, <span class=prg>false</span>);  
+
+ <span class=sc2>// Configura a superfície primária ( a tela )</span>
+ <span class=sc5>SurfaceDescription </span>tela_descricao = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>();  
+
+ <span class=sc2>// Define a superfície como primária, isto é, representa a memória</span>
+ <span class=sc2>// de vídeo imediata</span>
+ <span class=prg>tela_descricao.SurfaceCaps.PrimarySurface </span>= <span class=prg>true;</span>
+
+ <span class=sc2>// A 'tela ' vai receber o backbuffer virado sobre ela</span>
+ <span class=prg>tela_descricao.SurfaceCaps.Flip </span>= <span class=prg>true;</span>
+
+ <span class=sc2>// Complex quer dizer que a superfície vai conter outras</span>
+ <span class=sc2>// outras superfícies (backbuffers)</span>
+ <span class=prg>tela_descricao.SurfaceCaps.Complex </span>= <span class=prg>true;</span>
+ <span class=prg>tela_descricao.BackBufferCount </span>= 1; 
+
+ <span class=sc2>// Cria a superfície primária ( a tela )</span>
+ tela = <span class=prg>new </span><span class=sc5>Surface</span>(tela_descricao, device);  
+
+
+ <span class=sc2>// Obtém o backbuffer a partir da superfície primária</span>
+ <span class=sc5>SurfaceCaps </span>caps = <span class=prg>new </span><span class=sc5>SurfaceCaps</span>();  
+ <span class=prg>caps.BackBuffer </span>= <span class=prg>true;</span>
+ backBuffer = <span class=prg>tela.GetAttachedSurface</span>(caps);  
+
+ <span class=sc2>// Ignore as exceções geradas</span>
+ <span class=prg>DirectXException.IgnoreExceptions</span>();  
+
+ inicializarSprite();  
+
+ <span class=sc2>// Define posição inicial da sprite</span>
+ xcol = 320; 
+ ylin = 240; 
+
+ inicializarTeclado();  
+</b>
+<span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</div>
+<b><span class=sc2>// Cria o dispositivo DirectDraw.Device</span>
+device = <span class=prg>new </span><span class=sc5>Device</span>();</b>
+Aqui o dispositivo é criado facilmente; complicado é configurar.  
+
+<b><span class=sc2>// Configurando o nível de configuração: tela cheia exclusiva</span>
+<span class=prg>device.SetCooperativeLevel</span>(<span class=prg>this</span>, <span class=prg>CooperativeLevelFlags.FullscreenExclusive</span>); </b>
+Aqui é estabelecido o modo de cooperação aonde o dispositivo vai  ser
+tela cheia  e  que  por  conta disso o modo é exclusivo sem ocorrer o
+compartilhamento simultâneo do vídeo com outras aplicações.
+
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Verifica configuração atual do vídeo e reaplica-o em tela cheia</span>
+<span class=sc5>SurfaceDescription </span>video_atual_descricao = <span class=prg>device.DisplayMode;</span>
+xtela = <span class=prg>video_atual_descricao.Width;</span>
+ytela = <span class=prg>video_atual_descricao.Height;</span>
+<span class=prg>device.SetDisplayMode</span>(xtela, ytela, 32, <span class=sc4>0</span>, <span class=prg>false</span>);</b></div>
+Aqui obtemos a configuração do vídeo atual que na sequência é  usado 
+para configurar  o  dispositivo gráfico. O valor 32 (bits) refere-se
+a profundidade de cor; zero (0)  é  para  conseguir a melhor taxa de
+refrescamento  do  monitor  e <span class=prg>false</span> desliga o apoio a uma tecnologia
+de vídeo antiga, vesa, que não convém mais assimilar.
+
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Configura a superfície primária ( a tela )</span>
+<span class=sc5>SurfaceDescription </span>tela_descricao = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>();  
+
+<span class=sc2>// Define a superfície como primária, isto é, representa a memória</span>
+<span class=sc2>// de vídeo imediata</span>
+<span class=prg>tela_descricao.SurfaceCaps.PrimarySurface </span>= <span class=prg>true;</span>
+
+<span class=sc2>// A 'tela ' vai receber o backbuffer virado sobre ela</span>
+<span class=prg>tela_descricao.SurfaceCaps.Flip </span>= <span class=prg>true;</span>
+
+<span class=sc2>// Complex quer dizer que a superfície vai conter </span>
+<span class=sc2>// outras superfícies (backbuffers) atreladas</span>
+<span class=prg>tela_descricao.SurfaceCaps.Complex </span>= <span class=prg>true;</span>
+<span class=prg>tela_descricao.BackBufferCount </span>= 1; 
+
+<span class=sc2>// Cria a superfície primária ( a tela )</span>
+tela = <span class=prg>new </span><span class=sc5>Surface</span>(tela_descricao, device);</b></div> 
+Todo esse bloco de código é para configurar a tela. Veja que é criado
+um  objeto  aonde  as características da superfície são descritas que
+depois é passado para a função <b class=prg>Surface()</b> junto com o dispositivo para
+obtermos enfim a superfície primária.
+
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Obtém o backbuffer a partir da superfície primária</span>
+<span class=sc5>SurfaceCaps </span>caps = <span class=prg>new </span><span class=sc5>SurfaceCaps</span>();  
+<span class=prg>caps.BackBuffer </span>= <span class=prg>true;</span>
+backBuffer = <span class=prg>tela.GetAttachedSurface</span>(caps); </b></div>
+Aqui é configurado e obtido o acesso ao backbuffer atrelado  à  tela.
+
+
+<b><span class=sc2>// Ignore as exceções geradas</span>
+<span class=prg>DirectXException.IgnoreExceptions</span>();</b>
+Esta linha desliga a ocorrência de exceções  do  DirectX  sobre  esta
+aplicação.   No  DirectDraw  é  uma  exceção  quando  a sprite atinge
+coordenadas que estão fora da tela visível.  Este aspecto no Direct3D
+não é  problema  visto que o mundo 3D se expande ao infinito em todas
+as direções dos eixos (x,y,z). Também é uma exceção  desenhar na tela 
+quando esta não está pronta para receber o desenho. O Direct3D também
+gerencia  esse  aspecto  dispensando  a renderização que não pode ser
+aplicada no  dispositivo gráfico. Essa linha de código é  conveniente
+apenas  nesta  aplicação  de exemplo mas é ruim em grandes aplicações
+porque que ela desliga a ocorrência de <b>todas</b> as exceções do DirectX.
+
+<b>inicializarSprite();</b>
+Essa função inicializa a superfície que traz a imagem que representa
+o 'jogador' na tela. Vai ser detalhada logo mais. 
+ 
+<b><span class=sc2>// Define posição inicial da sprite</span>
+xcol = 320; ylin = 240; </b>
+Estas coordenadas vão ser modificadas pelas setas e movimentarão assim
+a sprite.
+
+<b><u>2.3 Inicialzando a sprite</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarSprite() 
+<span class=sc16>{</span>
+ <span class=sc2>// Diretório base de imagens</span>
+ <span class=prg>string </span>diretorioBase = <span class=sc6>@"c:\gameprog\gdkmedia\bitmap\";</span>
+
+ <span class=sc2>// Cria um objeto 'descrição de superfície'</span>
+ <span class=sc5>SurfaceDescription </span>desc = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>();  
+
+ <span class=sc2>// Cria a superfície bitmap a partir de uma imagem</span>
+ g_sprite = <span class=prg>new </span><span class=sc5>Surface</span>(diretorioBase + <span class=sc6>"logo.bmp"</span>, desc, device);  
+
+ <span class=sc2>// Faz um recorte da área a ser desenhada; nesse caso a textura toda</span>
+ g_recorte = <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+ <span class=sc2>// Indica a cor transparente (color key) da sprite</span>
+ ColorKey ck = <span class=prg>new </span>ColorKey();  
+ <span class=prg>g_sprite.SetColorKey</span>(<span class=prg>ColorKeyFlags.SourceDraw</span>, ck);  
+
+<span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+</div>
+<b><span class=sc2>// Cria um objeto 'descrição de superfície'</span>
+<span class=sc5>SurfaceDescription </span>desc = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>(); </b>
+Este objeto vai ser preenchido pela função <span class=prg>Surface()</span> com os dados da
+imagem que vai ser carregada por ela.
+
+<b><span class=sc2>// Cria a superfície bitmap a partir de uma imagem</span><
+g_sprite = <span class=prg>new </span><span class=sc5>Surface</span>(diretorioBase + <span class=sc6>"logo.bmp"</span>, desc, device);</b> 
+Aqui  a superfície <b>g_sprite</b> é de fato inicializada  com  uma  imagem
+carregada do disco. Utilize arquivos do tipo .bmp com tamanho padrão
+de texturas 64x64, 128x128 etc ou seja potência da base 2.O Direct3D
+não tem essa limitação no tocante ao tamanho  da  imagem  mas  ainda 
+assim  esses  tamanhos padrões  melhoram a performance da aplicação.
+A  sprite do Direct3D pode ser composta pelo tipos padrões de imagem
+png, tga, bmp, dds ou jpg.
+
+<b><span class=sc2>// Indica a cor transparente (color key) da sprite</span>
+ColorKey ck = <span class=prg>new </span>ColorKey();  
+<span class=prg>g_sprite.SetColorKey</span>(<span class=prg>ColorKeyFlags.SourceDraw</span>, ck); </b>
+Aqui é configurada a <span class=prg>ColorKey</span> que indica a cor transparente da imagem.
+Esse  efeito  é  mais  pobre que o efeito correspondente do Direct3D
+visto  que aqui a cor transparente configurada não deve ser usada ao
+longo da imagem.  Neste exemplo,  a colorkey não foi evidenciada mas
+é  o  preto por default. Nossa imagem do exemplo tem fundo preto que
+não é mostrado na renderização.
+
+<b><u>2.4 Renderizando a sprite</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+<b>
+verificarTeclado();  
+<span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+</b>
+<span class=sc2>// Preenche de branco o backbuffer</span>
+<span class=prg>backBuffer.ColorFill</span>(0xFFFFFF);  
+
+<span class=sc2>// Mostra a coordenada da sprite na tela</span>
+<span class=prg>string </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, xcol, ylin);  
+<span class=prg>backBuffer.DrawText</span>(10, 10, info, <span class=prg>false</span>);  
+
+<span class=sc2>// Desenha a sprite</span>
+<span class=prg>backBuffer.DrawFast</span>(xcol, ylin, g_sprite, g_recorte, 
+<span class=prg>DrawFastFlags.DoNotWait </span>| <span class=prg>DrawFastFlags.SourceColorKey</span>);  
+
+<span class=sc2>// Vira o backbuffer para a tela</span>
+<span class=prg>tela.Flip</span>(backBuffer, <span class=prg>FlipFlags.DoNotWait</span>);  
+
+<span class=sc2>// Libera a janela para processar outros eventos</span>
+<span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div>
+<b><span class=sc2>// Preenche de branco o backbuffer</span>
+<span class=prg>backBuffer.ColorFill</span>(0xFFFFFF); </b>
+Aqui o backbuffer é totalmente preenchido de branco.
+
+<b><span class=sc2>// Desenha a sprite</span>
+<span class=prg>backBuffer.DrawFast</span>(xcol, ylin, g_sprite, g_recorte, 
+<span class=prg>DrawFastFlags.DoNotWait </span>| <span class=prg>DrawFastFlags.SourceColorKey</span>); </b>
+O método <span class=prg>DrawFast()</span> desenha a sprite o mais rápido possível. Poderia
+ter  sido  usado  aqui  o  método <span class=prg>Draw()</span> sem perda de performance em
+ambientes com aceleração gráfica e que apresenta mais funcionalidades.
+
+<b><span class=sc2>// Vira o backbuffer para a tela</span>
+<span class=prg>tela.Flip</span>(backBuffer, <span class=prg>FlipFlags.DoNotWait</span>); </b>
+Aqui ocorre a apresentação da cena: o backbuffer é virado sobre a
+superfície primária, a <b>tela</b>.
+
+<b><u>4. Código fonte do projeto de exemplo:prj_Sprite02</u></b>
+<div class=prg-code>
+<img src=images\prj_Sprite02.png>
+
+<span class=sc2>// prj_Sprite02 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como desenhar sprites via DirectDraw</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.DirectDraw;</span>
+<span class=sc16>using </span>DirectInput = <span class=prg>Microsoft.DirectX.DirectInput;</span>
+
+<span class=sc16>namespace </span>prj_Sprite02 
+<span class=sc16>{</span>
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Variável para criação do dispositivo de gerenciamento teclado</span>
+    <span class=prg>private </span><span class=prg>DirectInput.Device </span>teclado = <span class=prg>null;</span>
+
+    <span class=sc2>// Para criação do dispositivo gráfico DirectDraw.Device</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// A tecla Escape terminará a aplicação</span>
+    <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+    <span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+    <span class=prg>int </span>xtela = 0; 
+    <span class=prg>int </span>ytela = 0; 
+
+    <span class=sc2>// Coordenadas (xcol, ylin) para movimentação da sprite</span>
+    <span class=prg>int </span>xcol = 0; 
+    <span class=prg>int </span>ylin = 0; 
+
+    <span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+    <span class=sc2>// na tela</span>
+    <span class=sc2>// O objeto sprite em si</span>
+    <span class=prg>private </span><span class=sc5>Surface </span>g_sprite = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Surface </span>tela = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Surface </span>backBuffer = <span class=prg>null;</span>
+
+    <span class=sc2>// Esse retângulo indica a área a ser desenhada da sprite</span>
+    <span class=sc2>// Isso permite produzir animações recortando partes diferentes da</span>
+    <span class=sc2>// sprite</span>
+    <span class=prg>private </span><span class=sc5>Rectangle </span>g_recorte; 
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>	
+	
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria o dispositivo DirectDraw.Device</span>
+      device = <span class=prg>new </span><span class=sc5>Device</span>();  
+
+      <span class=sc2>// Configurando o nível de configuração: tela cheia exclusiva</span>
+      <span class=prg>device.SetCooperativeLevel</span>(<span class=prg>this</span>, <span class=prg>CooperativeLevelFlags.FullscreenExclusive</span>);  
+
+      <span class=sc2>// Verifica configuração atual do vídeo e reaplica-o em tela cheia</span>
+      <span class=sc5>SurfaceDescription </span>video_atual_descricao = <span class=prg>device.DisplayMode;</span>
+      xtela = <span class=prg>video_atual_descricao.Width;</span>
+      ytela = <span class=prg>video_atual_descricao.Height;</span>
+      <span class=prg>device.SetDisplayMode</span>(xtela, ytela, 32, <span class=sc4>0</span>, <span class=prg>false</span>);  
+
+      <span class=sc2>// Configura a superfície primária ( a tela )</span>
+      <span class=sc5>SurfaceDescription </span>tela_descricao = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>();  
+
+      <span class=sc2>// Define a superfície como primária, isto é, representa a memória</span>
+      <span class=sc2>// de vídeo imediata</span>
+      <span class=prg>tela_descricao.SurfaceCaps.PrimarySurface </span>= <span class=prg>true;</span>
+
+      <span class=sc2>// A 'tela ' vai receber o backbuffer virado sobre ela</span>
+      <span class=prg>tela_descricao.SurfaceCaps.Flip </span>= <span class=prg>true;</span>
+
+      <span class=sc2>// Complex quer dizer que a superfície vai conter outras</span>
+      <span class=sc2>// outras superfícies (backbuffers)</span>
+      <span class=prg>tela_descricao.SurfaceCaps.Complex </span>= <span class=prg>true;</span>
+      <span class=prg>tela_descricao.BackBufferCount </span>= 1; 
+
+      <span class=sc2>// Cria a superfície primária ( a tela )</span>
+      tela = <span class=prg>new </span><span class=sc5>Surface</span>(tela_descricao, device);  
+
+      <span class=sc2>// Obtém o backbuffer a partir da superfície primária</span>
+      <span class=sc5>SurfaceCaps </span>caps = <span class=prg>new </span><span class=sc5>SurfaceCaps</span>();  
+      <span class=prg>caps.BackBuffer </span>= <span class=prg>true;</span>
+      backBuffer = <span class=prg>tela.GetAttachedSurface</span>(caps);  
+
+      <span class=sc2>// Ignore as exceções geradas</span>
+      <span class=prg>DirectXException.IgnoreExceptions</span>();  
+
+      inicializarSprite();  
+
+      <span class=sc2>// Define posição inicial da sprite</span>
+      xcol = 320; 
+      ylin = 240; 
+
+      inicializarTeclado();  
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>inicializarSprite() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Diretório base de imagens</span>
+      <span class=prg>string </span>diretorioBase = <span class=sc6>@"c:\gameprog\gdkmedia\bitmap\";</span>
+
+      <span class=sc2>// Cria um objeto 'descrição de superfície'</span>
+      <span class=sc5>SurfaceDescription </span>desc = <span class=prg>new </span><span class=sc5>SurfaceDescription</span>();  
+
+      <span class=sc2>// Cria a superfície bitmap a partir de uma imagem</span>
+      g_sprite = <span class=prg>new </span><span class=sc5>Surface</span>(diretorioBase + <span class=sc6>"logo.bmp"</span>, desc, device);  
+
+      <span class=sc2>// Faz um recorte da área a ser desenhada; nesse caso a textura toda</span>
+      g_recorte = <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+      <span class=sc2>// Indica a cor transparente (color key) da sprite</span>
+      ColorKey ck = <span class=prg>new </span>ColorKey();  
+      <span class=prg>g_sprite.SetColorKey</span>(<span class=prg>ColorKeyFlags.SourceDraw</span>, ck);  
+
+    <span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+	
+	
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      verificarTeclado();  
+      <span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+
+      <span class=sc2>// Preenche de branco o backbuffer</span>
+      <span class=prg>backBuffer.ColorFill</span>(0xFFFFFF);  
+
+      <span class=sc2>// Mostra a coordenada da sprite na tela</span>
+      <span class=prg>string </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, xcol, ylin);  
+      <span class=prg>backBuffer.DrawText</span>(10, 10, info, <span class=prg>false</span>);  
+
+      <span class=sc2>// Desenha a sprite</span>
+      <span class=prg>backBuffer.DrawFast</span>(xcol, ylin, g_sprite, g_recorte, 
+        <span class=prg>DrawFastFlags.DoNotWait </span>| <span class=prg>DrawFastFlags.SourceColorKey</span>);  
+
+      <span class=sc2>// Vira o backbuffer para a tela</span>
+      <span class=prg>tela.Flip</span>(backBuffer, <span class=prg>FlipFlags.DoNotWait</span>);  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+	
+	
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      Renderizar();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+	
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarTeclado() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria o dispositivo de gerenciamento do teclado</span>
+      teclado = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>DirectInput.SystemGuid.Keyboard</span>);  
+
+      <span class=sc2>// Configura nível de cooperação</span>
+      <span class=prg>teclado.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+        <span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+           <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+      <span class=sc2>// Adquire o teclado</span>
+      <span class=prg>teclado.Acquire</span>();  
+
+    <span class=sc16>} <span class=sc2>// inicializarTeclado().fim</span></span>
+
+
+    <span class=prg>void </span>verificarTeclado() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Variáveis para guardar o estado das teclas</span>
+      <span class=prg>int </span>seta_esquerda = 0; 
+      <span class=prg>int </span>seta_direita = 0; 
+      <span class=prg>int </span>seta_cima = 0; 
+      <span class=prg>int </span>seta_abaixo = 0; 
+
+      <span class=prg>DirectInput.Key</span>[] teclasPressionadas = <span class=prg>teclado.GetPressedKeys</span>();  
+	  
+      <span class=sc2>// Verifica teclado e atualiza teclas de estado</span>
+      <span class=prg>foreach </span>(<span class=prg>DirectInput.Key </span>tecla <span class=prg>in </span>teclasPressionadas) 
+      <span class=sc16>{</span>
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.DownArrow</span>)  seta_abaixo = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.UpArrow</span>)  seta_cima = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.LeftArrow</span>)  seta_esquerda = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightArrow</span>)  seta_direita = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightShift</span>)  xcol = 320; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightShift</span>)  ylin = 240; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.Escape</span>)  terminar = <span class=prg>true;</span>
+      <span class=sc16>} <span class=sc2>// endfor each</span></span>
+
+      <span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+      <span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>)  ylin += 5; 
+      <span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>)  ylin -= 5; 
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  xcol -= 5; 
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  xcol += 5; 
+
+      <span class=sc2>// Processa a tecla Escape</span>
+      <span class=sc9>if </span>(terminar) 
+      <span class=sc16>{</span>
+        <span class=prg>device.Dispose</span>();  
+        <span class=prg>teclado.Dispose</span>();  
+        <span class=prg>this.Close</span>();  
+        <span class=prg>Application.Exit</span>();  
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc16>} <span class=sc2>// AtualizarTeclado()</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track06-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

@@ -1,0 +1,370 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase18-2</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 18.2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track18-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track19-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">18.2 Terreno simples</h3><pre>
+<b><u>1.1 Construindo um terreno simples</b></u>
+<img src="images\terrain01-struct.png">
+
+Bem, agora vamos conhecer melhor as funções que possibilitaram a construção
+do terreno acima que fizemos esforço para parecer-se com um campo de futebol.
+
+
+<b class=prg>dbSetupTerrain();
+void dbSetupTerrain ( void );</b>
+Essa função inicializa o processo de criação do terreno, realizando processos
+internos. Você deve começar sempre o processo de criação com essa função e 
+aplicar as outras funções numa ordem lógica para obter o resultado correto.
+---------------------------------------------------------------------------
+
+
+<b class=prg>dbMakeObjectTerrain( nTerreno )
+void  dbMakeObjectTerrain( int iID ); </b>	
+Essa função registra um handle de identificação para o terreno que deverá ser
+utilizado em funções subsequentes para manipulá-lo.
+---------------------------------------------------------------------------
+
+
+<b class=prg>dbSetTerrainHeightMap( nTerreno, sArquivoMapa)
+void  dbSetTerrainHeightMap ( int iID, char* dwHeightMap ); </b>
+Essa função configura o mapa de altura no terreno especificado. Para melhor
+resultado utilize uma imagem formato BMP a partir de 8 bits (256 cores),
+tamanho 256x256 com tons entre o preto e o branco. Lembrando que o branco
+e o preto representam respectivamente a elevação máxima e nenhuma elevação
+com os diversos tons de cinza ocasionando alturas diversas.
+
+Exemplo: <font color="darkblue">
+// Determinando o mapa de altura
+<b>dbSetTerrainHeightMap ( nTerreno, "mapa_altura.bmp" );</b> </font>
+<img src="images\terrain01-altura-info.png">	
+---------------------------------------------------------------------------
+
+
+
+<b class=prg>dbSetTerrainTexture(nTerreno, nImagemCor, nImagemDetalhe);
+void dbSetTerrainTexture( int iID, int iBase, int iDetail );</b>
+Essa função define a imagem de difusão e a imagem de detalhe do terreno
+especificado. 
+
+Veja na ilustração abaixo que a imagem de cor é projetada sobre o terreno 
+imprimindo ao mesmo tempo sua cor e seu desenho sobre ele. 
+
+A imagem de detalhe dá textura ao ao terreno replicando-se em cada segmento
+do mesmo. Sem essa imagem de detalhe o terreno fica com um aspecto liso.
+<img src="images\terrain01-textures.png">
+Nosso exemplo não replica exatamente as cores  do  mapa  de  cor  porque 
+projetamos uma luz esverdeada sobre o terreno para reforçar  o  verde  do
+gramado e dessa forma as demais cores também sofrem esse efeito esverdeante 
+da luz.
+	
+Veja abaixo o cenário de uso da função <b>dbSetTerrainTexture()</b>: <font color="darkblue">
+<div style="border:solid 2px lightgray; width:630px;">
+// (...) procedimentos anteriores necessários...
+// Vamos nomear os números para ficar mais legível nosso programa 
+#define nTerreno	1	// identificação do terreno sendo trabalhado
+#define img_textura	1	// textura ou mapa de cor do terreno
+#define img_detalhe	2	// textura de detalhamento 
+
+// Carregando as imagens de trabalho
+dbSetDir("c:\\gameprog\\gdkmedia\\bitmap");
+dbLoadImage ( "mapa_cor.jpg", img_textura ); 
+dbLoadImage ( "detalhes.jpg", img_detalhe ); 
+
+// Determinando a textura difusa e a textura de detalhe
+<b>dbSetTerrainTexture ( nTerreno, img_textura, img_detalhe );</b></div> </font>	
+---------------------------------------------------------------------------
+
+<b class=prg>dbSetTerrainScale(nTerreno, sx, sy, sz);
+void  dbSetTerrainScale ( int iID, float fXScale, float fYScale, float fZScale );</b>
+Essa função aplica uma merecida escala no terreno. Use essa função para 
+expandir o tamanho do terreno pelos três eixos. 
+
+Exemplo: <font color="darkblue">	
+// (...) procedimentos anteriores necessários...
+// Vamos nomear os números para ficar mais legível nosso programa 
+#define nTerreno 1 // identificação do terreno sendo trabalhado
+
+// Vamos ajustar a escala do terreno
+// ...mais largo no eixo X e Z; menor no eixo Y
+float escala_x, escala_y, escala_z;
+escala_x = 3.0f; escala_y = 0.6f; escala_z = 3.0f;
+<b>dbSetTerrainScale ( nTerreno, escala_x, escala_y, escala_z ); </b></font>	
+---------------------------------------------------------------------------
+
+<b class=prg>dbSetTerrainLight ( nTerreno, xluzdir, yluzdir, zluzdir, 
+			luzred, luzgreen, luzblue, luz_intensidade ); 
+
+void  dbSetTerrainLight ( int iID, float fX, float fY, float fZ,
+			float fRed, float fGreen, float fBlue, float fScale );</b>
+Essa função define cor, direção e a intesidade da luz sobre o terreno.
+
+Exemplo: <font color="darkblue">	
+// (...) procedimentos anteriores necessários...
+// Vamos nomear os números para ficar mais legível nosso programa 
+#define nTerreno 1 // identificação do terreno sendo trabalhado
+
+// Ajustando a iluminação do terreno com uma luz esverdeante
+float xdir, ydir, zdir;
+float red, green, blue, intensidade;
+xdir = 1.0f;	ydir = -0.25f;	zdir = 0.0f;
+red = 0.55f;	green = 1.0f;	blue = 0.0f;
+intensidade = 0.2f;<b>
+dbSetTerrainLight ( nTerreno, xdir, ydir, zdir, 
+			red, green, blue, intensidade ); </b></font>	
+---------------------------------------------------------------------------
+
+
+<b class=prg>dbBuildTerrain(nTerreno);
+void  dbBuildTerrain ( int iID );</b>
+Essa função constrói o terreno e mostra-o na tela. Essa função deve fechar
+o bloco de funções de terreno.
+---------------------------------------------------------------------------
+
+
+<b class=prg>dbUpdateTerrain();
+void  dbUpdateTerrain ( void );</b>
+Essa função atualiza os dados internos do terreno permitindo assim uma
+renderização atualizada do mesmo. Você deve usar essa função antes de
+<b>dbSync().</b>
+--------------------------------------------------------------------------- 
+
+<hr><!--------------------------------------------------------------------->
+<b><u>1.2 Programa exemplo</b></u>	
+
+Veja agora o programa exemplo integralmente:
+	
+<div class=prg-code>
+<img src="images\terrain01-struct.png">
+// terrain01.cpp - Esse programa mostra como construir um simples terreno
+#include "DarkGDK.h" 
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">construir_terreno</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">   </span><span class="sc2">// configura e mostra o terreno
+</span><span class="sc0">
+</span><span class="sc2">// Faz a leitura do teclado e atualiza a visualização
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualizar_visao</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">     
+
+</span><span class="sc9">#define nTerreno        1       </span><span class="sc2">// handle do terreno
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">construir_terreno</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Ajustando a camera
+</span><span class="sc0">  </span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">385</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">23</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc0">  </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> 
+</span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc11">atualizar_visao</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Atualize a tela
+</span><span class="sc0">    </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+
+</span><span class="sc10"> }</span><span class="sc2">// endwhile
+</span><span class="sc10">}</span><span class="sc2">// endfunction: darkgdk
+</span><span class="sc0">
+</span><span class="sc2">//-----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbSyncOn</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">60</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"terrain01.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc2">// endfunction: initsys()
+</span><span class="sc0">
+
+</span><span class="sc2">//-----------------------------------------------------------------------------</span>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">construir_terreno</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Vamos nomear os números para ficar mais legível nosso programa 
+</span><span class="sc0"></span><span class="sc9">#define img_textura     1       </span><span class="sc2">// textura ou mapa de cor do terreno
+</span><span class="sc0"></span><span class="sc9">#define img_detalhe     2       </span><span class="sc2">// textura de detalhamento 
+</span><span class="sc0">
+
+</span><span class="sc2">// Carregando as imagens de trabalho
+</span><span class="sc0"></span><span class="sc11">dbSetDir</span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\bitmap"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"mapa_cor.jpg"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">img_textura</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"detalhes.jpg"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">img_detalhe</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// inicializando o processo de construção de terreno
+</span><span class="sc0"></span><span class="sc11">dbSetupTerrain</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Obtendo o handle para o terreno
+</span><span class="sc0"></span><span class="sc11">dbMakeObjectTerrain</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Determinando o mapa de altura
+</span><span class="sc0"></span><span class="sc11">dbSetTerrainHeightMap</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"mapa_altura.bmp"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Ajustando a escala do terreno
+</span><span class="sc0"></span><span class="sc2">// Mais largo no eixo X e Z; menor no eixo Y
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">escala_x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">escala_y</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">escala_z</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">escala_x</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3.0f</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">escala_y</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.6f</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">escala_z</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSetTerrainScale</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">escala_x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">escala_y</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">escala_z</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Ajustando a iluminação do terreno
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xdir</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ydir</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zdir</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">red</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">green</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">blue</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">intensidade</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">xdir</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc11">ydir</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">0.25f</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc11">zdir</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">red</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.55f</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc11">green</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">   </span><span class="sc11">blue</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">intensidade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.2f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSetTerrainLight</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xdir</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ydir</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zdir</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">red</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">green</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">blue</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">intensidade</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Determinando a textura difusa e a textura de detalhe
+</span><span class="sc0"></span><span class="sc11">dbSetTerrainTexture</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">img_textura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">img_detalhe</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Tudo pronto, agora mostre o terreno
+</span><span class="sc0"></span><span class="sc11">dbBuildTerrain</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc10">}</span><span class="sc2">// endfunction: construir_terreno()
+</span><span class="sc0"></span>
+<span class="sc2">//-----------------------------------------------------------------------------</span>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">atualizar_visao</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Vamos controlar a camera com as setas
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">nVelocidade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">nVelocidadeGiroLateral</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nCamera</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// Camera default
+</span><span class="sc0"></span><span class="sc11">dbControlCameraUsingArrowKeys</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nCamera</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVelocidade</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVelocidadeGiroLateral</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">            
+
+</span><span class="sc2">// Encontre a altura do terreno na posição da camera
+</span><span class="sc0"></span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">xcam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbCameraPositionX</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">zcam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbCameraPositionZ</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbGetTerrainGroundHeight</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nTerreno</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">);</span><span class="sc0">    
+
+</span><span class="sc2">// Vamos recolocar a camera um pouco acima do chão 
+</span><span class="sc0"></span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">10.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">xcam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zcam</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Atualize o terreno
+</span><span class="sc0"></span><span class="sc11">dbUpdateTerrain</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: atualizar_visao()</span></div>			
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track18-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track19-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

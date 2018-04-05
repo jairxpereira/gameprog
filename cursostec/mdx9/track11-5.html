@@ -1,0 +1,684 @@
+﻿<html>
+<head>
+<title>mdx9_fase11-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 11-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>11.5 Simplificação com a classe SimplificationMesh  </h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_MeshSimplificado.png></div>
+O objeto da classe <b class=prg>SimplificationMesh</b> é uma ferramenta que simplifica
+o modelo 3d através da redução de faces e vértices.   Esse objeto não
+é  renderizável  sendo  necessário  utilizar  seu  método <span class=prg>Clone()</span> que 
+retorna um mesh simplificado e renderizável.  Antes  do  processo  de
+simplificação é necessário coletar informação de adjacências e limpar
+o modelo 3d como já vimos no <b>tópico 11.3</b> desse capítulo.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_MeshSimplificado.png></div>
+Esta aplicação mostra um modelo 3d e uma versão simplificada do mesmo.
+Pressione <b>W</b> para ligar ou desligar o modo de  renderização  wireframe.
+A base inicial dessa aplicação é o <b>prj_Modelo3d</b> do <b>tópico 4.4</b> que foi
+adaptado para este tópico corrente.A função <b>gerarModeloSimplificado()</b>
+foi alterada para realizar o trabalho de simplificação com os métodos
+de redução de faces e vértices do objeto da classe <b class=prg>SimplificationMesh.</b>
+
+Antes da aplicação do processo de simplificação ocorre um processo de
+limpeza  do  mesh  no  qual  o  motor  do DirectX expande os vértices
+compartilhados  em  primitivas  com  a  formação de <b>TriangleFan</b> vista
+no <b>tópico 4.1</b> .Antes do processo de limpeza, o método que  carrega  o
+modelo <b class=prg>Mesh.FromFile()</b> retorna a informação de adjacências que indica
+'quem é vizinho de quem' do ponto de vista das faces  do  mesh;  esta
+informação  de  adjacências  é  colocada  na  variável  <b>adj</b>  do  tipo
+<b class=prg>GraphicsStream</b> e é utilizada na função <b>gerarModeloSimplificado()</b>.
+
+<b><u>2.1 Campos da classe (*)</u></b>
+Segue abaixo a listagem das variáveis da classe.
+
+<i>(*) <b>Campo</b> é o nome  técnico  do  vocabulário  da  Microsoft  para  as
+ variáveis  da  classe  e  outros  componentes como  as  propriedades.</i>
+
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+ <b>
+ <span class=sc2>// Variáveis para guardar as malhas 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>mesh_limpo = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>mesh_simplificado = <span class=prg>null;</span>
+
+ <span class=sc2>// Informação de adjacências</span>
+ <span class=sc5>GraphicsStream </span>adj; 
+
+ <span class=sc2>// Controla o modo de preenchimento da renderização</span>
+ <span class=prg>bool </span>bWireframe = <span class=prg>false;</span>
+  </b>
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para propriedade dos objetos</span>
+ Propriedades3D g_props; 
+
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+</div>
+
+<b><u>2.2 Inicialização da aplicação</u></b>
+Segue abaixo a listagem da função <b>initGfx().</b>
+
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Ativando o buffer de profundidade</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+  <b>
+ <span class=sc2>// Carrega o modelo e gera a versão simplificada</span>
+ diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+ CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+ gerarModeloSimplificado(); </b>  
+
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.3 Carregando o modelo</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+<span class=sc16>{</span>
+ <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+ <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+ <span class=sc2>// Composição do nome final do arquivo</span>
+ <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+ <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+ <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+ <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+ <span class=prg>int </span>nTam = 0; 
+ <b>
+ <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+ <span class=sc2>// e informação de adjacências</span>
+ objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+ device, <span class=prg>out </span>adj, <span class=prg>out </span>xMtl);   </b>
+
+ <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+ nTam = <span class=prg>xMtl.Length;</span>
+
+ <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+ <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+ <span class=sc16>{</span>
+
+ <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+ g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+ g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+ <span class=sc16>{</span>
+   <span class=sc2>// Carrega materiais</span>
+   g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+   <span class=sc2>// Carrega texturas</span>
+   arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+   <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+    <span class=sc16>{</span>
+	  g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+	    diretorioBase + arquivo_textura);  
+    <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+   <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+ <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+<span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+</div> <b>
+<span class=sc2>// Carrega modelo 3d com suas texturas e materiais e</span>
+<span class=sc2>// informação de adjacências</span>
+objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+ device, <span class=prg>out </span>adj, <span class=prg>out </span>xMtl);  </b>
+O grande destaque aqui é que  a  função  <span class=prg>Mesh.FromFile()</span>  preenche  a 
+variável <b>adj</b> com informação de adjacências necessária para o processo
+de limpeza. 
+
+<b><u>2.4 Gerando o modelo simplificado</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>gerarModeloSimplificado() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpeza do objeto 3d</span>
+ mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  
+
+ <span class=sc2>// Geração do objeto simplificador de mesh</span>
+ <span class=sc5>SimplificationMesh </span>simplificador = <span class=prg>new </span><span class=sc5>SimplificationMesh</span>(mesh_limpo, adj);  
+
+ <span class=sc2>// Aumenta simplificação do mesh conforme aumenta distância</span>
+ <span class=prg>int </span>nDistancia = 2500; 
+ <span class=prg>simplificador.ReduceFaces</span>(<span class=prg>objeto3D.NumberFaces </span>- nDistancia);  
+ <span class=prg>simplificador.ReduceVertices</span>(<span class=prg>objeto3D.NumberVertices </span>- nDistancia);  
+
+ <span class=sc2>// Produz finalmente o mesh simplificado</span>
+ mesh_simplificado = <span class=prg>simplificador.Clone</span>(<span class=prg>simplificador.Options.Value</span>, 
+  <span class=prg>simplificador.VertexFormat</span>, device);  
+
+<span class=sc16>} <span class=sc2>// gerarModeloSimplificado().fim</span></span>
+</div><b>
+<span class=sc2>// Limpeza do objeto 3d</span>
+mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  </b>
+Produz um modelo limpo. Este processo aumenta o  número  de  vértices
+porque  cria  um  vértice  a mais quando há  duas  tiras  de formação
+<i>triangleFan</i> compartilhando o mesmo vértice.
+
+<b><span class=sc2>// Geração do objeto simplificador de mesh</span>
+<span class=sc5>SimplificationMesh </span>simplificador = <span class=prg>new </span><span class=sc5>SimplificationMesh</span>(mesh_limpo, adj); </b>
+Com este código  criamos  um  objeto  simplificador  de  modelos  3d,
+<b>simplificador</b>,  nos quais os métodos <span class=prg>ReduceFaces()</span> e <span class=prg>ReduceVertices()</span>
+farão o trabalho de redução de faces e vértices do objeto 3d.
+<b>
+<span class=sc2>// Aumenta a simplificação do mesh conforme aumenta a distância</span>
+<span class=prg>int </span>nDistancia = 2500; 
+<span class=prg>simplificador.ReduceFaces</span>    (<span class=prg> objeto3D.NumberFaces    </span>- nDistancia );  
+<span class=prg>simplificador.ReduceVertices</span> (<span class=prg> objeto3D.NumberVertices </span>- nDistancia ); </b>  
+Esse código mostra um bom contexto de uso dos métodos <span class=prg>ReduceFaces()</span> e
+<span class=prg>ReduceVertices()</span> que aumentam a intensidade da simplificação conforme
+se aumenta a <b>distância</b> do objeto 3d original (<b>objeto3D</b>)  na  cena.  A
+propriedade  <span class=prg>Numberfaces</span>  retorna  o número de faces e <span class=prg>NumberVertices</span>
+retorna o número de vértices.
+
+<b><span class=sc2>// Produz finalmente o mesh simplificado</span>
+mesh_simplificado = <span class=prg>simplificador.Clone</span>(<span class=prg>simplificador.Options.Value</span>, 
+  <span class=prg>simplificador.VertexFormat</span>, device);</b>
+Essa linha de  código  finalmente  produz  o  modelo  simplificado  e
+renderizável  com a conservação das configurações originais do modelo
+3d tais como o formato de vértice.   
+
+<b><u>3. Código fonte do projeto de exemplo:prj_MeshSimplificado</u></b>
+<div class=prg-code>
+<img src=images\prj_MeshSimplificado.png>
+
+<span class=sc2>// prj_MesheSimplificado - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como simplificar um modelo 3d</span>
+<span class=sc2>// com a classe SimplificationMesh</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_MesheSimplificado 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação e cor</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variáveis para guardar as malhas 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>mesh_limpo = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>mesh_simplificado = <span class=prg>null;</span>
+
+    <span class=sc2>// Informação de adjacências</span>
+    <span class=sc5>GraphicsStream </span>adj; 
+
+    <span class=sc2>// Controla o modo de preenchimento da renderização</span>
+    <span class=prg>bool </span>bWireframe = <span class=prg>false;</span>
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesh e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para propriedade dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=sc2>// (...)</span>
+
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+        device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Carrega o modelo e gera a versão simplificada</span>
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+      gerarModeloSimplificado();  
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+      <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      <span class=sc2>// e informação de adjacências</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+       device, <span class=prg>out </span>adj, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Carrega texturas</span>
+          arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+          <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+          <span class=sc16>{</span>
+            g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+              diretorioBase + arquivo_textura);  
+          <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>gerarModeloSimplificado() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpeza do objeto 3d</span>
+      mesh_limpo = <span class=prg>Mesh.Clean</span>(objeto3D, adj, adj);  
+
+      <span class=sc2>// Geração do objeto simplificador de mesh</span>
+      <span class=sc5>SimplificationMesh </span>simplificador = <span class=prg>new </span><span class=sc5>SimplificationMesh</span>(mesh_limpo, adj);  
+
+      <span class=sc2>// Aumenta simplificação do mesh conforme aumenta distância</span>
+      <span class=prg>int </span>nDistancia = 2500; 
+      <span class=prg>simplificador.ReduceFaces</span>(<span class=prg>objeto3D.NumberFaces </span>- nDistancia);  
+      <span class=prg>simplificador.ReduceVertices</span>(<span class=prg>objeto3D.NumberVertices </span>- nDistancia);  
+
+      <span class=sc2>// Produz finalmente o mesh simplificado</span>
+      mesh_simplificado = <span class=prg>simplificador.Clone</span>(<span class=prg>simplificador.Options.Value</span>, 
+          <span class=prg>simplificador.VertexFormat</span>, device);  
+
+    <span class=sc16>} <span class=sc2>// gerarModeloSimplificado().fim</span></span>
+
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Essa variável foi modificada para acomodar o tamanho</span>
+      <span class=sc2>// do modelo</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>5000.0f;</span>
+
+      <span class=sc2>// Atualiza ângulo para dar movimento ao objeto 3d</span>
+      angulo += <span class=sc4>0.02f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc2>// O eixo z foi modificado para comportar o tamanho do modelo</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>600.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, 
+        cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+        <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+
+      AtualizarCamera();  
+
+      <span class=sc2>// Configuração de luz</span>
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>false;</span>
+
+      <span class=sc2>// Renderiza o modelo original</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-100.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Renderiza o modelo simplificado</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-200.0f</span>);  
+      <span class=prg>g_props.position </span>= posicao; 
+      desenharObjeto(mesh_simplificado, g_props);  
+
+      <span class=sc2>// Mostra o número de vértices de cada modelo</span>
+      <span class=prg>string </span>info; 
+      info = <span class=prg>String.Format</span>(<span class=sc6>"Modelo limpo: {0}"</span>, <span class=prg>mesh_limpo.NumberVertices</span>);  
+      MostrarMensagem(20, 20, info);  
+      info = <span class=prg>String.Format</span>(<span class=sc6>"simplificado: {0}"</span>, <span class=prg>mesh_simplificado.NumberVertices</span>);  
+      MostrarMensagem(220, 20, info);  
+      info = <span class=prg>String.Format</span>(<span class=sc6>"original: {0}"</span>, <span class=prg>objeto3D.NumberVertices</span>);  
+      MostrarMensagem(420, 20, info);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Ajusta rotação do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+      <span class=sc2>// Prepara e aplica uma material\textura no objeto</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+        <span class=sc2>// na renderização</span>
+        <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+        <span class=sc2>// Renderiza o mesh</span>
+        <span class=prg>obj.DrawSubset</span>(ncx);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto()</span></span>
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liga\Desliga modo wirefram com a tecla W</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.W</span>)  bWireframe = !bWireframe; 
+      <span class=sc9>if </span>(bWireframe) <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+      <span class=sc9>else </span><span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+    <span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+
+    <span class=sc2>// Mostra texto na posição (x, y) da tela</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarMensagem(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+    <span class=sc16>} <span class=sc2>// MostrarMensagem().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

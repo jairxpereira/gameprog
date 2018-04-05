@@ -1,0 +1,1677 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-6</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-6</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.6 Projeto Hierarquia Animada: Parte 5  - O motor</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe CMotor</a>
+<a href=#2.1>2.1 Especificação da classe CMotor: Motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: Arquivo Motor.cpp</a>
+<a href=#2.3>2.3 Métodos especiais: construtor\destrutor</a>
+<a href=#2.4>2.4 initGfx()        - Inicialização do motor gráfico</a>
+<a href=#2.5>2.5 loadxfile()      - Carregando o arquivo x</a>
+<a href=#2.6>2.6 Renderizar()     - Renderização da cena</a>
+<a href=#2.7>2.7 GetCamera()      - Obtendo a câmera</a>
+<a href=#2.8>2.8 mostrarTexto()   - Exibição de informações na tela</a>
+<a href=#2.9>2.9 Interface para controle de animação</a>
+<a href=#3.1>3.1 Aspectos globais: Arquivo entrada.cpp</a>
+<a href=#3.2>3.2 WinMain()        - Ponto de entrada da aplicação</a>
+<a href=#3.3>3.3 processaJanela() - Processamento de mensagens da janela</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png></div>
+Neste capítulo nós vamos examinar os arquivos finais da aplicação que
+implementam a classe <b>CMotor</b> e o arquivo  <b>entrada.cpp</b>  que  implementa
+o código de entrada da aplicação na forma  da  função  <b class=prg>WinMain()</b>  e a
+função de processamento das mensagens da janela ( <b>processaJanela()</b> ).
+
+A classe <b>CMotor</b> inicializa o motor gráfico  do  directx  e  coloca em
+giro a funcionalidade das outras classes vistas anteriormente.  Visto
+que o código das funções é conhecido dos  capítulos  anteriores,  tal
+como <b>initGfx()</b>, elas não serão densamente comentadas e terão apenas o
+código listado e destacado. É importante  perceber  no  código  fonte
+como a classe <b>CMotor</b> coloca em uso as outras classes  e  também  como
+o código de entrada coloca em uso o objeto da classe <b>CMotor (g_motor)</b>
+para iniciar de fato a aplicação <b class=sc16>prj_HierarquiaAnimada</b>.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da classe CMotor</b></u>
+<div class=prg-code><img src=images\cmotor_diagrama.png></div>
+
+Nesta seção vamos conhecer o elenco  de  métodos  e  propriedades  da
+classe <b>CMotor</b> e na próxima seção vamos examiná-los com um pouco  mais
+de profundidade.
+
+<u>Objetos principais da classe CMotor</u>
+<div class=prg-code><span class=sc5>IDirect3D9       </span> *m_d3dObject; <b class=sc2>// O objeto Direct3D</b>
+<span class=sc5>IDirect3DDevice9 </span> *m_d3dDevice; <b class=sc2>// O dispositivo renderizador</b>
+<span class=sc5>ID3DXFont        </span> *m_font;      <b class=sc2>// A fonte para escrever na tela</b>
+<span class=sc5>CModelo          </span> *m_modelo;    <b class=sc2>// O modelo 3D animado</b>
+<span class=sc5>CCamera          </span> *m_camera;    <b class=sc2>// A câmera da aplicação</b>
+</div>
+
+<u>Variáveis para controle da posição\orientação do modelo 3d </u>
+<div class=prg-code><b class=sc2>// Estas variáveis controlam a posição e orientação do modelo 3d.</b>
+<span class=sc5>D3DXVECTOR3      </span> m_modeloPosition; 
+<span class=prg>float            </span> m_modeloYaw, m_modeloPitch, m_modeloRoll; 
+</div>
+
+<u>Controle de texto </u>
+<div class=prg-code>
+<span class=prg>bool             </span> m_displayControls;  <b class=sc2>// Controle de exibição de texto</b>
+</div>
+
+<u>Métodos especiais </u>
+<div class=prg-code>CMotor  ( <span class=prg>void</span>); <b class=sc2>// Construtor da classe</b>
+~CMotor ( <span class=prg>void</span>); <b class=sc2>// Destrutor da classe</b>
+</div>
+
+<u>Métodos principais da classe <b>CMotor</b></u>
+<div class=prg-code><b class=sc2>// Inicializa o motor gráfico</b>
+<span class=prg>bool </span>initGfx      (<span class=sc16>HWND </span>hWnd ); 
+
+<b class=sc2>// Carrega o modelo 3d via CModelo</b>
+<span class=prg>bool </span>loadxfile    (<span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation = <span class=sc4>0</span>);   
+
+<b class=sc2>// Realiza os processos genéricos de renderização da cena</b>
+<span class=prg>void </span>Renderizar   ();</b>
+
+<b class=sc2>// Obtém a câmera da aplicação</b>
+<span class=sc5>CCamera </span>*GetCamera() <span class=sc16>const</span>; 
+</div>
+
+<u>Métodos de controle e exibição de texto </u>
+<div class=prg-code><b class=sc2>// Liga ou desliga a exibição de texto</b>
+<span class=prg>void </span>ToggleControlsDisplay() <span class=sc16>{ </span>m_displayControls =! m_displayControls; <span class=sc16>}</span>
+
+<b class=sc2>// Exibe informações na tela</b>
+<span class=prg>void </span>mostrarTexto()<span class=sc16>const</span>; 
+</div>
+
+<u>Interface para controle da orientação do modelo</u>
+<div class=prg-code><b class=sc2>// Rotacionam o objeto no eixo Y, X e Z respectivamente</b>
+<span class=prg>void </span>YawModelo(<span class=prg>float </span>value )   <span class=sc16>{ </span>m_modeloYaw += value; <span class=sc16>}</span>
+<span class=prg>void </span>PitchModelo(<span class=prg>float </span>value ) <span class=sc16>{ </span>m_modeloPitch += value; <span class=sc16>}</span> 
+<span class=prg>void </span>RollModelo(<span class=prg>float </span>value )  <span class=sc16>{ </span>m_modeloRoll += value; <span class=sc16>}</span>
+</div>
+
+<u>Interface para controle de animação</u>
+<div class=prg-code><b class=sc2>// Permitem controlar a animação do modelo 3d</b>
+<span class=prg>void </span>NextAnimation(); <b class=sc2>// Avança para a próxima animação</b>
+<span class=prg>void </span>AnimateFaster(); <b class=sc2>// Aumenta a velocidade de exibição da animação</b>
+<span class=prg>void </span>AnimateSlower(); <b class=sc2>// Reduz a velocidade de exibição da animação</b>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Especificação da classe CMotor: Motor.h </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span>&lt;string&gt; 
+
+<span class=sc2>// Bibliotecas do directx</span>
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"d3d9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"d3dx9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"dxerr.lib"</span>)  
+
+<span class=sc2>// Biblioteca para uso de timeGetTime (  ) </span>
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"winmm.lib"</span>)  
+
+<span class=sc2>// Classes de apoio que serão utilizadas</span>
+<span class=prg>class </span><span class=sc5>CModelo</span>; 
+<span class=prg>class </span><span class=sc5>CCamera</span>; 
+
+<span class=sc2>// A classe CMotor provê toda a funcionalidade gráfica da aplicação; </span>
+<span class=sc2>// ela tem o código para inicializar o Direct3D e carregar o modelo</span>
+<span class=sc2>// 3d pela classe CModelo</span>
+<span class=prg>class </span><span class=sc5>CMotor</span>
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// objetos do Direct3D</span>
+  <span class=sc5>IDirect3D9 </span>   *m_d3dObject; 
+  <span class=sc5>IDirect3DDevice9 </span> *m_d3dDevice; 
+  <span class=sc5>ID3DXFont </span>   *m_font; 
+
+  <span class=sc2>// Objetos internos</span>
+  <span class=sc5>CModelo </span>    *m_modelo; 
+  <span class=sc5>CCamera </span>    *m_camera; 
+
+  <span class=sc2>// Posição e orientação do modelo 3d</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_modeloPosition; 
+  <span class=prg>float </span>m_modeloYaw, m_modeloPitch, m_modeloRoll; 
+
+  <span class=sc2>// Exibição de informações na tela</span>
+  <span class=prg>bool </span>m_displayControls; 
+  <span class=prg>void </span>mostrarTexto (  )  <span class=sc16>const</span>; 
+
+<span class=sc16>public:</span>
+
+  <span class=sc2>// Os métodos especiais: construtor \ destrutor</span>
+  <span class=sc5>CMotor</span>(<span class=prg>void</span>);   
+  ~CMotor ( <span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=prg>bool </span>initGfx ( <span class=sc16>HWND </span>hWnd );   
+
+  <span class=sc2>// Carrega o arquivo x e define a animação inicial</span>
+  <span class=prg>bool </span>loadxfile ( <span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation = <span class=sc4>0</span>);   
+
+  <span class=sc2>// Renderiza a cena</span>
+  <span class=prg>void </span>Renderizar (  );   
+
+  <span class=sc2>// Obtém a câmera</span>
+  <span class=sc5>CCamera </span>*GetCamera (  )  <span class=sc16>const</span>; 
+
+  <span class=sc2>// Liga\desliga exibição de texto</span>
+  <span class=prg>void </span>ToggleControlsDisplay (  )  
+  <span class=sc16>{ </span>m_displayControls =! m_displayControls; <span class=sc16>}</span>
+
+  <span class=sc2>// Controle de orientação do modelo</span>
+  <span class=prg>void </span>YawModelo (  <span class=prg>float </span>value )   <span class=sc16>{ </span>m_modeloYaw += value; <span class=sc16>}</span>
+  <span class=prg>void </span>PitchModelo (  <span class=prg>float </span>value ) <span class=sc16>{ </span>m_modeloPitch += value; <span class=sc16>}</span>
+  <span class=prg>void </span>RollModelo (  <span class=prg>float </span>value )  <span class=sc16>{ </span>m_modeloRoll += value; <span class=sc16>}</span>
+
+  <span class=sc2>// Interface para controle de animação</span>
+  <span class=prg>void </span>NextAnimation (  );   
+  <span class=prg>void </span>AnimateFaster (  );   
+  <span class=prg>void </span>AnimateSlower (  );   
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CMOTOR</span>
+<span class=sc2>// fim do arquivo motor.h</span>
+</b></div>
+
+<u>Objetos principais da classe CMotor</u>
+
+<b class=prg-code><span class=sc5>IDirect3D9</span> *m_d3dObject; </b>
+Esse objeto representa o Direct3D.
+
+<b class=prg-code><span class=sc5>IDirect3DDevice9 </span> *m_d3dDevice; </b>
+Esse objeto representa o dispositivo renderizador  que é inicializado
+em <b>initGfx()</b> e  passado  como  referência  para  as  outras   classes.
+
+<b class=prg-code><span class=sc5>ID3DXFont</span> *m_font; </b>
+Esse objeto é utilizado para mostrar as informações e estatísticas da
+aplicação na função <b>mostrarTexto()</b>.
+
+<b class=prg-code><span class=sc5>CModelo</span> *m_modelo; </b>
+Este objeto representa o modelo 3d que será carregado de um arquivo x.
+
+<b class=prg-code><span class=sc5>CCamera</span> *m_camera; </b>
+Aqui está o objeto que concretiza a câmera da aplicação.
+
+
+<u>Variáveis para controle da posição\orientação do modelo 3d </u>
+
+<b class=prg-code><span class=sc5>D3DXVECTOR3 </span>m_modeloPosition; </b>
+Esta variável controla a posição do modelo 3d.
+
+<b class=prg-code><span class=prg>float </span>m_modeloYaw, m_modeloPitch, m_modeloRoll; </b>
+Estas variáveis controlam a orientação  do  modelo  3d  segurando  os
+valores individuais de rotação dos eixos Y,  X  e  Z respectivamente.
+
+
+<u>Controle de texto </u>
+
+<b class=prg-code><span class=prg>bool </span>m_displayControls; </b>
+Este flag liga ou desliga a exibição de informações na tela.
+
+
+<u>Métodos especiais </u>
+
+<b class=prg-code>CMotor  ( <span class=prg>void</span>);</b>
+<b class=prg-code>~CMotor ( <span class=prg>void</span>);</b>
+Estes métodos representam o construtor e o destrutor da classe.
+
+
+<u>Métodos principais da classe <b>CMotor</b></u>
+
+<b class=prg-code><span class=prg>bool </span>initGfx( <span class=sc16>HWND </span>hWnd ); </b>
+Essa função  conhecida dos estágios iniciais desse curso inicializa o
+motor gráfico  e  faz  a  configuração  básica de diversos estados do
+directx  como  iluminação,  texturização  etc.   Essa  função  também
+inicializa e instala a matriz de projeção.
+
+<b class=prg-code><span class=prg>bool </span>loadxfile ( <span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation = <span class=sc4>0</span>);   </b>
+Essa função carrega o modelo 3d do  arquivo  x  utilizando  a  classe
+<b>CModelo</b> e define  a  animação  inicial.  Essa  função  também  faz  a
+configuração inicial da câmera.
+
+<b class=prg-code><span class=prg>void </span>Renderizar();</b>
+Essa função realiza os processo genéricos  de  renderização da cena e
+utiliza os métodos da classe <b>CModelo</b>  para desencadear a renderização
+do modelo 3d animado. Essa  função  também  atualiza  o  timer  e  as
+matrizes  de  posição\orientação ( matriz mundo )  do  modelo  3d.
+
+<b class=prg-code><span class=sc5>CCamera </span>*GetCamera() <span class=sc16>const</span>; </b>
+Essa função obtém a câmera da aplicação. A câmera é controlada pelo
+teclado na função <b>processaJanela()</b> presente no arquivo <b>entrada.cpp</b>.
+
+
+<u>Métodos de controle e exibição de texto </u>
+
+<b class=prg-code><span class=prg>void </span>ToggleControlsDisplay() <span class=sc16>{ </span>m_displayControls =! m_displayControls; <span class=sc16>}</span></b>
+Esse método liga\desliga a  exibição  de  texto  na  tela. A tecla F1
+executa essa função que inverte o flag <b>m_displayControls</b> que  é  lido
+pela função <b>mostrarTexto()</b>.
+
+<b class=prg-code><span class=prg>void </span>mostrarTexto()<span class=sc16>const</span>; </b>
+Esse método é utilizado para mostrar as informações e estatísticas da
+aplicação.
+
+
+<u>Interface para controle da orientação do modelo</u>
+
+<b class=prg-code><span class=prg>void </span>YawModelo(<span class=prg>float </span>value )   <span class=sc16>{ </span>m_modeloYaw += value; <span class=sc16>}</span></b>
+Esse método gira o modelo no eixo Y.
+
+<b class=prg-code><span class=prg>void </span>PitchModelo(<span class=prg>float </span>value ) <span class=sc16>{ </span>m_modeloPitch += value; <span class=sc16>}</span> </b>
+Esse método gira o modelo no eixo X.
+
+<b class=prg-code><span class=prg>void </span>RollModelo(<span class=prg>float </span>value )  <span class=sc16>{ </span>m_modeloRoll += value; <span class=sc16>}</span> </b>
+Esse método gira o modelo no eixo Z.
+
+
+<u>Interface para controle de animação</u>
+
+<b class=prg-code><span class=prg>void </span>NextAnimation(); </b>  
+Avança o modelo para a próxima animação disponível.
+
+<b class=prg-code><span class=prg>void </span>AnimateFaster(); </b>
+Aumenta a velocidade de exibição da animação.
+
+<b class=prg-code><span class=prg>void </span>AnimateSlower(); </b>
+Reduz a velocidade de exibição da animação.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais - Arquivo Motor.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Motor.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Modelo3d.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span>
+
+<span class=sc2>// Tamanho da fonte</span>
+<span class=sc16>const </span><span class=prg>int </span>kFontSize = 16; 
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 Métodos especiais: construtor\destrutor </u></b>
+<div class=niceview><b><span class=sc2>// Construtor</span>
+CMotor::CMotor ( <span class=prg>void</span>)  : m_d3dObject ( <span class=sc4>0</span>), m_d3dDevice ( <span class=sc4>0</span>), m_modelo ( <span class=sc4>0</span>), 
+m_displayControls ( <span class=prg>true</span>), m_modeloPosition ( <span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_modeloYaw ( <span class=sc4>0</span>), 
+m_modeloPitch ( <span class=sc4>0</span>), m_modeloRoll ( <span class=sc4>0</span>), m_font ( <span class=sc4>0</span>)  
+<span class=sc16>{</span>
+  m_camera = <span class=prg>new </span><span class=sc5>CCamera</span>( );   
+<span class=sc16>} <span class=sc2>// CMotor (  ) .fim</span></span>
+
+<span class=sc2>// Destrutor</span>
+CMotor::~CMotor ( <span class=prg>void</span>)  
+<span class=sc16>{</span>
+ <span class=sc9>if </span> (  m_modelo  )  
+ <span class=sc16>{</span>
+  <span class=prg>delete </span>m_modelo; 
+  m_modelo = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> ( m_camera )  
+ <span class=sc16>{</span>
+  <span class=prg>delete </span>m_camera; 
+  m_camera = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> ( m_font )  
+ <span class=sc16>{</span>
+  <span class=prg>m_font-&gt;Release</span>( );   
+  m_font=0; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> (  m_d3dDevice  )  
+ <span class=sc16>{</span>
+  <span class=prg>m_d3dDevice-&gt;Release</span>( );   
+  m_d3dDevice=0; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> (  m_d3dObject  )  
+ <span class=sc16>{</span>
+  <span class=prg>m_d3dObject-&gt;Release</span>( );   
+  m_d3dObject = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// ~CMotor (  ) .fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 initGfx() - Inicialização do motor gráfico </u></b>
+<div class=niceview><b><span class=sc2>// Inicializa o motor gráfico</span>
+<span class=prg>bool </span>CMotor::initGfx ( <span class=sc16>HWND </span>hWnd )  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto Direct3D</span>
+  m_d3dObject = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION </span> );   
+  <span class=sc9>if </span> (  !m_d3dObject  )  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBoxA </span> ( <span class=sc4>0</span>, <span class=sc6>"Falha na criação do objeto Direct3D"</span>, 
+      <span class=sc6>"CMotor::initGfx</span>( ) <span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+  memset ( &amp;pps,<span class=sc4>0</span>, <span class=sc16>sizeof</span>(pps )  );   
+
+  <span class=prg>pps.Windowed </span>   = <span class=prg>TRUE</span>; 
+  <span class=prg>pps.SwapEffect </span>   = <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+  <span class=prg>pps.BackBufferFormat </span> = <span class=sc4>D3DFMT_UNKNOWN</span>; 
+  <span class=prg>pps.BackBufferCount </span>  = <span class=sc4>1</span>; 
+  <span class=prg>pps.PresentationInterval </span>= <span class=sc4>D3DPRESENT_INTERVAL_IMMEDIATE</span>; 
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>TRUE</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Criação do dispositivo renderizador</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>m_d3dObject-&gt;CreateDevice</span>( <span class=sc4>D3DADAPTER_DEFAULT</span>, 
+    <span class=sc4>D3DDEVTYPE_HAL</span>, hWnd, 
+    <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>, 
+    &amp;pps, &amp;m_d3dDevice );   
+
+  <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  
+  <span class=sc16>{</span>
+    <span class=sc2>// Talvez a máquina não suporte processamento de vértices no hardware</span>
+    <span class=sc2>// então vamos tentar no software!</span>
+    hr = <span class=prg>m_d3dObject-&gt;CreateDevice</span>( <span class=sc4>D3DADAPTER_DEFAULT</span>, <span class=sc4>D3DDEVTYPE_HAL</span>, hWnd, 
+      <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>, &amp;pps, &amp;m_d3dDevice );   
+    <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  
+    <span class=sc16>{</span>
+
+      <span class=prg>MessageBoxA </span> ( <span class=sc4>0</span>, <span class=sc6>"renderizador não foi criado"</span>, 
+        <span class=sc6>"CMotor::initGfx</span>( ) <span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+      <span class=sc6>return </span><span class=prg>false</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração básica de estados</span>
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_LIGHTING</span>,         <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_DITHERENABLE</span>,     <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SPECULARENABLE</span>,  <span class=prg>FALSE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>,          <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_CULLMODE</span>,         <span class=sc4>D3DCULL_CCW </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_NORMALIZENORMALS</span>, <span class=prg>TRUE </span> );   
+
+  <span class=sc2>// Configuração de texturização</span>
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLOROP</span>,   <span class=sc4>D3DTOP_MODULATE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLORARG1</span>, <span class=sc4>D3DTA_TEXTURE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLORARG2</span>, <span class=sc4>D3DTA_CURRENT </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAOP</span>,   <span class=sc4>D3DTOP_MODULATE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG1</span>, <span class=sc4>D3DTA_TEXTURE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG2</span>, <span class=sc4>D3DTA_DIFFUSE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetSamplerState</span>( <span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetSamplerState</span>( <span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR </span> );   
+
+  <span class=sc2>// configuração da matriz de projeção</span>
+  <span class=sc5>D3DXMATRIX </span>matProj; 
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &amp;matProj, <span class=sc4>D3DX_PI/4</span>, <span class=sc4>800.0f/600.0f</span>, 
+    <span class=sc4>1.0f</span>, <span class=sc4>5000.0f </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &amp;matProj  );   
+
+  <span class=sc2>// Criação de uma luz direcional</span>
+  <span class=sc5>D3DLIGHT9 </span>light; 
+  <span class=prg>ZeroMemory</span>( &amp;light, <span class=sc16>sizeof</span>( <span class=sc5>D3DLIGHT9 </span> )   );   
+  <span class=prg>light.Type </span>      = <span class=sc4>D3DLIGHT_DIRECTIONAL</span>; 
+  <span class=prg>light.Diffuse.r </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.g </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.b </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.a </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Range </span>     = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Direção da luz: ela deve estar normalizada - apontando pra baixo</span>
+  <span class=sc2>// ao longo do eixo z</span>
+  <span class=sc5>D3DXVECTOR3 </span>vecDir; 
+  vecDir = <span class=sc5>D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>-0.3f</span>, <span class=sc4>0.5f</span>);   
+  <span class=prg>D3DXVec3Normalize</span>(  ( <span class=sc5>D3DXVECTOR3*</span>)  <span class=prg>&amp;light.Direction</span>, &amp;vecDir  );   
+  <span class=prg>m_d3dDevice-&gt;SetLight</span>( <span class=sc4>0</span>, &amp;light  );   
+  <span class=prg>m_d3dDevice-&gt;LightEnable</span>( <span class=sc4>0</span>, <span class=prg>TRUE </span> );   
+
+  <span class=sc2>// Iluminação extra: luz ambiente</span>
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(80, 80, 80 )   );   
+
+  <span class=sc2>// Criação da fonte para mostrar texto na tela</span>
+  <span class=prg>D3DXCreateFont</span>( m_d3dDevice, kFontSize, <span class=sc4>0</span>, <span class=sc4>FW_BOLD</span>, <span class=sc4>0</span>, <span class=prg>FALSE</span>, 
+    <span class=sc4>DEFAULT_CHARSET</span>, <span class=sc4>OUT_DEFAULT_PRECIS</span>, <span class=sc4>DEFAULT_QUALITY</span>, 
+    <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>, <span class=prg>TEXT</span>(<span class=sc6>"Arial"</span>), &amp;m_font  );   
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 loadxfile() - Carregando o arquivo x </u></b>
+<div class=niceview><b><span class=sc2>// Esta função carrega o modelo 3d informado. Na falha ela retorna 'falso'</span>
+<span class=sc2>// provavelmente porque o arquivo do modelo não foi localizado.</span>
+<span class=sc2>// Adicionalmente ela permite a configuração da primeira animação a ser tocada</span>
+<span class=prg>bool </span>CMotor::loadxfile ( <span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation )  
+<span class=sc16>{</span>
+  <span class=sc2>// Apenas suportamos um modelo 3d. Então deletamos ele se ele existir!</span>
+  <span class=sc9>if </span> ( m_modelo )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>m_modelo; 
+    m_modelo = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Cria o modelo 3d</span>
+  m_modelo = <span class=prg>new </span><span class=sc5>CModelo</span>( m_d3dDevice  );   
+  <span class=sc9>if </span> (  <span class=prg>!m_modelo-&gt;Load</span>(filename )   )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>m_modelo; 
+    m_modelo = <span class=sc4>0</span>;  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Estabelece a animação inicial</span>
+  <span class=prg>m_modelo-&gt;SetAnimationSet</span>( startAnimation  );   
+
+  <span class=sc2>// Configura a câmera para olhar para o modelo 3d</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos = <span class=prg>m_modelo-&gt;GetInitialCameraPosition</span>( );   
+  <span class=prg>m_camera-&gt;SetPosition</span>(pos );   
+  <span class=prg>m_camera-&gt;SetYawPitchRoll</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);   
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// loadxfile().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 Renderizar() - Renderização da cena </u></b>
+<div class=niceview><b><span class=sc2>// É chamada dentro de WinMain().Essa função calcula o tempo decorrido</span>
+<span class=sc2>// e anima o modelo 3d. Ela também implementa o laço de renderização</span>
+<span class=prg>void </span>CMotor::Renderizar()  
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>lastTime = <span class=prg>timeGetTime</span>( );   
+
+  <span class=sc2>// Inicialização da matriz de visualização</span>
+  <span class=sc5>D3DXMATRIX </span>matView; 
+  <span class=prg>m_camera-&gt;CalculateViewMatrix</span>( &amp;matView  );   
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &amp;matView  );   
+
+  <span class=sc2>// Limpa o alvo de renderização e o zbuffer</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>m_d3dDevice-&gt;Clear</span>(<span class=sc4>0</span>, <span class=prg>NULL</span>, 
+    <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, 
+    <span class=prg>D3DCOLOR_XRGB</span>(255,255,255 ), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Renderiza a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>m_d3dDevice-&gt;BeginScene</span>( )   )   )  
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza o modelo 3d</span>
+    <span class=sc9>if </span> ( m_modelo )  
+    <span class=sc16>{</span>
+      <span class=sc2>// Calcula o tempo decorrido</span>
+      <span class=prg>float </span>timeElapsed = <span class=sc4>0.001f </span>*  (  <span class=prg>timeGetTime</span>( )  - lastTime  );   
+      lastTime = <span class=prg>timeGetTime</span>( );   
+
+      <span class=sc2>// É necessário passar a matriz de alto nível para posicionar e</span>
+      <span class=sc2>// orientar o modelo. Crie isto a partir da posição  e rotação</span>
+      <span class=sc2>// correntes</span>
+      <span class=sc5>D3DXMATRIX </span>matRotX, matRotY, matRotZ, matTrans; 
+
+      <span class=sc2>// Calcula a matriz de rotação</span>
+      <span class=prg>D3DXMatrixRotationX</span>( &amp;matRotX, m_modeloPitch  );   
+      <span class=prg>D3DXMatrixRotationY</span>( &amp;matRotY, m_modeloYaw  );   
+      <span class=prg>D3DXMatrixRotationZ</span>( &amp;matRotZ, m_modeloRoll  );   
+
+      <span class=sc2>// Calcula a matriz de translação</span>
+      <span class=prg>D3DXMatrixTranslation</span>( &amp;matTrans, <span class=prg>m_modeloPosition.x</span>, 
+        <span class=prg>m_modeloPosition.y</span>, <span class=prg>m_modeloPosition.z</span>);   
+
+      <span class=sc2>// Calcula a matriz de mundo pela multiplicação com as matrizes</span>
+      <span class=sc2>// acima na ordem correta</span>
+      <span class=sc5>D3DXMATRIX </span>matWorld =  (  matRotX * matRotY * matRotZ  )  * matTrans; 
+
+      <span class=sc2>// BoneMove (  )  realiza a animação enquanto Render (  ) </span>
+      <span class=sc2>// apenas desenha.</span>
+      <span class=prg>m_modelo-&gt;BoneMove</span>( timeElapsed, &amp;matWorld );   
+      <span class=prg>m_modelo-&gt;Render</span>( );   
+    <span class=sc16>} <span class=sc2>// endif  ( m_modelo ) </span></span>
+
+    <span class=sc2>// Exibição de texto na tela</span>
+    mostrarTexto (  );   
+
+    <span class=sc2>// Finaliza e apresenta a cena</span>
+    <span class=prg>m_d3dDevice-&gt;EndScene</span>( );   
+    <span class=prg>m_d3dDevice-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL </span> );   
+  <span class=sc16>} <span class=sc2>// endif  (  SUCCEEDED (  m_d3dDevice-&gt;BeginScene (  )   ) </span></span>
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 GetCamera() - Obtendo a câmera </u></b>
+<div class=niceview><b><span class=sc2>// Retorna a câmera</span>
+<span class=sc5>CCamera </span>*CMotor::GetCamera()  <span class=sc16>const</span>
+<span class=sc16>{</span>
+  assert (  m_camera  );   
+  <span class=sc6>return </span>m_camera; 
+<span class=sc16>} <span class=sc2>// GetCamera().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 mostrarTexto() - Exibição de informações na tela </u></b>
+<div class=niceview><b><span class=sc2>// Mostra as informações na tela</span>
+<span class=prg>void </span>CMotor::mostrarTexto ()<span class=sc16>const</span>
+<span class=sc16>{</span>
+
+ <span class=sc2>// Variáveis para controle do tempo e performance</span>
+ <span class=sc16>static </span><span class=prg>DWORD </span>lastTime = <span class=prg>timeGetTime</span>( );   
+ <span class=sc16>static </span><span class=prg>int </span>numFrames = <span class=sc4>0</span>; 
+ <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0</span>; 
+
+ <span class=sc2>// Calcula a taxa de frames a cada segundo</span>
+ numFrames++;   
+ <span class=prg>DWORD </span>timePassed = <span class=prg>timeGetTime</span>( )  - lastTime; 
+ <span class=sc9>if </span> (  timePassed &gt; 1000  )  
+ <span class=sc16>{</span>
+  fps = <span class=sc4>0.001f </span>* timePassed * numFrames; 
+  numFrames = <span class=sc4>0</span>; 
+  lastTime = <span class=prg>timeGetTime</span>( );   
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc5>D3DCOLOR </span>fontColor = <span class=prg>D3DCOLOR_XRGB</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, 128  );   
+ <span class=sc5>RECT </span>rct; 
+ <span class=prg>rct.left </span>= kFontSize; 
+ <span class=prg>rct.right </span>= 800; 
+ <span class=prg>rct.top </span>= kFontSize; 
+ <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+ <span class=sc2>// Exibe a taxa de frames</span>
+ <span class=prg>std::string </span>fpsString = <span class=sc6>"FPS: " </span>+ ToString ( fps );   
+ <span class=prg>m_font-&gt;DrawText</span>( <span class=prg>NULL</span>, <span class=prg>fpsString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+ <span class=sc9>if </span> (  m_modelo  )  
+ <span class=sc16>{</span>
+  <span class=sc2>// Pega o nome do arquivo do modelo 3d</span>
+  <span class=prg>std::string </span>fnameString = <span class=sc6>"Arquivo: " </span>+ <span class=prg>m_modelo-&gt;GetFilename</span>( );   
+  <span class=prg>m_font-&gt;DrawText</span>( <span class=prg>NULL</span>, <span class=prg>fnameString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=sc2>// Pega o nome do animation set corrente</span>
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>std::string </span>animString = <span class=sc6>"AnimationSet: </span>(<span class=sc6>" </span>+ 
+    ToString (  <span class=prg>m_modelo-&gt;GetCurrentAnimationSet</span>( )   )  + <span class=sc6>"</span>) <span class=sc6> " </span>+ 
+    <span class=prg>m_modelo-&gt;GetAnimationSetName</span>( <span class=prg>m_modelo-&gt;GetCurrentAnimationSet</span>( )   );   
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=prg>animString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=sc16>} <span class=sc2>// endif  (  m_modelo  ) </span></span>
+
+ <span class=sc9>else</span>
+ <span class=sc16>{</span>
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha no carregamento do modelo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=sc16>} <span class=sc2>// end else</span></span>
+
+ <span class=sc9>if </span> (  m_displayControls  )  
+ <span class=sc16>{</span>
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"CONTROLES"</span>, <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"Espaço: próximo animationSet"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>" </span>+ <span class=sc6>/-: Muda velocidade da animação"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom=rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Seta esquerda \\ Direita: movimenta a câmera lateralmente"</span>, 
+    <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Seta cima \\ baixo: movimenta a câmera frente\\fundo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas Home e End: movimenta a câmera cima\\baixo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 4 e 6: gira o modelo no eixo y </span>(yaw ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 8 e 2: gira o modelo no eixo x </span>(pitch ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 7 e 9: gira o modelo no eixo z </span>(roll ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"F1: Liga \\ desliga lengenda dos controles"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+ <span class=sc16>} <span class=sc2>// endif  ( m_displayControls ) </span></span>
+<span class=sc16>} <span class=sc2>// mostrarTexto().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 Interface para controle de animação </u></b>
+<div class=niceview><b><span class=sc2>// Seleciona o próximo animationSet</span>
+<span class=prg>void </span>CMotor::NextAnimation()  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  <span class=prg>m_modelo-&gt;NextAnimation</span>( );   
+<span class=sc16>} <span class=sc2>// NextAnimation() </span></span>
+
+
+<span class=sc2>// Acelera a animação</span>
+<span class=prg>void </span>CMotor::AnimateFaster()  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  
+    <span class=prg>m_modelo-&gt;AnimateFaster</span>( );   
+<span class=sc16>} <span class=sc2>// AnimateFaster().fim</span></span>
+
+<span class=sc2>// Desacelera a animação</span>
+<span class=prg>void </span>CMotor::AnimateSlower()  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  <span class=prg>m_modelo-&gt;AnimateSlower</span>( );   
+<span class=sc16>} <span class=sc2>// AnimateSlower().fim</span></span>
+</b></div>
+
+
+<a href=#topo>[topo]</a> <a name='3.1'></a><b><u>3.1 Aspectos globais: Arquivo entrada.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"Motor.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+
+<span class=sc2>// Intância global do motor da aplicação</span>
+<span class=sc5>CMotor </span>*g_motor = <span class=sc4>0</span>; 
+
+<span class=sc2>// Protótipo da função de processamento da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela  ( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+             <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam );   
+
+<span class=sc2>// Constantes de tamanho da tela</span>
+<span class=sc16>const </span><span class=prg>int </span>kViewPortWidth = 800; 
+<span class=sc16>const </span><span class=prg>int </span>kViewPortHeight = 600; 
+
+<span class=sc2>// Constantes de controle de câmera</span>
+<span class=sc16>const </span><span class=prg>float </span>kCameraMovementSpeed = <span class=sc4>0.05f</span>; 
+<span class=sc16>const </span><span class=prg>float </span>kCameraRotationSpeed = <span class=sc4>0.01f</span>; 
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='3.2'></a><b><u>3.2 WinMain() - Ponto de entrada da aplicação </u></b>
+<div class=niceview><b><span class=sc2>// Ponto de entrada do programa: cria a janela, inicializa o</span>
+<span class=sc2>// motor gráfico e entra no laço de mensagens</span>
+<span class=prg>int </span><span class=sc16>APIENTRY </span><span class=prg>WinMain</span>(<span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+           <span class=prg>LPSTR </span>lpCmdLine, <span class=prg>int </span>nCmdShow )  
+<span class=sc16>{</span>
+  <span class=sc2>// Criação e registro da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcex; 
+  <span class=prg>wcex.cbSize </span>= <span class=sc16>sizeof</span>(<span class=sc5>WNDCLASSEX</span>);   
+  <span class=prg>wcex.style </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.lpfnWndProc </span>=  ( <span class=prg>WNDPROC</span>)  processaJanela; 
+  <span class=prg>wcex.cbClsExtra </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.cbWndExtra </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.hInstance </span>= hInstance; 
+  <span class=prg>wcex.hIcon </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.hCursor </span>= <span class=prg>LoadCursor</span>( <span class=prg>NULL</span>, <span class=sc4>IDC_ARROW </span> );   
+  <span class=prg>wcex.hbrBackground </span>=  (  <span class=sc16>HBRUSH </span> )  (  <span class=sc4>COLOR_WINDOW </span>+ <span class=sc4>1</span>);   
+  <span class=prg>wcex.lpszMenuName </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.lpszClassName </span>= <span class=sc6>"clsDirectx"</span>; 
+  <span class=prg>wcex.hIconSm </span>= <span class=sc4>0</span>; 
+  <span class=prg>RegisterClassEx</span>(&amp;wcex );   
+
+  <span class=sc2>// Ajuste de tamanho da janela</span>
+  <span class=sc5>RECT </span>rc; 
+  <span class=prg>SetRect</span>( &amp;rc, <span class=sc4>0</span>, <span class=sc4>0</span>, kViewPortWidth, kViewPortHeight  );   
+  <span class=prg>AdjustWindowRectEx</span>( &amp;rc, <span class=sc4>WS_OVERLAPPEDWINDOW</span>, <span class=prg>false</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Criação da janela</span>
+  <span class=sc16>HWND </span>hWnd = <span class=prg>CreateWindow</span>(<span class=sc6>"clsDirectx"</span>, <span class=sc6>"prj_HierarquiaAnimada"</span>, 
+    <span class=sc4>WS_OVERLAPPEDWINDOW</span>, 
+    <span class=sc4>CW_USEDEFAULT</span>, <span class=sc4>CW_USEDEFAULT</span>, <span class=prg>rc.right </span>- <span class=prg>rc.left</span>, <span class=prg>rc.bottom </span>- <span class=prg>rc.top</span>, 
+    <span class=prg>NULL</span>, <span class=prg>NULL</span>, hInstance, <span class=prg>NULL</span>);   
+  <span class=sc9>if </span> ( hWnd==0 )  
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  <span class=sc2>// Inicialização do motor gráfico</span>
+  g_motor= <span class=prg>new </span><span class=sc5>CMotor</span>( );   
+  <span class=sc9>if </span> (  <span class=prg>!g_motor-&gt;initGfx</span>(hWnd )   )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>g_motor; 
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Carrega um modelo  ( x )  nativo do directx</span>
+  <span class=prg>g_motor-&gt;loadxfile</span>( Tools::GetTheCurrentDirectory (  )  + 
+    <span class=sc6>"/data/bones_all.x"</span>, <span class=sc4>1</span>);   
+
+  <span class=prg>ShowWindow</span>(hWnd, nCmdShow );   
+  <span class=prg>UpdateWindow</span>(hWnd );   
+
+  <span class=sc2>// Laço de mensagens da aplicação</span>
+  <span class=sc5>MSG </span>msg; 
+  <span class=prg>ZeroMemory</span>( &amp;msg, <span class=sc16>sizeof</span>(msg )   );   
+  <span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT </span> )  
+  <span class=sc16>{</span>
+     <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &amp;msg, <span class=prg>NULL</span>, <span class=sc4>0U</span>, <span class=sc4>0U</span>, <span class=sc4>PM_REMOVE </span> )   )  
+     <span class=sc16>{</span>
+      <span class=prg>TranslateMessage</span>( &amp;msg  );   
+      <span class=prg>DispatchMessage</span>( &amp;msg  );   
+     <span class=sc16>}</span>
+     <span class=sc9>else</span>
+     <span class=sc16>{</span>
+       <span class=prg>g_motor-&gt;Renderizar</span>( );   
+     <span class=sc16>}</span>
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// Limpeza e finalização</span>
+  <span class=prg>delete </span>g_motor; 
+  <span class=sc6>return </span> ( <span class=prg>int</span>) <span class=prg>msg.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='3.3'></a><b><u>3.3 processaJanela() - Processamento de mensagens da janela </u></b>
+<div class=niceview><b><span class=sc2>// Função de processamento das mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+             <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam )  
+<span class=sc16>{</span>
+  <span class=sc9>switch </span> ( message )  
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>switch</span>(wParam )  
+    <span class=sc16>{</span>
+      <span class=sc2>// Controle de câmera</span>
+      <span class=sc9>case </span>'W': 
+      <span class=sc9>case </span><span class=sc4>VK_UP:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveForward</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'S': 
+      <span class=sc9>case </span><span class=sc4>VK_DOWN:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>( )<span class=prg>-&gt;MoveForward</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'D': 
+      <span class=sc9>case </span><span class=sc4>VK_RIGHT:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveRight</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'A': 
+      <span class=sc9>case </span><span class=sc4>VK_LEFT:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveRight</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_HOME:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveUp</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_END:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveUp</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+
+      <span class=sc2>// Controle do modelo</span>
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD4:</span>
+        <span class=prg>g_motor-&gt;YawModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD6:</span>
+        <span class=prg>g_motor-&gt;YawModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD8:</span>
+        <span class=prg>g_motor-&gt;PitchModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD2:</span>
+        <span class=prg>g_motor-&gt;PitchModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD7:</span>
+        <span class=prg>g_motor-&gt;RollModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD9:</span>
+        <span class=prg>g_motor-&gt;RollModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+
+      <span class=sc2>// Controle de animação</span>
+      <span class=sc9>case </span><span class=sc4>VK_SPACE:</span>
+        <span class=prg>g_motor-&gt;NextAnimation</span>();   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_ADD:</span>
+        <span class=prg>g_motor-&gt;AnimateFaster</span>();   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_SUBTRACT:</span>
+        <span class=prg>g_motor-&gt;AnimateSlower</span>();   
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>VK_F1:</span>
+      <span class=prg>g_motor-&gt;ToggleControlsDisplay</span>();   
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>default:</span>
+        <span class=sc6>break</span>; 
+    <span class=sc16>}</span>
+    <span class=sc6>break</span>; 
+        <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+             <span class=prg>PostQuitMessage</span>(<span class=sc4>0</span>);   
+        <span class=sc6>break</span>; 
+        <span class=sc9>default:</span>
+            <span class=sc6>return </span><span class=prg>DefWindowProc</span>(hWnd, message, wParam, lParam );   
+  <span class=sc16>}</span>
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</b></div>
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</u></b>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span>&lt;string&gt; 
+
+<span class=sc2>// Bibliotecas do directx</span>
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"d3d9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"d3dx9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"dxerr.lib"</span>)  
+
+<span class=sc2>// Biblioteca para uso de timeGetTime (  ) </span>
+<span class=sc16>#pragma </span><span class=prg>comment </span> ( lib, <span class=sc6>"winmm.lib"</span>)  
+
+<span class=sc2>// Classes de apoio que serão utilizadas</span>
+<span class=prg>class </span><span class=sc5>CModelo</span>; 
+<span class=prg>class </span><span class=sc5>CCamera</span>; 
+
+<span class=sc2>// A classe CMotor provê toda a funcionalidade gráfica da aplicação; </span>
+<span class=sc2>// ela tem o código para inicializar o Direct3D e carregar o modelo</span>
+<span class=sc2>// 3d pela classe CModelo</span>
+<span class=prg>class </span><span class=sc5>CMotor</span>
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// objetos do Direct3D</span>
+  <span class=sc5>IDirect3D9 </span>   *m_d3dObject; 
+  <span class=sc5>IDirect3DDevice9 </span> *m_d3dDevice; 
+  <span class=sc5>ID3DXFont </span>   *m_font; 
+
+  <span class=sc2>// Objetos internos</span>
+  <span class=sc5>CModelo </span>    *m_modelo; 
+  <span class=sc5>CCamera </span>    *m_camera; 
+
+  <span class=sc2>// Posição e orientação do modelo 3d</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_modeloPosition; 
+  <span class=prg>float </span>m_modeloYaw, m_modeloPitch, m_modeloRoll; 
+
+  <span class=sc2>// Exibição de informações na tela</span>
+  <span class=prg>bool </span>m_displayControls; 
+  <span class=prg>void </span>mostrarTexto (  )  <span class=sc16>const</span>; 
+
+<span class=sc16>public:</span>
+
+  <span class=sc2>// Os métodos especiais: construtor \ destrutor</span>
+  <span class=sc5>CMotor</span>(<span class=prg>void</span>);   
+  ~CMotor ( <span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=prg>bool </span>initGfx ( <span class=sc16>HWND </span>hWnd );   
+
+  <span class=sc2>// Carrega o arquivo x e define a animação inicial</span>
+  <span class=prg>bool </span>loadxfile ( <span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation = <span class=sc4>0</span>);   
+
+  <span class=sc2>// Renderiza a cena</span>
+  <span class=prg>void </span>Renderizar (  );   
+
+  <span class=sc2>// Obtém a câmera</span>
+  <span class=sc5>CCamera </span>*GetCamera (  )  <span class=sc16>const</span>; 
+
+  <span class=sc2>// Liga\desliga exibição de texto</span>
+  <span class=prg>void </span>ToggleControlsDisplay (  )  
+  <span class=sc16>{ </span>m_displayControls =! m_displayControls; <span class=sc16>}</span>
+
+  <span class=sc2>// Controle de orientação do modelo</span>
+  <span class=prg>void </span>YawModelo (  <span class=prg>float </span>value )   <span class=sc16>{ </span>m_modeloYaw += value; <span class=sc16>}</span>
+  <span class=prg>void </span>PitchModelo (  <span class=prg>float </span>value ) <span class=sc16>{ </span>m_modeloPitch += value; <span class=sc16>}</span>
+  <span class=prg>void </span>RollModelo (  <span class=prg>float </span>value )  <span class=sc16>{ </span>m_modeloRoll += value; <span class=sc16>}</span>
+
+  <span class=sc2>// Interface para controle de animação</span>
+  <span class=prg>void </span>NextAnimation (  );   
+  <span class=prg>void </span>AnimateFaster (  );   
+  <span class=prg>void </span>AnimateSlower (  );   
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CMOTOR</span>
+<span class=sc2>// fim do arquivo motor.h</span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Motor.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Modelo3d.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span>
+
+<span class=sc2>// Tamanho da fonte</span>
+<span class=sc16>const </span><span class=prg>int </span>kFontSize = 16; 
+
+<span class=sc2>// Construtor</span>
+CMotor::CMotor ( <span class=prg>void</span>)  : m_d3dObject ( <span class=sc4>0</span>), m_d3dDevice ( <span class=sc4>0</span>), m_modelo ( <span class=sc4>0</span>), 
+m_displayControls ( <span class=prg>true</span>), m_modeloPosition ( <span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_modeloYaw ( <span class=sc4>0</span>), 
+m_modeloPitch ( <span class=sc4>0</span>), m_modeloRoll ( <span class=sc4>0</span>), m_font ( <span class=sc4>0</span>)  
+<span class=sc16>{</span>
+  m_camera = <span class=prg>new </span><span class=sc5>CCamera</span>( );   
+<span class=sc16>} <span class=sc2>// CMotor (  ) .fim</span></span>
+
+<span class=sc2>// Destrutor</span>
+CMotor::~CMotor ( <span class=prg>void</span>)  
+<span class=sc16>{</span>
+ <span class=sc9>if </span> (  m_modelo  )  
+ <span class=sc16>{</span>
+  <span class=prg>delete </span>m_modelo; 
+  m_modelo = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> ( m_camera )  
+ <span class=sc16>{</span>
+  <span class=prg>delete </span>m_camera; 
+  m_camera = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> ( m_font )  
+ <span class=sc16>{</span>
+  <span class=prg>m_font-&gt;Release</span>( );   
+  m_font=0; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> (  m_d3dDevice  )  
+ <span class=sc16>{</span>
+  <span class=prg>m_d3dDevice-&gt;Release</span>( );   
+  m_d3dDevice=0; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc9>if </span> (  m_d3dObject  )  
+ <span class=sc16>{</span>
+  <span class=prg>m_d3dObject-&gt;Release</span>( );   
+  m_d3dObject = <span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// ~CMotor (  ) .fim</span></span>
+
+<span class=sc2>// Inicializa o motor gráfico</span>
+<span class=prg>bool </span>CMotor::initGfx ( <span class=sc16>HWND </span>hWnd )  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto Direct3D</span>
+  m_d3dObject = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION </span> );   
+  <span class=sc9>if </span> (  !m_d3dObject  )  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBoxA </span> ( <span class=sc4>0</span>, <span class=sc6>"Falha na criação do objeto Direct3D"</span>, 
+      <span class=sc6>"CMotor::initGfx</span>( ) <span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+  memset ( &amp;pps,<span class=sc4>0</span>, <span class=sc16>sizeof</span>(pps )  );   
+
+  <span class=prg>pps.Windowed </span>   = <span class=prg>TRUE</span>; 
+  <span class=prg>pps.SwapEffect </span>   = <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+  <span class=prg>pps.BackBufferFormat </span> = <span class=sc4>D3DFMT_UNKNOWN</span>; 
+  <span class=prg>pps.BackBufferCount </span>  = <span class=sc4>1</span>; 
+  <span class=prg>pps.PresentationInterval </span>= <span class=sc4>D3DPRESENT_INTERVAL_IMMEDIATE</span>; 
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>TRUE</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+
+  <span class=sc2>// Criação do dispositivo renderizador</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>m_d3dObject-&gt;CreateDevice</span>( <span class=sc4>D3DADAPTER_DEFAULT</span>, 
+    <span class=sc4>D3DDEVTYPE_HAL</span>, hWnd, 
+    <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>, 
+    &amp;pps, &amp;m_d3dDevice );   
+
+  <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  
+  <span class=sc16>{</span>
+    <span class=sc2>// Talvez a máquina não suporte processamento de vértices no hardware</span>
+    <span class=sc2>// então vamos tentar no software!</span>
+    hr = <span class=prg>m_d3dObject-&gt;CreateDevice</span>( <span class=sc4>D3DADAPTER_DEFAULT</span>, <span class=sc4>D3DDEVTYPE_HAL</span>, hWnd, 
+      <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>, &amp;pps, &amp;m_d3dDevice );   
+    <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  
+    <span class=sc16>{</span>
+
+      <span class=prg>MessageBoxA </span> ( <span class=sc4>0</span>, <span class=sc6>"renderizador não foi criado"</span>, 
+        <span class=sc6>"CMotor::initGfx</span>( ) <span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+      <span class=sc6>return </span><span class=prg>false</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração básica de estados</span>
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_LIGHTING</span>,         <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_DITHERENABLE</span>,     <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_SPECULARENABLE</span>,  <span class=prg>FALSE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_ZENABLE</span>,          <span class=prg>TRUE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_CULLMODE</span>,         <span class=sc4>D3DCULL_CCW </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_NORMALIZENORMALS</span>, <span class=prg>TRUE </span> );   
+
+  <span class=sc2>// Configuração de texturização</span>
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLOROP</span>,   <span class=sc4>D3DTOP_MODULATE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLORARG1</span>, <span class=sc4>D3DTA_TEXTURE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_COLORARG2</span>, <span class=sc4>D3DTA_CURRENT </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAOP</span>,   <span class=sc4>D3DTOP_MODULATE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG1</span>, <span class=sc4>D3DTA_TEXTURE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTextureStageState</span>( <span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG2</span>, <span class=sc4>D3DTA_DIFFUSE </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetSamplerState</span>( <span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetSamplerState</span>( <span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR </span> );   
+
+  <span class=sc2>// configuração da matriz de projeção</span>
+  <span class=sc5>D3DXMATRIX </span>matProj; 
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &amp;matProj, <span class=sc4>D3DX_PI/4</span>, <span class=sc4>800.0f/600.0f</span>, 
+    <span class=sc4>1.0f</span>, <span class=sc4>5000.0f </span> );   
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &amp;matProj  );   
+
+  <span class=sc2>// Criação de uma luz direcional</span>
+  <span class=sc5>D3DLIGHT9 </span>light; 
+  <span class=prg>ZeroMemory</span>( &amp;light, <span class=sc16>sizeof</span>( <span class=sc5>D3DLIGHT9 </span> )   );   
+  <span class=prg>light.Type </span>      = <span class=sc4>D3DLIGHT_DIRECTIONAL</span>; 
+  <span class=prg>light.Diffuse.r </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.g </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.b </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Diffuse.a </span> = <span class=sc4>1.0f</span>; 
+  <span class=prg>light.Range </span>     = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Direção da luz: ela deve estar normalizada - apontando pra baixo</span>
+  <span class=sc2>// ao longo do eixo z</span>
+  <span class=sc5>D3DXVECTOR3 </span>vecDir; 
+  vecDir = <span class=sc5>D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>-0.3f</span>, <span class=sc4>0.5f</span>);   
+  <span class=prg>D3DXVec3Normalize</span>(  ( <span class=sc5>D3DXVECTOR3*</span>)  <span class=prg>&amp;light.Direction</span>, &amp;vecDir  );   
+  <span class=prg>m_d3dDevice-&gt;SetLight</span>( <span class=sc4>0</span>, &amp;light  );   
+  <span class=prg>m_d3dDevice-&gt;LightEnable</span>( <span class=sc4>0</span>, <span class=prg>TRUE </span> );   
+
+  <span class=sc2>// Iluminação extra: luz ambiente</span>
+  <span class=prg>m_d3dDevice-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>(80, 80, 80 )   );   
+
+  <span class=sc2>// Criação da fonte para mostrar texto na tela</span>
+  <span class=prg>D3DXCreateFont</span>( m_d3dDevice, kFontSize, <span class=sc4>0</span>, <span class=sc4>FW_BOLD</span>, <span class=sc4>0</span>, <span class=prg>FALSE</span>, 
+    <span class=sc4>DEFAULT_CHARSET</span>, <span class=sc4>OUT_DEFAULT_PRECIS</span>, <span class=sc4>DEFAULT_QUALITY</span>, 
+    <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>, <span class=prg>TEXT</span>(<span class=sc6>"Arial"</span>), &amp;m_font  );   
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// initGfx (  ) </span></span>
+
+
+<span class=sc2>// Esta função carrega o modelo 3d informado. Na falha ela retorna 'falso'</span>
+<span class=sc2>// provavelmente porque o arquivo do modelo não foi localizado.</span>
+<span class=sc2>// Adicionalmente ela permite a configuração da primeira animação a ser tocada</span>
+<span class=prg>bool </span>CMotor::loadxfile ( <span class=sc16>const </span><span class=prg>std::string </span>&amp;filename, <span class=prg>int </span>startAnimation )  
+<span class=sc16>{</span>
+  <span class=sc2>// Apenas suportamos um modelo 3d. Então deletamos ele se ele existir!</span>
+  <span class=sc9>if </span> ( m_modelo )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>m_modelo; 
+    m_modelo = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Cria o modelo 3d</span>
+  m_modelo = <span class=prg>new </span><span class=sc5>CModelo</span>( m_d3dDevice  );   
+  <span class=sc9>if </span> (  <span class=prg>!m_modelo-&gt;Load</span>(filename )   )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>m_modelo; 
+    m_modelo = <span class=sc4>0</span>;  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Estabelece a animação inicial</span>
+  <span class=prg>m_modelo-&gt;SetAnimationSet</span>( startAnimation  );   
+
+  <span class=sc2>// Configura a câmera para olhar para o modelo 3d</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos = <span class=prg>m_modelo-&gt;GetInitialCameraPosition</span>( );   
+  <span class=prg>m_camera-&gt;SetPosition</span>(pos );   
+  <span class=prg>m_camera-&gt;SetYawPitchRoll</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);   
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// loadxfile (  ) .fim</span></span>
+
+
+<span class=sc2>// É chamada dentro de WinMain (  ) . Essa função calcula o tempo decorrido</span>
+<span class=sc2>// e anima o modelo 3d. Ela também implementa o laço de renderização</span>
+<span class=prg>void </span>CMotor::Renderizar (  )  
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>DWORD </span>lastTime = <span class=prg>timeGetTime</span>( );   
+
+  <span class=sc2>// Inicialização da matriz de visualização</span>
+  <span class=sc5>D3DXMATRIX </span>matView; 
+  <span class=prg>m_camera-&gt;CalculateViewMatrix</span>( &amp;matView  );   
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &amp;matView  );   
+
+  <span class=sc2>// Limpa o alvo de renderização e o zbuffer</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>m_d3dDevice-&gt;Clear</span>(<span class=sc4>0</span>, <span class=prg>NULL</span>, 
+    <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, 
+    <span class=prg>D3DCOLOR_XRGB</span>(255,255,255 ), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc9>if </span> (  Tools::FailedHr ( hr )   )  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Renderiza cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>m_d3dDevice-&gt;BeginScene</span>( )   )   )  
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza o modelo 3d</span>
+    <span class=sc9>if </span> ( m_modelo )  
+    <span class=sc16>{</span>
+      <span class=sc2>// Calcula o tempo decorrido</span>
+      <span class=prg>float </span>timeElapsed = <span class=sc4>0.001f </span>*  (  <span class=prg>timeGetTime</span>( )  - lastTime  );   
+      lastTime = <span class=prg>timeGetTime</span>( );   
+
+      <span class=sc2>// É necessário passar a matriz de alto nível para posicionar e</span>
+      <span class=sc2>// orientar o modelo. Crie isto a partir da posição  e rotação</span>
+      <span class=sc2>// correntes</span>
+      <span class=sc5>D3DXMATRIX </span>matRotX, matRotY, matRotZ, matTrans; 
+
+      <span class=sc2>// Calcula a matriz de rotação</span>
+      <span class=prg>D3DXMatrixRotationX</span>( &amp;matRotX, m_modeloPitch  );   
+      <span class=prg>D3DXMatrixRotationY</span>( &amp;matRotY, m_modeloYaw  );   
+      <span class=prg>D3DXMatrixRotationZ</span>( &amp;matRotZ, m_modeloRoll  );   
+
+      <span class=sc2>// Calcula a matriz de translação</span>
+      <span class=prg>D3DXMatrixTranslation</span>( &amp;matTrans, <span class=prg>m_modeloPosition.x</span>, 
+        <span class=prg>m_modeloPosition.y</span>, <span class=prg>m_modeloPosition.z</span>);   
+
+      <span class=sc2>// Calcula a matriz de mundo pela multiplicação com as matrizes</span>
+      <span class=sc2>// acima na ordem correta</span>
+      <span class=sc5>D3DXMATRIX </span>matWorld =  (  matRotX * matRotY * matRotZ  )  * matTrans; 
+
+      <span class=sc2>// BoneMove (  )  realiza a animação enquanto Render (  ) </span>
+      <span class=sc2>// apenas desenha.</span>
+      <span class=prg>m_modelo-&gt;BoneMove</span>( timeElapsed, &amp;matWorld );   
+      <span class=prg>m_modelo-&gt;Render</span>( );   
+    <span class=sc16>} <span class=sc2>// endif  ( m_modelo ) </span></span>
+
+    <span class=sc2>// Exibição de texto na tela</span>
+    mostrarTexto (  );   
+
+    <span class=sc2>// Finaliza e apresenta a cena</span>
+    <span class=prg>m_d3dDevice-&gt;EndScene</span>( );   
+    <span class=prg>m_d3dDevice-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL </span> );   
+  <span class=sc16>} <span class=sc2>// endif  (  SUCCEEDED (  m_d3dDevice-&gt;BeginScene (  )   ) </span></span>
+<span class=sc16>} <span class=sc2>// Renderizar (  ) .fim</span></span>
+
+
+<span class=sc2>// Retorna a câmera</span>
+<span class=sc5>CCamera </span>*CMotor::GetCamera (  )  <span class=sc16>const</span>
+<span class=sc16>{</span>
+  assert (  m_camera  );   
+  <span class=sc6>return </span>m_camera; 
+<span class=sc16>} <span class=sc2>// GetCamera (  ) .fim</span></span>
+
+
+<span class=sc2>// Mostra as informações na tela</span>
+<span class=prg>void </span>CMotor::mostrarTexto (  )  <span class=sc16>const</span>
+<span class=sc16>{</span>
+
+ <span class=sc2>// Variáveis para controle do tempo e performance</span>
+ <span class=sc16>static </span><span class=prg>DWORD </span>lastTime = <span class=prg>timeGetTime</span>( );   
+ <span class=sc16>static </span><span class=prg>int </span>numFrames = <span class=sc4>0</span>; 
+ <span class=sc16>static </span><span class=prg>float </span>fps = <span class=sc4>0</span>; 
+
+ <span class=sc2>// Calcula a taxa de frames a cada segundo</span>
+ numFrames++;   
+ <span class=prg>DWORD </span>timePassed = <span class=prg>timeGetTime</span>( )  - lastTime; 
+ <span class=sc9>if </span> (  timePassed &gt; 1000  )  
+ <span class=sc16>{</span>
+  fps = <span class=sc4>0.001f </span>* timePassed * numFrames; 
+  numFrames = <span class=sc4>0</span>; 
+  lastTime = <span class=prg>timeGetTime</span>( );   
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc5>D3DCOLOR </span>fontColor = <span class=prg>D3DCOLOR_XRGB</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, 128  );   
+ <span class=sc5>RECT </span>rct; 
+ <span class=prg>rct.left </span>= kFontSize; 
+ <span class=prg>rct.right </span>= 800; 
+ <span class=prg>rct.top </span>= kFontSize; 
+ <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+ <span class=sc2>// Exibe a taxa de frames</span>
+ <span class=prg>std::string </span>fpsString = <span class=sc6>"FPS: " </span>+ ToString ( fps );   
+ <span class=prg>m_font-&gt;DrawText</span>( <span class=prg>NULL</span>, <span class=prg>fpsString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+ <span class=sc9>if </span> (  m_modelo  )  
+ <span class=sc16>{</span>
+  <span class=sc2>// Pega o nome do arquivo do modelo 3d</span>
+  <span class=prg>std::string </span>fnameString = <span class=sc6>"Arquivo: " </span>+ <span class=prg>m_modelo-&gt;GetFilename</span>( );   
+  <span class=prg>m_font-&gt;DrawText</span>( <span class=prg>NULL</span>, <span class=prg>fnameString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=sc2>// Pega o nome do animation set corrente</span>
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>std::string </span>animString = <span class=sc6>"AnimationSet: </span>(<span class=sc6>" </span>+ 
+    ToString (  <span class=prg>m_modelo-&gt;GetCurrentAnimationSet</span>( )   )  + <span class=sc6>"</span>) <span class=sc6> " </span>+ 
+    <span class=prg>m_modelo-&gt;GetAnimationSetName</span>( <span class=prg>m_modelo-&gt;GetCurrentAnimationSet</span>( )   );   
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=prg>animString.c_str</span>( ), <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=sc16>} <span class=sc2>// endif  (  m_modelo  ) </span></span>
+
+ <span class=sc9>else</span>
+ <span class=sc16>{</span>
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha no carregamento do modelo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=sc16>} <span class=sc2>// end else</span></span>
+
+ <span class=sc9>if </span> (  m_displayControls  )  
+ <span class=sc16>{</span>
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"CONTROLES"</span>, <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>"Espaço: próximo animationSet"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, <span class=sc6>" </span>+ <span class=sc6>/-: Muda velocidade da animação"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom=rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Seta esquerda \\ Direita: movimenta a câmera lateralmente"</span>, 
+    <span class=sc4>-1</span>, &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Seta cima \\ baixo: movimenta a câmera frente\\fundo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas Home e End: movimenta a câmera cima\\baixo"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 4 e 6: gira o modelo no eixo y </span>(yaw ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 8 e 2: gira o modelo no eixo x </span>(pitch ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"Teclas 7 e 9: gira o modelo no eixo z </span>(roll ) <span class=sc6>"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+
+  <span class=prg>rct.top </span>+= kFontSize; <span class=prg>rct.bottom </span>= <span class=prg>rct.top </span>+ kFontSize; 
+  <span class=prg>m_font-&gt;DrawText</span>(<span class=prg>NULL</span>, 
+    <span class=sc6>"F1: Liga \\ desliga lengenda dos controles"</span>, <span class=sc4>-1</span>, 
+    &amp;rct, <span class=sc4>0</span>, fontColor  );   
+ <span class=sc16>} <span class=sc2>// endif  ( m_displayControls ) </span></span>
+<span class=sc16>} <span class=sc2>// mostrarTexto (  ) .fim</span></span>
+
+
+<span class=sc2>// Seleciona o próximo animationSet</span>
+<span class=prg>void </span>CMotor::NextAnimation (  )  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  <span class=prg>m_modelo-&gt;NextAnimation</span>( );   
+<span class=sc16>} <span class=sc2>// NextAnimation (  ) </span></span>
+
+
+<span class=sc2>// Acelera a animação</span>
+<span class=prg>void </span>CMotor::AnimateFaster (  )  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  
+    <span class=prg>m_modelo-&gt;AnimateFaster</span>( );   
+<span class=sc16>} <span class=sc2>// AnimateFaster (  ) .fim</span></span>
+
+<span class=sc2>// Desacelera a animação</span>
+<span class=prg>void </span>CMotor::AnimateSlower (  )  
+<span class=sc16>{</span>
+  <span class=sc9>if </span> (  m_modelo  )  <span class=prg>m_modelo-&gt;AnimateSlower</span>( );   
+<span class=sc16>} <span class=sc2>// AnimateSlower (  ) .fim</span></span>
+<span class=sc2>// fim do arquivo Motor.cpp</span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"Motor.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+
+<span class=sc2>// Intância global do motor da aplicação</span>
+<span class=sc5>CMotor </span>*g_motor = <span class=sc4>0</span>; 
+
+<span class=sc2>// Protótipo da função de processamento da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela  ( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+             <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam );   
+
+<span class=sc2>// Constantes de tamanho da tela</span>
+<span class=sc16>const </span><span class=prg>int </span>kViewPortWidth = 800; 
+<span class=sc16>const </span><span class=prg>int </span>kViewPortHeight = 600; 
+
+<span class=sc2>// Constantes de controle de câmera</span>
+<span class=sc16>const </span><span class=prg>float </span>kCameraMovementSpeed = <span class=sc4>0.05f</span>; 
+<span class=sc16>const </span><span class=prg>float </span>kCameraRotationSpeed = <span class=sc4>0.01f</span>; 
+
+<span class=sc2>// Ponto de entrada do programa: cria a janela, inicializa o</span>
+<span class=sc2>// motor gráfico e entra no laço de mensagens</span>
+<span class=prg>int </span><span class=sc16>APIENTRY </span><span class=prg>WinMain</span>(<span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+           <span class=prg>LPSTR </span>lpCmdLine, <span class=prg>int </span>nCmdShow )  
+<span class=sc16>{</span>
+  <span class=sc2>// Criação e registro da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcex; 
+  <span class=prg>wcex.cbSize </span>= <span class=sc16>sizeof</span>(<span class=sc5>WNDCLASSEX</span>);   
+  <span class=prg>wcex.style </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.lpfnWndProc </span>=  ( <span class=prg>WNDPROC</span>)  processaJanela; 
+  <span class=prg>wcex.cbClsExtra </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.cbWndExtra </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.hInstance </span>= hInstance; 
+  <span class=prg>wcex.hIcon </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.hCursor </span>= <span class=prg>LoadCursor</span>( <span class=prg>NULL</span>, <span class=sc4>IDC_ARROW </span> );   
+  <span class=prg>wcex.hbrBackground </span>=  (  <span class=sc16>HBRUSH </span> )  (  <span class=sc4>COLOR_WINDOW </span>+ <span class=sc4>1</span>);   
+  <span class=prg>wcex.lpszMenuName </span>= <span class=sc4>0</span>; 
+  <span class=prg>wcex.lpszClassName </span>= <span class=sc6>"clsDirectx"</span>; 
+  <span class=prg>wcex.hIconSm </span>= <span class=sc4>0</span>; 
+  <span class=prg>RegisterClassEx</span>(&amp;wcex );   
+
+  <span class=sc2>// Ajuste de tamanho da janela</span>
+  <span class=sc5>RECT </span>rc; 
+  <span class=prg>SetRect</span>( &amp;rc, <span class=sc4>0</span>, <span class=sc4>0</span>, kViewPortWidth, kViewPortHeight  );   
+  <span class=prg>AdjustWindowRectEx</span>( &amp;rc, <span class=sc4>WS_OVERLAPPEDWINDOW</span>, <span class=prg>false</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Criação da janela</span>
+  <span class=sc16>HWND </span>hWnd = <span class=prg>CreateWindow</span>(<span class=sc6>"clsDirectx"</span>, <span class=sc6>"prj_HierarquiaAnimada"</span>, 
+    <span class=sc4>WS_OVERLAPPEDWINDOW</span>, 
+    <span class=sc4>CW_USEDEFAULT</span>, <span class=sc4>CW_USEDEFAULT</span>, <span class=prg>rc.right </span>- <span class=prg>rc.left</span>, <span class=prg>rc.bottom </span>- <span class=prg>rc.top</span>, 
+    <span class=prg>NULL</span>, <span class=prg>NULL</span>, hInstance, <span class=prg>NULL</span>);   
+  <span class=sc9>if </span> ( hWnd==0 )  
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  <span class=sc2>// Inicialização do motor gráfico</span>
+  g_motor= <span class=prg>new </span><span class=sc5>CMotor</span>( );   
+  <span class=sc9>if </span> (  <span class=prg>!g_motor-&gt;initGfx</span>(hWnd )   )  
+  <span class=sc16>{</span>
+    <span class=prg>delete </span>g_motor; 
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Carrega um modelo  ( x )  nativo do directx</span>
+  <span class=prg>g_motor-&gt;loadxfile</span>( Tools::GetTheCurrentDirectory (  )  + 
+    <span class=sc6>"/data/bones_all.x"</span>, <span class=sc4>1</span>);   
+
+  <span class=prg>ShowWindow</span>(hWnd, nCmdShow );   
+  <span class=prg>UpdateWindow</span>(hWnd );   
+
+  <span class=sc2>// Laço de mensagens da aplicação</span>
+  <span class=sc5>MSG </span>msg; 
+  <span class=prg>ZeroMemory</span>( &amp;msg, <span class=sc16>sizeof</span>(msg )   );   
+  <span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT </span> )  
+  <span class=sc16>{</span>
+     <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &amp;msg, <span class=prg>NULL</span>, <span class=sc4>0U</span>, <span class=sc4>0U</span>, <span class=sc4>PM_REMOVE </span> )   )  
+     <span class=sc16>{</span>
+      <span class=prg>TranslateMessage</span>( &amp;msg  );   
+      <span class=prg>DispatchMessage</span>( &amp;msg  );   
+     <span class=sc16>}</span>
+     <span class=sc9>else</span>
+     <span class=sc16>{</span>
+       <span class=prg>g_motor-&gt;Renderizar</span>( );   
+     <span class=sc16>}</span>
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// Limpeza e finalização</span>
+  <span class=prg>delete </span>g_motor; 
+  <span class=sc6>return </span> ( <span class=prg>int</span>) <span class=prg>msg.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain (  ) .fim</span></span>
+
+
+<span class=sc2>// Função de processamento das mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+             <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam )  
+<span class=sc16>{</span>
+  <span class=sc9>switch </span> ( message )  
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>switch</span>(wParam )  
+    <span class=sc16>{</span>
+      <span class=sc2>// Controle de câmera</span>
+      <span class=sc9>case </span>'W': 
+      <span class=sc9>case </span><span class=sc4>VK_UP:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveForward</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'S': 
+      <span class=sc9>case </span><span class=sc4>VK_DOWN:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveForward</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'D': 
+      <span class=sc9>case </span><span class=sc4>VK_RIGHT:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveRight</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span>'A': 
+      <span class=sc9>case </span><span class=sc4>VK_LEFT:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveRight</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_HOME:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveUp</span>(kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_END:</span>
+        <span class=prg>g_motor-&gt;GetCamera</span>()<span class=prg>-&gt;MoveUp</span>(-kCameraMovementSpeed );   
+      <span class=sc6>break</span>; 
+
+      <span class=sc2>// Controle do modelo</span>
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD4:</span>
+        <span class=prg>g_motor-&gt;YawModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD6:</span>
+        <span class=prg>g_motor-&gt;YawModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD8:</span>
+        <span class=prg>g_motor-&gt;PitchModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD2:</span>
+        <span class=prg>g_motor-&gt;PitchModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD7:</span>
+        <span class=prg>g_motor-&gt;RollModelo</span>(-kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_NUMPAD9:</span>
+        <span class=prg>g_motor-&gt;RollModelo</span>(kCameraRotationSpeed );   
+      <span class=sc6>break</span>; 
+
+      <span class=sc2>// Controle de animação</span>
+      <span class=sc9>case </span><span class=sc4>VK_SPACE:</span>
+        <span class=prg>g_motor-&gt;NextAnimation</span>();   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_ADD:</span>
+        <span class=prg>g_motor-&gt;AnimateFaster</span>();   
+      <span class=sc6>break</span>; 
+      <span class=sc9>case </span><span class=sc4>VK_SUBTRACT:</span>
+        <span class=prg>g_motor-&gt;AnimateSlower</span>();   
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>VK_F1:</span>
+      <span class=prg>g_motor-&gt;ToggleControlsDisplay</span>();   
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>default:</span>
+        <span class=sc6>break</span>; 
+    <span class=sc16>}</span>
+    <span class=sc6>break</span>; 
+        <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+             <span class=prg>PostQuitMessage</span>(<span class=sc4>0</span>);   
+        <span class=sc6>break</span>; 
+        <span class=sc9>default:</span>
+            <span class=sc6>return </span><span class=prg>DefWindowProc</span>(hWnd, message, wParam, lParam );   
+  <span class=sc16>}</span>
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela (  ) .fim</span></span>
+<span class=sc2>// fim do arquivo entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe CMotor</a>
+<a href=#2.1>2.1 Especificação da classe CMotor: Motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: Arquivo Motor.cpp</a>
+<a href=#2.3>2.3 Métodos especiais: construtor\destrutor</a>
+<a href=#2.4>2.4 initGfx()        - Inicialização do motor gráfico</a>
+<a href=#2.5>2.5 loadxfile()      - Carregando o arquivo x</a>
+<a href=#2.6>2.6 Renderizar()     - Renderização da cena</a>
+<a href=#2.7>2.7 GetCamera()      - Obtendo a câmera</a>
+<a href=#2.8>2.8 mostrarTexto()   - Exibição de informações na tela</a>
+<a href=#2.9>2.9 Interface para controle de animação</a>
+<a href=#3.1>3.1 Aspectos globais: Arquivo entrada.cpp</a>
+<a href=#3.2>3.2 WinMain()        - Ponto de entrada da aplicação</a>
+<a href=#3.3>3.3 processaJanela() - Processamento de mensagens da janela</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

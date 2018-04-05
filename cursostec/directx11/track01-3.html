@@ -1,0 +1,1192 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-3</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:5px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+
+
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-3</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.3 Inicialização do motor gráfico</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Variáveis globais</a>
+<a href=#2.3>2.3 initGfx() - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Renderizar() - Renderização da cena</a>
+<a href=#2.5>2.5 Limpar() - Limpeza adequada do ambiente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Dispositivo</a>
+
+<a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Dispositivo.png></div>
+Esta aplicação ilustra como inicializar o motor gráfico do direct 11.
+Isto consiste em criar e configurar um conjunto básico de objetos que
+vão participar do processo  de  produção,  manutenção  e  entrega  da
+imagem final no monitor:
+
+<u>1) Swap Chain ou corrente de trocas </u>
+Neste passo a corrente de trocas a ser criada é descrita  através  do
+preenchimento de uma estrutura que recebe os valores iniciais dos seus
+atributos incluindo principalmente a configuração do <b>backbuffer</b> aonde
+a imagem é renderizada inicialmente. Neste ponto ocorre o início de um
+padrão que predomina no processo de criação de objetos do directx 11:
+inicialmente é criado uma estrutura de dados que  <b>descreve</b> o objeto a
+ser criado por uma outra função  ou  método.   A corrente de trocas é
+objeto do tipo da interface <b class=prg>IDXGISwapChain</b>  cuja  descrição  é  feita
+através do preenchimento da estrutura  <b class=prg>DXGI_SWAP_CHAIN_DESC</b> e criada
+efetivamente com a função <span class=prg>D3D11CreateDeviceAndSwapChain().</span>
+Tanto  o  backubuffer,  o  frontbuffer  bem  como  outros objetos com
+finalidades gráficas semelhantes  serão  referenciados  eventualmente
+como <b>superfícies retangulares de renderização</b>.
+
+<u>2) Pré-configuração dos dispositivos do motor gráfico </u>
+Para uma boa leitura do código nosso programa prepara ou descreve nas
+devidas variáveis os valores desejados para  os  atributos  dos  dois
+dispositivos do motor gráfico a serem criados.   O directx 11  divide
+por dois objetos as tarefas de renderização e manutenção dos recursos
+criados. O objeto <b class=prg>ID3D11Device</b> realiza a  criação  e  manutenção  dos
+recursos  enquanto  o  objeto  <b class=prg>ID3D11DeviceContext</b> realiza tarefas de
+renderização imediata.
+
+<u>3) Criação efetiva da swap chain e dos dispositivos gráficos </u>
+Nesse ponto com a função <span class=prg>D3D11CreateDeviceAndSwapChain()</span> são criados
+os dois dispositivos gráficos e a swap chain utilizando os atributos
+que foram configurados previamente para estes três objetos.
+
+<u>4) Criação da textura alvo de renderização ou Render Target View</u>
+Nessa etapa  utilizando o objeto da swap chain  efetivamente  criada,
+com base no backbuffer dessa corrente  é  criado  o  <b>frontbuffer</b>  que
+recebe  a imagem final de visualização da cena.   O  frontbuffer  que
+aparece  diretamente  no  monitor  é   chamado  de  <b>textura  alvo  de
+renderização</b> ou em inglês <b>Render Target View</b>.  Depois  de  criado,  o
+frontbuffer é na  sequência  atrelado  ao  dispositivo  renderizador.
+O backbuffer é objeto da interface <b class=prg>ID3D11Texture2D</b>, e a textura alvo
+de renderização é do tipo dado pela interface <b class=prg>ID3D11RenderTargetView</b>.
+
+<u>5) Janela de visualização ou ViewPort</u>
+O  último  passo  da  inicialização  do  motor  gráfico  consiste  em
+criar, configurar e instalar a janela de visualização no dispositivo
+renderizador. A janela de visualização recorta a cena final e exibe-a
+no  monitor.   Com  muita  frequência  a  janela  de  visualização  é
+configurada para exibir a  cena  toda  sem  cortes  na  imagem  final.
+A janela de visualização  é  criada  a  partir  do  preenchimento  da 
+estrutura <b class=prg>D3D11_VIEWPORT</b> com as coordenadas do retângulo  do  recorte
+da cena final a ser exibido.
+
+<a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>wWinMain()</b>
+	chama initWindow() para criar a janela da aplicação
+	
+	<b class=sc16>chama initGfx() para inicializar o motor gráfico</b>
+	
+	estabelece o laço de mensagens
+		chama Renderizar() para renderizar a cena
+		
+	chama Limpar() para limpar o ambiente na finalização da aplicação.
+
+initWindow()
+	cria, configura e registra a classe da janela
+	cria a janela da aplicação
+	mostra a janela</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+<b class=sc16><u>initGfx()</u></b>
+Inicializa os objetos do motor gráfico:<b class=sc16>
+	- estabelece antecipadamente os valores iniciais dos objetos do motor gráfico
+	através do preenchimento  de  variáveis  e estruturas descritivas;	
+
+	Obtém  o tamanho da área cliente da janela com <b class=prg>GetClientRect()</b>
+		 
+	preenche a estrutura de descrição da corrente de trocas: <b class=prg>DXGI_SWAP_CHAIN_DESC</b>
+
+	cria a corrente de trocas ou swap chain, cria o dispositivo renderizador, cria 
+	o dispositivo de gestão de recursos todos com <b class=prg>D3D11CreateDeviceAndSwapChain()</b>
+	
+	Obtém o backbuffer ( <b class=prg>ID3D11Texture2D</b> ) com <b class=prg>g_pSwapChain-&gt;GetBuffer()</b>.
+	
+	cria a superfície alvo de renderização ( <b class=prg>ID3D11RenderTargetView</b> ) ou a 'render
+	target view' baseada no backbuffer com <b class=prg>g_pd3dDevice-&gt;CreateRenderTargetView()</b>
+
+	Instala a 'render target view' com <b class=prg>g_pImmediateContext-&gt;OMSetRenderTargets()</b>		
+	
+	Preenche a estrutura ( <b class=prg>D3D11_VIEWPORT</b> ) de criação da janela de visualização
+	ou viewport. Instala a viewport com <b class=prg>g_pImmediateContext-&gt;RSSetViewports()</b>.		
+	</b>
+Renderizar()
+	<b class=sc16>Limpa a tela representada pela superfície alvo de renderização
+	com <b class=prg>g_pImmediateContext-&gt;ClearRenderTargetView()</b>
+	
+		[ Desenha a cena ] 
+		
+	Apresenta a cena com <b class=prg>g_pSwapChain-&gt;Present()</b> </b>
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+		Verifica teclado - finaliza aplicação na tecla Escape
+		chama Limpar() na finalização da aplicação		
+	
+Limpar()
+	Libera os objetos utilizados: <b class=sc16>
+		- superfície alvo de renderização ( render target view )
+		- corrente de trocas ( swap chain )
+		- dispositivo de renderização
+		- dispositivo de gestão de recursos </b>
+
+</div></div>
+
+
+<a name='2.1'><b><u>2.1 Aspectos globais: arquivo motor.h </u></b>
+<div class=niceview><b>
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=sc16>HRESULT </span>initGfx();  
+
+  <span class=sc2>// Função de renderizar a cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função de liberar os objetos utilizados pela aplicação</span>
+  <span class=prg>void </span>Limpar( <span class=prg>void</span>);  
+</b></div>
+
+<a name='2.2'><b><u>2.2 Variáveis globais </u></b><div class=niceview>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+
+<span class=sc2>// Corrente de trocas</span>
+<span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Tipo de driver</span>
+<span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; 
+<span class=sc2>// nível desejado de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; 
+
+
+<span class=sc2>// Dispositivo gerenciador de recursos</span>
+<span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; 
+<span class=sc2>// Disposisitivo renderizador</span>
+<span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Interface de gestão da textura alvo de visualização</span>
+<span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Variáveis definidas em entrada.cpp</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; 
+<span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; 
+</div>
+
+<b class=prg-code><span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; </b>
+Este objeto  representa a corrente de trocas responsável pela criação
+e manutenção de um ou vários backbuffers e de apresentar  a  cena  na
+tela.  Esse  objeto  participa  da  criação  da  superfície  alvo  de
+renderização.
+
+<b class=prg-code><span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; </b>
+Esta  configuração  define  o  tipo do dispositivo renderizador a ser
+criado. Aqui selecionamos o tipo 'hardware' que naturalmente apresenta
+a melhor performance. Outros tipos selecionam emulação  por  software
+que pode garantir o funcionamento dos recursos  do  directx 11  porém
+ao custo de uma baixa performance.
+
+<b class=prg-code><span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; </b>
+Esta configuração seleciona o nível de capacidades que queremos que o
+motor gráfico apresente. Selecionamos o nível mais alto referenciando
+o directx 11.  Esta opção é resultado de uma estratégia de design que
+a  implementação  do  directx  11  traz para garantir que a aplicação
+funcione   em  hardware  com  capacidades  inferiores  ao directx 11.
+A lógica desse processo é optar pelo maior nível de capacidades que o
+hardware apresente e  que eventualmente podem se limitar aos recursos
+do directx 10 ou 9.
+
+<b class=prg-code><span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; </b>
+Este  objeto  representa  o  dispositivo  de  criação e manutenção de
+recursos. Entre estes recursos estão texturas,  buffers para vértices
+entre outras coisas.
+
+<b class=prg-code><span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; </b>
+Este é o <b>dispositivo renderizador.</b>   Este dispositivo está ligado com
+objetos e tarefas imediatas de renderização  tais  como  desenhar  as
+formas  geométricas  e  operações  programáveis  da  placa  de vídeo.
+
+<b class=prg-code><span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; </b>
+Esta interface representa a superfície alvo de renderização ou a tela
+de visualização imediata da cena.
+
+<b class=prg-code><span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; </b>
+O handle da janela  é  necessário para obtenção das dimensões da área
+cliente  que  lembramos  que  é  a  parte desenhável da janela e este
+handle  é  o  caminho  de  indicar  a  janela  alvo  da renderização.
+
+<b class=prg-code><span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; </b>
+As funções do directx sempre retornam o resultado  no  tipo  <b class=sc16>HRESULT</b>.
+Como  esta  é  uma  aplicação de exemplo, a fim de garantir uma maior
+clareza  e  facilidade  na  compreensão  do  código  do programa, foi
+omitido    código  referente  ao  aviso  e tratamento  de  erros  que
+podem  ocorrer. De qualquer maneira salientamos que é importante nas
+suas aplicações pipocar mensagens e verificações para localizar mais
+rapidamente as causas de falhas da aplicação.
+
+<a name='2.3'><b><u>2.3 initGfx() - Inicialização do motor gráfico </u></b>
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+    <span class=sc2>// Se tudo ocorrer bem initGfx() vair retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+  <span class=sc5>RECT </span>areaCliente; 
+    <span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+    <span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+    <span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+
+
+    <span class=sc2>// Configuração da corrente de trocas</span>
+  <span class=sc2>// Inicialização básica da estrutura</span>
+  <span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+    <span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+    <span class=sc2>// Quantidade de backbuffers</span>
+  <span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração da largura e tamanho</span>
+  <span class=prg>sd.BufferDesc.Width </span> = largura; 
+    <span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+  <span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+  <span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+    <span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+  <span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+    <span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+  <span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+  <span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+    <span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+  <span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+    <span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Modo de descarte do backbuffer</span>
+  <span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+  <span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc2>// Indicação do display default</span>
+  <span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+  <span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+    <span class=sc2>// Configuração dos flags de criação</span>
+  <span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+  <span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+    <span class=sc16>{</span>
+        <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+    <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+  <span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+  <span class=sc2>// motor gráfico do directx 11.</span>
+  g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+    NoRasterSoftware, createDeviceFlags, featureLevels, 
+    numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+    &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+
+
+  <span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+    <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+  g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+    ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+    g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+    &g_pRenderTargetView );  
+    <span class=prg>pBackBuffer-&gt;Release</span>();  
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+    <span class=sc2>// Configuração da textura alvo no dispositivo</span>
+  <span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+
+
+  <span class=sc2>// Configuração da janela de visualização (viewport)</span>
+    <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>D3D11_VIEWPORT </span>vp; 
+    <span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+    <span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+    <span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+    <span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+    <span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+    <span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+    <span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b class=prg-code>g_hr = <span class=sc4>S_OK</span>; </b>
+Se  tudo  ocorrer  bem  essa  função  e cada estágio dessa função vai
+retornar <b>S_OK</b>. 
+
+<div class=prg-code><span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; </div>
+Este código é para coletar o tamanho da área cliente da janela.
+
+
+<div class=prg-code><span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+<span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  </div>
+Este é o código de criação e  limpeza inicial da estrutura descritiva
+da swap chain.
+
+
+<b class=prg-code><span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; </b>
+Aqui indicamos a quantidade de backbuffers que queremos na swap chain.
+
+
+<div class=prg-code><span class=prg>sd.BufferDesc.Width </span> = largura; 
+<span class=prg>sd.BufferDesc.Height </span>= altura; </div>
+Definimos aqui as dimensões do backbuffer.    Aqui o melhor caminho é
+replicar o tamanho da área cliente da janela. 
+
+
+<div class=prg-code><span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+<span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; </div>
+Este código define a taxa de refrescamento  da imagem na tela  em  60
+vezes por segundo.
+
+
+<b class=prg-code><span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; </b>
+Aqui selecionamos  o formato  da superfície do backbuffer.  Este é um
+formato de 32 bits com 8 bits para cada canal de cor (RGB)  e o canal
+alpha de transparência (A).
+
+
+<b class=prg-code><span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; </b>
+Aqui  é  a  declaração  de  uso  do backbuffer assinalando-o como uma
+superfície alvo de renderização.
+
+
+<div class=prg-code><span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+<span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; </div>
+Estas  duas  linhas  definem  a  qualidade  final  da  imagem.  Nesta
+configuração default não é aplicado antialiasing que tira o serrilhado
+da renderização das diagonais das formas geométricas.
+
+
+<div class=prg-code><span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+<span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; </div>
+Na primeira linha indicamos  qual é a janela de saída da renderização
+e na segunda indicamos que  a aplicação vai trabalhar em modo janela.
+Em um exemplo posterior  vai ser mostrado como rodar uma aplicação em 
+tela cheia e entre outros cuidados e configurações isso envolve também
+configurar esta segunda linha para <span class=prg>false</span>.
+
+
+<b class=prg-code><span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; </b>
+Esta linha indica que o backbuffer  pode  ser  totalmente  descartado
+depois de apresentado na tela. Nos bastidores do directx pode ocorrer
+literalmente  uma  cópia  do  backbuffer para o frontbuffer ou apenas
+um flip aonde apenas os endereços destas memórias são permutadas.
+
+Até o presente momento  a swap chain desejada foi descrita e em breve
+ela  será  criada  efetivamente  tomando  essa  descrição  como base.
+Agora vamos avançar vagarosamente para  a  criação  dos  dispositivos
+gráficos que ocorre em conjunto com a swap chain.
+
+<b class=prg-code><span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; </b>
+Este objeto representa o adaptador gráfico. Configurado com NULL este
+objeto  vai  apontar  para  o  adaptador  gráfico  default. Uma outra
+divisão  ocorrida  na  evolução  do  directx  é  o  surgimento de uma
+biblioteca para lidar com a infraestrutura mais básica  dos  aspectos
+gráficos  que  concentra  serviços  de  verificação  dos  adaptadores
+instalados   e  enumeração  dos  modos  de  vídeo  disponíveis.  Essa
+biblioteca é denominada de  <b>DXGI</b> cuja abreviatura pode ser desdobrada
+como 'Directx Graphics Infrastructure' ou  'Infraestrutura gráfica do
+directx.'
+
+<b class=prg-code><span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; </b>
+Como sempre o directx traz abertura para funcionar através de emulação
+de  software  que  assume  estágios do processo de renderização. Essa
+opção  aponta  eventualmente  para  um software de montagem da imagem
+final.  Configurada  como  NULL  essa  tarefa  fica  nas boas mãos do
+directx.
+
+<b class=prg-code><span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; </b>
+Este flag indica opções avançadas de criação do  motor  gráfico,  por
+exemplo,  se  a  aplicação  vai  conter  vários  threads  ( linhas de
+execução), se vai ser necessário operar em modo debug, etc.  Zero (0)
+é um bom valor para este flag porque as  opções  oferecidas  não  são
+interessantes para o contexto desse curso.
+
+
+Níveis desejados de capacidades do dispositivo:
+<div class=prg-code><span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+<span class=sc16>{</span>
+  <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+  <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+  <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+  <span class=sc16>}</span>; 
+<span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  </div>
+Este código define uma lista de  capacidades esperadas do dispositivo
+a  ser  criado  numa  ordem  decrescente  de recursos. Na sequência a
+variável  <b>numFeatureLevels</b>  representa  o  tamanho dessa lista. Esses
+dois argumentos são passados para a função criadora dos  dispositivos
+que vai retornar o nível de capacidades mais alto disponível apontado
+por estas informações passadas.
+
+
+
+<div class=prg-code>g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+ NoRasterSoftware, createDeviceFlags, featureLevels, 
+ numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+ &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );   </div>
+Esta  longa  função  cheia  de argumentos de entrada e de saída faz a
+criação efetiva da swap chain retornada na variável <b>g_pSwapChain</b> e faz
+a criação efetiva dos  dois  dispositivos  gráficos  que são o objeto
+renderizador  (  <b>g_pImmediateContext</b>  )  e o dispositivo de gestão de
+recursos (  <b>g_pd3dDevice</b>  ). A variável <b>g_featureLevel</b> recebe o valor
+do nível de capacidades mais alto disponível e que neste exemplo numa
+placa  de  vídeo  moderna é retornado o valor <b>D3D_FEATURE_LEVEL_11_0</b>.
+
+<b class=prg-code><span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; </b>
+Em caso de falhas a função initGfx() acaba aqui.  O mínimo ideal aqui
+é pipocar uma mensagem informando que ocorreu uma falha neste estágio.
+Mesmo em caso de sucesso é importante checar o  nível  de  capacidade
+retornado. 
+
+
+Depois  da  swap  chain  e dos dispositivos criados podemos seguir na
+direção da criação da superfície alvo de renderização:
+
+<b class=prg-code><span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; </b>
+Os atributos de criação da superfície  de renderização são espelhados
+da configuração do backbuffer que  nada mais é do que uma textura 2d.
+
+
+<div class=prg-code>g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+	( <span class=prg>LPVOID*</span>)&pBackBuffer );  </div>
+Esta linha obtém a configuração atual do backbuffer  que  servirá  de
+modelo para a criação da superfície de renderização. 
+
+<div class=prg-code>g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+	&g_pRenderTargetView ); </div>
+Aqui   a  superfície  de  renderização  é  criada  efetivamente  pelo
+dispositivo de gestão de recursos. Perceba que a criação é  com  base
+no backbuffer apontado.
+
+<b class=prg-code><span class=prg>pBackBuffer-&gt;Release</span>();  </b>
+Dispensamos aqui o backbuffer pois ele não é mais necessário.    
+
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  </b>
+Depois  de  criada  a  superfície  alvo  é  instalada  dessa forma no
+dispositivo renderizador.
+
+
+Na sequência fazemos a criação, configuração e instalação da janela
+de visualização no dispositivo renderizador:
+
+<div class=prg-code><span class=sc5>D3D11_VIEWPORT </span>vp; 
+<span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+<span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura;  </div>
+Aqui definimos a estrutura que vai receber a configuração da viewport
+e configuramos na sequência a largura e altura dessa viewport. Perceba
+que  não  queremos  nenhum  corte  pois estamos passando as dimensões
+totais  da nossa tela de renderização.
+
+<div class=prg-code><span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+<span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; </div>
+Aqui  representa  a  posição  da  viewport na janela de renderização.
+
+<div class=prg-code><span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+<span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; </div>
+Estas  linhas  representam  a  faixa  mínima e máxima da percepção de
+profundidade.
+
+
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  </b>
+Aqui instalamos a viewport no renderizador.
+
+<b class=prg-code><span class=sc6>return </span><span class=sc4>S_OK</span>; </b>
+E finalmente retornamos um <b>S_OK</b> com a missão cumprida de inicializar
+o motor gráfico.
+
+<a name='2.4'><b><u>2.4 Renderizar() - Renderização da cena </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Configuração da cor de limpeza</span>
+    <span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>0.0f</span>, <span class=sc4>0.125f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+    <span class=sc2>// Limpeza do backbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+    <span class=sc2>// Apresentação do backbuffer</span>
+  <span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>); 
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+<b class=prg-code><span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>0.0f</span>, <span class=sc4>0.125f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; </b>
+Definimos aqui a cor de limpeza da superfície de renderização.
+
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  </b>
+Aqui a superfície de renderização é limpa.
+
+<b class=prg-code><span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  </b>
+Apresentamos aqui a cena na tela.
+
+<a name='2.5'><b><u>2.5 Limpar() - Limpeza adequada do ambiente </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+  <span class=sc2>// Retorne se já estiver limpo</span>
+  <span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+    <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+    <span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+  bLimpo = <span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+<div class=prg-code>
+<span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+<span class=sc2>// Retorne se já estiver limpo</span>
+<span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; </div>
+Essa  função  de  limpar  deve ser executada apenas uma vez. Portanto
+definimos aqui um flag que vai monitorar sua execução, e quando  esse
+flag for verdadeiro a função será abandonada de imediato.
+
+
+<b class=prg-code><span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  </b>
+A  função  de  limpeza  deve  começar  com  um  reset  no dispositivo
+renderizador.
+
+
+<b class=prg-code><span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  </b>
+Outro  cuidado  inicial  é  liberar  primeiros  os objetos filhos dos
+objetos criados. Aqui liberamos a superfície de renderização.
+
+
+<b class=prg-code><span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  </b>
+Aqui liberamos a swap chain. 
+
+<div class=prg-code>
+<span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  </div>
+Liberamos   na  sequência  o  dispositivo  renderizador  e  depois  o
+dispositivo de gestão de recursos.
+
+<b class=prg-code>bLimpo = <span class=prg>true</span>; </b>
+Aqui assinalamos que a função <b>Limpar()</b>  foi executada e esta condição
+vai ser percebida na próxima vez que esta função for chamada.
+
+
+<hr><a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Dispositivo</u></b>
+<div class=prg-code><img src=images\prj_Dispositivo.png>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - Arquivo: motor.h</span>
+<span class=sc2>// Exemplo de inicialização do motor gráfico (Directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+
+<span class=sc16>#if </span>!defined motor_h 
+<span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Função de processamento de mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>   processaJanela( <span class=sc16>HWND</span>, <span class=prg>UINT</span>, <span class=sc16>WPARAM</span>, <span class=sc16>LPARAM</span>);  
+
+
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=sc16>HRESULT </span>initGfx();  
+
+  <span class=sc2>// Função de renderizar a cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função de liberar os objetos utilizados pela aplicação</span>
+  <span class=prg>void </span>Limpar( <span class=prg>void</span>);  
+
+<span class=sc16>#endif</span></div>
+
+
+<div class=prg-code>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - Arquivo: motor.cpp</span>
+<span class=sc2>// Exemplo de inicialização do motor gráfico (Directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx11.h&gt;</span>
+
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+
+<span class=sc2>// Corrente de trocas</span>
+<span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Tipo de driver</span>
+<span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; 
+<span class=sc2>// nível desejado de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; 
+
+<span class=sc2>// Dispositivo gerenciador de recursos</span>
+<span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; 
+<span class=sc2>// Disposisitivo renderizador</span>
+<span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Interface de gestão da textura alvo de visualização</span>
+<span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Variáveis definidas em entrada.cpp</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; 
+<span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; 
+
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+    <span class=sc2>// Se tudo ocorrer bem initGfx() vair retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+  <span class=sc5>RECT </span>areaCliente; 
+    <span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+    <span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+    <span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+
+
+    <span class=sc2>// Configuração da corrente de trocas</span>
+  <span class=sc2>// Inicialização básica da estrutura</span>
+  <span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+    <span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+    <span class=sc2>// Quantidade de backbuffers</span>
+  <span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração da largura e tamanho</span>
+  <span class=prg>sd.BufferDesc.Width </span> = largura; 
+    <span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+  <span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+  <span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+    <span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+  <span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+    <span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+  <span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+  <span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+    <span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+  <span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+    <span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Modo de descarte do backbuffer</span>
+  <span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+  <span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc2>// Indicação do display default</span>
+  <span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+  <span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+    <span class=sc2>// Configuração dos flags de criação</span>
+  <span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+  <span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+    <span class=sc16>{</span>
+        <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+    <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+  <span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+  <span class=sc2>// motor gráfico do directx 11.</span>
+  g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+    NoRasterSoftware, createDeviceFlags, featureLevels, 
+    numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+    &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+
+
+  <span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+    <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+  g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+    ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+    g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+    &g_pRenderTargetView );  
+    <span class=prg>pBackBuffer-&gt;Release</span>();  
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+    <span class=sc2>// Configuração da textura alvo no dispositivo</span>
+  <span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+
+
+  <span class=sc2>// Configuração da janela de visualização (viewport)</span>
+    <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>D3D11_VIEWPORT </span>vp; 
+    <span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+    <span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+    <span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+    <span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+    <span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+    <span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+    <span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Configuração da cor de limpeza</span>
+    <span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>0.0f</span>, <span class=sc4>0.125f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+    <span class=sc2>// Limpeza do backbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+    <span class=sc2>// Apresentação do backbuffer</span>
+  <span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+  <span class=sc2>// Retorne se já estiver limpo</span>
+  <span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+    <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+    <span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+
+  <span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+  bLimpo = <span class=prg>true</span>; 
+
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// processaJanela() - Tratamento de mensagens da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) 
+<span class=sc16>{</span>
+    PAINTSTRUCT ps; 
+    <span class=sc16>HDC </span>hdc; 
+
+    <span class=sc9>switch</span>( message ) 
+    <span class=sc16>{</span>
+        <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+            hdc = <span class=prg>BeginPaint</span>( hWnd, &ps );  
+            <span class=prg>EndPaint</span>( hWnd, &ps );  
+            <span class=sc6>break</span>; 
+
+        <span class=sc9>case </span><span class=sc4>WM_CLOSE:</span>
+            Limpar();  
+        <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+            <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+      <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+      <span class=sc16>{</span>
+          Limpar();  
+        <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);   
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+        <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+            <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+            <span class=sc6>break</span>; 
+
+        <span class=sc9>default:</span>
+            <span class=sc6>return </span><span class=prg>DefWindowProc</span>( hWnd, message, wParam, lParam );  
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+
+
+<div class=prg-code>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - Arquivo: entrada.cpp</span>
+<span class=sc2>// Exemplo de inicialização do motor gráfico (Directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais de criação e manutenção da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HINSTANCE </span>  g_hInst   = <span class=prg>NULL</span>; 
+<span class=sc16>HWND </span>       g_hJanela  = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variável global da classe da janela; necessária em initWindow()</span>
+<span class=sc2>// e no encerramento de wWinMain()</span>
+<span class=prg>WCHAR </span> sclasseJanela[] = <span class=sc6>L"cls_directx"</span>; 
+
+<span class=sc2>// Recebimento do retorno das funções do directx</span>
+<span class=sc16>HRESULT </span> g_hr   = <span class=sc4>0</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>  g_xtela  = 640; 
+<span class=prg>int </span>  g_ytela  = 480; 
+
+<span class=sc2>// Título da janela</span>
+<span class=prg>WCHAR </span> janelaTitulo[] = <span class=sc6>L"prj_Dispositivo"</span>; 
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Protótipo da função de criação da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>   initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow );  
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Esta função é o ponto de entrada da aplicação. Ela inicializa a janela e</span>
+<span class=sc2>// entra no laço de mensagens. O tempo ocioso é utilizado para renderizar a cena.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>int </span><span class=sc16>WINAPI </span>wWinMain( <span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+          LPWSTR lpCmdLine, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+    UNREFERENCED_PARAMETER( hPrevInstance );  
+    UNREFERENCED_PARAMETER( lpCmdLine );  
+
+  <span class=sc2>// Inicializa a janela</span>
+  g_hr = initWindow( hInstance, nCmdShow );  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  g_hr = initGfx();  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) 
+  <span class=sc16>{</span>
+
+    Limpar();  
+    <span class=prg>MessageBoxW </span>(<span class=sc4>0</span>, <span class=sc6>L"Falha na inicialização do motor gráfico"</span>, 
+      <span class=sc6>L"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>}</span>
+
+    <span class=sc2>// Main message loop</span>
+  <span class=sc5>MSG </span>msg = {0}; 
+    <span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT</span>) 
+    <span class=sc16>{</span>
+        <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &msg, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, PM_REMOVE ) ) 
+        <span class=sc16>{</span>
+            <span class=prg>TranslateMessage</span>( &msg );  
+            <span class=prg>DispatchMessage</span>( &msg );  
+        <span class=sc16>} <span class=sc2>// endif</span></span>
+        <span class=sc9>else</span>
+        <span class=sc16>{</span>
+            Renderizar();  
+        <span class=sc16>} <span class=sc2>// end else</span></span>
+    <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  Limpar();  
+    <span class=prg>UnregisterClass</span>( sclasseJanela, g_hInst);  
+  <span class=sc6>return</span>(<span class=prg>int</span>)<span class=prg>msg.wParam</span>; 
+<span class=sc16>}</span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Essa função cria e registra a janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+
+    <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Tornando global o handle da aplicação</span>
+  g_hInst = hInstance; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span> = hInstance; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>  = <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW </span>| <span class=sc4>CS_OWNDC</span>; 
+  <span class=prg>wcls.cbSize </span>  = <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span> = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span> = <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span> = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span> = <span class=sc4>0</span>; 
+
+     <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  GetStockObject ( WHITE_BRUSH );  
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Registro falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span> <span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Atributos de configuração da janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=prg>DWORD </span>dwEstilo = <span class=sc4>WS_OVERLAPPEDWINDOW </span>- <span class=sc4>WS_MAXIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Criação da janela</span>
+  g_hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    dwEstilo, xpos, ypos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    hInstance, dadoExtra );  
+
+  <span class=sc9>if</span>(g_hJanela == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Criação da janela falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=prg>ShowWindow</span>( g_hJanela, nCmdShow );  
+  <span class=prg>UpdateWindow</span>(g_hJanela );  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>}</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Variáveis globais</a>
+<a href=#2.3>2.3 initGfx() - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Renderizar() - Renderização da cena</a>
+<a href=#2.5>2.5 Limpar() - Limpeza adequada do ambiente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Dispositivo</a>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

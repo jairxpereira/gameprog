@@ -1,0 +1,1272 @@
+<html><head>
+<title>cbiblioteca_track08_io</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track08.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track07.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track09.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="8.00"></A>
+<CENTER><H2>8.00 io.h</H2></CENTER>
+<A HREF="#08.01">08.01</a> access............Verifica existência e acessibilidade do arquivo
+<A HREF="#08.02">08.02</a> _chmod............Configura ou obtém o atributo de acesso de arquivo
+<A HREF="#08.03">08.03</a> chmod.............Troca o atributo de acesso do arquivo
+<A HREF="#08.04">08.04</a> chsize............Altera o tamanho do arquivo
+<A HREF="#08.05">08.05</a> _close............Fecha um arquivo aberto
+<A HREF="#08.06">08.06</a> close.............Fecha um arquivo aberto
+<A HREF="#08.07">08.07</a> _creat............Cria um arquivo, abrindo-o em modo binário
+<A HREF="#08.08">08.08</a> creat.............Cria um arquivo
+<A HREF="#08.09">08.09</a> creatnew..........Cria um arquivo, emite aviso quando arquivo já existe
+<A HREF="#08.10">08.10</a> creattemp.........Cria um arquivo, gerando um nome único primeiro
+<A HREF="#08.11">08.11</a> dup...............Retorna uma cópia de um handle de arquivo
+
+<A HREF="#08.12">08.12</a> dup2..............Duplica um handle de arquivo
+<A HREF="#08.13">08.13</a> eof...............Verifica final de arquivo
+<A HREF="#08.14">08.14</a> filelength........Obtém o tamanho do arquivo em bytes
+<A HREF="#08.15">08.15</a> getftime..........Obtém data e hora do arquivo
+<A HREF="#08.16">08.16</a> ioctl.............Manipula dispositivos de entrada e saída
+<A HREF="#08.17">08.17</a> isatty............Verifica o tipo de dispositivo
+<A HREF="#08.18">08.18</a> lock..............Trava uma região do arquivo para impedir acesso concorrente
+<A HREF="#08.19">08.19</a> lseek.............Posiciona o ponteiro do arquivo
+<A HREF="#08.20">08.20</a> _open.............Abre arquivo para leitura ou gravação
+<A HREF="#08.21">08.21</a> open..............Abre arquivo para leitura ou gravação
+<A HREF="#08.22">08.22</a> _read.............Lê dados de um arquivo
+
+<A HREF="#08.23">08.23</a> read..............Lê dados de um arquivo
+<A HREF="#08.24">08.24</a> setftime..........Reonfigura data e hora do arquivo
+<A HREF="#08.25">08.25</a> setmode...........Reconfigura o atributo de acesso do arquivo
+<A HREF="#08.26">08.26</a> sopen.............Abre um arquivo definindo modo de compartilhamento
+<A HREF="#08.27">08.27</a> tell..............Obtém a posição corrente do ponteiro do arquivo
+
+<A HREF="#08.28">08.28</a> unlink............Deleta um arquivo
+<A HREF="#08.29">08.29</a> unlock............Libera para acessos uma região de arquivo travada com lock()
+<A HREF="#08.30">08.30</a> _write............Grava uma string num arquivo
+<A HREF="#08.31">08.31</a> write.............Grava uma string num arquivo
+
+<A NAME="08.01"><B>08.01 access</B></A>
+        Esta função verifica existência do arquivo e sua acessibilidade para
+        determinar se ele pode ser lido ou escrito.
+        <B style="color:green">
+        ìnt access(const char *filename, int amode);
+        nSts = access(sFileName, nInfo);</B>
+
+        nInfo......Configure para 0 para checar se o arquivo existe, configure
+                   para 2 para checar acesso de leitura/gravação
+        nSts.......A função retorna 0 para confirmar que nInfo é válido, caso
+                   contrário o valor de retorno é -1 e a variável errno é configurada.
+
+        Ex.:    int nSts;
+                nSts = access("teste.txt",0);
+                if (nSts==-1) printf("Arquivo não existe\n");
+                        else printf ("Arquivo existente OK\n");
+
+.......................................................................................
+<A NAME="08.02"><B>08.02 _chmod</B></A>
+        Esta função configura ou obtém o atributo de modo de acesso ao
+        arquivo.
+        <B style="color:green">
+        int _chmod(const char *filename, int func, [,int attrib]);
+        nAtributo = _chmod(sFileName,0);
+        nAtributo = _chmode(sFileName,1,nAtributo);</B>
+
+        int func....Configure este parâmetro para zero quando você quiser
+                    somente obter a configuração de acesso do arquivo. Você
+                    deve usar 1 quando você quiser reconfigurar o modo de
+                    acesso e preencher o parâmetro seguinte desta função
+                    com o novo modo de acesso.
+
+        nAtributo...Em caso de sucesso, a função retorna o atributo do arquivo,
+                    em caso de erro, o retorno é -1.
+
+        Para nAtributo você pode usar estas constantes do arquivo dos.h:
+        ----------------------------------------------------------------
+        FA_RDONLY     apenas para leitura
+        FA_HIDDEN     arquivo oculto
+        FA_SYSTEM     arquivo de sistema
+        FA_LABEL      rótulo de unidade
+        FA_DIREC      diretório
+        FA_ARCH       arquivo comum
+
+        Ex.:    /* Obtendo o atributo */
+                int nAtributo;
+                nAtributo = _chmod("teste.txt",0);
+
+        Ex.:    /* Configurando o atributo */
+                int nSts;
+                int nAtributo = FA_RDONLY;
+                nSts = _chmod("teste.txt",1,nAtributo);
+
+        Veja mais este programa exemplo:<font color="darkblue">
+        #include "errno.h"
+        #include "stdio.h"
+        #include "dos.h"
+        #include "io.h"
+        #include "conio.h"
+
+        int main(void) {
+        char filename[128]="teste.txt";
+        int attrib;
+
+        clrscr();
+
+        attrib = _chmod(filename,0);
+
+        if (attrib == -1)
+        switch(errno) {
+        case ENOENT : printf("Caminho ou arquivo não encontrado.\n");
+        break;
+        case EACCES : printf("Acesso não permitido.\n");
+        break;
+        default:      printf("Erro nro: %d", errno);
+        break; }
+        else {
+        if (attrib & FA_RDONLY)
+        printf("%s ‚ um arquivo somente para leitura.\n", filename);
+
+        if (attrib & FA_HIDDEN)
+        printf("%s ‚ um arquivo oculto.\n", filename);
+
+        if (attrib & FA_SYSTEM)
+        printf("%s ‚ um arquivo de sistema.\n", filename);
+
+        if (attrib & FA_LABEL)
+        printf("%s ‚ um rótulo de unidade.\n", filename);
+
+        if (attrib & FA_DIREC)
+        printf("%s ‚ um diretório.\n", filename);
+
+        if (attrib & FA_ARCH)
+        printf("%s ‚ um arquivo comum.\n", filename);}
+        getch();
+        return 0;}</font>
+
+        Saída:
+        teste.txt é um arquivo somente para leitura.
+        teste.txt é um arquivo comum.
+
+.......................................................................................
+<A NAME="08.03"><B>08.03 chmod</B></A>
+        Esta função troca o atributo de acesso do arquivo.
+        <B style="color:green">
+        int chmod(const char *filename, int amode);
+        nSts = chmod(sFileName, nMode);</b>
+
+        nSts........A função retorna 0 para sucesso, -1 para falha.
+
+        Para nMode, você pode usar estas constantes do arquivo stat.h:
+        --------------------------------------------------------------
+        S_IFMT    file type mask
+        S_IFDIR   directory
+        S_IFIFO   FIFO special
+        S_IFCHR   character special
+        S_IFBLK   block special
+        S_IFREG   regular file
+        S_IREAD   owner can read
+        S_IWRITE  owner can write
+        S_IEXEC   owner can execute
+
+        Ex.:    chmod("teste.txt",S_IREAD);
+
+        Definimos neste exemplo que teste.txt é apenas para leitura.
+
+.......................................................................................
+<A NAME="08.04"><B>08.04 chsize</B></A>
+        Esta função altera o tamanho do arquivo.
+        <B style="color:green">
+        int chsize(int handle, long size);
+        nSts = chsize(nHandle, nTam);</B>
+
+        Ex.:    char sFileName[]="teste.txt";
+                long nTam = 30;
+                int nHandle;
+                int nAtributo = O_TEXT | O_RDWR;
+                nHandle = open(sFileName, nAtributo);
+                chsize(nHandle, nTam);
+
+.......................................................................................
+<A NAME="08.05"><B>08.05 _close</B></A>
+        Esta função fecha um arquivo aberto.
+        <B style="color:green">
+        int _close(int handle);
+        nSts = _close(nHandle);</B>
+
+        Ex.:    _close(nHandle);
+
+        Em caso de sucesso esta função retorna 0, -1 para falhas.
+
+.......................................................................................
+<A NAME="08.06"><B>08.06 close</B></A>
+        Esta função fecha um arquivo aberto.
+        <B style="color:green">
+        int close(int handle);
+        nSts = close(nHandle);</B>
+
+        Ex.:    close(nHandle);
+
+        Em caso de sucesso esta função retorna 0, -1 para falhas.
+
+.......................................................................................
+<A NAME="08.07"><B>08.07 _creat</B></A>
+        Esta função cria um arquivo. Caso o arquivo já exista, o seu conteúdo
+        será deletado. O arquivo é aberto diretamente em modo binário.
+        <B style="color:green">
+        int _creat(const char *path, int attrib);
+        nHandle = _creat(sFileName, nAtributo);</B>
+
+        nHandle.......Em caso de sucesso a função retorna um handle; em caso de
+                      falha a função retorna -1 e configura a variável errno.
+
+        Para nAtributo você pode usar as constantes definidas em dos.h
+
+        Ex.:    int nAtributo = FA_ARCH;
+                int nHandle;
+                char sFileName[]="teste.txt";
+                nHandle = _creat(sFileName,nAtributo);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "dos.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testando _creat()";
+        char sFileName[]="teste.txt";
+        int nAtributo=FA_ARCH;
+        int nSts;
+
+        clrscr();
+        nHandle = _creat(sFileName, nAtributo);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.08"><B>08.08 creat</B></A>
+        Esta função cria um arquivo. Caso o arquivo já exista, o seu conteúdo
+        será deletado.
+        <B style="color:green">
+        int creat(const char *path, int amode);
+        nHandle = creat(sFileName, nAtributo);</B>
+
+        nHandle.......Em caso de sucesso a função retorna um handle; em caso de
+                      falha a função retorna -1 e configura a variável errno.
+
+        Para nAtributo você pode usar as constantes definidas em sys\stat.h
+
+        Ex.:    int nAtributo = S_IWRITE;
+                int nHandle;
+                char sFileName[]="teste.txt";
+                nHandle = creat(sFileName,nAtributo);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "sys/stat.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testando creat()";
+        char sFileName[]="teste.txt";
+        int nAtributo=S_IWRITE;
+        int nSts;
+
+        clrscr();
+        nHandle = creat(sFileName, nAtributo);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.09"><B>08.09 creatnew</B></A>
+        Esta função cria um arquivo. Caso o arquivo já exista, será emitido este
+        aviso e o arquivo não será criado.O arquivo é aberto diretamente
+        em modo binário.
+        <B style="color:green">
+        int creatnew(const char *path, int attrib);
+        nHandle = creatnew(sFileName, nAtributo);</B>
+
+        nHandle.......Em caso de sucesso a função retorna um handle; em caso de
+                      falha a função retorna -1 e configura a variável errno.
+
+        Para nAtributo você pode usar as constantes definidas em dos.h
+
+        Ex.:    int nAtributo = FA_ARCH;
+                int nHandle;
+                char sFileName[]="teste.txt";
+                nHandle = creatnew(sFileName,nAtributo);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "dos.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testando creatnew()";
+        char sFileName[]="teste.txt";
+        int nAtributo=FA_ARCH;
+        int nSts;
+
+        clrscr();
+        nHandle = creatnew(sFileName, nAtributo);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.10"><B>08.10 creattemp</B></A>
+        Esta função cria um arquivo, gerando um nome único primeiro.
+        O arquivo é aberto em modo binário para gravação e leitura.
+        <B style="color:green">
+        int creattemp(const char *path, int attrib);
+        nHandle = creattemp(sPath, nAtributo);</B>
+
+        nHandle.......Em caso de sucesso a função retorna um handle; em caso de
+                      falha a função retorna -1 e configura a variável errno.
+
+        Para nAtributo você pode usar as constantes definidas em dos.h
+        Segundo, o arquivo de help do Turbo C++ 3.1, os únicos atributos
+        que você pode usar com esta função são estes: FA_HIDDEN, FA_SYSTEM
+        e FA_RDONLY.
+
+        sFileName deve terminar com backslash "\\" e deve ter espaço suficiente para
+        receber o nome de arquivo gerado.
+
+        Ex.:    int nAtributo = FA_HIDDEN;
+                int nHandle;
+                char sFileName[128]="\\TC\\";
+                nHandle = creattemp(sFileName,nAtributo);
+                printf("%s\n",sFileName);
+                /* Neste exemplo, um arquivo de nome aleatório é criado na pasta C:\TC */
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "dos.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testado creattemp()";
+        char sFileName[128]="\\TC\\";
+        int nAtributo=FA_HIDDEN;
+        int nSts;
+
+        clrscr();
+        nHandle = creattemp(sFileName, nAtributo);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        system("dir /ah");
+        printf("Nome do arquivo: %s\n",sFileName);
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.11"><B>08.11 dup</B></A>
+        Esta função retorna uma cópia do handle de arquivo fornecido.
+        <B style="color:green">
+        int dup(int handle);
+        nCopyHandle = dup(nHandle);</B>
+
+        nCopyHandle.....Em caso de sucesso a função retorna uma cópia do handle
+                        fornecido. Em caso de erro o valor de retorno é -1 e a
+                        variável errno é configurada com o tipo de erro.
+
+        Ex.:    int nCopyHandle;
+                int nHandle;
+                /* ...Aqui vai processo que abre arquivo que retorna nHandle */
+                nCopyHandle = dup(nHandle);
+
+        Neste programa exemplo a seguir, o buffer de dados é gravado no arquivo
+        usando uma função close() com uma cópia do handle original:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+
+        void flush(FILE *hFile);
+
+        int main(void) {
+        FILE *hFile;
+        char sMsg[] = "Testando dup()";
+
+        hFile = fopen("teste.dat", "w");
+
+        fwrite(sMsg, strlen(sMsg), 1, hFile);
+
+        clrscr();
+
+        /* Vamos gravar o buffer de dados em teste.dat sem fechá-lo */
+        flush(hFile);
+
+        puts("End of Program\n");
+        getch();
+        return 0; }
+
+        void flush(FILE *hFile) {
+        int nCopyHandle;
+        fflush(hFile);
+        nCopyHandle = dup(fileno(hFile));
+        /* Vamos fechar o arquivo com a cópia do handle para ocasionar
+        a gravação dos buffers no arquivo */
+        close(nCopyHandle);
+        printf("Dados gravados.\n"); }</font>
+
+.......................................................................................
+<A NAME="08.12"><B>08.12 dup2</B></A>
+        Esta função duplica um handle de arquivo.
+
+        *** O texto explicativo original com seu programa exemplo não foram
+        suficientes para elucidar o uso e a utilidade desta função. Recomendamos
+        ao usuário que consulte outra fonte de dados para esta função. Alertamos
+        que nosso texto está imperfeito em seu conjunto.
+
+        A tradução literal do texto original é esta:
+        "Dup2() duplica o antigo handle do arquivo em um novo handle de
+        um arquivo existente."
+        <font color=red>dup2 duplicates file handle oldhandle onto existing
+        file handle newhandle.</font>
+        <B style="color:green">
+        int dup2(int oldhandle, int newhandle);
+        nSts = dup2(nHandle, nCopyHandle);</B>
+
+        nSts.......A função retorna 0 para sucesso, -1 para falhas.
+
+.......................................................................................
+<A NAME="08.13"><B>08.13 eof</B></A>
+        Esta função verifica se ocorreu final de arquivo.
+        <B style="color:green">
+        int eof(int handle);
+        nSts = eof(nHandle);</B>
+
+        nSts....A função retorna 1 para final de arquivo, 0 quando ainda não estiver
+                no final do arquivo. Em caso de falhas a função retorna -1 e
+                configura a variável errno.
+
+        Ex.:    /* ...aqui vai processos de abertura de arquivo */
+                do {
+                /* ...aqui processos de exibição de dados */
+                } while (!eof(nHandle));
+
+.......................................................................................
+<A NAME="08.14"><B>08.14 filelength</B></A>
+        Esta função obtém o tamanho do arquivo em bytes.
+        <B style="color:green">
+        long filelength(int handle);
+        nTam = filelength(nHandle);</B>
+
+        Ex.:    int nHandle;
+                long nTam;
+                nHandle = open("bgidemo.exe",O_RDONLY);
+                nTam = filelength(nHandle);
+                close(nHandle);
+
+.......................................................................................
+<A NAME="08.15"><B>08.15 getftime</B></A>
+        Esta função obtém a data e hora do arquivo. Esta data e hora refere-se
+        a criação ou última atualização do arquivo.
+        <b style="color:green">
+        int getftime(int handle, struct ftime *ftimep);
+        nSts = getftime(nHandle,&xFileInfo);</b>
+
+        nHandle.....Número de handle de arquivo, que também pode ser obtido por
+                    fileno(hFile);
+        nSts........Esta função retorna 0 quando sucesso; -1 para falha e configura
+                    a variável errno que pode ser pesquisada por outra função.
+
+        Elementos da estrutura xFileInfo, definida em io.h:
+
+        unsigned  xFileInfo.ft_tsec  : 5; ............. Segundos
+        unsigned  xFileInfo.ft_min   : 6; ............. Minutos
+        unsigned  xFileInfo.ft_hour  : 5; ............. Horas
+        unsigned  xFileInfo.ft_day   : 5; ............. Dia
+        unsigned  xFileInfo.ft_month : 4; ............. Mês
+        unsigned  xFileInfo.ft_year  : 7; ............. Ano
+
+        Veja o programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "string.h"
+        #include "dos.h"
+        #include "io.h"
+
+        /* getftime() */
+
+        int main (int nCmd, char **sCmd) {
+
+        char sFileName[]="teste.txt";
+        struct ftime xFileInfo;
+        FILE *hFile;
+        char sOpenMode[]="rt";
+        int nHandle;
+
+        clrscr();
+        hFile = fopen(sFileName,sOpenMode);
+        nHandle = fileno(hFile);
+        getftime(nHandle,&xFileInfo);
+
+        printf("Dia: %d\n",xFileInfo.ft_day);
+        printf("Mês: %d\n",xFileInfo.ft_month);
+        printf("Ano: %d\n\n",xFileInfo.ft_year+1980);
+        printf("Hor: %d\n",xFileInfo.ft_hour);
+        printf("Min: %d\n",xFileInfo.ft_min);
+        printf("Seg: %d\n",xFileInfo.ft_tsec);
+
+        puts("\nEnd of program");
+        getch();
+        }</font>
+
+        Saída:
+        Dia: 9
+        Mês: 11
+        Ano: 2004
+        Hor: 21
+        Min: 21
+        Seg: 22
+        End of program
+......................................................................................
+<A NAME="08.16"><B>08.16 ioctl</B></A>
+        Esta função manipula dispositivos de entrada e saída de dados.
+        Ela é uma interface para o serviço 0x44 da interrupção 0x21 do
+        MsDos.A fim de obter um completo domínio desta opção você deve
+        consultar manuais de assembly sobre esta interrupção.
+        <B style="color:green">
+        int ioctl(int handle, int func, [,void *argdx, int argcx]);
+        nSts = ioctl(nHandle, nService, [sDxDados, nCxDados]);</B>
+
+        nSts.....Os valores positivos de retorno desta função variam conforme
+                 o serviço de controle requisitado por nService, mas em caso de
+                 erro o valor de retorno é -1 e a variável errno é configurada.
+                 Para nService igual a 0 e 1, o valor de retorno representa uma
+                 informação sobre o dispositivo oriunda do registrador DX.
+                 Para nService igual a 2 até 5, o valor de retorno é o número de
+                 bytes realmente transferidos.
+                 Par nService igual a 6 e 7, o valor de retorno representa o status
+                 do dispositivo.
+
+        nHandle......É o handle do dispositivo
+
+        nService.....Através desta variável é selecionado o serviço aplicado em
+                     ou requisitado do dispositivo. Veja na tabela abaixo os valores
+                     para configurar nService:
+        0....Obtém informações sobre o dispositvo
+        1....Configura informações para o dispositivo apontadas por sDxDados (argdx)
+        2....Lê o número de bytes conforme nCxDados para o endereço sDxDados
+        3....Escreve o número de dados conforme nCxDados do endereço sDxDados
+        4....O mesmo que 2, exceto que o nHandle é tratado como um número de drive
+             0 = default, 1 = A, etc.
+        5....O mesmo que 3, exceto que nHandle é tratado como um número de drive
+        6....Obtém status de entrada
+        7....Obtém status de saída
+        8....Verifica se dispositivo é removível
+        11...Estabelece o número de tentativas durante conflito de compartilhamento.
+
+        nDxDados.....Atua como um buffer de dados para troca de informações com o
+                     disposivo que está sendo controlado.
+        nCxDados.....Usado para apoiar as  operações com o dispositivo controlado
+
+        Ioctl() pode obter informações sobre canais de dispositivo. Arquivos
+        regulares podem ser usados, porém apenas os serviços 0, 6 e 7 podem
+        ser usados com eles. Usar outros serviços com eles resulta em erro.
+
+        Consulte outras documentações sobre a interrupção 0x21, serviço 0x44
+        para obter informações mais detalhadas sobre os argumentos e valores
+        de retorno.
+
+        Esta função se mostra como um meio de prover drivers de dispositivos
+        com funções especiais para o MsDos. Não há um descrição exata do
+        comportamento desta função visto que isto varia conforme o hardware
+        instalado, e nem todo hardware trabalha com as especificações desta
+        função.
+
+        Ex.:    int nSts;
+                nSts = ioctl(0,8,0,0);
+
+        Veja programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "dir.h"
+
+        int main(void) {
+
+        int nSts;
+
+        clrscr();
+
+        /* Use nService=8 para determinar se o drive default é removível */
+        nSts = ioctl(0, 8, 0, 0);
+        if (!nSts)
+        printf("Drive %c é removível.\n", getdisk() + 'A');
+        else
+        printf("Drive %c não é removível.\n", getdisk() + 'A');
+        puts("End of Program.\n");
+        getch();
+        return 0; }</font>
+
+        Saída:
+        Drive C não é removível.
+        End of Program.
+
+.......................................................................................
+<A NAME="08.17"><B>08.17 isatty</B></A>
+        Esta função verifica o tipo de dispositivo para determinar se
+        o hardware é do tipo que manipula carácter, isto é, se ele pertence
+        a uma destas quatro categorias: terminal, console, impressora e porta
+        serial.
+        <B style="color:green">
+        int isatty(int handle);
+        nSts = isatty(nHandle);</B>
+
+        nSts.....Se o driver do dispositivo for um driver de carácter, o valor
+                 de retorno é um inteiro nonzero, se não for o valor é zero.
+
+        Ex.:    int nSts;
+                nSts = isatty(stdprn);
+
+        Veja programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+
+        int main(void) {
+
+        int nHandle;
+        clrscr();
+
+        nHandle = fileno(stdprn);
+        if (isatty(nHandle))
+        printf("nHandle %d ‚ um tipo de dispositivo de caracter\n", nHandle);
+        else
+        printf("nHandle %d não é um tipo de dispositivo de  caracter\n", nHandle);
+
+        puts("End of Program.\n");
+        getch();
+        return 0;}</font>
+
+        Saída:
+        nHandle 4 é um tipo de dispositivo de caracter
+        End of Program.
+
+.......................................................................................
+<A NAME="08.18"><B>08.18 lock</B></A>
+        Esta função trava uma região do arquivo para impedir que outros
+        arquivos leiam e gravem nesta região durante acesso concorrente
+        desse mesmo arquivo.
+        <B style="color:green">
+        long lock(int handle, long offset, long length);
+        nSts = lock(nHandle, nPos, nTam);</B>
+
+        nSts........A função retorna 0 para sucesso, -1 para erro.
+        nPos........Posição a partir da qual será feito o travamento
+        nTam........Tamanho da área que será protegida contra acessos
+
+        Ex.:    long nSts, nPos=0, nTam=1000;
+                nSts = lock(nHandle, nPos, nTam);
+
+        /* Neste exemplo os primeiros 1000 bytes do arquivo são protegidos
+        contra leitura e gravação por parte de outros arquivos. */
+
+.......................................................................................
+<A NAME="08.19"><B>08.19 lseek</B></A>
+        Esta função reposiciona o ponteiro de gravação/leitura do arquivo.
+        <B style="color:green">
+        long lseek(int handle, long offset, int fromwhere);
+        nPos = lseek(nHandle, nOffSet, nFromWhere);</B>
+
+        nPos.........A função retorna a posição corrente do arquivo medida em bytes
+                     a partir do início do arquivo.
+        nFromWhere...Define a partir de onde será feito o deslocamento do ponteiro
+        nOffSet......Deslocamento em bytes do ponteiro relativo a nFromWhere
+
+        Para nFromWhere você tem estas constantes definidas em stdio.h:
+        -----------------------------------------------------------------
+        SEEK_SET..........A partir do início do arquivo
+        SEEK_CUR..........A partir da posição corrente do arquivo
+        SEEK_END..........A partir do final do arquivo
+
+        Ex.:    long nPos, nOffSet=3;
+                nPos = lseek(nHandle, nOffSet, SEEK_SET);
+
+.......................................................................................
+<A NAME="08.20"><B>08.20 _open</B></A>
+        Esta função abre um arquivo para leitura ou gravação.
+        <B style="color:green">
+        int _open(const char *filename, int oflags);
+        nHandle = _open(sFileName, nModo);</B>
+
+        nHandle.....A função retorna um handle para o arquivo aberto, -1 para erro.
+        sFileName...Nome do arquivo
+        nModo.......Define modo de acesso
+
+        Para nModo você pode usar estas constantes definidas em fcntl.h:
+        ------------------------------------------------------------------
+        O_RDONLY     para leitura apenas
+        O_WRONLY     para gravação apenas
+        O_RDWR       para leitura e gravação
+        O_CREAT      cria e abre o arquivo
+        O_TRUNC      abertura com truncagem
+        O_EXCL       abertura com exclusividade
+        O_APPEND     abertura em modo append
+        O_TEXT       abertura em modo texto, com processamento de CR/LF
+        O_BINARY     modo binário, sem processamento de CR/LF
+        Você pode combinar estes atributos unindo os atributos usando o operador
+        OR binário "|" dessa maneira: int nModo = O_APPEND | O_RDWR, abre o
+        arquivo para ser usado em modo de leitura e gravação em modo append.
+
+        *** _open() não cria arquivo. O arquivo deve existir previamente para
+        você usar a função _open().
+
+        Veja o programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testado _open()";
+        char sFileName[]="teste.txt";
+        int nModo = O_APPEND | O_RDWR;
+        int nSts;
+
+        clrscr();
+        nHandle = _open("TESTE.TXT", nModo);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.21"><B>08.21 open</B></A>
+        Esta função abre arquivo para leitura ou gravação; ou ainda
+        cria este arquivo e define seu atributo de acesso.
+        <B style="color:green">
+        int open(const char *filename, int acess [,unsigned mode ]);
+        nHandle = open(sFileName, nModo, nAtributo);</B>
+
+        nHandle.....A função retorna um handle para o arquivo aberto
+        sFileName...Nome do arquivo
+        nModo.......Define modo de acesso
+        nAtributo...configura o atributo quando nModo estiver configurado para
+                    criar o arquivo. Este parâmetro é opcional.
+
+        Para nModo você pode usar estas constantes definidas em fcntl.h:
+        ------------------------------------------------------------------
+        O_RDONLY     para leitura apenas
+        O_WRONLY     para gravação apenas
+        O_RDWR       para leitura e gravação
+        O_CREAT      cria e abre o arquivo
+        O_TRUNC      abertura com truncagem
+        O_EXCL       abertura com exclusividade
+        O_APPEND     abertura em modo append
+        O_TEXT       abertura em modo texto, com processamento de CR/LF
+        O_BINARY     modo binário, sem processamento de CR/LF
+        Você pode combinar estes atributos unindo os atributos usando o operador
+        OR binário "|" dessa maneira: int nModo = O_CREAT | O_TXT, cria um
+        arquivo para ser usado em modo texto.
+
+        Para nAtributo você pode usar estas contantes definidas em stat.h
+        --------------------------------------------------------------------
+        S_IFMT    Mascara de tipo de arquivo..............(file type mask)
+        S_IFDIR   diretório...............................................
+        S_IFIFO   FIFO especial...........................(FIFO special)
+        S_IFCHR   caracter special........................................
+        S_IFBLK   bloco especial..........................(block special)
+        S_IFREG   arquivo regular.........................................
+        S_IREAD   proprietário pode ler...................(owner can read)
+        S_IWRITE  proprietário pode escrever..............(owner can write)
+        S_IEXEC   proprietário pode executar..............(owner can execute)
+
+        Veja o programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testado open()";
+        char sFileName[]="teste.txt";
+        int nModo = O_CREAT | O_TEXT;
+        int nSts;
+
+        clrscr();
+        nHandle = open("TESTE.TXT", O_CREAT | O_TEXT);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.22"><B>08.22 _read</B></A>
+        Esta função lê dados de um arquivo.
+        <B style="color:green">
+        int _read(int handle, void *buffer, unsigned len);
+        nSts = _read(nHandle, sBuffer, nBytes);</B>
+
+        nHandle...Handle do arquivo obtido por open()
+        sBuffer...Buffer que receberá os dados
+        nBytes....Número de bytes a serem lidos
+        nSts......A função retorna o número de bytes colocados no buffer, -1 em
+                  caso de erro e 0 para fim de arquivo (EOF) encontrado.
+
+        Ex.:    _read(nHandle, sBuffer, 128);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[128]="\0";
+        char sFileName[]="teste.txt";
+        int nModo = O_CREAT | O_TEXT;
+        int nSts;
+
+        clrscr();
+
+        nHandle = open("TESTE.TXT", O_RDONLY );
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = _read(nHandle, sMsg, 128);
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro de leitura!\n");
+        printf("%s\nBytes Lidos: %d\n",sMsg,nSts);
+        puts("\nEnd of Program");
+        getch();
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.23"><B>08.23 read</B></A>
+        Esta função lê dados de um arquivo.
+        <B style="color:green">
+        int read(int handle, void *buffer, unsigned len);
+        nSts = read(nHandle, sBuffer, nBytes);</B>
+
+        nHandle...Handle do arquivo obtido por open()
+        sBuffer...Buffer que receberá os dados
+        nBytes....Número de bytes a serem lidos
+        nSts......A função retorna o número de bytes colocados no buffer. Se o
+                  arquivo estiver em modo texto CR/LF e EOF não são contados.
+
+        Ex.:    read(nHandle, sBuffer, 128);
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[128]="\0";
+        char sFileName[]="teste.txt";
+        int nModo = O_CREAT | O_TEXT;
+        int nSts;
+
+        clrscr();
+
+        nHandle = open("TESTE.TXT", O_RDONLY );
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = read(nHandle, sMsg, 128);
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro de leitura!\n");
+        printf("%s\nBytes Lidos: %d\n",sMsg,nSts);
+        puts("\nEnd of Program");
+        getch();
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.24"><B>08.24 setftime</B></A>
+        Esta função reconfigura data e hora do arquivo.
+        <B style="color:green">
+        int setftime(int handle, struct ftime *ftimep);
+        nSts = setftime(nHandle, &xFileInfo);</B>
+
+        Veja os elementos da struct xFileInfo na função getftime().
+
+        Veja programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "fcntl.h"
+
+        /* setftime() */
+        int main (int nCmd, char **sCmd) {
+
+        char sFileName[]="teste.txt";
+        struct ftime xFileInfo;
+        int nHandle;
+
+        clrscr();
+        nHandle = open(sFileName,O_RDONLY);
+
+        xFileInfo.ft_day =1;
+        xFileInfo.ft_month=3;
+
+        xFileInfo.ft_year=27;
+        /* O valor que você fornece para ano será somado com 1980 */
+
+        xFileInfo.ft_hour=16;
+        xFileInfo.ft_min=20;
+        xFileInfo.ft_tsec=33;
+
+        setftime(nHandle,&xFileInfo);
+        close(nHandle);
+        system ("dir teste.txt");
+
+        puts("\nEnd of program");
+        getch();}</font>
+
+        Saída:
+        TESTE    TXT            14  01/03/07  16:20 teste.txt
+        End of program
+
+.......................................................................................
+<A NAME="08.25"><B>08.25 setmode</B></A>
+        Esta função reconfigura o atributo de acesso do arquivo.
+        <B style="color:green">
+        int setmode(int handle, int amode);
+        nSts = setmode(nHandle, nAtributo);</B>
+
+        nSts....Em caso de erro a função retorna -1, 0 para sucesso.
+
+        Para nAtributo você pode usar as constantes definidas em fcntl.h
+
+        Ex.:    setmode(nHandle,O_RDONLY);
+
+.......................................................................................
+<A NAME="08.26"><B>08.26 sopen</B></A>
+        Esta opção abre um arquivo permitindo configurar o modo de compartilhamento.
+        Esta função na verdade é uma macro que existe para prover compatibilidade
+        com versões anteriores do Turbo C e outros compiladores.
+        <B style="color:green">
+        sopen(path,acess,shflag, mode);
+        nHandle = sopen(sFileName,nMode, nShare, nAtributo);</B>
+
+        nHandle......Em caso de sucesso, o handle do arquivo é retornado. Em caso
+                     de erro o valor de retorno é -1.
+        sFileName....Nome do arquivo, podendo incluir o caminho
+        nMode........Modo de abertura de arquivo
+        nShare.......Modo de compartilhamento de arquivo
+        nAtributo....Atributo do arquivo, usado para quando nMode=O_CREAT
+
+        Para nMode você pode usar as constantes definidas em fcntl.h
+        Para nAtributo você pode usar as constantes definidas em stat.h
+
+        Para nShare você pode usar as seguintes constantes definidas em share.h:
+        -------------------------------------------------------------------------
+        SH_COMPAT.......Modo de compatibilidade
+        SH_DENYRD.......Nega a leitura do arquivo
+        SH_DENYNO.......Permite leitura e gravação
+        SH_DENYRW.......Nega a gravação no arquivo
+        SH_DENYNONE.....Permite gravação e leitura
+        SH_DENYWR.......Nega gravação no arquivo
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "io.h"
+        #include "fcntl.h"
+        #include "sys\stat.h"
+        #include "process.h"
+        #include "share.h"
+
+        int main(void) {
+        int nHandle;
+        int nSts;
+
+        clrscr();
+
+        nHandle = sopen("c:\\autoexec.bat", O_RDONLY, SH_DENYNO, S_IREAD);
+
+        if (!nHandle) {
+           printf("sopen() falhou.\n");
+           exit(1);     }
+
+        nSts = access("c:\\autoexec.bat", 6);
+        if (nSts == 0)
+        printf("leitura/gravação accesso permitido\n");
+        else
+        printf("leitura/gravação acesso não permitido\n");
+
+        close(nHandle);
+        puts("End of Program.\n");
+        getch();
+        return 0;}</font>
+
+        Saída:
+        leitura/gravação accesso permitido
+        End of Program.
+
+.......................................................................................
+<A NAME="08.27"><B>08.27 tell</B></A>
+        Esta função obtém a posição corrente do ponteiro de dados do
+        arquivo.
+        <B style="color:green">
+        long tell(int handle);
+        nPos = tell(nHandle);</B>
+
+        Ex.:    long nPos;
+                nPos = tell(nHandle);
+
+        Em caso de erro a função retorna -1.
+
+.......................................................................................
+<A NAME="08.28"><B>08.28 unlink</B></A>
+        Esta função deleta um arquivo do disco.
+        <B style="color:green">
+        int unlink(const char *filename);
+        nSts = unlink(sFileName);</b>
+
+        nSts........A função retorna 0 para sucesso, -1 para erro
+
+        Ex.:    unlink ("teste.txt");
+
+        Se o arquivo estiver protegido, esta função falhará.
+
+.......................................................................................
+<A NAME="08.29"><B>08.29 unlock</B></A>
+        Esta função libera para acesso concorrente uma região do arquivo que
+        foi previamente travada com lock().
+        <B style="color:green">
+        int unlock(int handle, long offset, long length);
+        nSts = unlock(nHandle, nPos, nTam);</B>
+
+        nSts........A função retorna 0 para sucesso, -1 para erro.
+        nPos........Posição a partir da qual será feito a liberação
+        nTam........Tamanho da área que será liberada
+
+        Ex.:    int nSts;
+                nPos=0, nTam=1000;
+                nSts = unlock(nHandle, nPos, nTam);
+
+        /* Neste exemplo os primeiros 1000 bytes do arquivo foram liberados
+        para leitura e gravação por parte de outros arquivos durante acesso
+        concorrente deste mesmo arquivo */
+
+.......................................................................................
+<A NAME="08.30"><B>08.30 _write</B></A>
+        Esta função grava uma string no arquivo.
+        <B style="color:green">
+        int _write (int handle, void *buf, unsigned nbyte);
+        nSts = _write(nHandle, sDados, nBytes);</B>
+
+        nSts......Em caso de sucesso a função retorna o nro de bytes escritos,
+                  em caso de erro o valor de retorno é -1.
+        nHandle...Número de handle do arquivo aberto para gravação
+        sDados....String de dados que serão gravados
+        nBytes....Quantidade de bytes que serão gravados
+
+        Ex.:    _write (nHandle, sMsg, nBytes);
+
+        Segundo o arquivo de help do turbo C++ 3.1, em arquivo aberto no modo
+        O_APPEND a função write() desloca o ponteiro do arquivo para o final do
+        arquivo antes de gravar resultando no acréscimo da informação no arquivo
+        enquanto que _write() grava as informações a partir da posição corrente
+        do ponteiro de arquivo.
+
+        Veja o programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testado open()";
+        char sFileName[]="teste.txt";
+        int nModo = O_CREAT | O_TEXT;
+        int nSts;
+
+        clrscr();
+        nHandle = open("TESTE.TXT", O_CREAT | O_TEXT);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = _write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="08.31"><B>08.31 write</B></A>
+        Esta função grava uma string no arquivo.
+        <B style="color:green">
+        int write (int handle, void *buf, unsigned nbyte);
+        nSts = write(nHandle, sDados, nBytes);</B>
+
+        nSts......Em caso de sucesso a função retorna o nro de bytes escritos,
+                  em caso de erro o valor de retorno é -1.
+        nHandle...Número de handle do arquivo aberto para gravação
+        sDados....String de dados que serão gravados
+        nBytes....Quantidade de bytes que serão gravados
+
+        Ex.:    write (nHandle, sMsg, nBytes);
+
+        Segundo o arquivo de help do turbo C++ 3.1, em arquivo aberto no modo
+        O_APPEND a função write() desloca o ponteiro do arquivo para o final do
+        arquivo antes de gravar resultando no acréscimo da informação no arquivo
+        enquanto que _write() grava as informações a partir da posição corrente
+        do ponteiro de arquivo.
+
+        Veja o programa exemplo:<font color="darkblue">
+        #include "string.h"
+        #include "stdio.h"
+        #include "conio.h"
+        #include "fcntl.h"
+        #include "io.h"
+
+        int main(void) {
+        int nHandle;
+        char sMsg[] = "Testado open()";
+        char sFileName[]="teste.txt";
+        int nModo = O_CREAT | O_TEXT;
+        int nSts;
+
+        clrscr();
+        nHandle = open("TESTE.TXT", O_CREAT | O_TEXT);
+        if (nHandle==-1) {
+        perror("Error:");
+        return 1;}
+
+        nSts = write(nHandle, sMsg, strlen(sMsg));
+        close(nHandle);
+
+        if (nSts==-1) printf("Erro na gravação!\n");
+        printf("%s\n",sMsg);
+        puts("\nEnd of Program");
+        getch();
+
+        return 0; }</font>
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track07.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track09.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

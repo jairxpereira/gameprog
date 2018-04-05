@@ -1,0 +1,1028 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.2 Projeto Hierarquia Animada: Parte 1 - Câmera</h3><pre>
+<a href=#1.1>1.1  Visão geral</a>
+<a href=#1.2>1.2  Estrutura principal da classe CCamera</a>
+<a href=#2.1>2.1  Especificação da classe CCamera: Camera.h</a>
+<a href=#2.2>2.2  Aspectos globais: arquivo Camera.cpp</a>
+<a href=#2.3>2.3  CCamera::CCamera()                     - Construtor default</a>
+<a href=#2.4>2.4  CCamera::CCamera(D3DXVECTOR3 startPos) - Construtor alternativo</a>
+<a href=#2.5>2.5  CCamera::SetYawPitchRoll()             - Configuração da orientação da câmera</a>
+<a href=#2.6>2.6  CCamera::CalculateViewMatrix()         - Cálculo da matriz de visualização</a>
+<a href=#2.7>2.7  CCamera::Yaw()                         - Rotação ao redor do eixo y</a>
+<a href=#2.8>2.8  CCamera::Pitch()                       - Rotação ao redor do eixo x</a>
+<a href=#2.9>2.9  CCamera::Roll()                        - Rotação ao redor do eixo z</a>
+<a href=#2.10>2.10 CCamera::RestrictAngleTo360Range()     - Restrição de valores</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_HierarquiaAnimada.png>
+* figura prj_HierarquiaAnimada.png</div>
+A aplicação de exemplo que ilustra  como  renderizar  uma  hierarquia
+animada,  exatamente   o   projeto   <b>prj_HierarquiaAnimada</b>,  vai  ser
+explicado ao longo de vários capítulos.  Esse capítulo  vai  explicar
+a estruturação da classe <b>CCamera</b> que implementa a câmera da aplicação.
+
+Segue  abaixo  a  listagem  dos  arquivos  de código de composição do
+projeto Hieraquia Animada:
+
+	<b class=prg>Camera.h \ Camera.cpp</b>
+	São os arquivos da classe <b>CCamera</b>  que  implementa  a  câmera
+	da aplicação.
+
+	<b class=prg>Tools.h \ Tools.cpp</b>
+	Implementa a classe <b>Tools</b> que fornece funções de utilidade
+	genérica.
+
+	<b class=prg>Hierarquia.h \ Hierarquia.cpp</b>
+	Fornece a classe ( <b>CMeshHierarchy</b> ) e  as estruturas  de apoio
+	(<b>OSSO, MESHPACK</b>) ao carregamento e renderização de hierarquias
+	animadas de objetos 3d.
+	
+	<b class=prg>Modelo3d.h \ Modelo3d.cpp</b>
+	Implementa  a classe  <b>CModelo</b>  que  lida  com  o  carregamento e
+	renderização de modelos 3d animados nativos do directx (arquivos
+	<b>.x</b> )
+
+	<b class=prg>Motor.h \ Motor.cpp</b>
+	Implementa a classe <b>CMotor</b> que embrulha a funcionalidade do
+	motor gráfico de renderização  do  directx  e  vai  fazer o
+	trabalho  de  iniciar  e  gerenciar  o  trabalho  ativo  da
+	aplicação.
+
+	<b class=prg>entrada.cpp</b>
+	Esse arquivo é o ponto de entrada da aplicação que produz
+	a janela e o laço de mensagens correspondente.
+	
+Os  maiores  detalhes  sobre  cada  classe  serão dados  no  capítulo
+específico de cada uma. Vamos agora examinar como está implementada a
+câmera da aplicação.
+
+<div class=prg-code>
+<img src=images\ccamera_visu_helper.png>
+* figura ccamera_visu_helper.png
+</div>
+A figura acima ilustra uma câmera espetada por três eixos  no  centro
+inicial da câmera. Esse centro inicial  da  câmera  é  a  posição  da
+câmera no mundo 3d por onde passa os três eixos x, y e z.  Você  pode
+realmente visualizar os eixos como  espetos  atrelados  na câmera e a
+partir disso imaginar que está puxando ou rotacionando esses eixos na
+direção natural de cada um e isso vai dar a exata percepção  de  qual
+movimentação eles permitem aplicar na câmera e qual variável modificar
+para chegar nesse  movimento  ou  orientação.  Ao  imaginar  que está
+puxando ou rotacionando esses eixos isso dá  espaço para a existência
+de variáveis que indicam a quantidade do empuxo ou da torção rotativa
+que você aplica nos eixos que são representados por variáveis do tipo
+vetor 3d ( <b class=prg>D3DXVECTOR3</b> ).
+
+Descrevemos abaixo  o nome  das  variáveis  dos  eixos  da  câmera  e
+colocamos entre parêntesis o eixo correspondente do mundo 3d  no qual
+eles  se  movem  e  ao  lado  o  nome  da  variável  que representa a
+quantidade de rotação possível no eixo.
+
+   <b>m_right ( X ) m_pitch</b>
+   O eixo <b>m_right</b> permite o deslocamento lateral da  câmera  para  a
+   sua esquerda ou direita. A quantidade de rotação no eixo(<b>m_pitch</b>)
+   faz a câmera olhar para cima ou para baixo.    Esse  movimento  é
+   chamado pitch e podemos citar que define a inclinação  do  objeto
+   3d na direção do chão ou do céu.
+
+   <b>m_up ( Y) m_yaw</b>
+   O eixo <b>m_up</b> permite o deslocamento vertical da  câmera  para cima
+   ou para baixo. A quantidade de rotação no eixo ( <b>m_yaw</b> ) faz  a
+   câmera girar  o  'pescoço'  para  a  esquerda  ou  direita.  Esse
+   movimento  é chamado <b>yaw</b> ou <b>heading</b> ( encabeçamento )  e  podemos
+   citar que define para aonde  o  objeto  3d  está  olhando  ou  se 
+   dirigindo.
+	
+   <b>m_look (Z) m_roll</b>
+   O eixo <b>m_look</b> permite o  deslocamento em  profundidade  da câmera
+   para dentro ou fora da cena. A quantidade de rotação  nesse  eixo
+   ( <b>m_roll</b> ) faz a câmera rolar sobre  si mesma,  inclinando-se para
+   a direita ou esquerda. Esse movimento  é  chamado  <b>roll</b>  ou  <b>bank</b>
+   e podemos citar que define uma rotação inclinada da objeto 3d para
+   a esquerda ou direita em  contraste  com  pitch  que  rotaciona o
+   objeto 3d na direção do chão ou céu. O nome  da  variável  <b>m_look</b>
+   lembra que a câmera está olhando para dentro da cena.
+   
+<u>A relatividade dos deslocamentos</u>
+Todo movimento representa um distanciamento ou deslocamento  relativo
+de um ponto de origem. Geralmente esse ponto de origem é estabelecido
+de forma arbitrária e recebe  também o nome de  frame  ou  quadro  de
+referência.  Geralmente  no  ambiente  3d  o  ponto  de  origem  é  a
+coordenada de mundo (0,0,0).  Qualquer objeto do  mundo  3d  pode  se
+tornar um frame de referência e a partir disso usar  o  seu 'ponto de
+vista' para indicar a posição dos outros objetos  com  relação  a  si
+mesmo. Isso geralmente traz a possibilidade de aplicar o mesmo efeito
+visual na cena de duas ou mais formas diferentes. Por  exemplo,  você
+pode movimentar a câmera para esquerda e a mudança de visual  da cena
+que isto implica pode ser refeita se  todos  os  objetos  da  cena se 
+moverem para a direita ou  a  própria  matriz  de  mundo  sofrer  uma
+reconfiguração   equivalente   ou   ainda   uma   reconfiguração   de
+posicionamento dos vértices do objeto. É  comum  numa  hierarquia  de
+objetos 3d o objeto pai ou filho servir de frame de  referência  para
+outro objeto da corrente de objetos 3d.
+O movimento rotativo que produz  um  deslocamento  angular  também  é
+relativo a um ponto  de  referência.  As  rotações  de  câmera  dessa
+aplicação estão baseadas nos eixos XYZ sempre  tendo o  ponto (0,0,0)
+de origem do mundo 3d como quadro de referência.
+
+Para  manter  a  clareza  de  nosso  texto  vamos  estabelecer aqui a
+diferença de duas palavras que podem  gerar  confusão  se  forem  mal
+compreendidas: orientação e direção.  A direção aponta para onde algo
+está indo. Por exemplo, se você rotacionar  a  câmera  no  eixo  Z, a
+câmera permanece na  mesma  posição,  com  a  mesma  direção  porém a 
+orientação foi alterada  no  eixo Z.  A  orientação  diz  respeito ao 
+estado de rotação acumulado de forma geral nos três eixos e geralmente
+vai influir para onde o objeto está olhando.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da classe CCamera</b></u>
+<div class=prg-code>
+<img src=images\ccamera_diagrama.png></div>
+<u>Propriedades</u>
+<div class=prg-code><b class=prg>
+m_up			// eixo y da câmera
+m_right			// eixo x da câmera
+m_look			// eixo z da câmera</b></div>
+Estas variáveis estabelecem os eixos de orientação da câmera e todas
+são necessariamente do tipo <b class=prg>D3DXVECTOR3</b>.
+
+<div class=prg-code><b class=prg>
+m_yaw			// quantidade de rotação no eixo y
+m_pitch			// quantidade de rotação no eixo x
+m_roll			// quantidade de rotação no eixo z</b></div>
+Estas variáveis em conjunto  representam a orientação geral da câmera
+e isoladamente cada uma representa a quantidade de rotação da  câmera
+em um eixo particular. Estas variáveis são do tipo <b class=prg>float</b>.
+
+<u>Construtores</u>
+<b class=prg-code>
+<b class=prg>CCamera::CCamera() : m_position(0,0,0), m_yaw(0), m_pitch(0), m_roll(0) </b></b>
+Este é o construtor default. Ele basicamente  zera  as  variáveis  de
+posição ( <b>m_position</b> ) e  rotação ( <b>m_yaw,  m_pitch,  m_roll</b> ).  Esse
+construtor estabelece a configuração inicial dos eixos (<b>m_up, m_right
+e m_look</b> ).
+
+<b class=prg-code>
+<b class=prg>CCamera::CCamera(D3DXVECTOR3 startPos) : m_position(startPos) <b class=sc2>// (...)</b></b></b>
+Esse construtor tem a mesma funcionalidade  do  construtor  default e
+como adição ele permite estabelecer  uma  posição  inicial  diferente
+para a câmera ( <b>startPos</b> ).
+
+<u>Métodos de aplicação de movimento</u>
+<div class=prg-code><b class=prg>
+<b class=sc2>// Mover para a direita \ esquerda ( deslocamento no eixo X )</b>
+void MoveRight( float amount ) { m_position += m_right * amount; }
+
+<b class=sc2>// Mover para cima \ baixo ( deslocamento no eixo Y )</b>
+void MoveUp( float amount)  { m_position += m_up * amount; }
+
+<b class=sc2>// Mover para a frente \ fundo ( deslocamento no eixo Z )</b>
+void MoveForward( float amount ) { m_position += m_look * amount; }</b></div>
+Estas funções movem a câmera adiante ou em reverso no espaço 3d. Veja
+que estes métodos são  altamente  semelhantes:  primeiro  ocorre  uma
+multiplicação do eixo pela quantia que se quer mover (<b>amount</b>) e depois
+esse valor  resultante  é  somado  com  a  posição  atual  da  câmera
+( <b>m_position</b> ). O movimento em reverso no eixo selecionado  é causado
+por uma quantia negativa (<b>-amount</b>).
+
+<u>Métodos de aplicar movimento rotativo na câmera</u>
+<div class=prg-code><b class=prg>
+<b class=sc2>// Rotação ao redor do eixo x</b>
+void Pitch( float amount );  
+
+<b class=sc2>// Rotação ao redor do eixo y </b>
+void Yaw( float amount );  
+
+<b class=sc2>// Rotação ao redor do eixo z </b>
+void Roll( float amount );  </b></div>
+Estes métodos rotacionam a câmera no eixo selecionado através da soma
+da  quantia  dada ( <b>amount</b> )  na  quantidade  anterior   de   rotação
+particular do eixo.
+
+<u>Métodos de configuração da orientação e posição da câmera</u>
+<div class=prg-code><b class=prg>
+<b class=sc2>// Configura a rotação nos eixos XYZ simultaneamente</b>
+void SetYawPitchRoll( float yaw, float pitch, float roll );  
+
+<b class=sc2>// Configurar posição </b>
+void SetPosition( const D3DXVECTOR3 &pos ) { m_position = pos; }
+</b></div>
+<b>SetYawPitchRoll()</b> configura a orientação da câmera através do
+estabelecimento dos valores de <b>m_yaw, m_pitch e m_roll</b>.
+<b>SetPosition()</b> configura a posição da câmera com o vetor 3d indicado.
+
+<u>Métodos para obter a configuração da câmera</u>
+<div class=prg-code><b class=prg>
+<b class=sc2>// Obter rotação do eixo x</b>
+float GetPitch() const { return m_pitch; }
+
+<b class=sc2>// Obter rotação do eixo y</b>
+float GetYaw() const { return m_yaw; }
+
+<b class=sc2>// Obter rotação do eixo z </b>
+float GetRoll() const { return m_roll; }
+
+<b class=sc2>// Obter posição da câmera </b>
+D3DXVECTOR3 GetPosition() const { return m_position; }
+</b></div>
+Estes métodos obtém o valor atual configurado nas  variáveis  membros
+da classe <b>CCamera</b>.
+
+<u>Os métodos especiais</u>
+ 
+<b class=prg-code><b class=prg>float RestrictAngleTo360Range(float angle) const;</b></b>
+A finalidade desse método é manter as propriedades  que  descrevem  a
+orientação da câmera (  <b>m_yaw,  m_pitch,  m_roll</b>)  na  faixa  natural
+de valores de ângulos de 0 a 360 graus.
+
+<b class=prg-code><b class=prg>void CalculateViewMatrix(D3DXMATRIX *viewMatrix); </b></b>
+Esse método é a razão especial da existência da  classe  <b>CCamera</b>. Ele
+pega os valores das propriedades  de  orientação  e posição da câmera
+e calcula a matriz de visualização da câmera. Esse método realiza  as
+operações da função nativa do directx <b class=prg>D3DXMatrixLookAtLH()</b> e  isso  é
+interessante para  verificar o algoritmo  de  produção  da  matriz de
+visualização.
+
+<b class=prg-code><b class=prg>~CCamera(void){};</b></b>
+Esse método é o destrutor da classe  e sua função é liberar a memória
+e os objetos utilizados pela classe.  Porém como a classe <b>CCamera</b> não
+utiliza interfaces do directx e também não faz  alocação  de  memória
+esse método não é implementado.
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Especificação da classe CCamera: Camera.h </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Camera.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span>once 
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Camera.h: Implementação de uma câmera em primeira pessoa</span>
+<span class=prg>class </span>CCamera 
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// Posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_position; 
+
+  <span class=sc2>// Rotação ao redor do eixo y</span>
+  <span class=prg>float </span>m_yaw; 
+
+  <span class=sc2>// Rotação ao redor do eixo x</span>
+  <span class=prg>float </span>m_pitch; 
+
+  <span class=sc2>// Rotação ao redor do eixo z</span>
+  <span class=prg>float </span>m_roll; 
+
+  <span class=sc2>// Eixos da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_up, m_look, m_right; 
+
+  <span class=sc2>// Restrição para manter o ângulo na faixa 0 - 360 graus</span>
+  <span class=prg>float </span>RestrictAngleTo360Range(<span class=prg>float </span>angle) <span class=sc16>const</span>; 
+
+<span class=sc16>public:</span>
+  CCamera();  
+  CCamera(<span class=sc5>D3DXVECTOR3 </span>startPos);  
+  ~CCamera(<span class=prg>void</span>) {}; 
+
+  <span class=sc2>// Calcular a matriz de visualização</span>
+  <span class=prg>void </span>CalculateViewMatrix(<span class=sc5>D3DXMATRIX </span>*viewMatrix);  
+
+  <span class=sc2>// Sets ( Configurações )</span>
+  <span class=sc2>// Configurar posição</span>
+  <span class=prg>void </span>SetPosition( <span class=sc16>const </span><span class=sc5>D3DXVECTOR3 </span>&pos ) <span class=sc16>{ </span>m_position = pos; <span class=sc16>}</span>
+
+  <span class=sc2>// Configurar rotação</span>
+  <span class=prg>void </span>SetYawPitchRoll( <span class=prg>float </span>yaw, <span class=prg>float </span>pitch, <span class=prg>float </span>roll );  
+
+  <span class=sc2>// Gets ( Obter )</span>
+  <span class=sc2>// Obter rotação do eixo y</span>
+  <span class=prg>float </span>GetYaw() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_yaw; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter rotação do eixo x</span>
+  <span class=prg>float </span>GetPitch() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_pitch; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter rotação do eixo z</span>
+  <span class=prg>float </span>GetRoll() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_roll; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>GetPosition() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_position; <span class=sc16>}</span>
+
+  <span class=sc2>// Operações de mover</span>
+  <span class=sc2>// Mover para a frente</span>
+  <span class=prg>void </span>MoveForward( <span class=prg>float </span>amount ) <span class=sc16>{ </span>m_position += m_look * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Mover para a direita</span>
+  <span class=prg>void </span>MoveRight( <span class=prg>float </span>amount ) <span class=sc16>{ </span>m_position += m_right * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Mover para cima</span>
+  <span class=prg>void </span>MoveUp( <span class=prg>float </span>amount)  <span class=sc16>{ </span>m_position += m_up * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Rotações</span>
+  <span class=sc2>// Rotação ao redor do eixo y</span>
+  <span class=prg>void </span>Yaw( <span class=prg>float </span>amount );  
+
+  <span class=sc2>// Rotação ao redor do eixo x</span>
+  <span class=prg>void </span>Pitch( <span class=prg>float </span>amount );  
+
+  <span class=sc2>// Rotação ao redor do eixo z</span>
+  <span class=prg>void </span>Roll( <span class=prg>float </span>amount );  
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CCamera</span>
+<span class=sc2>// fim do arquivo Camera.h</span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais: arquivo Camera.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Camera.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span></b>
+</div>
+
+<u><b>Créditos</b></u>
+Reforçamos  que os capítulos sobre hierarquia  animada  são  baseados
+no trabalho do professor norte americano <b>Keith Ditchburn</b> que publicou
+esse material no site <b class=prg>http://toymaker.info</b>.
+
+O material foi vertido para a  língua  portuguesa,  foi  aumentado  e
+melhorado, entretanto, devido aos impactos da tradução  e  estilo  de
+codificação da Gameprog nossa tradução não  tem  uma  correspondência
+exata e fácil com o material original em inglês. Para  concretizar  o
+que afirmamos, por exemplo, a classe original <b>CGraphics</b> foi traduzida
+para <b>CMotor</b> para casar com o estilo de código da  produção  do  motor
+gráfico que tem sido usado em nossas aplicações.  A  versão  original
+traz código para uma versão Debug da aplicação que não foi aproveitado
+em nossas lições.
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 CCamera::CCamera() - Construtor default </u></b>
+<div class=niceview>CCamera::CCamera() : m_position(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Comece com um eixo de camera ortogonal olhando para baixo-z</span>
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+<span class=sc16>} <span class=sc2>// construtor default fim</span></span>
+</div>
+
+<b class=prg-code>CCamera::CCamera() : m_position(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)</b>  
+Aqui destacamos  um recurso de C++  desse  construtor:  as  variáveis
+membros da classe são inicializadas numa  sintaxe  curta  depois  dos
+dois pontos (:).
+
+<u><b>Os eixos XYZ da câmera</b></u>
+<img src=images\ccamera_visu_helper.png>
+<div class=prg-code><span class=sc2>// Comece com um eixo de camera ortogonal olhando para baixo-z</span>
+m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>); </div>
+
+Neste momento do código a câmera é construída na origem do  mundo 3d,
+<b>m_position(0,0,0)</b> e  não  tem  nenhuma  rotação  aplicada:  <b>m_yaw(0)</b>, 
+<b>m_pitch(0)</b>  e  <b>m_roll(0)</b>  conforme  vemos  no  construtor.
+A partir da posição de origem do mundo 3d a direção de cada  eixo  se
+estabelece em uma unidade (1) em cada eixo com dois eixos zerados. Por
+exemplo, o eixo <b>x (m_right)</b> é definido dessa forma  <b>m_right( <b class=sc4>1</b>, 0, 0)</b>
+utilizando a linguagem curta do construtor.   Seguindo  esse  padrão 
+podemos deduzir que a variável vetor 3d que  assinala  o  eixo  Z  é
+definida dessa forma <b>m_look(0, 0, <b class=sc4>1</b> )</b>.
+
+É interessante fixar que a indicação de eixos é feita por  vetores 3d
+e visto que definem eixos estes vetores são  chamados  <b>vetores  base</b>. 
+Estes três vetores base em conjunto definem uma  matriz  3x3  e  essa
+matriz forma um  'frame  de  referência'  que  pode  ser  usado  para
+transformar outros vetores para  o 'ponto de vista'  ou  'sistema  de
+coordenadas' que esse frame de referência  representa.  É  importante
+passar essa informação pois ela pode ser utilizada em outros  objetos
+3d, por exemplo, é útil em um jogo enxergar o  cenário  do  ponto  de
+vista de um inimigo, levar em conta  a  sua <b>orientação</b>  e  perceber o 
+posicionamento dos itens  de  acordo com a percepção  dele.  Voltando 
+aos vetores bases em livros de matemática 3d são nomeados <b>pqr</b> com uma
+natural correspondência com os eixos xyz.
+
+O professor Keith comenta que essa matriz é  'ortogonal'  mas  o  que
+isso  significa?  A  matriz   é   ortogonal   porque   define   eixos 
+perpendiculares entre si formando ângulos de 90 graus  no  cruzamento
+entre cada par de eixos. Uma aparência da matriz ortogonal é  o  fato
+de haver números diferentes de zero na diagonal (1) e valores zerados
+nos campos não-diagonais. A matriz ortogonal é ótima para cálculos de
+rotação,  translação  e  reflexão  e  apresenta  outras  propriedades
+interessantes cujo alistamento aqui não seria apropriado mas que  uma
+boa pesquisa no Google pode revelar facilmente.
+
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 CCamera::CCamera(D3DXVECTOR3 startPos) - Construtor alternativo </u></b>
+<div class=niceview><b>CCamera::CCamera(<span class=sc5>D3DXVECTOR3 </span>startPos):m_position(startPos), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Comece com um eixo de camera ortogonal olhando para baixo-z</span>
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+<span class=sc16>} <span class=sc2>// construtor alternativo</span></span>
+</b></div>
+
+<b class=prg-code>CCamera::CCamera(<span class=sc5>D3DXVECTOR3 </span>startPos):m_position(startPos), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)</b>
+A única diferença com relação ao outro construtor é  que este permite
+estabelecer  a  posição  inicial  da  câmera: <b>m_position(startPos)</b>
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 CCamera::SetYawPitchRoll() - Configuração da orientação da câmera </u></b>
+<div class=niceview><b><span class=prg>void </span>CCamera::SetYawPitchRoll(<span class=prg>float </span>_yawy, <span class=prg>float </span>_pitchx, <span class=prg>float </span>_rollz) 
+<span class=sc16>{</span>
+  m_yaw   = _yawy; 
+  m_pitch = _pitchx; 
+  m_roll  = _rollz; 
+<span class=sc16>} <span class=sc2>// CCamera::SetYawPitchRoll().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 CCamera::CalculateViewMatrix() - Cálculo da matriz de visualização </u></b>
+Bem,  abaixo está  a função <b>CalculateViewMatrix()</b> que elabora a matriz
+de visualização da câmera, que em outras palavras, mostra o  mundo  do
+ponto de vista desse objeto 3d virtual identificado como a câmera aqui.
+Queremos destacar que essa função pode ser usada  com  qualquer  outro
+objeto 3d para ver o mundo através do  ponto  de  vista  desse objeto,
+naturalmente que usando as variáveis para segurar eixos e orientações
+atribuídos a este objeto de referência.
+
+Não vamos tentar explicar a justificação matemática e  geométrica  do
+funcionamento dessa função; estaria fora do nosso alcance agora fazer
+isso   da   forma  apropriada.  Vamos  nos  limitar  a  tecer  breves 
+comentários sobre o código. Entretanto recomendamos o excelente livro
+sobre matemática 3D '<b class=prg>3D math primer for graphics and game development</b>'
+escrito em  conjunto  por  <b>Fletcher Dunn  e  Ian Parberry</b>   publicado
+pela  editora Wordware (2002). O  livro  apresenta  os  conceitos  de
+produção dos gráficos 3D de forma lenta e gradual com uma riqueza  de
+ilustrações que facilitam a compreensão dessa  temática  espinhosa  da
+produção de jogos.
+
+<div class=niceview><b><span class=sc2>// Calcula a matriz de visualização pela rotação dos nossos eixos a partir da</span>
+<span class=sc2>// orientação default (olhando para baixo-z) via variáveis membro yaw, pitch e roll.</span>
+<span class=sc2>// Também adicione qualquer translação</span>
+<span class=prg>void </span>CCamera::CalculateViewMatrix( <span class=sc5>D3DXMATRIX </span>*viewMatrix) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Comece com o eixo da nossa camera apontado baixo-z</span>
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+
+
+  <span class=sc2>// Yaw é a rotação ao redor do eixo y ( m_up)</span>
+  <span class=sc2>// Elabore a matriz que pode realizar esta rotação</span>
+  <span class=sc5>D3DXMATRIX </span>yawMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>(&yawMatrix, &m_up, m_yaw);  
+
+  <span class=sc2>// Para aplicar 'yaw' nós rodamos os vetores m_look e m_right ao redor do vetor</span>
+  <span class=sc2>// m_up ( usando nossa matriz-yaw )</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &yawMatrix  );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &yawMatrix );  
+
+
+  <span class=sc2>// Pitch é a rotação ao redor do eixo x ( m_right)</span>
+  <span class=sc2>// Elabora a matriz que pode realizar essa rotação</span>
+  <span class=sc5>D3DXMATRIX </span>pitchMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>( &pitchMatrix, &m_right, m_pitch );  
+
+  <span class=sc2>// Para aplicar 'pitch' nós rodamos os vetores m_look e m_up ao redor do vetor</span>
+  <span class=sc2>// m_right ( usando nossa matriz-pitch )</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &pitchMatrix );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &pitchMatrix );  
+
+
+  <span class=sc2>// Roll é a rotação ao redor do eixo z ( m_look)</span>
+  <span class=sc2>// Elabore a matriz que pode realizar essa rotação</span>
+  <span class=sc5>D3DXMATRIX </span>rollMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>( &rollMatrix, &m_look, m_roll );  
+
+  <span class=sc2>// Para aplicar esta rotação nós rodamos para cima e para a direta ao redor do</span>
+  <span class=sc2>// vetor olhar ( usando nossa matriz-roll)</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &rollMatrix );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &rollMatrix );  
+
+  <span class=sc2>// Elabore a matriz de visualização a partir dos eixos da camera transformados</span>
+  <span class=prg>D3DXMatrixIdentity</span>(viewMatrix);  
+
+  <span class=prg>viewMatrix-&gt;_11 </span>= <span class=prg>m_right.x</span>; <span class=prg>viewMatrix-&gt;_12 </span>= <span class=prg>m_up.x</span>; <span class=prg>viewMatrix-&gt;_13 </span>= <span class=prg>m_look.x</span>; 
+  <span class=prg>viewMatrix-&gt;_21 </span>= <span class=prg>m_right.y</span>; <span class=prg>viewMatrix-&gt;_22 </span>= <span class=prg>m_up.y</span>; <span class=prg>viewMatrix-&gt;_23 </span>= <span class=prg>m_look.y</span>; 
+  <span class=prg>viewMatrix-&gt;_31 </span>= <span class=prg>m_right.z</span>; <span class=prg>viewMatrix-&gt;_32 </span>= <span class=prg>m_up.z</span>; <span class=prg>viewMatrix-&gt;_33 </span>= <span class=prg>m_look.z</span>; 
+
+  <span class=prg>viewMatrix-&gt;_41 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_right );  
+  <span class=prg>viewMatrix-&gt;_42 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_up );  
+  <span class=prg>viewMatrix-&gt;_43 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_look );  
+<span class=sc16>} <span class=sc2>// CCamera::CalculateViewMatrix().fim</span></span>
+</b></div>
+
+<u>Posição inicial ou identidade dos eixos</u>
+<img src=images\ccamera_visu_helper.png>
+<div class=prg-code>
+m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+</div>
+Esse código aqui de inicialização dos eixos garante  que toda rotação
+aplicada vai começar a partir da posição inicial  de  identidade  dos
+eixos. Veja pela ilustração e pela imaginação que se você aplicar uma
+torção rotativa em um eixo, por exemplo no eixo Y,  essa  rotação vai
+ocasionar uma rotação correspodente nos dois outros eixos, no caso XZ
+se você pegou o eixo Y para aplicar a rotação. É costume chamar  esse
+par de eixos XZ de 'plano XZ' e percebemos que  toda rotação acontece
+em um plano. Essa rotação do  plano  XZ  em  torno  do  eixo  Y  está 
+representada pelo seguinte código que vem na sequência:
+
+<u>Rotação dos eixos XZ ao redor do eixo Y</u>
+<div class=prg-code>
+<span class=sc2>// Yaw é a rotação ao redor do eixo y ( m_up)</span>
+<span class=sc2>// Elabore a matriz que pode realizar esta rotação</span>
+<span class=sc5>D3DXMATRIX </span>yawMatrix; 
+<b class=prg>D3DXMatrixRotationAxis</b>(&yawMatrix, &m_up, m_yaw);  
+
+<span class=sc2>// Para aplicar 'yaw' nós rodamos os vetores m_look e m_right ao redor do vetor</span>
+<span class=sc2>// m_up ( usando nossa matriz-yaw )</span>
+<b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &yawMatrix  );  
+<b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &yawMatrix );  
+</div>
+<b class=prg-code><b class=prg>D3DXMatrixRotationAxis</b>(&yawMatrix, &m_up, m_yaw); </b>
+A função <b class=prg>D3DXMatrixRotationAxis()</b>  produz  uma matriz  de  rotação ao
+redor de um eixo arbitrário.Neste caso <b>m_yaw</b> é a quantidade de torção
+expressa em radianos e <b>m_up</b> é o nosso eixo  Y  arbitrário.  Depois de
+montada a rotação dessa matriz é aplicada nos demais eixos  com  esse
+código: 
+
+<b class=prg-code><b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &yawMatrix  );  </b>
+A função <b class=prg>D3DXVec3TransformCoord()</b> transforma  um vetor 3d ( <b>m_look</b> )
+por uma matriz. Aqui no caso uma rotação de eixo Y ( <b>yawMatrix</b> ) está
+sendo aplicada ao eixo Z ( <b>m_look</b> ) que é ao mesmo  tempo  um  valor
+de entrada ( antigo ) e o valor de saida ( novo rotacionado ).
+
+<b class=prg-code><b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &yawMatrix  );  </b>
+A função <b class=prg>D3DXVec3TransformCoord()</b> transforma  um vetor 3d ( <b>m_right</b> )
+por uma matriz. Aqui no caso uma rotação de eixo Y ( <b>yawMatrix</b> ) está
+sendo aplicada ao eixo X ( <b>m_right</b> ) que é ao mesmo  tempo  um  valor
+de entrada ( antigo ) e o valor de saida ( novo rotacionado ).
+
+Agora com a compreensão de rotação dos eixos XZ provocada pela rotação
+do eixo Y fica fácil entender  a  produção  das  outras  matrizes  de
+rotação e a aplicação delas nos demais eixos.  Segue a listagem desse
+código na sequência:
+
+<u>Rotação dos eixos ZY ao redor do eixo X</u>
+<div class=prg-code>
+<span class=sc2>// Pitch é a rotação ao redor do eixo x ( m_right)</span>
+<span class=sc2>// Elabora a matriz que pode realizar essa rotação</span>
+<span class=sc5>D3DXMATRIX </span>pitchMatrix; 
+<b class=prg>D3DXMatrixRotationAxis</b>( &pitchMatrix, &m_right, m_pitch );  
+
+<span class=sc2>// Para aplicar 'pitch' nós rodamos os vetores m_look e m_up ao redor do vetor</span>
+<span class=sc2>// m_right ( usando nossa matriz-pitch )</span>
+<b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &pitchMatrix );  
+<b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &pitchMatrix );  </div>
+
+<u>Rotação dos eixos XY ao redor do eixo Z</u>
+<div class=prg-code>
+<span class=sc2>// Roll é a rotação ao redor do eixo z ( m_look)</span>
+<span class=sc2>// Elabore a matriz que pode realizar essa rotação</span>
+<span class=sc5>D3DXMATRIX </span>rollMatrix; 
+<b class=prg>D3DXMatrixRotationAxis</b>( &rollMatrix, &m_look, m_roll );  
+
+<span class=sc2>// Para aplicar esta rotação nós rodamos para cima e para a direta ao redor do</span>
+<span class=sc2>// vetor olhar ( usando nossa matriz-roll)</span>
+<b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &rollMatrix );  
+<b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &rollMatrix );  
+</div>
+
+Bem, até esse momento, rotacionamos os eixos (<b>m_right, m_up, m_look</b>)
+e agora o que nos resta é instalar estes valores  que  vão  compor a
+matriz de visualização:
+
+<u>Configurando a matriz de visualização a partir dos eixos transformados</u>
+<div class=prg-code>
+<span class=prg>D3DXMatrixIdentity</span>(viewMatrix);  
+<span class=prg>viewMatrix-&gt;_11 </span>= <span class=prg>m_right.x</span>; <span class=prg>viewMatrix-&gt;_12 </span>= <span class=prg>m_up.x</span>; <span class=prg>viewMatrix-&gt;_13 </span>= <span class=prg>m_look.x</span>; 
+<span class=prg>viewMatrix-&gt;_21 </span>= <span class=prg>m_right.y</span>; <span class=prg>viewMatrix-&gt;_22 </span>= <span class=prg>m_up.y</span>; <span class=prg>viewMatrix-&gt;_23 </span>= <span class=prg>m_look.y</span>; 
+<span class=prg>viewMatrix-&gt;_31 </span>= <span class=prg>m_right.z</span>; <span class=prg>viewMatrix-&gt;_32 </span>= <span class=prg>m_up.z</span>; <span class=prg>viewMatrix-&gt;_33 </span>= <span class=prg>m_look.z</span>; 
+
+<span class=prg>viewMatrix-&gt;_41 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_right );  
+<span class=prg>viewMatrix-&gt;_42 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_up );  
+<span class=prg>viewMatrix-&gt;_43 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_look );  
+</div>
+<b class=prg-code><span class=prg>viewMatrix-&gt;_41 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_right );  </b>
+A função <b class=prg>D3DXVec3Dot()</b> retorna um float que  representa  o  valor  do
+dot-produto de dois vetores 3d.  Isso atualiza a posição da câmera no
+eixo apontado.	  
+
+As demais funções que estão adiante não serão comentadas pois a maior
+importância é a  finalidade  delas  que  já   foi   declarada  quando 
+discutimos a estrutura da classe <b>CCamera</b>.
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 CCamera::Yaw() - Rotação ao redor do eixo y </u></b>
+<div class=niceview></b><span class=prg>void </span>CCamera::Yaw(<span class=prg>float </span>amount) 
+<span class=sc16>{</span>
+  m_yaw += amount; 
+  m_yaw = RestrictAngleTo360Range( m_yaw );  
+<span class=sc16>} <span class=sc2>// CCamera::Yaw().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 CCamera::Pitch() - Rotação ao redor do eixo x </u></b>
+<div class=niceview><b><span class=prg>void </span>CCamera::Pitch( <span class=prg>float </span>amount ) 
+<span class=sc16>{</span>
+  m_pitch += amount; 
+  m_pitch = RestrictAngleTo360Range( m_pitch );  
+<span class=sc16>} <span class=sc2>// CCamera::Pitch()</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 CCamera::Roll() - Rotação ao redor do eixo z </u></b>
+<div class=niceview><b><span class=sc2>// Nota: normalmente apenas usado para cameras de aeronaves - não é usado</span>
+<span class=sc2>// normalmente para veículos terrestres. (**) Porém, se o veículo terrestre</span>
+<span class=sc2>// explodir e 'sair pelos ares' então ele consegue realizar essa rotação</span>
+<span class=prg>void </span>CCamera::Roll( <span class=prg>float </span>amount ) 
+<span class=sc16>{</span>
+  m_roll += amount; 
+  m_roll = RestrictAngleTo360Range( m_roll );  
+<span class=sc16>} <span class=sc2>// CCamera::Roll().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.10'></a><b><u>2.10 CCamera::RestrictAngleTo360Range() - Restrição de valores </u></b>
+<div class=niceview><b><span class=sc2>// Mantenha o ângulo na faixa 0 à 360 graus ( 2*PI radianos)</span>
+<span class=prg>float </span>CCamera::RestrictAngleTo360Range( <span class=prg>float </span>angle ) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc9>while</span>( angle &gt; <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>) 
+    angle -= <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc9>while</span>( angle &lt; <span class=sc4>0</span>) 
+    angle += <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc6>return </span>angle; 
+<span class=sc16>} <span class=sc2>// CCamera::RestrictAngleTo360Range().fim</span></span>
+</b></div>
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</u></b>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Camera.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span>once 
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Camera.h: Implementação de uma câmera em primeira pessoa</span>
+<span class=prg>class </span>CCamera 
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// Posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_position; 
+
+  <span class=sc2>// Rotação ao redor do eixo y</span>
+  <span class=prg>float </span>m_yaw; 
+
+  <span class=sc2>// Rotação ao redor do eixo x</span>
+  <span class=prg>float </span>m_pitch; 
+
+  <span class=sc2>// Rotação ao redor do eixo z</span>
+  <span class=prg>float </span>m_roll; 
+
+  <span class=sc2>// Eixos da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>m_up, m_look, m_right; 
+
+  <span class=sc2>// Restrição para manter o ângulo na faixa 0 - 360 graus</span>
+  <span class=prg>float </span>RestrictAngleTo360Range(<span class=prg>float </span>angle) <span class=sc16>const</span>; 
+
+<span class=sc16>public:</span>
+  CCamera();  
+  CCamera(<span class=sc5>D3DXVECTOR3 </span>startPos);  
+  ~CCamera(<span class=prg>void</span>) {}; 
+
+  <span class=sc2>// Calcular a matriz de visualização</span>
+  <span class=prg>void </span>CalculateViewMatrix(<span class=sc5>D3DXMATRIX </span>*viewMatrix);  
+
+  <span class=sc2>// Sets ( Configurações )</span>
+  <span class=sc2>// Configurar posição</span>
+  <span class=prg>void </span>SetPosition( <span class=sc16>const </span><span class=sc5>D3DXVECTOR3 </span>&pos ) <span class=sc16>{ </span>m_position = pos; <span class=sc16>}</span>
+
+  <span class=sc2>// Configurar rotação</span>
+  <span class=prg>void </span>SetYawPitchRoll( <span class=prg>float </span>yaw, <span class=prg>float </span>pitch, <span class=prg>float </span>roll );  
+
+  <span class=sc2>// Gets ( Obter )</span>
+  <span class=sc2>// Obter rotação do eixo y</span>
+  <span class=prg>float </span>GetYaw() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_yaw; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter rotação do eixo x</span>
+  <span class=prg>float </span>GetPitch() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_pitch; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter rotação do eixo z</span>
+  <span class=prg>float </span>GetRoll() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_roll; <span class=sc16>}</span>
+
+  <span class=sc2>// Obter posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>GetPosition() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_position; <span class=sc16>}</span>
+
+  <span class=sc2>// Operações de mover</span>
+  <span class=sc2>// Mover para a frente</span>
+  <span class=prg>void </span>MoveForward( <span class=prg>float </span>amount ) <span class=sc16>{ </span>m_position += m_look * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Mover para a direita</span>
+  <span class=prg>void </span>MoveRight( <span class=prg>float </span>amount ) <span class=sc16>{ </span>m_position += m_right * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Mover para cima</span>
+  <span class=prg>void </span>MoveUp( <span class=prg>float </span>amount)  <span class=sc16>{ </span>m_position += m_up * amount; <span class=sc16>}</span>
+
+  <span class=sc2>// Rotações</span>
+  <span class=sc2>// Rotação ao redor do eixo y</span>
+  <span class=prg>void </span>Yaw( <span class=prg>float </span>amount );  
+
+  <span class=sc2>// Rotação ao redor do eixo x</span>
+  <span class=prg>void </span>Pitch( <span class=prg>float </span>amount );  
+
+  <span class=sc2>// Rotação ao redor do eixo z</span>
+  <span class=prg>void </span>Roll( <span class=prg>float </span>amount );  
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CCamera</span>
+<span class=sc2>// fim do arquivo Camera.h</span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Camera.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"Camera.h"</span>
+
+CCamera::CCamera() : m_position(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Comece com um eixo de camera ortogonal olhando para baixo-z</span>
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+<span class=sc16>} <span class=sc2>// construtor default fim</span></span>
+
+
+CCamera::CCamera(<span class=sc5>D3DXVECTOR3 </span>startPos) : m_position(startPos), m_yaw(<span class=sc4>0</span>), m_pitch(<span class=sc4>0</span>), m_roll(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Comece com um eixo de camera ortogonal olhando para baixo-z</span>
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+<span class=sc16>} <span class=sc2>// construtor alternativo</span></span>
+
+
+<span class=prg>void </span>CCamera::SetYawPitchRoll(<span class=prg>float </span>_yawy, <span class=prg>float </span>_pitchx, <span class=prg>float </span>_rollz) 
+<span class=sc16>{</span>
+  m_yaw   = _yawy; 
+  m_pitch = _pitchx; 
+  m_roll  = _rollz; 
+<span class=sc16>} <span class=sc2>// CCamera::SetYawPitchRoll().fim</span></span>
+
+<span class=sc2>// Calcula a matriz de visualização pela rotação dos nossos eixos a partir da</span>
+<span class=sc2>// orientação default (olhando para baixo-z) via variáveis membro yaw, pitch e roll.</span>
+<span class=sc2>// Também adicione qualquer translação</span>
+<span class=prg>void </span>CCamera::CalculateViewMatrix( <span class=sc5>D3DXMATRIX </span>*viewMatrix) 
+<span class=sc16>{</span>
+  <span class=sc2>// Comece com o eixo da nossa camera apontado baixo-z</span>
+  m_up    = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  m_look  = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  m_right = <span class=sc5>D3DXVECTOR3</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+  <span class=sc2>// Yaw é a rotação ao redor do eixo y ( m_up)</span>
+  <span class=sc2>// Elabore a matriz que pode realizar esta rotação</span>
+  <span class=sc5>D3DXMATRIX </span>yawMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>(&yawMatrix, &m_up, m_yaw);  
+
+  <span class=sc2>// Para aplicar 'yaw' nós rodamos os vetores m_look e m_right ao redor do vetor</span>
+  <span class=sc2>// m_up ( usando nossa matriz-yaw )</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &yawMatrix  );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &yawMatrix );  
+
+  <span class=sc2>// Pitch é a rotação ao redor do eixo x ( m_right)</span>
+  <span class=sc2>// Elabora a matriz que pode realizar essa rotação</span>
+  <span class=sc5>D3DXMATRIX </span>pitchMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>( &pitchMatrix, &m_right, m_pitch );  
+
+  <span class=sc2>// Para aplicar 'pitch' nós rodamos os vetores m_look e m_up ao redor do vetor</span>
+  <span class=sc2>// m_right ( usando nossa matriz-pitch )</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_look, &m_look, &pitchMatrix );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &pitchMatrix );  
+
+  <span class=sc2>// Roll é a rotação ao redor do eixo z ( m_look)</span>
+  <span class=sc2>// Elabore a matriz que pode realizar essa rotação</span>
+  <span class=sc5>D3DXMATRIX </span>rollMatrix; 
+  <b class=prg>D3DXMatrixRotationAxis</b>( &rollMatrix, &m_look, m_roll );  
+
+  <span class=sc2>// Para aplicar esta rotação nós rodamos para cima e para a direta ao redor do</span>
+  <span class=sc2>// vetor olhar ( usando nossa matriz-roll)</span>
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_right, &m_right, &rollMatrix );  
+  <b class=prg>D3DXVec3TransformCoord</b>( &m_up, &m_up, &rollMatrix );  
+
+  <span class=sc2>// Elabore a matriz de visualização a partir dos eixos da camera transformados</span>
+  <span class=prg>D3DXMatrixIdentity</span>(viewMatrix);  
+
+  <span class=prg>viewMatrix-&gt;_11 </span>= <span class=prg>m_right.x</span>; <span class=prg>viewMatrix-&gt;_12 </span>= <span class=prg>m_up.x</span>; <span class=prg>viewMatrix-&gt;_13 </span>= <span class=prg>m_look.x</span>; 
+  <span class=prg>viewMatrix-&gt;_21 </span>= <span class=prg>m_right.y</span>; <span class=prg>viewMatrix-&gt;_22 </span>= <span class=prg>m_up.y</span>; <span class=prg>viewMatrix-&gt;_23 </span>= <span class=prg>m_look.y</span>; 
+  <span class=prg>viewMatrix-&gt;_31 </span>= <span class=prg>m_right.z</span>; <span class=prg>viewMatrix-&gt;_32 </span>= <span class=prg>m_up.z</span>; <span class=prg>viewMatrix-&gt;_33 </span>= <span class=prg>m_look.z</span>; 
+
+  <span class=prg>viewMatrix-&gt;_41 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_right );  
+  <span class=prg>viewMatrix-&gt;_42 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_up );  
+  <span class=prg>viewMatrix-&gt;_43 </span>= -<b class=prg>D3DXVec3Dot</b>( &m_position, &m_look );  
+<span class=sc16>} <span class=sc2>// CCamera::CalculateViewMatrix().fim</span></span>
+
+
+<span class=prg>void </span>CCamera::Yaw(<span class=prg>float </span>amount) 
+<span class=sc16>{</span>
+  m_yaw += amount; 
+  m_yaw = RestrictAngleTo360Range( m_yaw );  
+<span class=sc16>} <span class=sc2>// CCamera::Yaw().fim</span></span>
+
+
+<span class=prg>void </span>CCamera::Pitch( <span class=prg>float </span>amount ) 
+<span class=sc16>{</span>
+  m_pitch += amount; 
+  m_pitch = RestrictAngleTo360Range( m_pitch );  
+<span class=sc16>} <span class=sc2>// CCamera::Pitch()</span></span>
+
+
+<span class=sc2>// Nota: normalmente apenas usado para cameras de aeronaves - não é usado</span>
+<span class=sc2>// normalmente para veículos terrestres. (**) Porém, se o veículo terrestre</span>
+<span class=sc2>// explodir e 'sair pelos ares' então ele consegue realizar essa rotação</span>
+<span class=prg>void </span>CCamera::Roll( <span class=prg>float </span>amount ) 
+<span class=sc16>{</span>
+  m_roll += amount; 
+  m_roll = RestrictAngleTo360Range( m_roll );  
+<span class=sc16>} <span class=sc2>// CCamera::Roll().fim</span></span>
+
+<span class=sc2>// Mantenha o ângulo na faixa 0 à 360 graus ( 2*PI radianos)</span>
+<span class=prg>float </span>CCamera::RestrictAngleTo360Range( <span class=prg>float </span>angle ) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc9>while</span>( angle &gt; <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>) 
+    angle -= <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc9>while</span>( angle &lt; <span class=sc4>0</span>) 
+    angle += <span class=sc4>2 </span>* <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc6>return </span>angle; 
+<span class=sc16>} <span class=sc2>// CCamera::RestrictAngleTo360Range().fim</span></span>
+
+<span class=sc2>// fim do arquivo Camera.cpp</span>
+</div>
+
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1  Visão geral</a>
+<a href=#1.2>1.2  Estrutura principal da classe CCamera</a>
+<a href=#2.1>2.1  Especificação da classe CCamera: Camera.h</a>
+<a href=#2.2>2.2  Aspectos globais: arquivo Camera.cpp</a>
+<a href=#2.3>2.3  CCamera::CCamera()                     - Construtor default</a>
+<a href=#2.4>2.4  CCamera::CCamera(D3DXVECTOR3 startPos) - Construtor alternativo</a>
+<a href=#2.5>2.5  CCamera::SetYawPitchRoll()             - Configuração da orientação da câmera</a>
+<a href=#2.6>2.6  CCamera::CalculateViewMatrix()         - Cálculo da matriz de visualização</a>
+<a href=#2.7>2.7  CCamera::Yaw()                         - Rotação ao redor do eixo y</a>
+<a href=#2.8>2.8  CCamera::Pitch()                       - Rotação ao redor do eixo x</a>
+<a href=#2.9>2.9  CCamera::Roll()                        - Rotação ao redor do eixo z</a>
+<a href=#2.10>2.10 CCamera::RestrictAngleTo360Range()     - Restrição de valores</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

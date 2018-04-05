@@ -1,0 +1,392 @@
+﻿<html>
+<head>
+<title>Gameprog_CPP_fase_28</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track28.html</b></center>
+<hr>
+<table border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track27.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track29.html" style="color:blue">&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track28"></a><h3 style="background-color:#80ff80">28. &lt;algorithm&gt; </h3>
+<b><u>19.1 Visão geral</b></u>
+A biblioteca STL tem um pacote de utilitários muito útil para programação em
+geral que podem ser bem aproveitados em programação de jogos. Trata-se de
+uma coleção de algorítmos para organizar dados, localizar dados e outras
+operações sobre os containers (vector, list...).
+Para utilizar esse conjunto de utilitário, que consiste em torno de 70 funções,
+você deve incluir o arquivo &lt;algorithm&gt; em seu programa.
+
+Vamos apresentar as seguintes funções desse pacote:
+
+<b>sort()</b> - Organiza um conjunto de dados em ordem crescente. Bom para
+organizar os placares e outros números gerados pelo jogador durante
+uma partida de videogame.
+
+<b>generate()</b> - preenche um container com o dado especificado.
+
+<b>for_each()</b> - executa uma operação especificada em um conjunto de dados do
+container.
+
+<b>reverse()</b> - inverte a ordem dos dados de um container. O último dado passa
+a ser o primeiro e assim por diante.
+
+<b>replace()</b>- substitui as ocorrências de um dado especificado em um container.
+
+É muito comum estas funções aceitarem como argumento os iterators que apontam
+para o começo e o fim do container, e ainda uma falsa função definida pelo
+implementação do operador operator().
+
+Em nosso programa abaixo criamos um lista de 15 inteiros, alojados em um container
+da classe vetor que sofre as operações dos algoritmos apresentados acima.
+
+<div class=prg-code>
+<img src="images/algo_tst.png">
+
+<span class="sc2">// algo_tst.cpp
+// Esse programa ilustra o uso dos utilitários do arquivo &lt;algorithm&gt;
+</span><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ***************************************************************************
+// Classe de serviço de impressão de números inteiros
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Impressora_virtual</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0"> 
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_pularLinha</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">Impressora_virtual</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">config</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">):</span><span class="sc0"> </span><span class="sc11">m_pularLinha</span><span class="sc10">(</span><span class="sc11">config</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{}</span><span class="sc0">
+
+</span><span class="sc2">// Vamos imprimir números inteiros 
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc5">operator</span><span class="sc10">()(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc10">)</span><span class="sc0">           
+</span><span class="sc10">{</span><span class="sc0">       </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">m_pularLinha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t\t"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" | "</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">m_pularLinha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método operator()
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da classe impressora virtual
+</span><span class="sc0">
+</span><span class="sc2">// ***************************************************************************
+// Classe geradora de números aleatórios
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Sorteador</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc16">private</span><span class="sc10">:</span><span class="sc0"> 
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_min</span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_max</span><span class="sc10">;</span><span class="sc0"> 
+
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0"> 
+</span><span class="sc11">Sorteador</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nmin</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nmax</span><span class="sc10">):</span><span class="sc0"> </span><span class="sc11">m_min</span><span class="sc10">(</span><span class="sc11">nmin</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">m_max</span><span class="sc10">(</span><span class="sc11">nmax</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{}</span><span class="sc0"> 
+
+</span><span class="sc2">// Vamos retornar um número aleatório faixa (m_mim, m_max)
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc5">operator</span><span class="sc10">()()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">m_min</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">rand</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">%</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">m_max</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">m_min</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// fim do metodo operator()
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da classe: Sorteador
+</span><span class="sc0">
+</span><span class="sc2">// ---------------- O programa principal começa aqui -------------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color f0"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"title algo_tst.cpp"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0">    
+
+</span><span class="sc11">Impressora_virtual</span><span class="sc0"> </span><span class="sc11">impressora</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">Sorteador</span><span class="sc0"> </span><span class="sc11">sorteador</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">);</span><span class="sc0">   
+</span><span class="sc11">Sorteador</span><span class="sc0"> </span><span class="sc11">xsorteador</span><span class="sc10">(</span><span class="sc4">2000</span><span class="sc10">,</span><span class="sc4">4000</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos criar uma lista para 15 numeros
+</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc16">int</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc0"> </span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">resize</span><span class="sc10">(</span><span class="sc4">15</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// O objeto sorteador() vai gerar números entre (2,4)
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\nRecheando lista com numeros aleatorios: \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">srand</span><span class="sc10">(</span><span class="sc11">time</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">));</span><span class="sc0"> 
+</span><span class="sc11">generate</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">sorteador</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// O objeto impressora(nval) vai imprimir numeros assim: nval | nval |...
+</span><span class="sc11">for_each</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">impressora</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Vamos contar frequência do número 3 na lista
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nfrequencia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">count</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\nNumero 3 apareceu "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">nfrequencia</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" vezes na lista. Vamos troca'-lo por 99\n"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Vamos substituir o nro 3 pelo nro 99 na lista
+</span><span class="sc11">replace</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">,</span><span class="sc4">99</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">for_each</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">impressora</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">sname</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"gameprog 1 2 3"</span><span class="sc10">;</span><span class="sc0"> 
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\n\tA string '"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">sname</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"' ao reverso fica '"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">reverse</span><span class="sc10">(</span><span class="sc11">sname</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">sname</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">sname</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"'"</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Vamos gerar uma lista de placar com números maiores
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\tLista desordenada dos placares de hoje: \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">generate</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">()-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xsorteador</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc2">// O objeto impressora(nval) vai imprimir numeros assim: nval | nval |...
+</span><span class="sc11">Impressora_virtual</span><span class="sc0"> </span><span class="sc11">ximpressora</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">for_each</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">()-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ximpressora</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\tOs melhores placares de hoje: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sort</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">()-</span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">for_each</span><span class="sc10">(</span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">()-</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ximpressora</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\tO melhor placar de hoje: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">lstPlacar</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pontos. \n\n"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"pause"</span><span class="sc10">);</span><span class="sc0">  
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da funcao: main()</span></div>
+
+<b><u>Explicando nossa impressora virtual</b></u> <font color="darkblue">
+// ***************************************************************************
+// Classe de serviço de impressão de números inteiros
+class Impressora_virtual {
+public:	
+int m_pularLinha;
+
+Impressora_virtual (int config = 0): m_pularLinha(config) {}
+
+// Vamos imprimir números inteiros 
+void operator()(int nval)			
+{		if (m_pularLinha == 1) cout << "\t\t";
+cout &lt;&lt; nval &lt;&lt; " | ";
+if (m_pularLinha == 1) cout << endl;
+
+} // fim do metodo operator()
+}; // fim da classe impressora virtual </font>
+
+Nossa classe Impressora_virtual produz um objeto de apenas um método 
+(<b>impressora()</b>) e uma propriedade (<b>m_pularLinha</b>): <font color="darkblue">
+
+Impressora_virtual impressora;
+Impressora_virtual ximpressora(1);	</font>
+
+Como o operador <b>operator()</b> foi implementado esse dois objetos podem ser usados
+dessa forma: <font color="darkblue">
+cout &lt;&lt; <b>impressora(100);</b>		// Produz a saída 10 |
+cout &lt;&lt; <b>ximpressora(120);</b>		// Imprime "\t\t", o valor 120 e depois "|\n"; </font>
+
+Note que esse objeto funciona semelhante a uma função. Essa construção é 
+denominada <b>functor ou objeto-função</b> na literatura de programação. A função
+<b>for_each()</b> aceita como argumento um objeto-função que realiza uma operação
+em cada dado do conjunto de dados delimitados pelos iterators <b>.begin() e 
+.end()</b> do container utilizado. Utilizamos nosso objeto impressora com 
+<b>for_each()</b> para mostrar cada um dos inteiros de nossa lista.
+
+<b><u>Explicando nossa classe geradora de números aleatórios</b></u> <font color="darkblue">
+// ***************************************************************************
+// Classe geradora de números aleatórios
+class Sorteador { 
+private: 
+int m_min; 
+int m_max; 
+
+public: 
+Sorteador(int nmin, int nmax): m_min(nmin), m_max(nmax) {} 
+
+// Vamos retornar um numero aleatorio na faixa (m_mim, m_max)
+int operator()()
+{ 
+return m_min + rand() % (m_max - m_min + 1);
+}  // fim do metodo operator()
+}; // fim da classe: Sorteador </font>
+
+Tal como fizemos com nossa classe Impressora_virtual, o objeto da classe
+Sorteador vai produzir um objeto que vai funcionar como uma função e
+vai ser passado como argumento para a função para a função generate() que
+vai usá-la como fonte dos números para preenchimento de nossa lista.
+<font color="darkblue">
+Sorteador sorteador(2, 4);   // Vai retornar números entre 2 - 4
+Sorteador xsorteador(2000,4000); // Vai retornar nros entre 2000 - 4000</font>
+
+Como o operador <b>operator()</b> foi definido nesta classe esses objetos podem ser
+usados de forma semelhante a uma função:		<font color="darkblue">
+cout &lt;&lt; <b>sorteador();</b>
+cout &lt;&lt; <b>xsorteador();</b>	</font>
+
+<b><u>Usando generate() </b></u> <font color="darkblue">
+// O objeto sorteador() vai gerar numeros entre (2,4)
+cout &lt;&lt; "\nRecheando lista com números aleatórios: \n";
+srand(time(0)); 
+<b>generate(lstPlacar.begin(), lstPlacar.end(), sorteador);</b> </font>
+Veja acima como utilizar a função generate() que preenche a lista de inteiros
+com os números retornados pelo objeto-função especificado.
+
+<b><u>Usando for_each() </b></u> <font color="darkblue">
+// O objeto impressora(nval) vai imprimir numeros assim: nval | nval |...
+for_each(lstPlacar.begin(), lstPlacar.end(), impressora);  </font>
+Veja como usar o algoritmo <b>for_each()</b> ilustrado acima. Cada dado do vetor
+lstPlacar vai ser passado como argumento para <b>impressora().</b>
+
+<b><u>Usando count() </b></u> <font color="darkblue">
+// Vamos contar frequencia do numero 3 na lista
+int nfrequencia = count (lstPlacar.begin(), lstPlacar.end(), 3);
+cout &lt;&lt; "\n\nNumero 3 apareceu " &lt;&lt; nfrequencia; </font>
+<b>count()</b> conta a ocorrência do dado especificado do container passado como
+argumento na forma dos iterators.
+
+<b><u>Usando count() </b></u> <font color="darkblue">
+// Vamos substituir o nro 3 pelo nro 99 na lista
+replace(lstPlacar.begin(), lstPlacar.end(), 3,99); </font>
+Aqui usamos <b>replace()</b> para substituir todas as ocorrências do número 3
+pelo número 99.
+
+<b><u>Usando reverse() </b></u> <font color="darkblue">
+string sname = "gameprog 1 2 3"; 
+cout << "\n\n\tA string '" &lt;&lt; sname &lt;&lt; "' ao reverso fica '";
+<b>reverse(sname.begin(), sname.end());</b> </font>
+A função <b>reverse()</b> revira o conteúdo de um container de cabeça pra baixo.
+O primeiro elemento passa a ser o último, o último o primeiro e assim por
+diante.
+(*) É importante destacar que a classe string foi implementada para trabalhar 
+bem com o conjunto geral de STL podendo então sofrer as operações realizadas
+pelos algoritmos da biblioteca &lt;algorithm&gt;. Veja acima que o objeto string
+também apresenta os iterators como métodos normais.
+
+<b><u>sort() - Organizando números</b></u> <font color="darkblue">
+cout &lt;&lt; "\n\tOs melhores placares de hoje: " &lt;&lt; endl;
+sort(lstPlacar.begin(), lstPlacar.end()-10); </font>
+A função <b>sort()</b> organiza um container em ordem crescente.		
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track27.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track29.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>

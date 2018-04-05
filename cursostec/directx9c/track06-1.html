@@ -1,0 +1,1274 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase06-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 06-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>06.1 Sprite</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Sprite.png></div>
+O directx apresenta a interface <b class=prg>ID3DXSprite</b> que  desenha  uma  imagem
+retangular na tela. Essa imagem que geralmente é  usada  para  compor
+animações  2d  é  chamada  também de <b>sprite</b>. Para mostrar a sprite na
+tela  a  imagem é carregada para dentro da aplicação como uma textura
+representada  pela  interface  <b class=prg>IDirect3DTexture9</b>.  Pela análise desse
+conjunto e  de outros aspectos 3d que cercam o processo de renderizar
+uma  sprite  na  tela  é  facilmente  perceptível  que internamente o 
+directx  manipula uma sprite representando-a como um plano retangular
+texturizado dentro de um mundo 3d.
+
+Nessa aplicação vamos apenas desenhar uma sprite na tela  trabalhando
+ainda  nos  termos  de  um mundo 2d para manter a aplicação dentro de
+um  nível  confortável  de simplicidade. Porém fique ciente que o uso
+de  sprites  2d  torna-se  mais  sofisticado  com  a  aplicação  mais
+volumosa de recursos 3d como luz, câmera e transformações geométricas
+entre outros recursos do mundo 3d.
+
+Essa aplicação também mostra como utilizar o recurso de transparência
+que  já  está  embutido  na expressão das cores como o canal alpha da
+cor.  Na ocorrência de dois pontos ocuparem a mesma posição na tela o
+canal alpha da cor dos pontos dá  a base dos efeitos de transparência
+e de  <b>mistura de cor</b>  chamado  <b>alpha blending</b>  em inglês.   Durante a
+execução  da  aplicação  pressione  as  setas  esquerda  ou direita e 
+desloque a  sprite  sobre o texto para ver o efeito da mistura de cor
+que ocorre quando a sprite passa sobre o texto.
+
+Vamos ver  também  através  dessa  aplicação  o uso mais extensivo do
+teclado  e  de  coordenadas  cartesianas  para movimentar a sprite na
+tela. Esta aplicação tem um efeito visual desagradável na animação da
+sprite provocado pela lentidão no processamento do teclado pelas vias
+comuns da programação Windows; esse efeito desagradável será suprimido
+com o uso do teclado via <b>DirectInput</b> que vamos ver mais adiante. 
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>WinMain()</b>
+	criação da classe da janela
+	registro da classe da janela
+	criação da janela de acordo com a classe definida
+	chama initGfx() para inicializar o motor gráfico
+	mostra a janela
+	estabelecimento do laço de mensagens
+	finaliza a aplicação</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+	Inicializa objeto para mostrar texto via inicializarTexto()
+	<b class=sc16><u>Inicializa objetos para mostrar sprite via inicializarSprite()</u></b>
+
+<b class=sc16><u>inicializarSprite()</u>
+	Carrega textura
+	Inicializa objeto de mostrar sprite
+	Configuração da posição 3d e rotação inicial da sprite</b>
+	
+<b class=sc16><u>tratarTeclado()</u>
+	Atualiza coordenada (x,y) atual da sprite no pressionamento das setas.
+	Atualiza informação de direção do movimento conforme seta pressionada</b>
+
+<b class=sc16><u>renderizarSprite()</u>
+	Configura cor difusa da sprite conforme direção assumida.
+	Configura coordenada (x,y) atual da sprite
+	Define parte da textura que vai ser exibida como sprite
+	Desenha a sprite na tela</b>
+
+Renderizar()
+	Limpa a tela
+	Desenha a cena
+	mostra texto
+	<b class=sc16><u>Desenha a sprite com renderizarSprite()</u></b>
+	Apresenta a cena
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+	  Verifica teclado - finaliza aplicação na tecla Escape
+	  <b class=sc16><u>chama tratarTeclado (wParam) no evento WM_KEYDOWN</u></b>
+	  chama Limpar() na finalização da aplicação
+	  chama Renderizar() para desenhar os gráficos
+
+Limpar()
+	<b class=sc16><u>Libera o objeto de textura</u>
+	<u>Libera o objeto de mostrar sprite</u></b>
+	Libera objeto de mostrar texto
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Sprite - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar uma sprite</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+  <span class=prg>void </span>inicializarTexto();  
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+	<b>
+  <span class=sc2>// Inicializa a sprite</span>
+  <span class=prg>void </span>inicializarSprite();  
+
+  <span class=sc2>// Desenha a sprite</span>
+  <span class=prg>void </span>renderizarSprite();  
+
+  <span class=sc2>// Trata o pressionamento das setas do teclado</span>
+  <span class=prg>void </span>tratarTeclado( <span class=sc16>WPARAM </span>wParam);  
+	</b>
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div><b>
+<span class=sc2>// Inicializa a sprite</span>
+<span class=prg>void </span>inicializarSprite(); </b>
+Essa função inicializa um objeto da interface <span class=prg>ID3DXSprite</span> que mostra
+uma imagem na tela.  A  imagem  em  si  é  um  objeto  da  interface 
+<span class=prg>IDirect3DTexture9</span> que também é inicializado nessa função.
+
+<b><span class=sc2>// Desenha a sprite</span>
+<span class=prg>void </span>renderizarSprite();  </b>
+Essa função desenha a sprite na tela. Neste processo apenas  a  parte
+selecionada da imagem é exibida numa coordenada da tela. 
+
+(*) Estamos sempre falando que algo desenha na 'tela'  mas isso não é
+uma verdade exata. Não se faz nada direto na tela. A aplicação apenas
+desenha no backbuffer que depois é transferido para a tela.  A imagem
+no backubuffer na grande maioria das vezes é gerada em muitos passos, 
+com  cada  passo  acrescentando  algum detalhe  ou   <b>sobre-escrevendo</b>
+algum detalhe anterior. Essa briga do conteúdo anterior do backbuffer
+com o conteúdo novo que está  chegando  pode  ser  intermediada  pela
+configuração de <b>alpha blending</b> que determina quem sobrevive  que pode
+ser o conteúdo anterior, o conteúdo  novo  ou  uma  <b>mistura dos dois</b>.
+
+<b><span class=sc2>// Trata o pressionamento das setas do teclado</span>
+<span class=prg>void </span>tratarTeclado( <span class=sc16>WPARAM </span>wParam);  </b>
+Essa  função  trata  as setas pressionadas atualizando  a  coordenada
+<b>(xpos, ypos)</b> aonde a sprite vai ser desenhada na  <i>tela</i>.  Essa  função
+também  atualiza  a  variável  <b>movimento_direcao</b>  que  é  usada  para
+modificar a configuração de <b>cor difusa</b> da sprite com as quatro  cores
+que trazem uma configuração particular do  canal  alpha. A cor difusa
+representa  a cor principal que o objeto emana na presença da luz.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Sprite - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar uma sprite</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+<span class=sc5>ID3DXFont* </span>      gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Interfaces necessárias para a criação da sprite</span>
+<span class=sc2>// A textura vai compor a imagem da sprite</span>
+<span class=sc5>IDirect3DTexture9* </span>g_textura = <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite* </span>   g_sprite = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Argumentos necessários na criação da sprite</span>
+<span class=sc2>// Posicionamento e recorte da sprite</span>
+<span class=sc5>RECT </span>         g_recorte; 
+<span class=sc2>// Posicionamento 3d da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_posicao = <span class=prg>NULL</span>; 
+<span class=sc2>// Centro de apoio para rotações da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_centro = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controle de movimentação da sprite</span>
+<span class=prg>int </span>                movimento_direcao = <span class=sc4>1</span>; 
+<span class=prg>int </span>               xpos = <span class=sc4>-240</span>; 
+<span class=prg>int </span>                ypos = <span class=sc4>-160</span>; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+
+<span class=sc2>// Constante para cores com transparência</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>verde_transparente = 0x8000FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho_transp   = 0x80FF0000; 
+</div><b>
+<span class=sc2>// Interfaces necessárias para a criação da sprite</span>
+<span class=sc2>// A textura vai compor a imagem da sprite</span>
+<span class=sc5>IDirect3DTexture9* </span>g_textura = <span class=prg>NULL</span>; </b>
+A variável <b>g_textura</b> vai receber uma imagem  que  vai  ser  levemente
+recortada para compor a  imagem  final  da  sprite.  Este  objeto  da
+interface <span class=prg>IDirect3DTexture9</span> é o mesmo que vai ser usado posteriormente
+em aplicações mais avançadas para  texturizar  os  objetos  3d.  Este 
+objeto possui  muitos  métodos e os mais importantes serão discutidos
+ao longo deste curso.
+
+<b><span class=sc5>ID3DXSprite*</span> g_sprite = <span class=prg>NULL</span>; </b>
+Este  é  o  objeto  que  gerencia  a renderização das sprites na tela
+controlando   internamente   questões   de  rotação,  posicionamento,
+texturização e outras transformações geométricas desse objeto.
+
+<b><span class=sc2>// Argumentos necessários na criação da sprite</span>
+<span class=sc2>// Posicionamento e recorte da sprite</span>
+<span class=sc5>RECT</span> g_recorte; </b>
+O objeto  <b>g_sprite</b>  pega  desse retângulo  a  coordenada  <b>(x,y)</b>  para
+posicionar a sprite na tela e um ponto  na  forma <b>( largura, coluna )</b>
+para  recortar  a  textura  até esse ponto na forma <b>(0,0) - (largura,</b> 
+<b>coluna)</b> que representa o retângulo de corte da imagem. Veja na imagem
+abaixo o retângulo de recorte aplicado no caso dessa aplicação.
+<img src=images\teste-transp-info.png>
+(*) A imagem final foi criada na aplicação GIMP 2.8 e salva no formato
+png para conservar a informação de cor transparente (preto).
+
+<b><span class=sc2>// Posicionamento 3d da sprite</span>
+<span class=sc5>D3DXVECTOR3*</span>   g_posicao = <span class=prg>NULL</span>; 
+<span class=sc2>// Centro de apoio para rotações da sprite</span>
+<span class=sc5>D3DXVECTOR3*</span>   g_centro = <span class=prg>NULL</span>;</b>
+Estas variáveis são criadas com  valor <b>(0,0,0)</b> mas não são utilizadas
+diretamente por esta aplicação. O directx deve  usá-las  internamente
+para manter informação de posicionamento 3d e rotação.
+
+<b><span class=sc2>// Controle de movimentação da sprite</span>
+<span class=prg>int </span> movimento_direcao = <span class=sc4>1</span>;</b>
+Esta variável foi definida apenas para manter informação da direção da
+sprite para variar a cor difusa da sprite  de  acordo  com  a  direção
+tomada.
+ 
+<b><span class=prg>int </span> xpos = <span class=sc4>-240</span>; <span class=prg>int </span> ypos = <span class=sc4>-160</span>; </b>
+Estas são as coordenadas (x, y) da sprite  na  tela.   Elas  vão  ser
+modificadas pelo pressionamento das setas do teclado.
+
+<b><span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; </b>
+Aqui definimos duas contantes para duas cores opacas e duas cores com
+transparência abaixo com 0x80 no canal alpha.
+<b>
+<span class=sc2>// Constante para cores com transparência</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>verde_transparente = 0x8000FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho_transp   = 0x80FF0000; </b>
+
+<b><u>2.2 Inicializando o motor gráfico</u></b>
+O destaque da função <b>initGfx()</b> é  a  função  <b>inicializarSprite()</b>  que
+vamos conhecer melhor no próximo subtópico.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Inicializa texto</span>
+  inicializarTexto();  
+<b>
+  <span class=sc2>// Inicializa sprite</span>
+  inicializarSprite();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.3 Inicializando a sprite</u></b>
+<div class=niceview><span class=prg>void </span>inicializarSprite() 
+<span class=sc16>{</span>
+ <span class=sc2>// Carrega e prepara textura 256 x 256</span>
+ <span class=sc16>const </span><span class=prg>char* </span>stextura = <span class=sc6>"C:\\gameprog\\gdkmedia\\bitmap\\teste-transp.png"</span>; 
+ g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, stextura, &g_textura);  
+
+ <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+ <span class=sc16>{</span>
+ <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Textura: falha no carregamento"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+ <span class=sc6>return</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ g_hr = <span class=prg>D3DXCreateSprite</span> (g_device, &g_sprite);  
+ <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+ <span class=sc16>{</span>
+ <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Sprite: falha na criação"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc2>// Posicionamento 3d não utilizado extensamente</span>
+ g_posicao = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+ g_centro = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+<span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+</div>
+
+<b><span class=sc2>// Carrega e prepara textura 256 x 256</span>
+<span class=sc16>const </span><span class=prg>char* </span>stextura = <span class=sc6>"C:\\gameprog\\gdkmedia\\bitmap\\teste-transp.png"</span>; 
+g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, stextura, &g_textura);  </b>
+Essa é a forma de carregar uma imagem que  pode  ser  utilizada  para
+texturizar objetos 3d ou  servir  de  imagem  base  para  uma  sprite.
+A função  <span class=prg>D3DXCreateTextureFromFile()</span>  aceita  todos  estes  tipos  de
+imagem: <b>bmp, dds, dib, hdr, jpg, pfm, png, ppm, e tga</b>.   Os  formatos
+png  e  tga  são interessantes porque aceitam uma cor transparente. O
+formato  jpg  é interessante pela eficiência de compressão produzindo 
+arquivos  pequenos.  Mas  o melhor formato para trabalhar é o <b>dds</b> que
+é  o  formato  nativo  do  directx  e reúne o melhor de cada formato.
+
+<b>g_hr = <span class=prg>D3DXCreateSprite</span>(g_device, &g_sprite);  </b>
+Aqui criamos o objeto sprite.
+
+<b><span class=sc2>// Posicionamento 3d não utilizado extensamente</span>
+g_posicao = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+g_centro = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   </b>
+Criamos aqui estes vetores 3d que são argumentos que o objeto  sprite
+usa internamente para posicionar e rotacionar a sprite no  mundo  3d.
+Eles são aplicados na  função  de  desenhar (<span class=prg> Draw()</span> ) desse  objeto,
+naturalmente podemos fazer uso prático destas  variáveis  mas  nesta 
+limitada aplicação o foco ficou concentrado no mundo 2d.
+
+<b><u>2.4 Desenhando a sprite</u></b>
+<div class=niceview><span class=prg>void </span>renderizarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Cor difusa da sprite</span>
+  <span class=prg>DWORD </span>cor_difusa = branco; 
+
+  <span class=sc2>// Muda cor difusa conforme direção assumida</span>
+  <span class=sc9>if </span>(movimento_direcao ==  <span class=sc4>1</span>)  cor_difusa = branco; 
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>-1</span>)  cor_difusa = vermelho; 
+  <span class=sc9>if </span>(movimento_direcao ==  <span class=sc4>2</span>)  cor_difusa = verde_transparente; 
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>-2</span>)  cor_difusa = vermelho_transp; 
+
+  <span class=sc2>// Indica o ponto de corte da sprite</span>
+  <span class=prg>int </span>direita = 128; 
+  <span class=prg>int </span>fundo = 120; 
+
+  <span class=sc2>// Configuração posição de colocação da sprite na tela</span>
+  <span class=sc2>// o ponto de corte da textura</span>
+  <span class=prg>SetRect</span>(&g_recorte, xpos, ypos, direita, fundo);  
+
+  <span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+  <span class=prg>g_sprite-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);  
+
+  <span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+  <span class=prg>g_sprite-&gt;Draw</span>(g_textura, &g_recorte, g_centro, g_posicao, cor_difusa);  
+
+  <span class=sc2>// Finaliza processo de renderização de sprites</span>
+  <span class=prg>g_sprite-&gt;End</span>();  
+
+<span class=sc16>} <span class=sc2>// renderizarSprite().fim</span></span>
+</div><b>
+<span class=sc2>// Cor difusa da sprite</span>
+<span class=prg>DWORD </span>cor_difusa = branco; </b>
+A configuração inicial da cor difusa é branca. Essa configuração não
+mexe  com  a  cor original da textura mantendo o aspecto original da
+imagem.
+
+<b><span class=sc2>// Muda cor difusa conforme direção assumida</span>
+<span class=sc9>if </span>(movimento_direcao ==  <span class=sc4>1</span>)  cor_difusa = branco; 
+<span class=sc9>if </span>(movimento_direcao == <span class=sc4>-1</span>)  cor_difusa = vermelho; 
+<span class=sc9>if </span>(movimento_direcao ==  <span class=sc4>2</span>)  cor_difusa = verde_transparente; 
+<span class=sc9>if </span>(movimento_direcao == <span class=sc4>-2</span>)  cor_difusa = vermelho_transp; </b>
+O interessante aqui são as cores transparentes que serão aplicadas na
+sprite quando esta for deslocada pela esquerda ou direita.  O  efeito 
+de  <b>alpha  blending (mistura de cor)</b>  poderá  ser  visto deslocando a
+sprite lateralmente pelo texto.
+
+A razão  da  variável  <b>movimento_direcao</b>  receber  valores  positivos
+e negativos é que em um programa aonde a movimentação não é dada pelo
+usuário, a inversão da direção do movimento controlado  por  código é 
+feito facilmente por uma multiplicação por -1.
+
+<b><span class=sc2>// Indica o ponto de corte da sprite</span>
+<span class=prg>int </span>direita = 128; <span class=prg>int </span>fundo = 120; </b>
+Este ponto (direita, fundo) é o mesmo que na ilustração abaixo está
+destacado com um ponto amarelo e identificado como (largura, altura).
+<img src=images\teste-transp-info.png>
+
+<b><span class=sc2>// Configuração posição de colocação da sprite na tela</span>
+<span class=sc2>// o ponto de corte da textura</span>
+<span class=prg>SetRect</span>(&g_recorte, xpos, ypos, direita, fundo);  </b>
+<span class=prg>SetRect()</span> faz o importante trabalho de configurar a posição <b>(x, y)</b> da
+sprite e indicar o ponto de recorte  da  textura.   Com  um  contexto
+adequadamente montado, o ideal é que este retângulo permita  recortar
+qualquer quadro da textura para composição de efeitos animados e  que
+<b>g_posicao</b> seja utilizado como coordenada de colocação  da  sprite  na
+tela. Mas infelizmente  não é intuitivo a montagem desse cenário para
+produzir sprites animadas ficando mais  fácil  produzí-lo  depois  de
+aprendermos a manipular texturas e objetos 3d com código  próprio  do
+que utilizar a interface <b class=prg>ID3DXSprite</b> do directx.
+
+<b><span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+<span class=prg>g_sprite-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);  </b>
+O processo padrão de desenhar qualquer coisa começa  com  <span class=prg>Begin()</span>,  a
+definição <b>D3DXSPRITE_ALPHABLEND</b> habilita  o  uso  de  <b>alpha blending</b>
+ou <b>efeito de mistura de cor</b> conforme nossa tradução  para  o  idioma
+português.
+
+<b><span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+<span class=prg>g_sprite-&gt;Draw</span>(g_textura, &g_recorte, g_centro, g_posicao, cor_difusa);  </b>
+Aqui desenhamos a sprite. Veja a colocação dos argumentos que já foram
+discutidos gradualmente ao longo deste tópico.
+
+<b><span class=sc2>// Finaliza processo de renderização de sprites</span>
+<span class=prg>g_sprite-&gt;End</span>();  </b>
+O processo  de  desenho  padrão  é finalizado por <span class=prg>End()</span>. É importante
+destacar  que  <span class=prg>Begin()</span>  e  <span class=prg>End()</span>  faz a preparação do ambiente para o 
+processo  de  desenho  preservando  e restaurando estados internos do
+dispositivo gráfico no começo e final do processo de desenho.
+
+<b><u>2.5 Tratando o teclado</u></b>
+<div class=niceview><span class=prg>void </span>tratarTeclado (<span class=sc16>WPARAM </span>wParam) 
+<span class=sc16>{</span>
+  <span class=sc2>// Controle de movimento da sprite para colocação</span>
+  <span class=sc2>// da sprite sobre a tela</span>
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)     ypos = ypos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)   ypos = ypos - <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)   xpos = xpos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  xpos = xpos - <span class=sc4>5</span>; 
+
+  <span class=sc2>// Controle de movimento da sprite utilizado para</span>
+  <span class=sc2>// mudar a cor difusa da sprite conforme direção assumida</span>
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)     movimento_direcao = <span class=sc4>1</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)   movimento_direcao = <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)   movimento_direcao = <span class=sc4>2</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  movimento_direcao = <span class=sc4>-2</span>;  
+<span class=sc16>} <span class=sc2>// tratarTeclado().fim</span></span>
+</div>
+
+<b><span class=sc2>// Controle de movimento da sprite para colocação</span>
+<span class=sc2>// da sprite sobre a tela</span>
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)     ypos = ypos + <span class=sc4>5</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)   ypos = ypos - <span class=sc4>5</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)   xpos = xpos + <span class=sc4>5</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  xpos = xpos - <span class=sc4>5</span>; </b>
+Aqui conforme  a  tecla  pressionada  as  variáveis  (xpos, ypos)  de
+posicionamento das sprites são modificadas.
+
+<b><span class=sc2>// Controle de movimento da sprite utilizado para</span>
+<span class=sc2>// mudar a cor difusa da sprite conforme direção assumida</span>
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)     movimento_direcao = <span class=sc4>1</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)   movimento_direcao = <span class=sc4>-1</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)   movimento_direcao = <span class=sc4>2</span>; 
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  movimento_direcao = <span class=sc4>-2</span>;  </b>
+O mesmo pressionamento tratado acima serve  de  base  para  estocar a
+direção dada à sprite  pelo  usuário  que  é  usada  na  renderização
+para selecionar a cor difusa da sprite.
+
+<b><u>2.6 Renderização da cena</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// String para mostrar posição da sprite</span>
+  <span class=prg>char </span>info[40];  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (220, 160, <span class=sc6>"www.gameprog.com.br"</span>);   
+    mostrarTexto (170,400, <span class=sc6>"Movimente a sprite com as setas."</span>);   
+<b>
+    <span class=sc2>// Mostra posicionamento da sprite</span>
+    <span class=prg>sprintf </span>(info, <span class=sc6>"</span>( %i, %i )<span class=sc6>"</span>, xpos, ypos);  
+    mostrarTexto (10, 10, info);  
+
+    <span class=sc2>// Desenha sprite</span>
+    renderizarSprite();  
+</b>
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div><b>
+<span class=sc2>// String para mostrar posição da sprite</span>
+<span class=prg>char </span>info[40];  
+<span class=prg>sprintf </span>(info, <span class=sc6>"( %i, %i )"</span>, xpos, ypos);  
+mostrarTexto (10, 10, info);  </b>
+Usamos esse bloco de código para mostrar a posição da sprite.
+
+<b><span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+<span class=sc16>{</span>
+renderizarSprite();</b>  
+<span class=prg>g_device-&gt;EndScene</span>(); </b>
+<b class=sc16>}</b>
+E finalmente renderizamos a sprite com <b>renderizarSprite().</b>
+
+<b><u>2.7 Processando as mensagens da janela</u></b>
+O destaque dessa função <b>processaJanela()</b> é a  função  <b>tratarTeclado()</b>
+chamada  no  evento  de  pressionamento  de  tecla  <b>WM_KEYDOWN</b>.
+
+<div class=niceview><span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <b>tratarTeclado ( wParam );  </b>
+
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+
+<b><u>2.8 Liberação dos recursos utilizados</u></b>
+Repare  na  lista crescente de objetos liberados na função  <b>Limpar().</b>
+
+<div class=niceview><span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span><b>
+  <span class=sc2>// Libera o objeto textura</span>
+  <span class=sc9>if</span>( g_textura != <span class=prg>NULL</span>)  <span class=prg>g_textura-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o objeto sprite</span>
+  <span class=sc9>if</span>( g_sprite != <span class=prg>NULL</span>)   <span class=prg>g_sprite-&gt;Release</span>();  
+</b>
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Sprite</u></b>
+<div class=prg-code><img src=images\prj_Sprite.png>
+<span class=sc2>// Projeto: prj_Sprite - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar uma sprite</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+  <span class=prg>void </span>inicializarTexto();  
+  <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+  <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+  <span class=sc2>// Inicializa a sprite</span>
+  <span class=prg>void </span>inicializarSprite();  
+
+  <span class=sc2>// Desenha a sprite</span>
+  <span class=prg>void </span>renderizarSprite();  
+
+  <span class=sc2>// Trata o pressionamento das setas do teclado</span>
+  <span class=prg>void </span>tratarTeclado( <span class=sc16>WPARAM </span>wParam);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Sprite - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar uma sprite</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+<span class=sc5>ID3DXFont* </span>      gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Interfaces necessárias para a criação da sprite</span>
+<span class=sc2>// A textura vai compor a imagem da sprite</span>
+<span class=sc5>IDirect3DTexture9* </span>g_textura = <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite* </span>   g_sprite = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Argumentos necessários na criação da sprite</span>
+<span class=sc2>// Posicionamento e recorte da sprite</span>
+<span class=sc5>RECT </span>         g_recorte; 
+<span class=sc2>// Posicionamento 3d da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_posicao = <span class=prg>NULL</span>; 
+<span class=sc2>// Centro de apoio para rotações da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_centro = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controle de movimentação da sprite</span>
+<span class=prg>int </span>                movimento_direcao = <span class=sc4>1</span>; 
+<span class=prg>int </span>               xpos = <span class=sc4>-240</span>; 
+<span class=prg>int </span>                ypos = <span class=sc4>-160</span>; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+
+<span class=sc2>// Constante para cores com transparência</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>verde_transparente = 0x8000FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho_transp   = 0x80FF0000; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Inicializa texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Inicializa sprite</span>
+  inicializarSprite();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>inicializarSprite() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Carrega e prepara textura 256 x 256</span>
+  <span class=sc16>const </span><span class=prg>char* </span>stextura = <span class=sc6>"C:\\gameprog\\gdkmedia\\bitmap\\teste-transp.png"</span>; 
+  g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, stextura, &g_textura);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Textura: falha no carregamento"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  g_hr =  <span class=prg>D3DXCreateSprite</span>(g_device, &g_sprite);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Sprite: falha na criação"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Posicionamento 3d não utilizado extensamente</span>
+  g_posicao = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  g_centro = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+
+
+<span class=prg>void </span>renderizarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Cor difusa da sprite</span>
+  <span class=prg>DWORD </span>cor_difusa = branco; 
+
+  <span class=sc2>// Muda cor difusa conforme direção assumida</span>
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>1</span>)  cor_difusa = branco; 
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>-1</span>)  cor_difusa = vermelho; 
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>2</span>)  cor_difusa = verde_transparente; 
+  <span class=sc9>if </span>(movimento_direcao == <span class=sc4>-2</span>)  cor_difusa = vermelho_transp; 
+
+  <span class=sc2>// Indica o ponto de corte da sprite</span>
+  <span class=prg>int </span>direita = 128; 
+  <span class=prg>int </span>fundo = 120; 
+
+  <span class=sc2>// Configuração posição de colocação da sprite na tela</span>
+  <span class=sc2>// o ponto de corte da textura</span>
+  <span class=prg>SetRect</span>(&g_recorte, xpos, ypos, direita, fundo);  
+
+  <span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+  <span class=prg>g_sprite-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);  
+
+  <span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+  <span class=prg>g_sprite-&gt;Draw</span>(g_textura, &g_recorte, g_centro, g_posicao, cor_difusa);  
+
+  <span class=sc2>// Finaliza processo de renderização de sprites</span>
+  <span class=prg>g_sprite-&gt;End</span>();  
+
+<span class=sc16>} <span class=sc2>// renderizarSprite().fim</span></span>
+
+
+<span class=prg>void </span>tratarTeclado (<span class=sc16>WPARAM </span>wParam) 
+<span class=sc16>{</span>
+  <span class=sc2>// Controle de movimento da sprite para colocação</span>
+  <span class=sc2>// da sprite sobre a tela</span>
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)  ypos = ypos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)  ypos = ypos - <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)  xpos = xpos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  xpos = xpos - <span class=sc4>5</span>; 
+
+  <span class=sc2>// Controle de movimento da sprite utilizado para</span>
+  <span class=sc2>// mudar a cor difusa da sprite conforme direção assumida</span>
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_UP</span>)  movimento_direcao = <span class=sc4>1</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_DOWN</span>)  movimento_direcao = <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_LEFT</span>)  movimento_direcao = <span class=sc4>2</span>; 
+  <span class=sc9>if </span>(wParam == <span class=sc4>VK_RIGHT</span>)  movimento_direcao = <span class=sc4>-2</span>;  
+<span class=sc16>} <span class=sc2>// tratarTeclado().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    tratarTeclado ( wParam );  
+
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto()</span></span>
+
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc5>RECT </span>area_limite; 
+
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto(); </span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o objeto textura</span>
+  <span class=sc9>if</span>( g_textura != <span class=prg>NULL</span>)  <span class=prg>g_textura-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o objeto sprite</span>
+  <span class=sc9>if</span>( g_sprite != <span class=prg>NULL</span>)   <span class=prg>g_sprite-&gt;Release</span>();  
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// String para mostrar posição da sprite</span>
+  <span class=prg>char </span>info[40];  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (220, 160, <span class=sc6>"www.gameprog.com.br"</span>);   
+    mostrarTexto (170,400, <span class=sc6>"Movimente a sprite com as setas."</span>);   
+
+    <span class=sc2>// Mostra posicionamento da sprite</span>
+    <span class=prg>sprintf </span>(info, <span class=sc6>"</span>( %i, %i )<span class=sc6>"</span>, xpos, ypos);  
+    mostrarTexto (10, 10, info);  
+
+    <span class=sc2>// Desenha sprite</span>
+    renderizarSprite();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Sprite - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar uma sprite</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Sprite"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

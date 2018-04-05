@@ -1,0 +1,1266 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase03-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 03-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track03-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>03.2 Quadrado texturizado</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\tex_mapping.png>
+</div>
+O processo de texturizar  consiste  em  mapear  a  textura  sobre  os
+vértices do polígono formado. A coordenada (x,y) da textura é chamada
+de (<b>u,v</b>) com <b>u</b> correspondente à x e <b>v</b> correspondente à y.
+
+As coordenadas de mapeamento de textura são expressas pelo tipo <b class=prg>float</b>
+e variam  de  <b>0.0f</b>  a  <b>1.0f</b> que equivalem a percentuais de largura ou
+altura da imagem. 
+
+Por exemplo, no eixo x (expresso por <b class=sc16>u</b>), <b>zero (0)</b> quer dizer extremo
+canto esquerdo e <b>1.0f</b> extremo canto direito. No eixo y (<b class=sc16>v</b>), <b>zero (0)</b> 
+quer dizer extremo canto superior e <b>1.0f</b> extremo canto inferior. E o
+valor <b>0.5f</b> refere-se à metade do caminho. No processo de texturizar,
+a  coordenada de textura  é  associada  ao  vértice  e  isso demanda
+naturalmente um formato de vértice que aceite as coordenadas (u, v).
+
+É interessante notar que essa forma de associar textura aos vértices,
+através de float's que representam percentuais da largura  ou  altura
+da imagem o directx consegue assim trabalhar com imagens de  qualquer
+tamanho para a textura.  Porém, para melhor performance da aplicação, 
+utilize texturas quadradas com dimensões  em  potências  da  base  2,
+por exemplo 128x128, 256x256 etc.  Isso  agiliza  processos  internos
+do directx. 
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+<b class=sc16>inicializar_Textura()</b>
+	carrega a textura via <b class=prg>D3DXCreateTextureFromFile()</b>
+	configura alguns estados de texturização
+
+initGfx()
+	chama <b class=sc16>inicializar_Textura()</b> para montar o contexto de texturização
+	chama montar_Geometria() para montar os quadrados texturizados
+	chama inicializar_Camera() para a configuração inicial da câmera.
+	
+montar_Geometria()
+	<b class=sc16>Define coordenadas de texturas nomeadas
+	
+	Faz a montagem de cinco quadrados texturizados com cada um tendo
+		diferentes coordenadas de textura.
+		
+	Define um ponteiro para cada quadrado texturizado</b>
+
+	
+renderizar_Geometria()
+	Declara o formato de vértice utilizado: 
+			<b class=sc16>CustomVertex_PositionTextured_Format</b>
+			
+	<b class=sc16>O temporizador seleciona um quadrado texturizado diferente a cada segundo</b>
+	
+	Renderiza o quadrado selecionado com g_device->DrawIndexedPrimitiveUP()	
+
+Limpar()	
+	<b class=sc16>Libera a textura utilizada</b>
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+	<b class=sc16>Configura os ponteiros para NULL</b>
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h </u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Textura - Arquivo: motor.h</span>
+<span class=sc2>// Esse projeto ilustra como renderizar um quadrado com textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+ <span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Estrutura para suportar coordenadas de textura</span>
+<span class=prg>struct </span><span class=sc5>TexCoord</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Coordenada de textura</span>
+    <span class=prg>float </span>tu, tv; 
+
+    <span class=sc2>// Construtor default</span>
+    <span class=sc5>TexCoord</span>() {} 
+
+    <span class=sc5>TexCoord</span>( <span class=prg>float </span>_tu, <span class=prg>float </span>_tv) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura coordenada de textura</span>
+      tu = _tu; 
+      tv =_tv; 
+    <span class=sc16>}</span>
+  <span class=sc16>}; <span class=sc2>// fim da estrutura TexCoord</span></span>
+
+<span class=sc2>// Estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionTextured</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Coordenada de textura</span>
+  <span class=prg>float </span>tu, tv; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionTextured</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionTextured</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=sc5>TexCoord </span>texcoord) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configura posição</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+    <span class=sc2>// Configura coordenada de textura</span>
+    tu = <span class=prg>texcoord.tu</span>; 
+    tv = <span class=prg>texcoord.tv</span>; 
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionTextured</span></span>
+
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionTextured_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_TEX1</span>) 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+<b>
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a textura</span>
+  <span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>);  
+</b>
+  <span class=sc2>// Inicializa a câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+ <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+    <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<u>Estrutura para coordenadas de textura</u>
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Estrutura para suportar coordenadas de textura</span>
+<span class=prg>struct </span><span class=sc5>TexCoord</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Coordenada de textura</span>
+    <span class=prg>float </span>tu, tv; 
+
+    <span class=sc2>// Construtor default</span>
+    <span class=sc5>TexCoord</span>() {} 
+
+    <span class=sc5>TexCoord</span>( <span class=prg>float </span>_tu, <span class=prg>float </span>_tv) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura coordenada de textura</span>
+      tu = _tu; 
+      tv =_tv; 
+    <span class=sc16>}</span>
+  <span class=sc16>}; <span class=sc2>// fim da estrutura TexCoord</span></span></div>
+ Esta pequena estrutura <b class=prg>TexCoord</b> foi desenvolvida para facilitar o
+ trabalho  com  coordenadas  de  textura.   Os  elementos (<b>tu, tv</b>) 
+ representam naturalmente as coordenadas (<b class=sc16>u, v</b>) de textura.
+
+
+<u>Estrutura para o vértice customizado com posição e coordenada de textura</u>
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionTextured</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Coordenada de textura</span>
+  <span class=prg>float </span>tu, tv; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionTextured</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionTextured</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=sc5>TexCoord </span>texcoord) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configura posição</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+    <span class=sc2>// Configura coordenada de textura</span>
+    tu = <span class=prg>texcoord.tu</span>; 
+    tv = <span class=prg>texcoord.tv</span>; 
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionTextured</span></span></div>
+Esta estrutura de vértice customizado contém uma  estrutura  <b class=prg>TexCoord</b>
+como elemento para suportar coordenadas de textura.
+
+
+<b><span class=sc16>#define </span><span class=sc4>CustomVertex_PositionTextured_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_TEX1</span>) </b>
+Essa macro define o formato de vértice utilizado por  esta  aplicação.
+
+<b><span class=prg>void </span>Limpar();  </b>
+Salientamos aqui que depois de liberar a interface utilizada com o
+método <span class=prg>Release()</span> é importante reconfigurar o  ponteiro  como  <span class=prg>NULL</span>:<b>
+<span class=sc2>// Libera a textura</span>
+<span class=sc9>if </span>(g_Textura != <span class=prg>NULL</span>) <span class=prg>g_Textura-&gt;Release</span>(); 
+g_Textura  = <span class=prg>NULL</span>; </b>
+Utilize o <span class=prg>NULL</span> como filtro para evitar que  sua  aplicação  entre  em
+pane  por  tentar  utilizar  uma  interface  que  já  foi  liberada.
+
+
+<b><span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);</b>
+Essa função monta cinco quadrados  texturizados  com  cada  um  deles
+tendo coordenadas diferentes de  textura  produzindo  imagens  finais 
+diferentes.    Salientamos  que  com  a  compreensão  desse  exemplo,
+utilizando os  recursos de textura é possível  construir  uma  classe
+para manipulação de sprites com funcionalidades melhores  do  que  as
+oferecidas pela interface do directx para isso.
+
+
+<b><span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);</b>
+Essa função renderiza a cada segundo um quadrado com uma texturização
+diferente.  Essa  variação  periódica  é  obtida  com o uso da função
+<span class=prg>clock()</span> que retorna o tempo de operação da aplicação em milessegundos
+que é convertido em segundos e restringido aos valores de 0  à  4, na
+sequência com esse valor selecionando  o  recipiente  de  vértices  a
+ser renderizado.
+
+
+<b><span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>);</b>
+Essa função carrega a textura do disco e inicializa o contexto geral
+de texturização configurando alguns estados e instalando  a  textura
+carregada no dispositivo renderizador.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><b><span class=sc2>// Interface de textura</span>
+<span class=sc5>IDirect3DTexture9* </span>  g_Textura = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controla a mudança periódica do quadrado texturizado</span>
+<span class=sc2>// com diferentes coordenadas de textura</span>
+<span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; 
+</b>
+<span class=sc2>// Memória para os vértices</span>
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts1[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts2[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts3[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts4[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts5[<span class=sc4>4 </span>];   
+
+<span class=sc2>// Um ponteiro para cada conjunto de vértices</span>
+<span class=sc5>CustomVertex_PositionTextured </span>*g_pVerts[<span class=sc4>5 </span>];   
+</div>
+<b><span class=sc5>IDirect3DTexture9* </span>g_Textura = <span class=prg>NULL</span>; </b>
+Declaramos nesta linha o único objeto textura que vai  ser  utilizado
+por esta aplicação.
+
+<b><span class=sc5>CustomVertex_PositionTextured </span>g_Verts1[<span class=sc4>4</span>];  
+<span class=sc2>// (...)</span>
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts5[<span class=sc4>4</span>]; </b>
+Declaramos aqui cinco arrays  do  tipo  <span class=prg>CustomVertex_PositionTextured</span>
+com  quatro  vértices   para  conter  cada  um  dos  cinco  quadrados
+texturizados.
+
+<b><span class=sc5>CustomVertex_PositionTextured </span>*g_pVerts[<span class=sc4>5</span>]; </b>
+Na sequência é declarado uma array de ponteiros com um  elemento para
+cada um dos recipientes de vértices criados na linha acima.    
+
+<b><span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; </b>
+Esta variável aqui vai assumir valores de 0  à  4 e vai ser combinada
+com <b>g_pVerts</b> na forma <b>g_pVerts[temporizador]</b> para produzir a variação
+periódica do quadrado texturizado.
+
+<b><u>2.2 Inicialização do motor gráfico</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=sc2>// Monta vários quads (quadrados) com diferentes coordenadas</span>
+  <span class=sc2>// de textura</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Carrega a textura do disco e configura alguns estados referentes.</span>
+  inicializar_Textura();  
+
+  <span class=sc2>// Configura a câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Habilita a iluminação default</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);   
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b><span class=sc2>// Monta vários quads (quadrados) com diferentes coordenadas</span>
+<span class=sc2>// de textura</span>
+montar_Geometria();  
+<span class=sc2>// Carrega a textura do disco e configura alguns estados referentes.</span>
+inicializar_Textura();  </b>
+Estas funções foram descritas de forma geral no subtópico acima 2.1.1
+e serão melhor detalhadas em seus respectivos subtópicos particulares.
+
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>); </b>
+Configuramos esse estado como <span class=prg>false</span> para permitir a iluminação default
+provida pelo directx.
+
+<b><u>2.3 Montagem dos quadrados com textura</u></b>
+<div class=niceview><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// *** Coordenadas de texturas ***</span>
+  <span class=sc2>// cima-esquerda</span>
+  <span class=sc5>TexCoord </span>cimaEsq( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// cima-meio</span>
+  <span class=sc5>TexCoord </span>cimaMeio( <span class=sc4>0.5f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// cima-direita</span>
+  <span class=sc5>TexCoord </span>cimaDir( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  <span class=sc2>// meio-direita</span>
+  <span class=sc5>TexCoord </span>meioDir( <span class=sc4>0.0f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// meio-meio</span>
+  <span class=sc5>TexCoord </span>meioMeio( <span class=sc4>0.5f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// meio-esquerda</span>
+  <span class=sc5>TexCoord </span>meioEsq( <span class=sc4>1.0f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// baixo-esquerda</span>
+  <span class=sc5>TexCoord </span>baixoEsq ( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc2>// baixo-meio</span>
+  <span class=sc5>TexCoord </span>baixoMeio ( <span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc2>// baixo-direita</span>
+  <span class=sc5>TexCoord </span>baixoDir ( <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);  
+
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts1[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaEsq);  
+  g_Verts1[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaDir);  
+  g_Verts1[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoDir);  
+  g_Verts1[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoEsq);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts2[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaEsq);  
+  g_Verts2[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaMeio);  
+  g_Verts2[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioMeio);  
+  g_Verts2[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioDir);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts3[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaMeio);  
+  g_Verts3[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaDir);  
+  g_Verts3[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioEsq);  
+  g_Verts3[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioMeio);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts4[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioDir);  
+  g_Verts4[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioMeio);  
+  g_Verts4[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoMeio);  
+  g_Verts4[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoEsq);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts5[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioMeio);  
+  g_Verts5[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioEsq);  
+  g_Verts5[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoDir);  
+  g_Verts5[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoMeio);  
+
+  <span class=sc2>// Um ponteiro para cada conjunto de vértices</span>
+  g_pVerts[<span class=sc4>0</span>] = &g_Verts1[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>1</span>] = &g_Verts2[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>2</span>] = &g_Verts3[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>3</span>] = &g_Verts4[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>4</span>] = &g_Verts5[<span class=sc4>0 </span>];   
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+</div>
+
+<u>Coordenadas nomeadas de textura</u>
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// cima-esquerda</span>
+<span class=sc5>TexCoord </span>cimaEsq( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// cima-direita</span>
+<span class=sc5>TexCoord </span>cimaDir( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>); 
+
+<span class=sc2>// baixo-direita</span>
+<span class=sc5>TexCoord </span>baixoDir ( <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+
+<span class=sc6>// (...)</span>
+
+<span class=sc2>// baixo-esquerda</span>  
+<span class=sc5>TexCoord </span>baixoEsq ( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>); </b></div>
+Produzimos várias coordenadas de texturas com a estrutura <span class=prg>TexCoord</span>
+para  facilitar  o  mapeamento  da  textura em cada quadrado. Cada
+coordenada  de  textura  representa  um  ponto  notável  referente
+aos meios e extremidades da imagem carregada.
+
+
+<u>Montagem do quadrado texturizado</u>
+<div class=niceview style="border-style:dashed;"><b>g_Verts1[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaEsq);  
+g_Verts1[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaDir);  
+g_Verts1[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoDir);  
+g_Verts1[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoEsq);  </b></div>
+Esse  conjunto  de  vértices  com  essa  configuração  particular  de
+coordenadas  de  textura  pertence  ao  primeiro  quadrado  que  traz
+estampado em sua superfície o total da textura.  Os demais  quadrados
+foram definidos de forma muito semelhante a  esta  amostra  comentada.
+
+
+<u>Guardando o endereço de cada recipiente de vértices</u>
+<div class=niceview style="border-style:dashed;"><b>g_pVerts[<span class=sc4>0</span>] = &g_Verts1[<span class=sc4>0</span>];   
+g_pVerts[<span class=sc4>1</span>] = &g_Verts2[<span class=sc4>0</span>];   
+g_pVerts[<span class=sc4>2</span>] = &g_Verts3[<span class=sc4>0</span>];   
+g_pVerts[<span class=sc4>3</span>] = &g_Verts4[<span class=sc4>0</span>];   
+g_pVerts[<span class=sc4>4</span>] = &g_Verts5[<span class=sc4>0</span>];</b></div>
+Aqui em cada posição da array <b>g_pVerts</b> é estocado o endereço  inicial
+de cada conjunto de vértices que produzem o seu  respectivo  quadrado
+texturizado  de  forma  particular.   Depois,  colocando  a  variável 
+<b>temporizador</b>  como  índice  dessa  array  ocasiona  a cada segundo um
+diferente buffer de vértices para o  método  <span class=prg>DrawIndexedPrimitiveUP()</span>
+fazer o seu trabalho de renderização, produzindo assim a cada segundo
+um quadrado texturizado de forma diferente.   
+
+
+<b><u>2.4 Renderização do quadrado texturizado</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Produz a cada segundo um valor de 0 a 4.</span>
+  temporizador = ( <span class=prg>clock</span>() / 1000 ) % <span class=sc4>5</span>; 
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitiveUP()</span>
+  <span class=prg>UINT </span>  nVerticeInicial = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nVerticeQtd   = <span class=sc4>4</span>; 
+  <span class=prg>UINT </span>  nContagemPrim  = <span class=sc4>2</span>; 
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionTextured</span>);   
+
+  <span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionTextured_Format</span>);  
+
+  <span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+    nVerticeInicial, nVerticeQtd, nContagemPrim, &g_Indices, 
+    <span class=sc4>D3DFMT_INDEX16</span>, g_pVerts[temporizador], nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+<b>temporizador = ( <span class=prg>clock</span>() / 1000 ) % <span class=sc4>5</span>; </b>
+Esta linha simples faz o trabalho formidável  de  selecionar  a  cada
+segundo um dos cinco recipientes diferentes de vértices  cada  um com
+seu quadrado texturizado de forma particular.  Nesta  linha  o  valor 
+<b>1000</b>  representa  o  período  de  <b>1  segundo</b>  para gerar a mudança no
+<b>temporizador</b>; se você quiser um período de dois segundos basta alterar
+esse valor para <b>2000</b>.   O valor 5 depois do operador módulus (<b>%</b>)  vai 
+restringir o valor máximo do <b>temporizador</b> dado pela subtração <b class=sc6>5 - 1</b>.
+
+
+<b><span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionTextured_Format</span>);  </b>
+Configura o formato de vértice atual no dispositivo renderizador.
+
+
+<b><span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+nVerticeInicial, nVerticeQtd, nContagemPrim, &g_Indices, 
+<span class=sc4>D3DFMT_INDEX16</span>, <b class=sc6>g_pVerts[temporizador]</b>, nPasso);  </b>
+Renderiza finalmente os vértices resultando em um quadrado texturizado.
+
+<b><u>2.5 Inicialização da textura</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  g_hr = <span class=prg>D3DXCreateTextureFromFile </span>(g_device, 
+    <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\textura2x2.png"</span>, 
+    &g_Textura);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED </span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha: D3DXCreateTextureFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_Textura</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a textura no dispositivo</span>
+  <span class=prg>g_device-&gt;SetTexture </span>(<span class=sc4>0</span>, g_Textura);  
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// menor do que a superfície ( atuante nesta aplicação )</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// maior do que a superfície	( não atuante nesta aplicação )</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializar_Textura(void).fim</span></span>
+</div>
+<b>g_hr = <span class=prg>D3DXCreateTextureFromFile </span>(g_device, 
+<span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\textura2x2.png"</span>, &g_Textura);  </b>
+Esta linha carrega a imagem e produz um objeto textura.
+
+<b><span class=prg>g_device-&gt;SetTexture </span>(<span class=sc4>0</span>, g_Textura);  </b>
+Esta linha configura a textura no dispositivo.  Para limpar a textura
+do dispositivo passe o valor <span class=prg>NULL</span> no estágio a ser limpo. Por exemplo,
+essa linha anula a textura do estágio 0:
+<b><span class=prg>g_device-&gt;SetTexture </span>(<span class=sc4>0</span>, NULL);  </b>
+O estágio de textura é  um  canal  que  contém  uma textura  que pode
+ser utilizado para efeitos especiais de mistura de texturas.
+
+<b><span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+<span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   </b>
+Estas linhas fazem a correção visual da textura na ocasião em que a
+textura aparece blocada ou pixelizada em função do  descompasso  do
+tamanho da textura com o tamanho da área texturizada.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Textura</u></b>
+<div class=prg-code><img src=images\prj_Textura.png>
+
+<span class=sc2>// Projeto: prj_Textura - Arquivo: motor.h</span>
+<span class=sc2>// Esse projeto ilustra como renderizar um quadrado com textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Estrutura para suportar coordenadas de textura</span>
+<span class=prg>struct </span><span class=sc5>TexCoord</span>
+  <span class=sc16>{</span>
+      <span class=sc2>// Coordenada de textura</span>
+    <span class=prg>float </span>tu, tv; 
+
+    <span class=sc2>// Construtor default</span>
+    <span class=sc5>TexCoord</span>() {} 
+
+    <span class=sc5>TexCoord</span>( <span class=prg>float </span>_tu, <span class=prg>float </span>_tv) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura coordenada de textura</span>
+      tu = _tu; 
+      tv =_tv; 
+    <span class=sc16>}</span>
+  <span class=sc16>}; <span class=sc2>// fim da estrutura TexCoord</span></span>
+
+<span class=sc2>// Estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionTextured</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Coordenada de textura</span>
+  <span class=prg>float </span>tu, tv; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionTextured</span>() {} 
+
+   <span class=sc5>CustomVertex_PositionTextured</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=sc5>TexCoord </span>texcoord) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configura posição</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+    <span class=sc2>// Configura coordenada de textura</span>
+    tu = <span class=prg>texcoord.tu</span>; 
+    tv = <span class=prg>texcoord.tv</span>; 
+  <span class=sc16>}</span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionTextured</span></span>
+
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionTextured_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_TEX1</span>) 
+
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a textura</span>
+  <span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+ <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+    <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Textura - arquivo: motor.cpp</span>
+<span class=sc2>// Esse projeto ilustra como renderizar um quadrado com textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Vamos usar a função clock() para produzir um temporizador</span>
+<span class=sc16>#include </span><span class=prg>&lt;time.h&gt;</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+
+<span class=sc2>// Buffer de índices - indica a ordem de conexão dos vértices</span>
+<span class=prg>WORD </span>g_Indices[<span class=sc4>6</span>] = <span class=sc16>{ </span> <span class=sc4>0</span>, <span class=sc4>1</span>, <span class=sc4>2</span>,   <span class=sc4>2</span>, <span class=sc4>3</span>, <span class=sc4>0 </span><span class=sc16>}</span>; 
+
+
+<span class=sc2>// Interface de textura</span>
+<span class=sc5>IDirect3DTexture9* </span>  g_Textura = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controla a mudança periódica do quadrado texturizado</span>
+<span class=sc2>// com diferentes coordenadas de textura</span>
+<span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; 
+
+
+<span class=sc2>// Memória para os vértices</span>
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts1[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts2[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts3[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts4[<span class=sc4>4 </span>];   
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts5[<span class=sc4>4 </span>];   
+
+<span class=sc2>// Um ponteiro para cada conjunto de vértices</span>
+<span class=sc5>CustomVertex_PositionTextured </span>*g_pVerts[<span class=sc4>5 </span>];   
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta vários quads (quadrados) com diferentes coordenadas</span>
+  <span class=sc2>// de textura</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Carrega a textura do disco e configura alguns estados referentes.</span>
+  inicializar_Textura();  
+
+  <span class=sc2>// Configura a câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Habilita a iluminação default</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);   
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// *** Coordenadas de texturas ***</span>
+  <span class=sc2>// cima-esquerda</span>
+  <span class=sc5>TexCoord </span>cimaEsq( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// cima-meio</span>
+  <span class=sc5>TexCoord </span>cimaMeio( <span class=sc4>0.5f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// cima-direita</span>
+  <span class=sc5>TexCoord </span>cimaDir( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);  
+  <span class=sc2>// meio-direita</span>
+  <span class=sc5>TexCoord </span>meioDir( <span class=sc4>0.0f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// meio-meio</span>
+  <span class=sc5>TexCoord </span>meioMeio( <span class=sc4>0.5f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// meio-esquerda</span>
+  <span class=sc5>TexCoord </span>meioEsq( <span class=sc4>1.0f</span>, <span class=sc4>0.5f</span>);  
+  <span class=sc2>// baixo-esquerda</span>
+  <span class=sc5>TexCoord </span>baixoEsq ( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc2>// baixo-meio</span>
+  <span class=sc5>TexCoord </span>baixoMeio ( <span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc2>// baixo-direita</span>
+  <span class=sc5>TexCoord </span>baixoDir ( <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);  
+
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts1[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaEsq);  
+  g_Verts1[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaDir);  
+  g_Verts1[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoDir);  
+  g_Verts1[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoEsq);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts2[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaEsq);  
+  g_Verts2[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaMeio);  
+  g_Verts2[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioMeio);  
+  g_Verts2[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioDir);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts3[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaMeio);  
+  g_Verts3[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, cimaDir);  
+  g_Verts3[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioEsq);  
+  g_Verts3[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, meioMeio);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts4[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioDir);  
+  g_Verts4[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioMeio);  
+  g_Verts4[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoMeio);  
+  g_Verts4[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoEsq);  
+
+  <span class=sc2>// Configuração normal dos vértices com coordenadas de textura</span>
+  g_Verts5[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioMeio);  
+  g_Verts5[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos, meioEsq);  
+  g_Verts5[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>(<span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoDir);  
+  g_Verts5[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, baixoMeio);  
+
+  <span class=sc2>// Um ponteiro para cada conjunto de vértices</span>
+  g_pVerts[<span class=sc4>0</span>] = &g_Verts1[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>1</span>] = &g_Verts2[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>2</span>] = &g_Verts3[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>3</span>] = &g_Verts4[<span class=sc4>0 </span>];   
+  g_pVerts[<span class=sc4>4</span>] = &g_Verts5[<span class=sc4>0 </span>];   
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+    <span class=sc2>// Produz a cada segundo um valor de 0 a 4.</span>
+  temporizador = ( <span class=prg>clock</span>() / 1000 ) % <span class=sc4>5</span>; 
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitiveUP()</span>
+  <span class=prg>UINT </span>  nVerticeInicial = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>  nVerticeQtd   = <span class=sc4>4</span>; 
+  <span class=prg>UINT </span>  nContagemPrim  = <span class=sc4>2</span>; 
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionTextured</span>);   
+
+  <span class=sc2>// Declara o formato de vértice utilizado pela aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionTextured_Format</span>);  
+
+  <span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+    nVerticeInicial, nVerticeQtd, nContagemPrim, &g_Indices, 
+    <span class=sc4>D3DFMT_INDEX16</span>, g_pVerts[temporizador], nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera a textura</span>
+  <span class=sc9>if </span>(g_Textura != <span class=prg>NULL</span>)  <span class=prg>g_Textura-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Limpando os ponteiros</span>
+  g_Direct3d = <span class=prg>NULL</span>; 
+  g_device  = <span class=prg>NULL</span>; 
+  g_Textura  = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+<span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  g_hr = <span class=prg>D3DXCreateTextureFromFile </span>(g_device, 
+    <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\textura2x2.png"</span>, 
+    &g_Textura);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED </span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha: D3DXCreateTextureFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_Textura</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a textura no dispositivo</span>
+  <span class=prg>g_device-&gt;SetTexture </span>(<span class=sc4>0</span>, g_Textura);  
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// menor do que a superfície ( atuante nesta aplicação )</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// maior do que a superfície	( não atuante nesta aplicação )</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializar_Textura(void).fim</span></span>
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Textura - arquivo: entrada.cpp</span>
+<span class=sc2>// Esse projeto ilustra como renderizar um quadrado com textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Textura"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track03-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

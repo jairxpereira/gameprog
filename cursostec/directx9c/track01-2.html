@@ -1,0 +1,748 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.2 A janela principal</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Janela.png></div>
+Esta primeira aplicação ilustra como criar uma janela e  isso  é  uma
+tarefa  de  muitas  partes  com  um  código  difícil  de dominar e de 
+compreender por parte do iniciante  em  programação  Windows.  Para a
+correta  compreensão do código que envolve toda a criação e gestão da 
+janela  é  necessário  enxergar  as  aplicações do ponto de vista dos
+desafios que o sistema Windows enfrenta para dar a vida artificial de
+cada aplicação.
+
+O Windows  é  um sistema multitarefa que geralmente pode rodar várias
+janelas ao mesmo tempo.  Cada  janela representa uma aplicação. Nesse
+contexto  um  dos primeiros desafios do Windows é gerenciar uma lista
+de janelas com cada janela tendo uma <b>identificação própria</b> que aponte
+para  todos os recursos utilizados por aquela janela: memória, vídeo,
+áudio, teclado, mouse, etc.    Lembrando  ainda  que  estes  recursos
+precisam ser <b>compartilhados sem conflitos</b>  entre  cada  aplicação.  A 
+identificação  de  cada janela  é chamado de <b>handle</b> representado pelo 
+tipo de dado <b class=prg>HWND</b>.  Cada  recurso  utilizado  tem  um  handle que lhe
+identifica, assim temos handle de bitmap, handle de cursor, etc.  Uma
+mesma  aplicação pode ser aberta várias vezes, e assim cada cópia  da
+aplicação  é chamado de <b>instância</b> e identificada pelo tipo <b class=prg>HINSTANCE</b>.
+
+Cada  janela  tem  sua  própria  aparência  e  isso  necessita de uma
+<b>estrutura que guarde a configuração</b> de aparência da janela.  Todas as
+janelas  sofrem  <b>eventos</b>  externos  do usuário, por exemplo,  o mouse
+clicado sobre as janelas. O Windows precisa de uma forma de comunicar
+esse evento para a janela e a janela precisa bombear esse evento para
+um local que vai tratar adequadamente esse evento.  Disso decorre que
+o Windows sustenta uma <b>fila de eventos</b> para cada janela,e cada janela
+deve  ter  um centro para receber e bombear pra frente as <b>mensagens</b> e
+uma  central  de  processamento  dessas  mensagens endereçadas para a 
+janela ou várias janelas  da  aplicação.  Uma mensagem nada mais é do
+que um evento codificado e comunicado em forma de número para  dentro
+de uma aplicação. 
+
+Geralmente um computador tem uma só placa de vídeo que faz o trabalho
+de escrever ou desenhar no monitor. Duas janelas que estão desenhando
+em seu próprio espaço na verdade estão alternando  o uso  do  monitor
+que  consegue  atender apenas uma janela por vez. Antes de desenhar a
+janela  precisa  ter  uma forma de pedir licença para usar a placa de
+vídeo  e  depois  disso  precisa  liberar a placa de vídeo para outra 
+aplicação.   Ainda,  cada janela precisa ter uma área de memória para
+guardar  o seu próprio conteúdo  visual.   O  Windows  resolve  essas
+questões dando a cada janela um "monitor virtual" chamado <b>dispositivo
+contextual</b>  geralmente  abreviado  como  <b class=prg>DC</b>  com  sua área própria de
+memória para guardar o conteúdo visual da janela.  
+
+Essas justificativas colocadas visam esclarecer parte da complexidade
+que  vai  ser encontrada no código C++ de geração e gestão da janela. 
+Outra  parte  da  complexidade  encontrada do código vem pelo fato do
+Windows  manter uma compatibilidade com suas versões antigas e ter de
+lidar  com  a  diversidade  de  idiomas  com um diferente conjunto de
+caracteres.  Os  nossos  programas  serão  compilados  sem  o  uso de
+caracteres UNICODE que atende todos os idiomas do mundo.Se o conjunto
+UNICODE estiver habilitado o programa não compila.
+
+O uso de caracteres <b>UNICODE</b>  deve  ser  desabilitado na opção <b>General</b>
+na janela de <b>propriedades do projeto</b> conforme a imagem:
+<div class=prg-code><img src=images\no_unicode.png></div>
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>WinMain()</b>
+	criação da classe da janela
+	registro da classe da janela
+	criação da janela de acordo com a classe definida
+	mostra a janela
+	estabelecimento do laço de mensagens
+	finaliza a aplicação
+
+<b>processaJanela()</b>
+	tratamento das mensagens </div> </div>
+Essa aplicação inicial tem apenas duas funções. <span class=prg>WinMain()</span> é a  função
+de entrada obrigatória de qualquer  aplicação  Windows.  Essa  função
+é responsável por criar a janela e de estabelecer o <b>laço de mensagens</b>
+que obtém as mensagens dos eventos que ocorrem sobre a  janela  e  as
+despacha para a função <b>processaJanela()</b> que tem que fazer o  trabalho
+de  dar uma resposta adequada para as mensagens ou eventos que são de
+interesse da aplicação.O <b>laço de mensagens</b> é o 'coração' da aplicação
+e a função <b>processaJanela()</b> é o 'cérebro'.
+
+<b><u>2.1 Aspectos globais</u></b>
+<div class=niceview><span class=sc16>#include </span>&lt;<span class=prg>windows.h&gt;</span> 
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; 
+<span class=prg>int </span>g_ytela = 240; 
+</div>
+<b><span class=sc16>#include </span>&lt;<span class=prg>windows.h&gt;</span></b> 
+Toda aplicação que vai utilizar os recursos oferecidos pelo sistema
+Windows  como interface gráfica e outros aspectos deve incluir este
+arquivo  em  destaque.   Dentro  deste  arquivo outros arquivos são
+incluidos  dando  acesso  a  uma extensa gama de funcionalidades do 
+sistema Windows.
+
+<b><span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (
+	<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  </b>
+Essa  é  a  assinatura  obrigatória  da função que trata as mensagens
+recebidas para a janela ou janelas de uma aplicação.   Toda aplicação
+deve ter pelo menos uma função dessas porém é normal e  mais didático
+produzir uma função dessas para cada janela da aplicação.
+
+<b><span class=sc16>HWND </span>hJanela</span></b>
+Esse argumento de entrada  identifica a janela para a qual a mensagem
+está endereçada. Havendo uma só janela, esse valor refere-se a janela
+principal da aplicação.
+
+<b><span class=prg>UINT </span>mensagem</span></b>
+Este argumento identifica a mensagem em si.  As mensagens são valores
+numéricos que representam eventos que ocorrem  sobre a  janela.   Por
+exemplo,  <span class=sc4>WM_QUIT</span>  é  uma mensagem que sinaliza o encerramento de uma
+aplicação e seu valor é zero (0). 
+
+<b><span class=sc16>WPARAM </span>wParam</span>
+<span class=sc16>LPARAM </span>lParam</span></b>
+Estes dois argumentos trazem informações extras  relevantes  sobre  a
+mensagem.   Por exemplo, em mensagens atreladas ao  mouse,  os  dados 
+de  posicionamento  do   mouse  são  trazidos  por  estes argumentos.
+
+<b><span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; <span class=prg>int </span>g_ytela = 240; </b>
+A intenção destes valores é representar globalmente o tamanho da área
+útil que a aplicação tem para desenhar.  Estas  variáveis são globais
+porque   serão  utilizadas  em  muitos  outros  pontos  da  aplicação 
+conforme a necessidade do contexto. 
+
+<b><u>2.2 Criando a janela e o laço de mensagens</u></b>
+<div class=niceview><span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando, <span class=prg>int </span>nExibir) <span class=sc16>{</span>
+ <span class=sc2>// alça da janela</span>
+ <span class=sc16>HWND </span>hJanela = <span class=prg>NULL</span>; 
+
+ <span class=sc2>// Estrutura de recepção das mensagens</span>
+ <span class=sc5>MSG </span>mensagem; 
+
+ <span class=sc2>// Estrutura de descrição da janela</span>
+ <span class=sc5>WNDCLASSEX </span>wcls; 
+
+ <span class=sc2>// Nome da classe da janela</span>
+ <span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+ <span class=sc2>// Estrutura que descreve a janela</span>
+ <span class=prg>wcls.hInstance </span>= app_instancia; 
+ <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+ <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+ <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+ <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+ <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+ <span class=prg>wcls.hIcon </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+ <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+ <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+ <span class=sc2>// Aplicação sem menu</span>
+ <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+ <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+ <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+ <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+ <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+ <span class=sc2>// Cor default da janela</span>
+ <span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  <span class=sc4>COLOR_BACKGROUND</span>; 
+
+ <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+ <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+ <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  MessageBox (<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"prj_Janela"</span>, <span class=sc4>MB_OK</span>);   
+ <span class=sc6>return </span><span class=sc4>0</span>; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+ <span class=sc2>// Depois da classe criada cria-se a janela</span>
+ <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+ <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Janela"</span>; 
+ <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU</span>;  
+ <span class=prg>int </span>xpos = 160; 
+ <span class=prg>int </span>ypos = 120; 
+ <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+ <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+ <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+ hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+ controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+ app_instancia, dadoExtra );  
+
+ <span class=sc2>// Mostra a janela</span>
+ <span class=prg>ShowWindow </span>(hJanela, nExibir);  
+ <span class=prg>UpdateWindow </span>(hJanela); 
+
+ <span class=sc2>// Rode o bombeamento de mensagens até GetMessage() retornar 0</span>
+ <span class=sc9>while </span>(<span class=prg>GetMessage </span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>) ) 
+ <span class=sc16>{</span>
+  <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+  <span class=prg>TranslateMessage</span>(&mensagem);  
+
+  <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+  <span class=prg>DispatchMessage</span>(&mensagem);  
+ <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+ <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+ <span class=prg>UnregisterClass</span>(sclasseJanela, app_instancia );  
+ <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+ <span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div><b>
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando, <span class=prg>int </span>nExibir) </b>
+Essa é a assinatura obrigatória da função <b>WinMain()</b>  que é o ponto de
+entrada de uma aplicação para sistema Windows.   Os  argumentos estão
+explicados abaixo.
+
+<b><span class=sc16>HINSTANCE </span>app_instancia</b>
+Esse argumento identifica a instância  da  aplicação  perante  outras
+cópias da mesma que estejam rodando simultâneamente.  Esse  argumento
+é muito solicitado em outras funções, portanto ele é um bom candidato
+para uma variável global.
+
+<b><span class=sc16>HINSTANCE </span>app_anterior</b>
+Há muito tempo atrás esse argumento identificava uma  cópia  anterior
+do programa. Porém, esse argumento não é mais sustentado pelo Windows
+e existe apenas para prover compatibilidade com programas antigos.
+
+<b><span class=prg>LPSTR </span>sComando</b>
+Esse argumento são os argumentos da linha de comando que porventura o
+usuário pode utilizar para chamar seu programa. 
+
+<b><span class=prg>int </span>nExibir</b>
+Esse argumento representa o modo inicial de exibição da janela, se ela
+vai iniciar minimizada, maximizada ou normal. Esse argumento vai parar
+mais adiante no código na função <b class=prg>ShowWindow()</b> que mostra a janela. 
+
+<b><span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela = <span class=prg>NULL</span>;</b>
+hJanela é então a 'alça' da janela pela qual o sistema ou a própria
+aplicação vai 'pegar', 'apontar' e 'manipular' a janela.
+
+<b><span class=sc2>// Estrutura de recepção das mensagens</span>
+<span class=sc5>MSG </span>mensagem; </b>
+Essa  estrutura  vai  receber  as  mensagens  endereçadas  para  esta
+aplicação.   Basicamente   os  elementos   internos  desta  estrutura 
+identificam  a  janela  destino,  a  mensagem e informações extras da
+mensagem que vão ter significados particulares conforme cada mensagem.
+
+<b><span class=sc2>// Estrutura de descrição da janela</span>
+<span class=sc5>WNDCLASSEX </span>wcls; </b>
+Esta estrutura define a configuração da janela.   Detalhando  melhor,
+esta  estrutura define  a configuração de uma classe com aspectos que 
+podem ser aplicados a uma ou mais janelas que recebem a  configuração
+que é definida pelos elementos  desta  estrutura.   Segue   abaixo  o
+detalhamento de cada componente.
+
+<b><span class=sc2>// Nome da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; </b>
+Esta variável define o nome da classe.  Posteriormente  esse  nome  é
+usado para registrar janelas dessa classe.
+
+<b><span class=sc2>// Estrutura que descreve a janela</span>
+<span class=prg>wcls.hInstance </span>= app_instancia; </b>
+Este elemento identifica a cópia ou instância da aplicação  que  está
+rodando.
+
+<b><span class=prg>wcls.lpszClassName </span>= sclasseJanela; </b>
+Este elemento recebe o nome da janela.
+
+<b><span class=prg>wcls.lpfnWndProc </span>= processaJanela; </b>
+Este elemento é muito importante pois aponta para a função que  trata
+as mensagens  recebidas  pela  aplicação,  <b>processaJanela()</b>  no  caso
+particular desta aplicação.
+
+<b><span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; </b>
+Esse argumento define como deve ocorrer o processo de atualização  da
+da janela; define como ocorre o  alocamento  do espaço do dispositivo
+gráfico particular da janela e outros aspectos.
+A configuração  passada,  <b>CS_HREDRAW  |  CS_VREDRAW</b>,   indica  que  o
+redesenhamento  da  janela  deve ocorrer sempre que a janela mudar de
+posição ou tamanho.
+
+<b><span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   </b>
+Este argumento é sempre usado dessa forma. Indica o total de bytes que
+deve ser reservado para conter esta estrutura.
+
+<b><span class=sc2>// O cursor e os ícones da aplicação são default</span>
+<img src=images\prj_janela_cfg.png>
+<span class=prg>wcls.hIcon   </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   </b>
+Esses argumentos definem os ícones da aplicação  que  são  usados  na
+barra de títulos da aplicação e  o  ícone  que  é  exibido  quando  a
+aplicação está minimizada na barra de tarefas. <span class=prg>hCursor</span> é  o cursor da
+aplicação  que  é  exibido  quando  o mouse está dentro da janela. Os 
+ícones  e  o  cursor  selecionado  são  os padrões da coleção interna
+do  sistema Windows.
+
+<b><span class=sc2>// Aplicação sem menu</span>
+<span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; </b>
+Esse argumento recebe o handle do menu da janela. NULL quer dizer que
+a janela não vai ter menu.
+
+<b><span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+<span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+<span class=sc2>// Nada de espaço extra atrelado a janela</span>
+<span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; </b>
+Estes argumentos são usados para alocar espaço extra  para  dados  de
+usuário que podem ser atrelados à janela.
+
+<b><span class=sc2>// Cor default da janela</span>
+<span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  <span class=sc4>COLOR_BACKGROUND</span>; </b>
+Este argumento  define o aspecto visual do interior da janela.  Nesse
+momento  a  configuração desse aspecto não  é  importante  pois  este
+espaço será manipulado pelo Directx em seus processos de renderização.
+Porém é importante saber que esse espaço de desenho é chamado de <b>área 
+cliente.</b>
+
+<b><span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+<span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  </b>
+Essa  função  registra a janela. Se houver falha o valor de retorno é
+zero (0)  que  é  usado no bloco abaixo para encerrar graciosamente a
+aplicação:
+
+<b><span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+MessageBox (<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"prj_Janela"</span>, <span class=sc4>MB_OK</span>);   
+<span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+
+Agora no bloco de código abaixo apresentamos os argumentos que vão na
+função <span class=prg>CreateWindowEx()</span> responsável por criar a janela  e  que  estão
+mais relacionados com o aspecto visual da janela.
+
+<b><span class=sc2>// Depois da classe criada cria-se a janela</span>
+<span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; </b>
+Este argumento permite usar outros estilos que controlam a aparência e
+funcionalidades da janela.
+
+<b><span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Janela"</span>; </b>
+Esse argumento é a string de título da janela.
+
+<b><span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU</span>;  </b>
+Esse argumento define se a janela vai ter botão minimizar, maximizar,
+barra de menu entre outros aspectos visuais.
+
+<b><span class=prg>int </span>xpos = 160; <span class=prg>int </span>ypos = 120; </b>
+Estas variáveis indicam o posicionamento da janela na tela. Lembramos
+que <b>g_xtela,g_ytela</b> definidos globalmente indicam largura e altura da
+janela.
+
+<b><span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>;</b>
+Esse argumento indica quem é o pai da janela. É comum  uma  aplicação
+com  várias  janelas  apresentar  uma hierarquia das janelas  uma  em
+relação às outras. Nessa aplicação, apontamos para a  janela  desktop
+do Windows. Esse parâmetro poderia ser também configurado  como  NULL.   
+
+<b><span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>;</b>
+Esta janela não vai ter menu por isso esse argumento foi  configurado
+como NULL. 
+
+<b><span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; </b>
+Esse argumento representa informação extra que  pode  ser  atrelada à
+janela.
+
+<b>hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+app_instancia, dadoExtra );  </b>
+Essa  função  cria  de fato a janela. Se houver falha <b>hJanela</b>  recebe
+<span class=prg>NULL</span> que deve ser verificado para confirmar a criação da janela ou não.
+
+<b><span class=sc2>// Mostra a janela</span>
+<span class=prg>ShowWindow </span>(hJanela, nExibir);  </b>
+Essa função exibe a janela apontada por <b>hJanela</b>; <b>nExibir</b> veio de fora
+mas geralmente seu valor é <b>SW_NORMAL  (1)</b>.   A  janela  pode  iniciar
+minimizada ou maximizada se for chamada de fora com essa configuração.
+
+<b><span class=prg>UpdateWindow </span>(hJanela);  </b>
+Essa função atualiza a janela. Neste primeiro programa não ocorre um
+efeito  prático  mas  é  bom  saber  que existe essa função para ser
+utilizada depois da janela sofrer uma reconfiguração.
+
+
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Rode o bombeamento de mensagens até GetMessage() retornar 0</span>
+<span class=sc9>while </span>(<span class=prg>GetMessage </span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>) ) 
+<span class=sc16>{</span>
+<span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+<span class=prg>TranslateMessage</span>(&mensagem);  
+<span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+<span class=prg>DispatchMessage</span>(&mensagem);  
+<span class=sc16>} <span class=sc2>// endwhile</span></span> </div>
+Este bloco de código representa o coração de uma  aplicação  Windows.
+Aqui, <span class=prg>GetMessage()</span> retira  uma  mensagem  da  fila  de  mensagens  da
+aplicação  que  é  despachada  pela  função  <span class=prg>DispatchMessage()</span> para a
+função  que  processa  as  mensagens  da  janela (<b>processaJanela()</b> em
+nosso caso).   Antes  da  mensagem  ser  despachada para o cérebro da
+aplicação,  a  mensagem recebe um pequeno tratamento dado pela função
+<span class=prg>TranslateMessage()</span> para facilitar o processamento do teclado.
+Quando <span class=prg>GetMessage()</span> retira uma mensagem <span class=sc4>WM_QUIT</span> da fila  ela  retorna
+zero (0)  quebrando  assim  o  laço  feito  por <span class=prg>while</span>  e  finaliza-se
+assim a aplicação.
+
+<b><span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+<span class=prg>UnregisterClass</span>(sclasseJanela, app_instancia );  
+<span class=sc6>return </span><span class=prg>mensagem.wParam</span>; </b>
+Este pequeno bloco finaliza a aplicação Windows.  A classe da janela é
+apagada do sistema (<span class=prg>UnregisterClass()</span>) e <span class=prg>return</span> retorna o último valor
+que geralmente é zero(0) que adveio da função <span class=prg>PostQuitMessage()</span>.
+
+<b><u>2.2 O cérebro processador de mensagens</u></b>
+<div class=niceview><span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) <span class=sc16>{</span>
+<span class=sc9>switch </span>(mensagem) 
+<span class=sc16>{</span>
+ <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+ <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+ <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+ <span class=sc6>break</span>; 
+
+ <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+ <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+ <span class=sc6>return </span><span class=sc4>0</span>; 
+ <span class=sc6>break</span>; 
+
+ <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+ <span class=sc9>default:</span>
+ <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+ <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+ <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<b><span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( 
+	<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) </b>
+Esta é a assinatura obrigatória de uma função criada  para  processar
+mensagens para a janela ou janelas de uma  aplicação.   A  assinatura
+recebe a identificação da janela (<b>HWND hJanela</b>),   a  mensagem  (<b>UINT 
+mensagem</b>) e informações extras sobre a mensagem  (  <b>LPARAM  lParam</b>  e
+<b>WPARAM wParam</b> );   estes últimos parâmetros tem variados significados
+conforme as particularidades de cada mensagem.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc9>switch </span>(mensagem) 
+<span class=sc16>{</span>
+<span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+<span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+<span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+<span class=sc6>break</span>; 
+
+<span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+<span class=sc9>if </span>( wParam == <span class=sc4>VK_ESCAPE</span>)  <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span> );  
+<span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc6>break</span>; 
+
+<span class=sc2>// Processamento default de mensagens não tratadas pela aplicação</span>
+<span class=sc9>default:</span>
+<span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+<span class=sc16>} <span class=sc2>// endswitch</span></span></b></div>
+Este  é  o  modelo  de  como  processar  as  mensagens recebidas pela
+aplicação com cada  <span class=sc9>case</span> processando uma mensagem particular. 
+A mensagem <span class=sc4>WM_DESTROY</span> é  gerada no evento de fechamento da janela.  Ao
+receber esse evento a janela coloca uma mensagem  <span class=sc4>WM_QUIT (0)</span>  na  sua  
+fila  de  mensagens  com    <span class=prg>PostQuitMessage()</span>  para  quebrar o laço de 
+mensagens e assim finalizar a aplicação.
+
+A mensagem  <span class=sc4>WM_KEYDOWN</span> ocorre no pressionamento das  teclas  e  <span class=prg>wParam</span>
+indica a tecla  pressionada.    <span class=sc4>VK_ESCAPE</span>  está  definido  no  arquivo
+<b>WinUser.h</b>  e  equivale a tecla ESCAPE.  Dê uma olhada neste arquivo de
+cabeçalho para verificar o código <b>VK_</b> das outras teclas.
+
+Todas as mensagens que  a  sua  aplicação  não  processar  devem  ser
+passadas para a função  <span class=prg>DefWindowProc()</span> fazer este trabalho: <b>
+<span class=sc2>// Processamento default de mensagens não tratadas pela aplicação</span>
+<span class=sc9>default:</span>
+<span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam); </b>
+
+<b><span class=sc6>return </span><span class=sc4>0</span>; </b>
+Depois do processamento  das  mensagens,  a  função  processaJanela()
+retorna 0.
+
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Janela</u></b>
+<div class=prg-code>
+<img src=images\prj_Janela.png>
+
+<span class=sc2>// Projeto prj_Janela arquivo: entrada.cpp</span>
+<span class=sc2>// Este programa ilustra como criar uma janela</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+
+<span class=sc16>#include </span>&lt;<span class=prg>windows.h&gt;</span>
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; 
+<span class=prg>int </span>g_ytela = 240; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Nome da classe da janela</span>
+  <span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  MessageBox (NULL, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"prj_Janela"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Depois da classe criada cria-se a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Janela"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU</span>;  
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow </span>(hJanela, nExibir);  
+  <b><span class=prg>UpdateWindow </span>(hJanela);  </b>
+
+  <span class=sc2>// Rode o bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage </span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>(&mensagem);  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>(&mensagem);  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>(sclasseJanela, app_instancia );  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span> );  
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

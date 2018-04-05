@@ -1,0 +1,1500 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase10-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='dx9cpp.html#start' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>10.4 Modelo texturizado</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HLSL03.png></div>
+
+A aplicação deste exemplo  vai  mostrar  como  renderizar  um  modelo
+texturizado com hlsl. O programa hlsl vai mostrar duas técnicas:  uma
+que  vai  retornar  a  textura original do objeto e outra técnica que
+vai retornar a textura com um simples efeito visual aplicado.Ainda, o
+programa hlsl  vai  mostrar  uma  forma  alternativa  de  declarar os
+argumentos de entrada e saída das funções.
+
+A base desta aplicação é o projeto <b>prj_Modelo3d</b> do  tópico  4.3. Essa
+aplicação original foi modificada  para ter o modelo  3d  renderizado
+com   o   efeito   hlsl   que  foi  aplicado  duas  vezes  na  função
+<b>renderizar_Geometria()</b>   com   seleção  de  técnicas  diferentes  que
+produziu  um    visual    diferente para o mesmo modelo 3d carregado.
+
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+Aspectos globais
+	Declaração de ponteiros globais para:
+	o objeto 3d da interface <b class=prg>ID3DXMesh</b>  ( g_objeto3d )
+	o objeto efeito produzido pela interface <b class=prg>ID3DXEffect</b> ( g_efeito )
+	
+	Declaração de dois handles globais para as técnicas:
+	<b class=prg>technique texturaOriginal</b> ( htech_texturaOriginal )
+	<b class=prg>technique texturaNegativa</b> ( htech_texturaNegativa )
+	
+inicializarEfeito()
+
+	inicializa os argumentos da função que produz o objeto efeito
+
+	produz o objeto efeito com a função <span class=prg>D3DXCreateEffectFromFile()</span>
+	que carrega o arquivo com o código hlsl, compila-o e produz o
+	objeto efeito da interface <b class=prg>ID3DXEffect</b>.
+
+	<b class=sc16>carrega cada técnica para seu próprio handle</b>
+		
+initGfx()
+	Configura  a ocorrência do processamento de vértices no hardware.
+	
+	chama inicializar_Camera() para configuração inicial da câmera. 
+	
+	chama inicializarEfeito() para carregar o programa hlsl do disco
+	e inicializar o objeto efeito ( g_efeito ). 
+	
+	carrega o modelo 3d na função CarregarModelo()
+	
+desenharObjeto()
+	Esta função vai renderizar na tela o objeto  da  interface <b class=prg>ID3DXMesh</b> .
+	Isso envolve a configuração das matrizes parciais de rotação, posição
+	e escala; produzir a matriz de mundo final com as matrizes parciais.
+
+	Atualiza as variáveis para produzir variação de movimento e cor
+	
+	Produz a matriz final de câmera combinada com a matriz final do objeto.
+	
+	Introjeta  as  variáveis  atualizadas  na  linha  programável  do
+	dispositivo gráfico.
+	
+	configura textura e material no dispositivo renderizador
+	Renderiza o modelo 3d
+		
+renderizar_Geometria() <b class=sc16>
+	Inicializa o processo de renderização com o objeto efeito
+	aplica a técnica htech_texturaOriginal
+	Chama desenharObjeto() para renderizar o objeto
+	Finaliza o processo de renderização com o objeto efeito 
+	
+	Inicializa o processo de renderização com o objeto efeito
+	aplica a técnica htech_texturaNegativa
+	Chama desenharObjeto() para renderizar o objeto
+	Finaliza o processo de renderização com o objeto efeito </b>
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_HLSL03 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação  ilustra  como  renderizar  um</span>
+<span class=sc2>// modelo 3d texturizado com técnicas diferentes</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Desliga aviso de 'função insegura' devido ao uso das</span>
+<span class=sc2>// funções de string ( strcat etc. . . )</span>
+<span class=sc16>#pragma </span>warning( disable:4996 ) 
+
+<span class=sc2>// Estrutura posição e rotação do objeto 3d</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+<span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Renderiza o modelo 3d duas vezes com o objeto efeito</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa as matrizes da câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa o objeto efeito</span>
+  <span class=prg>void </span>inicializarEfeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Desenha o objeto 3d</span>
+  <span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>// Carrega o modelo 3d</span>
+  <span class=prg>void </span>CarregarModelo( <span class=prg>char </span>*diretorioBase, <span class=prg>char </span>*arquivo);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                  <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+
+<b><u>2.1.2 Aspectos globais - Aqrquivo: motor.cpp</u></b>
+<div class=niceview><b>
+<span class=sc2>// Representa o objeto efeito</span>
+<span class=sc5>ID3DXEffect </span>*g_efeito       = <span class=prg>NULL</span>; 
+<span class=prg>D3DXHANDLE </span>htech_texturaOriginal = <span class=prg>NULL</span>; 
+<span class=prg>D3DXHANDLE </span>htech_texturaNegativa = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variáveis para provocar mudanças de cor e movimento</span>
+<span class=prg>float </span>nMovimento = <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>nVelocidade = <span class=sc4>0.01f</span>; 
+<span class=prg>float </span>g_angulo  = <span class=sc4>0.01f</span>; 
+
+<span class=sc2>// Interface do objeto 3d</span>
+<span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de materiais do mesh</span>
+<span class=prg>DWORD </span>     g_mtlQtd  = <span class=sc4>0</span>; 
+<span class=sc5>D3DMATERIAL9 </span> *g_meshMtl = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de texturas do mesh</span>
+<span class=sc5>IDirect3DTexture9 </span>**g_meshTex = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+</b></div>
+<b><span class=prg>D3DXHANDLE </span>htech_texturaOriginal = <span class=prg>NULL</span>; 
+<span class=prg>D3DXHANDLE </span>htech_texturaNegativa = <span class=prg>NULL</span>; </b>
+Estes handles para as técnicas estão no espaço global  pois  precisam
+ser vistos na função <b>inicializarEfeito()</b> aonde  são  inicializados  e
+na função  <b>renderizar_Geometria()</b>  aonde são utilizados efetivamente.
+
+<b><u>2.2 Inicialização do motor gráfico</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+    <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=sc2>// Carrega o modelo 3d</span>
+  CarregarModelo(<span class=sc6>"\\gameprog\\gdkmedia\\Modelos\\Tiny\\"</span>, <span class=sc6> "tiny.x"</span>);   
+
+  <span class=sc2>// Inicializa o objeto efeito</span>
+  inicializarEfeito();  
+
+  <span class=sc2>// Inicializa a configuração de câmera</span>
+  inicializar_Camera();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+
+<b><u>2.3 Renderização dos modelos 3d com técnicas diferentes</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Número de passos do efeito</span>
+  <span class=prg>UINT </span>numPasses = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_texturaOriginal);  
+  <span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto(g_objeto3d, &g_props);  
+</b>
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_texturaNegativa);  
+  <span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto(g_objeto3d, &g_props);  
+</b>
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+
+<div class=niceview style="border-style:dashed"><span class=prg><b>g_efeito-&gt;SetTechnique</span>(htech_texturaOriginal);  </b>
+<span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+ <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) <span class=sc16>{</span>
+ <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+ <b class=sc2>// (...) </b>
+ desenharObjeto(g_objeto3d, &g_props);  
+ <span class=prg>g_efeito-&gt;EndPass </span>();  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+ 
+<span class=prg>g_efeito-&gt;End </span>();  </div>
+O aspecto importante para considerar aqui é que a  técnica  deve  ser
+configurada antes de entrar em <span class=prg>g_efeito-&gt;Begin()</span> e somente  pode  ser
+reconfigurada depois de <span class=prg>g_efeito-&gt;End()</span> como aconteceu  nesta  função
+<b>renderizar_Geometria()</b>.
+
+<div class=niceview style="border-style:dashed"><span class=prg><b>g_efeito-&gt;SetTechnique</span>(htech_texturaNegativa);  </b>
+<span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+ <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) <span class=sc16>{</span>
+ <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+ <b class=sc2>// (...) </b>
+ desenharObjeto(g_objeto3d, &g_props);  
+ <span class=prg>g_efeito-&gt;EndPass </span>();  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+ 
+<span class=prg>g_efeito-&gt;End </span>();  </div>  
+
+
+<b><u>2.4 Inicialização do efeito</u></b>
+<div class=niceview><span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+  <span class=sc2>// Nome do arquivo de efeito</span>
+  <span class=prg>char </span>fx_arquivo[] = <span class=sc6>"\\gameprog\\gdkmedia\\shader\\mesh-texturizado.fx"</span>; 
+
+  <span class=sc2>// Flag de configuração</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DXSHADER_DEBUG</span>; 
+
+  <span class=sc2>// Buffer para receber informação em caso de erro</span>
+  <span class=sc5>ID3DXBuffer </span>*txtErro = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Gera o efeito a partir do arquivo carregado</span>
+  g_hr = <span class=prg>D3DXCreateEffectFromFile</span>( g_device, fx_arquivo, 
+    <span class=sc4>0</span>, <span class=sc4>0</span>, create_flags, <span class=sc4>0</span>, &g_efeito, &txtErro);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateEffectFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, (<span class=prg>char*</span>)  <span class=prg>txtErro-&gt;GetBufferPointer</span>(), 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>txtErro-&gt;Release </span>();  
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Carrega cada técnica em seu próprio handle</span>
+  htech_texturaOriginal = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaOriginal"</span>);   
+  htech_texturaNegativa = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaNegativa"</span>);   
+
+  <span class=sc2>// Libera o buffer de erros</span>
+  <span class=sc9>if </span>(txtErro != <span class=prg>NULL</span>)  <span class=prg>txtErro-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarEfeito().fim</span></span>
+</div>
+
+<b>htech_texturaOriginal = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaOriginal"</span>);  
+htech_texturaNegativa = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaNegativa"</span>);  </b>
+Aqui cada técnica foi carregada para seu próprio handle podendo assim
+cada uma ser selecionada e aplicada no melhor momento  decidido  pela
+aplicação.
+
+<b><u>2.5 Renderização do modelo 3d</u></b>
+<div class=niceview><span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props) 
+<span class=sc16>{</span>
+  <span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+  <span class=sc5>D3DXMATRIX </span>obj_rot; 
+  <span class=sc5>D3DXMATRIX </span>obj_pos; 
+  <span class=sc5>D3DXMATRIX </span>camera; 
+
+  <span class=sc2>// Handle para a variáveis do shader</span>
+  <span class=prg>D3DXHANDLE </span>hMov = <span class=prg>NULL</span>; 
+  <span class=prg>D3DXHANDLE </span>hCam = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &camera );  
+
+  <span class=sc2>// Atualiza ângulo de rotação</span>
+  g_angulo += <span class=sc4>0.01f</span>; 
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+    <span class=prg>props-&gt;rot.z</span>);   
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   
+
+  <span class=sc2>// Tranfere posição e rotação para o g_mtxMundo</span>
+  <span class=prg>D3DXMatrixMultiply </span>(&g_mtxMundo, &obj_rot, &obj_pos);  
+
+  <span class=sc2>// Atualiza cor</span>
+  nMovimento += nVelocidade; 
+  <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+
+  <span class=sc2>// Atualiza a câmera</span>
+  camera = g_mtxMundo * g_mtxVisao * g_mtxProj; 
+
+  <span class=sc2>// Obtém acesso às variáveis do shader</span>
+  hMov = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"nMovimento"</span>);   
+  hCam = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"Camera"</span>);   
+
+  <span class=sc2>// Atualiza variáveis no shader</span>
+  <span class=prg>g_efeito-&gt;SetValue </span>(hMov, &nMovimento, <span class=sc16>sizeof</span>(nMovimento) );  
+  <span class=prg>g_efeito-&gt;SetValue </span>(hCam, &camera, <span class=sc16>sizeof</span>(camera) );  
+
+  <span class=sc2>// Renderiza o mesh</span>
+  <span class=sc9>if </span>(g_mtlQtd &gt; <span class=sc4>0</span>)  
+    <span class=prg>for </span>(<span class=prg>DWORD </span>ncx=0; ncx &lt; g_mtlQtd; ncx++) 
+    <span class=sc16>{</span>
+      <span class=prg>g_device-&gt;SetMaterial</span>(&g_meshMtl[ncx] );  
+      <span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx] );  
+      <span class=prg>obj3d-&gt;DrawSubset</span>(ncx);  
+    <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+</div>
+
+
+<b><u>3.0 Código hlsl para renderização do modelo 3d texturizado: mesh-texturizado.fx</u></b>
+
+<b><u>3.1 Variáveis globais do shader</u></b>
+<div class=niceview><span class=sc2>// Variáveis globais de camera, textura, estruturas de entrada e saída.</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=sc5>sampler </span>textura; 
+
+<span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+ <span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+ <span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+<span class=sc2>// Dados de entrada: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsEntrada 
+<span class=sc16>{</span>
+ <span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+ <span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+</div>
+<b><span class=sc5>sampler </span>textura; </b>
+Dentro do shader as texturas são acessadas e configuradas através  de
+variáveis do tipo <span class=prg>sampler.</span>   A variável <b>textura</b> vai permitir o acesso
+aos  dados  de  cor da textura  enviados  ao  shader  pela  aplicação.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span></b></div>
+A  novidade  presente  na  estrutura  de  entrada  e  saída que serão
+utilizadas pelo Shader é a variável <b>texCoord</b> do  tipo  <span class=prg>float2</span>.   Este
+tipo possui como subelementos x  e  y  visto  que  a  textura  é  uma
+superfície 2D.A semântica <b class=sc16>TEXCOORD0</b> serve para indicar que a variável
+será utilizada para a manipulação de <b>coordenadas de textura</b>.  É muito
+comum  em  trabalhos  com  coordenadas de textura pensar em termos de
+(u, v) em  correspondência com os elementos (x, y) de uma imagem 2D.
+
+<b><u>3.2 VertexShader: vs_Main()</u></b>
+<div class=niceview><span class=sc2>// Retorna posição e coordenadas de textura</span>
+vsSaida vs_Main ( vsEntrada entrada ) 
+<span class=sc16>{</span>
+<span class=sc2>// Declara estrutura de saída</span>
+ vsSaida saida = (vsSaida) 0; 
+
+ <span class=sc2>// Transforma posição para espaço de mundo</span>
+ <span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  
+
+ <span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+ <span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span>
+
+ <span class=sc2>// Retorna posição transformada e coordenadas originais</span>
+ <span class=sc2>// de textura</span>
+ <span class=sc6>return </span>saida; 
+ <span class=sc16>}</span>
+</div>
+<b>vsSaida vs_Main ( vsEntrada entrada ) </b>
+Com esta assinatura através das estruturas declaradas, esta função do
+vertexshader  que  denominamos  <b>vs_Main()</b>  recebe  posicionamento  de
+vértices  e  coordenadas de textura.  E retorna na estrutura de saída 
+a  posição  transformada  e  as  coordenadas  de textura do jeito que
+entraram.   Na  sequência  deste  shader mostramos uma outra forma de
+declarar valores de entrada e de saída da função.
+
+<b><span class=sc2>// Transforma posição para espaço de mundo</span>
+<span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  </b>
+Esta  linha  simplesmente   devolve  a  posição  3d  transformada  em
+espaço de mundo. Em aplicações mais sofisticadas é comum antes  deste
+trecho a posição 3d sofrer outras transformações em seus subelementos
+xyz que ocasionam efeitos especiais ou animações  particulares  sobre
+os vértices.
+
+<b><span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+<span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span></b>
+Esta linha passa adiante as coordenadas de  textura  com  os  valores
+originais intactos.   É  comum  antes  deste  trecho  modificar estas 
+coordenadas  para  criar através disso efeitos especiais com texturas
+animadas.
+
+<b><span class=sc6>return </span>saida;</b>
+Esta linha retorna a posição transformada  e coordenadas originais de
+textura  que  estão  assinaladas  dentro  desta  estrutura  <b>saida.</b>
+Vamos ver abaixo  que  o  apontamento  antecipado  da  variável  pela
+instrução <b class=prg>out</b> dispensa depois o uso da instrução <span class=prg>return</span>.
+
+<b><u>3.3 Retornando a textura original</u></b>
+<div class=niceview><span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                           <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>    ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Pega a cor do pixel da textura</span>
+ cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+ <span class=sc2>// Retorna cor da textura sem modificações</span>
+ <span class=sc6>return </span>cor_difusa; 
+<span class=sc16>};</span>
+</div>
+
+<b><span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                           <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>   ) : <span class=sc16>COLOR0</span></b>
+Esta aqui é a primeira função do nosso pixelshader.Conforme assinatura
+essa função retorna uma cor.  Na entrada de argumentos, ela recebe  as
+coordenadas  de  textura  e  uma  cor difusa para  ser  trabalhada. Na 
+recepção  de  um  modelo com textura, a função de pixelshader deve ter 
+esta assinatura.
+
+<b><span class=sc2>// Pega a cor do pixel da textura</span>
+cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord); </b>
+A função <span class=prg>tex2D()</span> recebe dados de textura como cor e  coordenada,  faz
+uma pesquisa utilizando essa entrada e retorna a  cor  correspondente 
+ao ponto examinado.
+
+<span class=sc2>// Retorna sem modificações</span>
+<span class=sc6>return </span>cor_difusa; 
+Aqui ocorre o retorno da cor para a aplicação. É  comum  antes  disso
+aplicar alterações na cor, em seus  componentes  rgba,  para obtenção
+de  efeitos  visuais  na imagem final; faremos isso na próxima função
+de pixelshader.
+
+<b><u>3.4 Aplicando textura original</u></b>
+Finalmente a seleção desta técnica na aplicação  ocasiona  o  retorno
+da textura original do objeto com seus  vértices  transformados  para
+espaço de mundo.
+
+<div class=niceview><span class=sc5>technique </span>texturaOriginal 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+  <span class=sc16>{</span>
+  <span class=sc2>// Aplicando textura original</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_TexturaOriginal();  
+  <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+
+<b><u>3.5 PixelShader: Retornando cor negativa</u></b>
+<div class=niceview><span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+				 <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+<span class=sc16>{</span>
+ <span class=sc2>// Pega a cor do pixel da textura</span>
+ cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+ <span class=sc2>// Modifica a cor original</span>
+ <span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+ <span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+ <span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span>
+
+<span class=sc16>}</span>
+</div>
+<span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                         <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+Esta assinatura traz uma forma diferente de declarar os argumentos de
+entrada e saida.  Os argumentos  de  entrada  são  declarados  com  a 
+instrução  <b class=prg>in</b>  enquanto  os  argumentos de saída são declarados com a
+instrução <b class=prg>out</b> e a função é assinalada como <span class=prg>void</span>.
+
+<b><span class=sc2>// Pega a cor do pixel da textura</span>
+cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  </b>
+Pegamos aqui a cor da textura e vamos modificá-la abaixo.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Modifica a cor original</span>
+<span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+<span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+<span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span></b></div>
+Com essa subtração produz-se o efeito de cor negativa. Através da
+manipulação destes três canais da cor pode ser produzido  dezenas
+de efeitos visuais.  Esta função retorna então a cor do pixel com
+essa modificação.
+
+<b><u>3.6 Aplicando textura negativa</u></b>
+A seleção desta técnica retorna então  para  a  aplicação  a  textura
+modificada do objeto e com seus vértices transformados para espaço de
+mundo.
+
+<div class=niceview><span class=sc5>technique </span>texturaNegativa 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+ <span class=sc16>{</span>
+ <span class=sc2>// Aplicando textura negativa</span>
+ <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+ <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_TexturaNegativa();  
+ <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+
+<b><u>3.7 Código fonte do programa hlsl de exemplo:mesh_texturizado.fx</u></b>
+<div class=prg-code>
+<span class=sc2>// prj_HLSL03: Renderizando mesh texturizado com hlsl</span>
+<span class=sc2>// Arquivo: mesh_texturizado.fx</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+
+<span class=sc2>// Variáveis globais de camera, textura, e estruturas de entrada e saída</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=sc5>sampler </span>textura; 
+
+<span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+<span class=sc2>// Dados de entrada: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsEntrada 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+
+<span class=sc2>// Retorna posição e coordenadas de textura</span>
+vsSaida vs_Main ( vsEntrada entrada ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara estrutura de saída</span>
+  vsSaida saida = (vsSaida) 0; 
+
+  <span class=sc2>// Transforma posição para espaço de mundo</span>
+    <span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  
+
+    <span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+  <span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span>
+
+  <span class=sc2>// Retorna posição transformada e coordenadas originais</span>
+  <span class=sc2>// de textura</span>
+  <span class=sc6>return </span>saida; 
+<span class=sc16>}</span>
+
+
+ <span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                            <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+    <span class=sc2>// Pega a cor do pixel da textura</span>
+  cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+  <span class=sc2>// Retorna sem modificações</span>
+  <span class=sc6>return </span>cor_difusa; 
+<span class=sc16>};</span>
+
+
+<span class=sc5>technique </span>texturaOriginal 
+<span class=sc16>{</span>
+    <span class=sc5>pass </span>P0 
+    <span class=sc16>{</span>
+        <span class=sc2>// Aplicando textura original</span>
+        <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+        <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_TexturaOriginal();  
+    <span class=sc16>}</span>
+<span class=sc16>}</span>
+
+
+<span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                         <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+<span class=sc16>{</span>
+    <span class=sc2>// Pega a cor do pixel da textura</span>
+  cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+  <span class=sc2>// Modifica a cor original</span>
+  <span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+  <span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+  <span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span>
+
+<span class=sc16>}</span>
+
+
+<span class=sc5>technique </span>texturaNegativa 
+<span class=sc16>{</span>
+    <span class=sc5>pass </span>P0 
+    <span class=sc16>{</span>
+        <span class=sc2>// Aplicando textura negativa</span>
+        <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+        <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_TexturaNegativa();  
+    <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+
+
+<b><u>4.0 Código fonte do projeto de exemplo: prj_HLSL03</u></b>
+<div class=prg-code><img src=images\prj_HLSL03.png>
+
+<span class=sc2>// Projeto: prj_HLSL03 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação  ilustra  como  renderizar  um</span>
+<span class=sc2>// modelo 3d texturizado com técnicas diferentes</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Desliga aviso de 'função insegura' devido ao uso das</span>
+<span class=sc2>// funções de string ( strcat etc. . . )</span>
+<span class=sc16>#pragma </span>warning( disable:4996 ) 
+
+<span class=sc2>// Estrutura posição e rotação do objeto 3d</span>
+<span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>pos; 
+  <span class=sc5>D3DXVECTOR3 </span>rot; 
+<span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Renderiza o modelo 3d duas vezes com o objeto efeito</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa as matrizes da câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa o objeto efeito</span>
+  <span class=prg>void </span>inicializarEfeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Desenha o objeto 3d</span>
+  <span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>// Carrega o modelo 3d</span>
+  <span class=prg>void </span>CarregarModelo( <span class=prg>char </span>*diretorioBase, <span class=prg>char </span>*arquivo);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                  <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL03 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação  ilustra  como  renderizar  um</span>
+<span class=sc2>// modelo 3d texturizado com técnicas diferentes</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;string.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Representa o objeto efeito</span>
+<span class=sc5>ID3DXEffect </span>*g_efeito       = <span class=prg>NULL</span>; 
+<span class=prg>D3DXHANDLE </span>htech_texturaOriginal = <span class=prg>NULL</span>; 
+<span class=prg>D3DXHANDLE </span>htech_texturaNegativa = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variáveis para provocar mudanças de cor e movimento</span>
+<span class=prg>float </span>nMovimento = <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>nVelocidade = <span class=sc4>0.01f</span>; 
+<span class=prg>float </span>g_angulo  = <span class=sc4>0.01f</span>; 
+
+<span class=sc2>// Interface do objeto 3d</span>
+<span class=sc5>ID3DXMesh </span>*g_objeto3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de materiais do mesh</span>
+<span class=prg>DWORD </span>     g_mtlQtd  = <span class=sc4>0</span>; 
+<span class=sc5>D3DMATERIAL9 </span> *g_meshMtl = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de texturas do mesh</span>
+<span class=sc5>IDirect3DTexture9 </span>**g_meshTex = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = <span class=sc4>0xFF008000</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+    <span class=sc2>// Vamos ativar o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Carrega o modelo 3d</span>
+  CarregarModelo(<span class=sc6>"\\gameprog\\gdkmedia\\Modelos\\Tiny\\"</span>, <span class=sc6> "tiny.x"</span>);   
+
+  <span class=sc2>// Inicializa o objeto efeito</span>
+  inicializarEfeito();  
+
+  <span class=sc2>// Inicializa a configuração de câmera</span>
+  inicializar_Camera();  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Número de passos do efeito</span>
+  <span class=prg>UINT </span>numPasses = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_texturaOriginal);  
+  <span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto(g_objeto3d, &g_props);  
+
+
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_texturaNegativa);  
+  <span class=prg>g_efeito-&gt;Begin</span>(&numPasses, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>ncx = <span class=sc4>0</span>; ncx &lt; numPasses; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Renderiza uma etapa no VertexShader</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(ncx);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+    <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>100.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-20.0f</span>);   
+    desenharObjeto(g_objeto3d, &g_props);  
+
+
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera as texturas que estejam presentes no modelo</span>
+  <span class=sc9>if </span>(g_mtlQtd &gt; <span class=sc4>0</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>for </span>(<span class=prg>DWORD </span>ncx=0; ncx &lt; g_mtlQtd; ncx++) 
+      <span class=sc9>if </span>(g_meshTex[ncx] != <span class=prg>NULL</span>)  g_meshTex[ncx]<span class=prg>-&gt;Release</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Libera o buffer de vértices</span>
+  <span class=sc9>if</span>( g_objeto3d != <span class=prg>NULL</span>)  <span class=prg>g_objeto3d-&gt;Release</span>();  
+
+  <span class=sc9>if </span>(g_efeito != <span class=prg>NULL</span>)  <span class=prg>g_efeito-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| <span class=sc4>D3DCLEAR_ZBUFFER</span>, verde, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>700.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+
+  <span class=sc2>// Pega o tamanho da área cliente</span>
+  <span class=sc5>RECT </span>area_cliente; 
+  <span class=prg>GetWindowRect </span>(hJanela, &area_cliente);  
+  g_xtela = <span class=prg>area_cliente.right</span>; 
+  g_ytela = <span class=prg>area_cliente.bottom</span>;  
+
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_g_mtxVisao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_g_mtxVisao, aspecto, 
+    corte_perto, corte_longe);  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+
+<span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+  <span class=sc2>// Nome do arquivo de efeito</span>
+  <span class=prg>char </span>fx_arquivo[] = <span class=sc6>"\\gameprog\\gdkmedia\\shader\\mesh-texturizado.fx"</span>; 
+
+  <span class=sc2>// Flag de configuração</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DXSHADER_DEBUG</span>; 
+
+  <span class=sc2>// Buffer para receber informação em caso de erro</span>
+  <span class=sc5>ID3DXBuffer </span>*txtErro = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Gera o efeito a partir do arquivo carregado</span>
+  g_hr = <span class=prg>D3DXCreateEffectFromFile</span>( g_device, fx_arquivo, 
+    <span class=sc4>0</span>, <span class=sc4>0</span>, create_flags, <span class=sc4>0</span>, &g_efeito, &txtErro);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateEffectFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, (<span class=prg>char*</span>)  <span class=prg>txtErro-&gt;GetBufferPointer</span>(), 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>txtErro-&gt;Release </span>();  
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Carrega cada técnica em seu próprio handle</span>
+  htech_texturaOriginal = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaOriginal"</span>);   
+  htech_texturaNegativa = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"texturaNegativa"</span>);   
+
+  <span class=sc2>// Libera o buffer de erros</span>
+  <span class=sc9>if </span>(txtErro != <span class=prg>NULL</span>)  <span class=prg>txtErro-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarEfeito().fim</span></span>
+
+
+<span class=prg>void </span>desenharObjeto ( <span class=sc5>ID3DXMesh </span>*obj3d, <span class=sc5>Propriedades3d </span>*props) 
+<span class=sc16>{</span>
+  <span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+  <span class=sc5>D3DXMATRIX </span>obj_rot; 
+  <span class=sc5>D3DXMATRIX </span>obj_pos; 
+  <span class=sc5>D3DXMATRIX </span>camera; 
+
+  <span class=sc2>// Handle para a variáveis do shader</span>
+  <span class=prg>D3DXHANDLE </span>hMov = <span class=prg>NULL</span>; 
+  <span class=prg>D3DXHANDLE </span>hCam = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &camera );  
+
+  <span class=sc2>// Atualiza ângulo de rotação</span>
+  g_angulo += <span class=sc4>0.01f</span>; 
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x </span>+ g_angulo, 
+    <span class=prg>props-&gt;rot.z</span>);   
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);   
+
+  <span class=sc2>// Tranfere posição e rotação para o g_mtxMundo</span>
+  <span class=prg>D3DXMatrixMultiply </span>(&g_mtxMundo, &obj_rot, &obj_pos);  
+
+  <span class=sc2>// Atualiza cor</span>
+  nMovimento += nVelocidade; 
+  <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+
+  <span class=sc2>// Atualiza a câmera</span>
+  camera = g_mtxMundo * g_mtxVisao * g_mtxProj; 
+
+  <span class=sc2>// Obtém acesso às variáveis do shader</span>
+  hMov = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"nMovimento"</span>);   
+  hCam = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"Camera"</span>);   
+
+  <span class=sc2>// Atualiza variáveis no shader</span>
+  <span class=prg>g_efeito-&gt;SetValue </span>(hMov, &nMovimento, <span class=sc16>sizeof</span>(nMovimento) );  
+  <span class=prg>g_efeito-&gt;SetValue </span>(hCam, &camera, <span class=sc16>sizeof</span>(camera) );  
+
+  <span class=sc2>// Renderiza o mesh</span>
+  <span class=sc9>if </span>(g_mtlQtd &gt; <span class=sc4>0</span>)  
+    <span class=prg>for </span>(<span class=prg>DWORD </span>ncx=0; ncx &lt; g_mtlQtd; ncx++) 
+    <span class=sc16>{</span>
+      <span class=prg>g_device-&gt;SetMaterial</span>(&g_meshMtl[ncx] );  
+      <span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx] );  
+      <span class=prg>obj3d-&gt;DrawSubset</span>(ncx);  
+    <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+<span class=prg>void </span>CarregarModelo( <span class=prg>char </span>*diretorioBase, <span class=prg>char </span>*arquivo) 
+<span class=sc16>{</span>
+  <span class=sc2>// Composição do nome final do arquivo do modelo 3d</span>
+  <span class=sc2>// caminhoFinal = diretorioBase + arquivo</span>
+  <span class=prg>char </span>caminhoFinal[255] = <span class=sc6>"\0"</span>; 
+  <span class=prg>strcat </span>(caminhoFinal, diretorioBase);  
+  <span class=prg>strcat </span>(caminhoFinal, arquivo);  
+
+  <span class=sc2>// Buffer para o pacote de materiais e texturas do modelo 3d</span>
+  <span class=sc5>ID3DXBuffer </span>*mtlPack; 
+
+  <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+  <span class=prg>char </span>*arquivo_textura = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+  g_hr = <span class=prg>D3DXLoadMeshFromX</span>(caminhoFinal, <span class=sc4>D3DXMESH_SYSTEMMEM</span>, 
+    g_device, <span class=prg>NULL</span>, &mtlPack, <span class=prg>NULL</span>, &g_mtlQtd, &g_objeto3d );  
+
+  <span class=sc2>// Verifica falha no carregamento do modelo 3d</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha no carregamento do modelo"</span>, <span class=sc6>"CarregarModelo</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pacote de materiais da biblioteca auxiliar d3dx</span>
+  D3DXMATERIAL* xMtl = (D3DXMATERIAL*) <span class=prg>mtlPack-&gt;GetBufferPointer</span>();  
+
+  <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+  g_meshMtl  = <span class=prg>new </span><span class=sc5>D3DMATERIAL9</span>[g_mtlQtd];  
+  g_meshTex  = <span class=prg>new </span><span class=sc5>IDirect3DTexture9* </span>[g_mtlQtd];  
+
+  <span class=sc2>// Carrega texturas e materiais</span>
+  <span class=prg>for </span>(<span class=prg>DWORD </span>ncx = <span class=sc4>0</span>;  ncx &lt; g_mtlQtd; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Copia o material</span>
+    g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.MatD3D</span>; 
+
+    <span class=sc2>// Configura a cor ambiente do material</span>
+    g_meshMtl[ncx]<span class=prg>.Ambient </span>= g_meshMtl[ncx]<span class=prg>.Diffuse</span>; 
+
+    <span class=sc2>// Cria a textura se ela existir</span>
+    g_meshTex[ncx] = <span class=prg>NULL</span>; 
+    <span class=prg>ZeroMemory</span>(caminhoFinal, <span class=sc16>sizeof</span>(caminhoFinal));  
+    <span class=prg>strcat</span>(caminhoFinal,diretorioBase);  
+    arquivo_textura = <span class=prg>strcat</span>(caminhoFinal, xMtl[ncx]<span class=prg>.pTextureFilename</span>);   
+
+    <span class=sc9>if </span>(arquivo_textura != <span class=prg>NULL</span>)  g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, 
+      arquivo_textura, &g_meshTex[ncx]);  
+
+    <span class=sc2>// Verifica falha no carregamento da textura</span>
+    <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=sc16>{</span>
+      <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+        <span class=sc6>"Falha na criação da textura"</span>, <span class=sc6>"CarregarModelo</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+      <span class=prg>mtlPack-&gt;Release</span>();  
+      <span class=sc6>return</span>; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Libera o buffer do pacote de materiais</span>
+  <span class=prg>mtlPack-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL03 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação  ilustra  como  renderizar  um</span>
+<span class=sc2>// modelo 3d texturizado com técnicas diferentes</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_HLSL03"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='dx9cpp.html#start' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

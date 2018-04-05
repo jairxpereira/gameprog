@@ -1,0 +1,672 @@
+﻿<html>
+<head>
+<title>mdx9_fase1-2</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 1-2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track01-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">1.2 A primeira janela</h3><pre>
+
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_Janela.png></div>
+
+A experiência mais traumática para quem está começando a fazer jogos com o
+DirectX é a inicialização do ambiente,  mostrar  a  primeira  janela  e  o 
+primeiro triangulo renderizado.
+
+Para mostrar uma janela turbinada com o motor do DirectX você vai proceder
+desta forma:
+
+1- Criar um projeto Windows Forms e configurar o ambiente geral da janela;
+
+2- Inicializar o motor gráfico do DirectX;
+   2.1 Configurar os parâmetros de apresentação a  ser  utilizado  em  um 
+   dispositivo gráfico.
+
+   2.2 Criar um dispositivo gráfico e  conectá-lo  com  a  janela  criada;
+
+3- Configurar a câmera;
+
+4- Renderizar a cena no evento <b class=prg>onPaint()</b>. 
+
+O evento <b class=prg>onPaint</b> ocorre toda vez que sua janela  precisa  ser  atualizada.
+Numa  aplicação  comum essa necessidade ocorre apenas quando a janela tem
+seu  conteúdo  obstruido por outra janela e deve ser refeita na parte que
+foi coberta. Numa  aplicação  DirectX  o  evento  <b class=prg>onPaint()</b>  vai  ocorrer 
+continuamente.
+
+<b><u>1.1 Estrutura da aplicação</b></u>
+<img src=images\esquema_prj_Janela.png>
+As classes dessa primeira  aplicação  estão  ilustradas  acima:  a  classe
+<b class=prg>Program</b>  que  contém  a  função  <span class=prg>Main()</span> que chama a nossa janela produzida
+pela  classe <b>Tela</b> responsável pelo gerenciamento da funcionalidade gráfica
+da aplicação. 
+
+Na  ilustração  acima  tem  algumas  funções  na  cor cinza que são criadas 
+automaticamente pelo editor visual. Estas funções geralmente inicializam os
+controles gráficos adicionados na janela principal e   no  encerramento  da
+aplicação encarregam-se  de limpar o ambiente.   Estas  funções  não  serão 
+discutidas a fundo como faremos com as outras nos tópicos seguintes.
+
+<b><u>2. Configurando o ambiente geral da janela</b></u>
+<div class=niceview>
+<span class="sc2">// Prj_Janela - Arquivo: Janela.cs
+// Esse projeto ilustra como inicializar o motor gráfico do DirectX 9
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Janela</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Branco cor de fundo para nossa janela   
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> 
+      </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">    
+    </span><span class="sc2">// (...)    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+Crie um novo projeto <b>Windows Forms Application</b> e  configure a  propriedade  
+<b class=prg>name</b>  da  janela principal como <b>Tela</b>.
+
+No construtor da Janela,  depois da  chamada de <b class=prg>InitializeComponent()</b> você
+deve acrescentar esta linha para que todo o  processo  de  desenho  ocorra
+dentro do evento <b class=prg>onPaint()</b>:
+<span class=prg>
+this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+</span>
+O construtor da janela vai ficar com esta aparência:
+<span class=prg>
+public Tela()
+{
+ InitializeComponent();
+ <b>this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);</b>
+}
+</span>
+Acima do construtor, na área de  declaração  de  métodos  e  propriedades,
+declare  duas  variáveis  privadas  que  vamos  usar  posteriormente:
+<span class=prg>
+private Device device = null;     // Para criação do dispositivo gráfico
+private int cor_fundo = 0xFFFFFF; // Branco cor de fundo para nossa janela
+</span>
+
+<b><u>2.1 Inicialização do motor gráfico</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Aplicação vai rodar em modo janela
+</span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0"> 
+
+</span><span class="sc2">// Descarta o que não está pronto para ser renderizado
+</span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Adaptador de vídeo default
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Monta o dispositivo gráfico utilizando a placa de vídeo default,
+// renderização na placa de vídeo, tratamento de vértices
+// pelo software(Directx), utilizando a janela (this), com
+// as configurações de apresentação apontada (pps)
+</span><span class="sc11">device</span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">      
+
+</span><span class="sc2">// Configuração da câmera
+</span><span class="sc11">SetupCamera</span><span class="sc10">();</span><span class="sc0">      
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx() 
+</span></div>
+
+Geralmente você vai precisar de uma função para fazer isso. Vamos chamar
+essa função de <b>initGfx()</b>. Nela vai haver estas linhas:
+<span class=prg>
+// Configuração dos parâmetros de apresentação 
+<b>PresentParameters pps = new PresentParameters();</span></b>
+
+Com esta linha acima é criada o objeto pps que vai conter as configurações
+de apresentação da cena renderizada.
+
+Na sequência configuramos a propriedade <span class=prg>Windowed</span> para verdadeiro para 
+estabelecer que aplicação é uma janela em contraposição à tela cheia:
+<b class=prg>pps.Windowed = true; 
+
+pps.SwapEffect = SwapEffect.Discard;</b>
+Esta linha acima informa que o dispositivo gráfico deve descartar
+conteúdo do buffer gráfico que não estiver pronto para ser exibido.
+
+Pronto, criamos e configuramos os parametros de apresentação! Agora
+vamos criar o dispositivo gráfico:
+<b class=prg> 
+ int adaptador = 0;
+ device= new Device(adaptador, DeviceType.Hardware, this, 
+        CreateFlags.SoftwareVertexProcessing, pps);    </b>
+		
+Com estas linhas criamos o dispositivo gráfico. O adaptador configurado
+como valor zero (0) aponta para a placa gráfica default do sistema;
+o parâmetro <b>DeviceType.Hardware</b> informa que a renderização vai ser
+feita pela placa gráfica. 
+
+O parâmetro <b>this</b> aponta a janela como local aonde vai ser exibido a
+cena.
+
+<b>CreateFlags.SoftwareVertexProcessing</b> - informa que o processamento
+dos vértices vai ser feito via Software, no caso, o DirectX.
+
+<b>pps</b> representa a configuração dos parâmetros de apresentação.
+
+Com isto criamos e configuramos o dispositivo gráfico. Dentro 
+dessa função <b>initGfx()</b> vamos  chamar  setupCamera()  na  qual 
+faremos a configuração inicial da camera.
+	
+<b><u>2.2 Configurando a camera</b></u>
+<div class=niceview>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">SetupCamera</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Dados para configurar a matriz de projeção
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+<b>
+</span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+</b>
+</span><span class="sc0">        
+</span><span class="sc2">// Dados para configurar a matriz de visualização
+</span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">18.0f</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Posição da camera
+</span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Alvo da câmera
+</span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Orientação da câmera
+<b>
+</span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+</b>
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// SetupCamera().fim
+</span></div>
+A configuração da camera tem 3 aspectos para considerar:
+
+- a posição da câmera 
+- o alvo ou foco da camera 
+- orientação da camera que define o que é cima ou baixo para a camera
+
+Todos estes três aspectos são definidos em termos de (x,y,z). Para definir
+estes três aspectos você deve usar uma estrutura Vector3():
+<span class=prg>
+Vector3 cam_pos = new Vector3(0, 0, 18.0f); // Posição da camera
+Vector3 cam_alvo = new Vector3(0, 1.0f, 0); // Alvo da câmera
+Vector3 cam_orientacao = new Vector3(0, 1.0f, 0); // Orientação da câmera
+<b>device.Transform.View = Matrix.LookAtLH(cam_pos, cam_alvo, cam_orientacao);</b>
+</span>
+Conforme visto acima, a propriedade <span class=prg>device.Transform.View</span> do dispositivo
+recebe  a  matriz  de  transformação  da  camera   através   da   função 
+<span class=prg>Matrix.LookAtLH()</span>.
+
+Ainda antes de fazer esta etapa  da  configuração  da  câmera  você  vai
+configurar  a  matriz  de  projeção da imagem que vai definir o campo de 
+visão da camera, o aspecto da imagem que é uma relação da largura\altura
+da tela e vai definir o espaço de enquadramento definindo o que é "perto"
+ou "longe" da câmera:
+<span class=prg>
+int largura = this.Width; // largura da janela
+int altura = this.Height;  // altura da janela      
+float aspecto = largura / altura; // aspecto dos gráficos      
+float campo_visao = (float)Math.PI / 4; // Campo de visão
+float corte_perto = 1.0f;
+float corte_longe = 100.0f;     
+<b>device.Transform.Projection = Matrix.PerspectiveFovLH(campo_visao, 
+		aspecto, corte_perto, corte_longe);</b>
+</span>		
+Conforme  visto  acima,  a  propriedade  <span class=prg>device.Transform.Projection</span>  do
+dispositivo  recebe  a  matriz  de  projeção da camera através da função 
+<span class=prg>Matrix.PerspectiveFovLH()</span>.
+
+<b><u>2.3 Renderizando a cena</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Limpa o dispositivo
+</span><span class="sc0">  </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// inicia o processo de renderização
+</span><span class="sc0">  </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc2">// (...) Todo o código de desenhar vai aqui     
+</span><span class="sc0"> 
+ </span><span class="sc2">// Finaliza o processo de renderização
+</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc2">// Apresenta a cena renderizada nos bastidores
+</span><span class="sc0">  </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+  
+  </span><span class="sc2">// Verifica outros eventos para não travar a aplicação
+</span><span class="sc0">  </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar().fim</span>
+</div>
+Vamos utilizar uma função que vamos chamar de Renderizar() que vai ter este
+conteúdo:
+
+<span class=prg>device.Clear(ClearFlags.Target, cor_fundo, 1.0f, 0); </span>
+Esta função limpa o dispositivo e os buffers utilizados.  Ela limpa a tela
+e configura a cor de fundo do dispositivo, branco em nosso exemplo.
+
+<b>ClearFlags.Target</b> - limpa a superfíce de renderização, no caso nossa
+janela.
+
+<b>cor_fundo</b> - É o branco que foi definido anteriormente.
+
+Os valores <b>1.0f e 0</b> não precisam ser discutidos agora. Configure
+sempre estes valores. Eles se referem a buffers de profundidade
+que serão discutidos adiante em nosso curso.
+<span class=prg>
+device.BeginScene();           
+// Todo o código de desenhar vai aqui neste miolo.
+device.EndScene();  
+</span>
+Todo o processo de desenhamento da cena ocorre entre device.BeginScene()
+e device.EndScene() que monta e desmonta o ambiente final de renderização.
+É nesse miolo que vamos colocar todas as nossas funções que desenham
+nossos objetos.
+
+<span class=prg>
+device.Present();</span>
+Esta linha apresenta a cena na tela. Como não desenhamos nada, apenas a 
+janela em branco vai aparecer.
+
+<span class=prg>
+Application.DoEvents(); </span>
+Esta linha libera nossa aplicação para processar outros eventos do
+Windows sobre nossa janela. Por exemplo, o Windows vai processar 
+os comandos minimizar\maximizar que o usuário realizar sobre nossa
+janela. 
+
+<b><u>2.4 O evento onPaint()</b></u>
+<div class=niceview>
+<span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span></div>
+Definimos aqui uma função para processar o evento <b class=prg>onPaint</b>. Essa função
+vai chamar continuamente nossa função <b>Renderizar()</b>.
+
+<span class=prg>base.OnPaint(e);</span>
+Pede para o Windows processar processos padrões
+
+<span class=prg>this.Renderizar();</span>
+Chama nossa renderização
+
+<span class=prg>this.Invalidate(); </span>
+Invalida a tela para chamar novamente <b class=prg>OnPaint()</b>!
+
+<b><u>3. Rodando nossa aplicação e mostrando nossa janela</b></u>
+
+Na classe <b class=prg>Program</b>, na função <span class=prg>Main()</span>, apague o código gerado automaticamente
+e substitua por estas linhas: <span class=prg>
+
+using (Tela tela = new Tela())
+{
+ tela.Show();
+ tela.initGfx();
+ Application.Run(tela);      
+} // end using </span>	  
+	  
+Isso garante que nossa função <b>initGfx()</b> vai ser chamada na ordem correta e
+<b class=prg>Application.Run()</b>  realiza  processos internos  como encerrar corretamente
+a aplicação. A construção <span class=prg>using {}</span>  garante  que  os  recursos  utilizados
+sejam liberados no final do bloco.
+
+<b><u>4. Código fonte do projeto de exemplo: prj_Janela</u></b>
+<div class=prg-code>
+<img src=images\prj_Janela.png>
+
+<span class="sc2">// Prj_Janela - Arquivo: Program.cs
+// Esse projeto ilustra como inicializar o motor gráfico do DirectX 9
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Janela</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">using</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc11">tela</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">())</span><span class="sc0">
+            </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc2">// Mostre a tela
+</span><span class="sc0">                </span><span class="sc11">tela</span><span class="sc10">.</span><span class="sc11">Show</span><span class="sc10">();</span><span class="sc0">
+
+                </span><span class="sc2">// Inicialize o dispositivo gráfico
+</span><span class="sc0">                </span><span class="sc11">tela</span><span class="sc10">.</span><span class="sc11">initGfx</span><span class="sc10">();</span><span class="sc0">
+
+                </span><span class="sc2">// Rode a aplicação adequadamente
+</span><span class="sc0">                </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">Run</span><span class="sc10">(</span><span class="sc11">tela</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// end using 
+</span><span class="sc0">        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Main().fim
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc15"></div>
+</span><span class="sc0">
+</span><span class="sc15"><div class=prg-code>
+</span><span class="sc2">// Prj_Janela - Arquivo: Janela.cs
+// Esse projeto ilustra como inicializar o motor gráfico do DirectX 9
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Janela</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">        </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Branco cor de fundo para nossa janela   
+</span><span class="sc0">
+        </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc2">// Qualquer configuração em algum componente, faça depois dessa função!
+</span><span class="sc0">            </span><span class="sc2">// Pois a geração automática de código pode suprimir algo que você
+</span><span class="sc0">            </span><span class="sc2">// fizer antes dela
+</span><span class="sc0">            </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+
+            </span><span class="sc2">// Toda renderização deverá ocorrer dentro do evento onPaint()
+</span><span class="sc0">            </span><span class="sc2">// Isso evita interferência estrangeira de processamento default
+</span><span class="sc0">            </span><span class="sc2">// do sistema Windows
+</span><span class="sc0">            </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span>
+		<span class="sc0"> </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">
+        </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+
+            </span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc0">            </span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+            </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+            </span><span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice 
+</span><span class="sc0">            </span><span class="sc2">// no software, janela (this), parâmetros de apresentação (pps)
+</span><span class="sc0">            </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+              </span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc2">// Configura a camera
+</span><span class="sc0">            </span><span class="sc11">SetupCamera</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span><span class="sc0">
+        </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">SetupCamera</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+
+            </span><span class="sc2">// Dados para a configuração da matriz de projeção
+</span><span class="sc0">            </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc0">            </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc0">            </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc0">            </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc0">            </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+
+            </span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc0">            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0">
+                </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc2">// Dados para a configuração da matriz de visualização
+</span><span class="sc0">            </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">18.0f</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Posição da camera
+</span><span class="sc0">            </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Alvo da câmera
+</span><span class="sc0">            </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Orientação da câmera
+</span><span class="sc0">
+            </span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc0">            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// setupCamera()
+</span><span class="sc0">
+        </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc2">// Limpa os dispositivos e os buffers de apoio
+</span><span class="sc0">            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+            </span><span class="sc2">// (...) Todo o código de desenhar vai aqui   
+</span><span class="sc0">            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+            </span><span class="sc2">// Apresenta a cena renderizada na tela
+</span><span class="sc0">            </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+
+            </span><span class="sc2">// Libera a janela para processar outros eventos
+</span><span class="sc0">            </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// render()
+</span><span class="sc0">
+        </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc2">// Trate outros processos padrões
+</span><span class="sc0">            </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc2">// Renderize a cena
+</span><span class="sc0">            </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+
+            </span><span class="sc2">// Invalide para chamar novamente onPaint()
+</span><span class="sc0">            </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Janela</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc15">/// &lt;summary&gt;
+</span><span class="sc0">    </span><span class="sc15">/// Required designer variable.
+</span><span class="sc0">    </span><span class="sc15">/// &lt;/summary&gt;
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">.</span><span class="sc11">IContainer</span><span class="sc0"> </span><span class="sc11">components</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc15">/// &lt;summary&gt;
+</span><span class="sc0">    </span><span class="sc15">/// Clean up any resources being used.
+</span><span class="sc0">    </span><span class="sc15">/// &lt;/summary&gt;
+</span><span class="sc0">    </span><span class="sc15">/// &lt;param name="disposing"&gt;true if managed resources should be disposed; 
+    /// otherwise, false.&lt;/param&gt;
+</span><span class="sc0">    </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Dispose</span><span class="sc10">(</span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">disposing</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">disposing</span><span class="sc0"> </span><span class="sc10">&amp;&amp;</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">components</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">))</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">components</span><span class="sc10">.</span><span class="sc11">Dispose</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0">
+      </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">Dispose</span><span class="sc10">(</span><span class="sc11">disposing</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc9">#region Windows Form Designer generated code
+</span><span class="sc0">
+    </span><span class="sc15">/// &lt;summary&gt;
+</span><span class="sc0">    </span><span class="sc15">/// Required method for Designer support - do not modify
+</span><span class="sc0">    </span><span class="sc15">/// the contents of this method with the code editor.
+</span><span class="sc0">    </span><span class="sc15">/// &lt;/summary&gt;
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">InitializeComponent</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SuspendLayout</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc2">// 
+</span><span class="sc0">      </span><span class="sc2">// Tela
+</span><span class="sc0">      </span><span class="sc2">// 
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">AutoScaleDimensions</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">.</span><span class="sc11">SizeF</span><span class="sc10">(</span><span class="sc4">6F</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">13F</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">AutoScaleMode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">.</span><span class="sc11">AutoScaleMode</span><span class="sc10">.</span><span class="sc11">Font</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">ClientSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">.</span><span class="sc11">Size</span><span class="sc10">(</span><span class="sc4">292</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">273</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"ownd"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"prj_Janela"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">ResumeLayout</span><span class="sc10">(</span><span class="sc5">false</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc9">#endregion
+</span><span class="sc0">  </span><span class="sc10">}</span>
+<span class="sc10">}</span>
+</div>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track01-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,1232 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-3</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-3</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.3 Criando o dispositivo</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Dispositivo.png></div>
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>WinMain()</b>
+	criação da classe da janela
+	registro da classe da janela
+	criação da janela de acordo com a classe definida
+	<b class=sc16>chama initGfx() para inicializar motor gráfico</b>
+	mostra a janela
+	estabelecimento do laço de mensagens
+	finaliza a aplicação
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+		<b class=sc16>Verifica teclado - finaliza aplicação na tecla Escape</b>
+		<b class=sc16>chama Limpar() na finalização da aplicação</b>
+		<b class=sc16>chama Renderizar() para desenhar os gráficos</b></div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+
+Renderizar()
+	Limpa a tela
+	Desenha a cena
+	Apresenta a cena
+
+Limpar()
+	Libera dispositivo renderizador
+	Libera objeto Direct3d
+</div></div>
+A aplicação desse tópico mostra  como  inicializar  o  Direct3d  e  o
+dispositivo gráfico que produz a imagem final da cena.   A  aplicação
+mostra  a configuração básica da função <b>Renderizar()</b> e mostra como se
+faz  o  importante  trabalho de 'limpeza' no qual todos os objetos do
+DirectX utilizados são liberados. A tecla Escape finaliza a aplicação.
+
+Como se pode deduzir da leitura da estrutura da aplicação, o arquivo
+<b>entrada.cpp</b>  contém  o código de criação da janela e outros aspectos
+básicos  de uma aplicação Windows e faz chamadas às funções contidas
+em  <b>motor.cpp</b>  responsável por inicializar e finalizar os objetos do
+directx bem como renderizar a cena.
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+A  listagem  abaixo  mostra o conteúdo do arquivo <b>motor.h</b> que traz os
+protótipos  das  funções  presentes em <b>motor.cpp</b>. A partir do próximo
+tópico a função <b>processaJanela()</b> será transferida para estes arquivos
+pois  ela  se  constitui  numa  roda ativa da aplicação com o arquivo 
+<b>entrada.cpp</b>  ficando  apenas  responsável por criar a janela e outros
+aspectos primários.
+
+<div class=niceview><span class=sc2>// Projeto: prj_Dispositivo - Arquivo: motor.h</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+<span class=sc16>#endif</span></div>
+
+<b><span class=sc2>// Projeto: prj_Dispositivo - Arquivo: motor.h</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h
+  <span class=sc2>// (...) conteúdo do arquivo</span>
+<span class=sc16>#endif</span> </b>
+Esse bloco de código é clássico de qualquer arquivo de cabeçalho. Ele
+define  uma  macro ( <b>motor_h</b> ) que controla a inclusão do conteúdo do
+arquivo  evitando  incluir  em  duplicidade  o conteúdo se a macro já
+estiver definida.
+
+<b><span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  </b>
+Essa função inicializa o objeto Direct3d que é responsável por  criar
+o dispositivo renderizador. Através de <b>HRESULT</b>  a  função  retorna  o
+status  de  falha ou sucesso na criação destes dispositivos. A função
+conecta o dispositivo renderizador com a janela apontada por <b>hJanela</b>.
+
+<b><span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();</b>
+Todo objeto do Directx utilizado deve ser liberado.  Esse trabalho de
+limpeza ou liberação é feito na função <b>Limpar().</b> 
+
+<b><span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();</b>
+O backbuffer é uma superfície retangular que duplica  a  configuração
+da tela  imediata.  A  imagem  é  composta  no  backbuffer  e  virada 
+rapidamente para a tela. O trabalho de limpeza do backbuffer e outras
+superfícies conectadas com ele ocorre nessa função que também realiza
+o trabalho de montar a cena final ( renderização )  e apresentá-la na
+tela imediata.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - arquivo: motor.cpp</span>
+<span class=sc2>// Este programa ilustra como inicializar o Direct3D e</span>
+<span class=sc2>// limpar a tela. Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>LPDIRECT3DDEVICE9 </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+</div><b>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span></b>
+Estes dois arquivos de cabeçalho contém as funcionalidades principais
+do Direct3d.
+
+<b><span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)</b>
+A diretiva <b class=sc16>#pragma</b> utilizada dessa maneira  informa ao linker durante
+o processo de montagem do executável final as bibliotecas  de  origem
+das funções do Direct3d que devem ser ligadas à aplicação final.
+
+<b><span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9</span> g_Direct3d = <span class=prg>NULL</span>;</b>
+Essa  é  a  forma clássica de  declarar  um  ponteiro  para  qualquer
+interface  do  directx que será utilizada. Nesse caso <b>g_Direct3d</b> é um
+ponteiro  que  aponta  para  a interface <b class=prg>IDirect3D9</b> que é responsável
+por  criar  o  dispositivo  renderizador  e  verificar capacidades do
+adaptador gráfico. O prefixo <b>LP</b> indica que será criado um ponteiro da
+interface indicada no restante da nomenclatura.
+
+<b><span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>LPDIRECT3DDEVICE9</span> g_device = <span class=prg>NULL</span>;</b>
+Essa interface é o centro das maiores atenções do directx pois ela  é
+o motor de produção gráfica que  processa  a  geometria,  texturas  e 
+outros aspectos para produzir a imagem final da cena.  O  dispositivo
+renderizador  é  solicitado em muitas funções portanto é interessante
+que a variável desse ponteiro seja global.   Ao  invés de utilizar as
+macros  que começam com LP também é possível inicializar os ponteiros
+de qualquer interface do directx conforme o exemplo abaixo:
+<b><span class=sc5>IDirect3DDevice9*</span> g_device = <span class=prg>NULL;</span></b>
+Isso é exatamente equivalente a <span class=sc5>LPDIRECT3DDEVICE9</span> g_device = <span class=prg>NULL</span>;</b>
+
+<b><span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>;</b>
+A grande  maioria  das  funções do directx  retorna o status  do  seu
+trabalho  pelo  tipo  <b>HRESULT</b>  que  indica  sucesso ou o tipo de erro
+ocorrido.   Esta  variável  foi  declarada  como  global pois é muito 
+solicitada.  Como  é  global,  cada uso particular por uma função vai
+apagar  o  valor  anterior,  entretanto vai se prestar ao processo de
+verificação do momento.
+
+<b><u>2.2 Inicializando o motor gráfico</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span> );  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, 
+    <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+              hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+</div><b>
+<span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+g_Direct3d = <b class=prg>Direct3DCreate9</b>( <span class=sc4>D3D_SDK_VERSION</span> ); </b>
+A função <span class=prg>Direct3DCreate9</span>() cria o objeto Direct3d.  O único argumento
+é uma macro para garantir que os dispositivos criados vão corresponder
+com as dll's instaladas ou com o runtime(*) como se fala. (*) O termo
+runtime  refere-se  às  bibliotecas  que  estão  operando em tempo de
+execução  do  programa  ou  à própria aplicação em tempo de execução. 
+
+<b><span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+<span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+<span class=sc16>{</span>
+<span class=prg>MessageBox</span> (<span class=prg>NULL</span>, 
+<span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+<span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+Esse bloco de código verifica se o  dispositivo  Direct3d  foi criado
+com sucesso.   Ainda  que  o código esteja correto é importante fazer
+essa verificação  na  criação  de  qualquer  coisa  pois se o sistema
+Windows estiver com problemas nenhum código correto funciona!
+
+<b><span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+<span class=sc5>D3DPRESENT_PARAMETERS </span>pps;</b>
+Esta linha cria  a  estrutura  <b>pps</b> do tipo <span class=prg>D3DPRESENT_PARAMETERS</span> para
+configurar os parâmetros de  apresentação  que  definem  aspectos  de
+elaboração  da apresentação da imagem final. Por exemplo, a aplicação
+vai  ter  janela?   Qual  o tamanho e quantos backbuffer's vão haver?
+Como vai ocorrer a troca de dados entre o backbuffer e a tela? Então,
+os  parâmetros  de  apresentação  definem  as respostas para questões 
+como estas e outras afins.
+
+<b><span class=sc2>// Limpa a estrutura</span>
+<span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) ); </b>
+A estrutura é limpa com esta linha.
+
+<b><span class=sc2>// Configura os parâmetros de apresentação</span>
+<span class=sc2>// A aplicação vai ter janela</span>
+<span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; </b>
+Esta linha indica que a aplicação vai ser <b>janelada</b>.  Para  aplicações
+em tela cheia o valor desse argumento deve ser <b class=prg>FALSE</b> junto com outras 
+configurações adicionais que vão ser esclarecidas mais adiante  neste
+curso.
+
+<b><span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+<span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; </b>
+Aqui o formato do backbuffer é selecionado. O formato  do  backbuffer
+é baseado  em  como  a  cor é expressa pela aplicação, por exemplo, o
+popular  RGB  no qual cada componente de cor tem 8 bits é visto assim
+do  ponto  de vista de formatação do backbuffer: <b>R8G8B8</b>, que totaliza
+24 bits para cada pixel.   Isso  é  um exemplo hipotético apenas para 
+ilustrar  neste  momento  o  conceito  de  formato  de uma superfície 
+desenhável  como  o backbuffer, a textura ou a própria tela. Voltando
+ao  código <b>D3DFMT_UNKNOWN</b> deixa o directx selecionar o formato que  é
+compatível com a janela. Mais adiante no curso vamos conhecer  outros
+formatos possíveis.
+
+<b><span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+<span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>;</b>
+Por questões de qualidade e performance a renderização  nunca  ocorre
+diretamente  na  tela  imediata. A imagem é composta gradualmente nos
+bastidores  de  uma  área  de  memória  que duplica a configuração da 
+tela, o famoso  <b>backbuffer</b>,  e  depois  de  pronta  esta   imagem   é
+copiada ou <b>virada</b> rapidamente para a tela. Pode haver  uma coleção de
+backbuffers trabalhando <b>circularmente</b> e neste caso dizemos que existe
+uma <b>corrente de trocas</b> ou uma <b>swap chain</b> em inglês.   A  imagem  pode
+ser sequencialmente copiada de backbuffer em backbuffer até chegar na
+tela  imediata  ou  pode  ser  virada  que  é uma operação que apenas 
+modifica  o endereço do ponteiro que aponta para o próximo backbuffer
+a ser renderizado.  A  opção  <b>D3DSWAPEFFECT_DISCARD</b>  deixa  o directx 
+escolher  a  forma  de  troca  de imagens na corrente de trocas com a 
+melhor performance para a aplicação que pode ser virada ou copiada.
+
+Acabamos  com  a   explanação  de  alguns  itens  dos  parâmetros  de 
+apresentação e na sequência temos outros argumentos que vão  aparecer
+na função que cria o dispositivo renderizador.
+
+<b><span class=sc2>// Configuração do renderizador a ser criado</span>
+<span class=sc2>// Adaptador default (0)</span>
+<span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; </b>
+O adaptador indica qual a placa de vídeo ou saída de vídeo  que  será
+usada. O dispositivo primário ou adaptador default tem valor zero(0).
+
+<b><span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+<span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>;</b>
+Essa linha indica o tipo de dispositivo que será usado  que  pode  ser
+a placa aceleradora (<b>D3DDEVTYPE_HAL</b>) ou o lento emulador de referência
+indicado pelo valor <b>D3DDEVTYPE_REF</b> definido  na enumeração <b>D3DDEVTYPE</b>.
+O  emulador  de  referência  implementa  todas  as funcionalidades do
+directx porém ele é muito lento e serve apenas para testes. 
+
+<b><span class=sc2>// Flags de configuração do dispositivo</span>
+<span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; </b>
+Esta linha configura os flags  de  criação  cujas  opções  podem  ser
+concatenadas com um <b>ou binário (|)</b>. A configuração acima indica que o
+processamento de vértices vai ser feita pelo directx. Na configuração
+ideal  o  processamento de vértices é feito puramente e totalmente no
+hardware.    A  configuração  ideal  é  expressa por essa combinação:
+<b>D3DCREATE_PUREDEVICE | D3DCREATE_HARDWARE_VERTEXPROCESSING</b>
+
+Depois de tudo configurado a função <span class=prg>CreateDevice()</span> cria o dispositivo
+e é prudente depois fazer a verificação do resultado dessa operação:
+<b><span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+		  hJanela, create_flags, &pps, &g_device ); </b>  
+
+Note  que  os  parâmetros  de  apresentação  (<b>&pps</b>) e o  ponteiro do
+dispositivo (<b>&g_device</b>) são passados como referência.  Isso é rotina
+na criação de objetos do directx.
+
+<b><span class=sc2>// Verifica se houve falha no processo</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+<span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+<span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+
+<b><span class=sc6>return </span><span class=prg>S_OK;</span> </b>
+Estando tudo ok a função <b>initGfx()</b> retorna o  sinal  de  sucesso  das
+operações do directx: <b>S_OK.</b>
+
+<b><u>2.3 Renderizando a cena</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>cor_fundo = branco; 
+
+  <span class=sc2>// Superfícies que serão limpas</span>
+  <span class=prg>DWORD </span>superficies = <span class=sc4>D3DCLEAR_TARGET</span>; 
+
+  <span class=sc2>// Configuração padrão do buffer de profundidade</span>
+  <span class=prg>float </span>zBuffer = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração padrão do stencil</span>
+  <span class=prg>DWORD </span>sBuffer = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de retângulos a serem limpos</span>
+  <span class=prg>DWORD </span>nPartes = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Array de retângulos que serão limpos</span>
+  <span class=sc16>const </span><span class=sc5>D3DRECT* </span>pPartes = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( nPartes, pPartes, superficies, cor_fundo, 
+    zBuffer, sBuffer);  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=sc2>// Retangulo fonte e destino</span>
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rFonte = <span class=prg>NULL</span>; 
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rDestino = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Janela alternativa para apresentar os dados visuais</span>
+  <span class=sc16>HWND </span>hOutraJanela = <span class=prg>NULL</span>; 
+
+  <span class=prg>g_device-&gt;Present</span>( rFonte, rDestino, hOutraJanela, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div><b>
+<span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+<span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; </b>
+O primeiro cuidado da função <b>Renderizar()</b>  é <b>sair</b> caso  o  dispositivo
+esteja <span class=prg>NULL</span>. Esse cuidado é importante pois  a aplicação pode perder o
+dispositivo para outras aplicações que estejam rodando simultaneamente
+para as quais o usuário pode alternar o seu foco de atenção.
+
+<b><span class=sc2>// Cor de fundo da janela</span>
+<span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+<span class=sc16>const </span><span class=sc5>D3DCOLOR </span>cor_fundo = branco; </b>
+A cor branco vai ser a cor de fundo ou de limpeza da janela. O padrão
+de cor do directx é o ARGB de 32 bits com um canal alpha  responsável
+pela taxa de transparência da cor.  A  cor totalmente  opaca tem este
+valor   configurado  como  255  ou  0xFF  em  hexadecimal.   A  macro
+<span class=prg>D3DCOLOR_XRGB()</span>  recebe  uma  cor  RGB mas retorna uma cor ARGB com o 
+canal alpha configurado para 255.
+
+<b><span class=sc2>// Superfícies que serão limpas</span>
+<span class=prg>DWORD </span>superficies = <span class=sc4>D3DCLEAR_TARGET</span>; </b>
+O termo superfície define uma área retangular de memória para imagens,
+textura, o backbuffer ou ainda a tela imediata.  Além  do  backbuffer
+existe uma área retangular chamada <b>zBuffer</b> que indica qual pixel está
+na frente do outro no caso de haver dois pixels querendo  ocupar  uma 
+mesma posição na tela. Outra superfície retangular é  o  <b>stencil</b>  que
+indica qual ponto que deve ser desenhado e como deve ser desenhado no
+caso  de  haver  dois  pixels  disputando  a mesma posição na tela. O 
+zBuffer ou buffer de profundidade como é normalmente conhecido é mais
+usado  para correção da visualização da cena enquanto que o stencil é
+usado  para efeitos especiais de espelhamento, sombra, mistura de cor
+ou cortes propositais na visualização da cena.  O  argumento  aqui em
+questão vai limpar a  superfície  alvo ( <b>D3DCLEAR_TARGET</b> ) que  neste
+caso é o backbuffer que por tabela vai limpar a tela pois o backbuffer
+é despejado sobre ela.   Este  flag pode receber outras configurações
+para limpar o stencil e o buffer de profundidade. Geralmente o buffer
+de profundidade e o  stencil habitam na mesma superfície com cada  um
+ocupando alguma porção do mesmo  tipo de dado e a superfície como  um
+todo tendo uma correspondência com  o pixel final desenhado  sobre  a
+tela.
+O estudo do stencil será feito  no nosso curso avançado de DirectX 9.
+
+<b><span class=sc2>// Configuração padrão do buffer de profundidade</span>
+<span class=prg>float </span>zBuffer = <span class=sc4>1.0f</span>; </b>
+A configuração padrão do buffer de profundidade é 1.0f.
+
+<b><span class=sc2>// Configuração padrão do stencil</span>
+<span class=prg>DWORD </span>sBuffer = <span class=sc4>0</span>; </b>
+A configuração padrão do stencil é zero (0).
+
+<b><span class=sc2>// Quantidade de retângulos a serem limpos</span>
+<span class=prg>DWORD </span>nPartes = <span class=sc4>0</span>; </b>
+Geralmente a superfície toda é limpa.  Entretanto é possível escolher
+partes quadriculadas para a ocorrência  da  limpeza.   Esta  variável
+indica quantos retangulos  estão presentes na array de retangulos que
+indicam as porções da tela  que devem ser limpas.   Para  a tela toda
+esse  argumento  é  configurado  como  zero  (0)  e  a  array que lhe
+corresponde é configurada como <span class=prg>NULL</span>.
+
+<b><span class=sc2>// Array de retângulos que serão limpos</span>
+<span class=sc16>const </span><span class=sc5>D3DRECT* </span>pPartes = <span class=prg>NULL</span>; </b>
+Esta  aqui  é  a array de retangulos  que indicam as áreas para serem
+limpas. Deixe configurado como <span class=prg>NULL</span> para limpar a tela toda.
+
+<b><span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+<span class=prg>g_device-&gt;Clear</span>( nPartes, pPartes, superficies, cor_fundo, 
+zBuffer, sBuffer);  </b>
+Esta função realiza a limpeza das superfícies indicadas e  resseta  o
+buffer de profundidade e o stencil para valores padrões.
+
+<b><span class=sc2>// Começa a cena</span>
+<span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+  <span class=sc2>// Finalizando a cena</span>
+  <span class=prg>g_device-&gt;EndScene</span>();  
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+O processo de desenhar qualquer objeto 3d ou texto deve ocorrer entre
+esse   par  de  funções  <span class=prg>BeginScene()</span>  e  <span class=prg>EndScene()</span>  do  dispositivo 
+renderizador ( <b>g_device</b> ).  Geralmente,  de  dentro  desse  bloco  de
+código  você vai chamar outras funções que desenham alguma  geometria
+ou texto.
+
+<b><span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+<span class=sc2>// Retangulo fonte e destino</span>
+<span class=sc16>const </span><span class=sc5>RECT* </span>rFonte = <span class=prg>NULL</span>; 
+<span class=sc16>const </span><span class=sc5>RECT* </span>rDestino = <span class=prg>NULL</span>; </b>
+Depois  de  <span class=prg>EndScene()</span> o backbuffer está pronto para ser  transferido
+para a tela. A função de apresentar a cena também permite através dos
+argumentos <b>rFonte</b> e <b>rDestino</b> que  apenas  parte  do  backbuffer  seja
+transferido para parte da tela. Mas quase sempre queremos copiar todo
+o backbuffer para toda a tela e  para isso esses parâmetros devem ser
+configurados como <span class=prg>NULL</span>.
+
+<b><span class=sc2>// Janela alternativa para apresentar os dados visuais</span>
+<span class=sc16>HWND </span>hOutraJanela = <span class=prg>NULL</span>; </b>
+Alternativamente a função que apresenta a cena permite apontar  para
+outra janela diferente da que foi pré-configurada para o dispositivo.
+Para  manter  a  janela  original  que  deu  muito trabalho para ser
+confeccionada o valor desse argumento deve ser <span class=prg>NULL</span>.
+
+<b><span class=prg>g_device-&gt;Present</span>( rFonte, rDestino, hOutraJanela, <span class=prg>NULL</span>); </b>
+Esta é a função que apresenta a cena finalizando todo o trabalho  de
+renderização.  O  último  argumento que está definido como <span class=prg>NULL</span> é um 
+retangulo que define a região mínima da tela que deve ser atualizada;
+este valor <span class=prg>NULL</span> indica que queremos que toda a tela seja atualizada.
+
+Reforçamos que todos os quatro  argumentos  de  <span class=prg>Present()</span>  devem  ser
+configurados como <span class=prg>NULL</span> para transferência total da área do backbuffer
+para  a  área  total  da tela. Se a aplicação vai trabalhar com áreas
+parciais  como  permitem  os  argumentos  de  <span class=prg>Clear()</span>  e <span class=prg>Present()</span>, a 
+propriedade  <span class=prg>SwapEffect</span>  dos  parâmetros  de  apresentação  deve  ser
+configurada como <b class=sc4>D3DSWAPEFFECT_COPY.</b>
+
+<b><u>2.4 Limpando o ambiente</u></b>
+<div class=niceview><span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div><b>
+
+<span class=sc2>// Libera o dispositivo gráfico</span>
+<span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+<span class=sc2>// Libera o motor do Direct3D</span>
+<span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();</b>  
+
+Este bloco de código ilustra como se deve liberar  com  segurança  os
+objetos  criados.   A  função  <b>Limpar()</b>  é  chamada  no  processo  de 
+finalização da aplicação no evento de <b>WM_DESTROY</b>  e no pressionamento 
+da tecla Escape no evento <b>WM_KEYDOWN</b>.   Os  objetos  subordinados  ao
+Direct3d  devem  ser  liberados  primeiro  e  por  último  o Direct3d 
+( <b>g_Direct3d</b> ).
+
+<b><u>2.5 Aspectos globais de inicialização da aplicação</u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - arquivo: entrada.cpp</span>
+<span class=sc2>// Este programa ilustra como inicializar o Direct3D e</span>
+<span class=sc2>// limpar a tela. Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; 
+<span class=prg>int </span>g_ytela = 240;
+</div><b>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span></b>
+Estes  arquivos  foram  inseridos  no  arquivo  <b>entrada.cpp</b>  para  o
+aproveitamento do elenco de valores de retorno do directx através de
+<b>HRESULT</b>
+
+<b><span class=sc16>#include </span><span class=sc6>"motor.h"</span></b>
+Este arquivo foi inserido em entrada.cpp porque este  módulo  precisa
+conhecer a  assinatura  de  <b>initGfx()</b>.   Nos próximos  tópicos,  este
+arquivo  vai  trazer  também a assinatura de <b>processaJanela()</b> que vai
+ser transferida e vai compor um peça  ativa  do  'motor'  das  nossas 
+aplicações.
+
+<b><span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; <span class=prg>int </span>g_ytela = 240; </b>
+Estas variáveis são globais e serão aproveitadas em outras partes  de
+aplicações futuras neste curso.
+
+<b><u>2.6 Criando a janela da aplicação</u></b>
+<div class=niceview><span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Dispositivo"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela);  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox</span> (hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow </span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow </span>(hJanela);  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage </span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>(&mensagem);  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>(&mensagem);  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div><b>
+<span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX;</span></b>
+Aqui é interessante notar como foi inserido o botão de minimizar na
+janela ( <b>WS_MINIMIZEBOX</b> ).
+
+<b><span class=sc2>// Cria a janela</span>
+hJanela = <span class=prg>CreateWindowEx</span>( estiloExtra, sclasseJanela, janelaTitulo, 
+<u>controleEstilo</u>, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+app_instancia, dadoExtra );  </b>
+
+<b><span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>hr; 
+<span class=sc2>// Inicia o Direct3D</span>
+hr = initGfx ( hJanela);  </b>
+A função <b>initGfx()</b> passa a janela  ( <b>hJanela</b> ) para a frente  na qual
+os gráficos serão renderizados. A variável <b>hr</b> recebe o  resultado  do
+processo de inicialização dos dispositivos  gráficos.   Na  sequência,
+este resultado é verificado no código abaixo para encerrar a aplicação
+caso tenha ocorrido falha.
+
+<b><span class=sc2>// Encerre a aplicação se houve falha</span>
+<span class=sc9>if</span>( <span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+<span class=prg>MessageBox</span> ( hJanela, 
+<span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+<span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+<span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+
+<b><u>2.7 Processamento de mensagens</u></b>
+<div class=niceview><span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    <b>Limpar();  </b>
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      <b>Limpar();</b>  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+  <b><span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; </b>
+
+  <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+</div><b>
+<span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+<span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+Limpar();  
+<span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+<span class=sc6>break</span>; 
+
+<span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+<span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+<span class=sc16>{</span>
+Limpar();  
+<span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+} // endif
+<span class=sc6>break;</span> </b>
+Aqui nestes <span class=prg>case</span>'s do <span class=prg>switch</span>,  a  função  <b>Limpar()</b> é chamada um pouco
+antes da finalização da aplicação para liberar os objetos do  directx
+utilizados.
+
+<b><span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+<span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+<span class=sc2>// Renderiza a cena</span>
+Renderizar();  
+<span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+<span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+<span class=sc6>break</span>; </b>
+A mensagem <b>WM_PAINT</b> ocorre quando a janela precisa ter o seu conteúdo
+desenhado. Esse evento ocorre quando a janela foi coberta parcialmente
+por outra aplicação e precisa ter parte  do  seu  <b>retangulo  ou  área
+cliente</b> restaurada. Geralmente o Windows informa qual parte da janela
+deve  ser  restaurada  passando  essa  parte  em um chamado <b>retangulo
+inválido</b>. Mas em nosso caso queremos desenhar <b>continuamente em toda</b> a
+janela e não apenas para consertar parcialmente seu conteúdo  visual.
+Então, chamamos <span class=prg>InvalidateRect()</span> dentro de <b>WM_PAINT</b> para gerar  outro
+<b>WM_PAINT</b>  e  assim chamar a função <b>Renderizar()</b> continuamente. O <span class=prg>NULL</span>
+dentro  desta  função  indica  que toda a janela deve ser atualizada,
+e o <span class=prg>false</span> impede que essa função apague o background já  que  isso  é
+feito por <span class=prg>g_device->Clear()</span>.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Dispositivo</u></b>
+<div class=prg-code><img src=images\prj_Dispositivo.png>
+
+<span class=sc2>// Projeto: prj_Dispositivo - Arquivo: motor.h</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - arquivo: motor.cpp</span>
+<span class=sc2>// Este programa ilustra como inicializar o Direct3D e</span>
+<span class=sc2>// limpar a tela. Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>LPDIRECT3DDEVICE9 </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = Direct3DCreate9( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, 
+    <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+              hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>cor_fundo = branco; 
+
+  <span class=sc2>// Superfícies que serão limpas</span>
+  <span class=prg>DWORD </span>superficies = <span class=sc4>D3DCLEAR_TARGET</span>; 
+
+  <span class=sc2>// Configuração padrão do buffer de profundidade</span>
+  <span class=prg>float </span>zBuffer = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Configuração padrão do stencil</span>
+  <span class=prg>DWORD </span>sBuffer = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de retângulos a serem limpos</span>
+  <span class=prg>DWORD </span>nPartes = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Array de retângulos que serão limpos</span>
+  <span class=sc16>const </span><span class=sc5>D3DRECT* </span>pPartes = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( nPartes, pPartes, superficies, cor_fundo, 
+    zBuffer, sBuffer);  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=sc2>// Retangulo fonte e destino</span>
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rFonte = <span class=prg>NULL</span>; 
+  <span class=sc16>const </span><span class=sc5>RECT* </span>rDestino = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Janela alternativa para apresentar os dados visuais</span>
+  <span class=sc16>HWND </span>hOutraJanela = <span class=prg>NULL</span>; 
+
+  <span class=prg>g_device-&gt;Present</span>( rFonte, rDestino, hOutraJanela, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Dispositivo - arquivo: entrada.cpp</span>
+<span class=sc2>// Este programa ilustra como inicializar o Direct3D e</span>
+<span class=sc2>// limpar a tela. Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 320; 
+<span class=prg>int </span>g_ytela = 240; 
+
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Dispositivo"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span> (<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela);  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+   <span class=prg>MessageBox</span> (hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"prj_Dispositivo"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow </span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow </span>(hJanela);  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage </span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>(&mensagem);  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>(&mensagem);  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+  <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

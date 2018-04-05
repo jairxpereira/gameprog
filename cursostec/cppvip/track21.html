@@ -1,0 +1,365 @@
+﻿<html>
+<head>
+<title>Gameprog_CPP_fase_21</title>
+<head>
+<style type="text/css">
+
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track21.html</b></center>
+<hr>
+<table border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track20.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track22.html" style="color:blue">&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track021"></a><h3 style="background-color:#80ff80">21. Lendo e escrevendo em arquivos binários</h3>
+<b><u>21.1 Visão geral</b></u>
+Uma das grandes vantagens do arquivo texto é a visibilidade e a legibilidade,
+isto é, você pode lê-lo e editá-lo com qualquer editor de texto. Entretanto
+essa mesma vantagem é totalmente desfavorável quando há necessidade de proteger
+alguma informação. Por exemplo, em nosso arquivo de savegame anterior, o jogador
+poderia hackeá-lo com o simples notepad. É claro que um arquivo aberto pode
+ser uma estratégia para prover maior diversão ao usuário. As desvantagens mesmo
+do arquivo texto são tamanho e velocidade lenta na leitura e gravação dos
+dados. Essas desvantagens podem ser resolvidas com o uso do arquivo binário.
+
+Em resumo o arquivo binário permite esconder o conteúdo uma vez que ele não
+é legível por qualquer programa, sendo apenas legível pela aplicação que
+conhece o seu formato, que  conhece o tipo e a disposição de seus dados.
+Geralmente o arquivo é mais compacto e o processo de leitura e gravação de
+dados é mais rápido e mais elaborado, você pode ter acesso direto aos registros. 	
+
+<div class=prg-code>
+<img src="images/saveloadbin.png">
+
+<span class="sc2">// saveloadbin.cpp
+// Ilustra leitura e gravaççao de arquivos binários
+</span><span class="sc9">#include &lt;iostream&gt;     </span><span class="sc2">// permite usar cin e cout
+</span><span class="sc9">#include &lt;fstream&gt;      </span><span class="sc2">// permite ler e gravar arquivos
+</span><span class="sc9">#include &lt;string&gt;       </span><span class="sc2">// vamos usar strings
+</span><span class="sc9">#include &lt;cstdlib&gt;      </span><span class="sc2">// vamos gerar valor de energia aleatório
+</span><span class="sc9">#include &lt;ctime&gt;        </span><span class="sc2">// vamos gerar valores aleatórios sempre diferentes
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ****************** classe Config para dados de configuração do jogo ********
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Config</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_fase</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_estagio</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc10">;</span><span class="sc0">  
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">;</span><span class="sc0">  
+
+</span><span class="sc2">// Nosso construtor
+</span><span class="sc11">Config</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">fase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">estagio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0">  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">hp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">snome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Player"</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">m_fase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">fase</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_estagio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">estagio</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">hp</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">snome</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ::Config().end
+</span><span class="sc0">
+</span><span class="sc2">// Mostra dados de status do jogo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"\t(jogador:%s energia:%d tela:%d estagio:%d)"</span><span class="sc10">,</span><span class="sc0"> 
+</span><span class="sc11">m_nome</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">m_energia</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_fase</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_estagio</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ::mostrar().end
+</span><span class="sc0">    
+</span><span class="sc2">// Resseta para os valores originais os dados de status do jogo
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">reset</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">m_fase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_estagio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Player"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ::reset().end
+</span><span class="sc0">
+</span><span class="sc2">// -------------- loadgame() - carrega dados de configuração
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">loadgame</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">            
+</span><span class="sc11">ifstream</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">(</span><span class="sc6">"binfile.dat"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ios</span><span class="sc10">::</span><span class="sc11">binary</span><span class="sc10">);</span><span class="sc0"> 
+    
+</span><span class="sc2">// arquivo existe?
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">hfile</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t *** erro na abertura do arquivo *** \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif      
+</span><span class="sc0">    
+</span><span class="sc2">// faz a leitura dos dados
+// cuidado na hora de ler a string
+</span><span class="sc16">char</span><span class="sc0">  </span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">read</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">);</span><span class="sc0">     
+</span><span class="sc11">m_nome</span><span class="sc10">.</span><span class="sc11">assign</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">read</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_fase</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">read</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_estagio</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">read</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_energia</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">     
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t .loadgame() ok \n"</span><span class="sc10">;</span><span class="sc0">     
+
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">       
+    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ::loadgame().end
+</span><span class="sc0">
+</span><span class="sc2">// -------------- savegame() - grava dados de configuração
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">savegame</span><span class="sc10">()</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">   
+</span><span class="sc11">ofstream</span><span class="sc0"> </span><span class="sc11">hfile</span><span class="sc10">(</span><span class="sc6">"binfile.dat"</span><span class="sc10">,</span><span class="sc11">ios</span><span class="sc10">::</span><span class="sc11">binary</span><span class="sc10">);</span><span class="sc0"> 
+    
+</span><span class="sc2">// arquivo existe?
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">hfile</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t *** erro na abertura do arquivo *** \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif      
+</span><span class="sc0">    
+</span><span class="sc2">// Salvando os dados - repare no cuidado da gravação da string
+// A string Mario ocupa 5 letras + um byte para a marca de fim de string
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">write</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">()+</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">     
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">write</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_fase</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">write</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_estagio</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">write</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">m_energia</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">));</span><span class="sc0">    
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\t .savegame() ok \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">hfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">       
+    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ::savegame().end   
+</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da classe config
+// --------------------------------------------------------------------------
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das nossas funções básicas
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc2">// -------------------- inicio da função principal ---------------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color f0"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"title saveloadbin.cpp"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">  
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">carregar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">gravar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sts</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">Config</span><span class="sc0"> </span><span class="sc11">jogo_situacao</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">7</span><span class="sc10">,</span><span class="sc4">3</span><span class="sc10">,</span><span class="sc4">45</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Mario"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// gera um valor aleatório na faixa 0-100 diferente a cada execução do programa
+</span><span class="sc11">srand</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">time</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">m_energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">rand</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">%</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">nEscolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">gravar</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">sts</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">savegame</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif gravando dados no disco
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">carregar</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">reset</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\tDados atuais do registro:  \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\tAgora, dados carregados do arquivo: \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sts</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">loadgame</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">jogo_situacao</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif carregando dados do disco
+</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"pause"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endmain
+</span><span class="sc0">
+</span><span class="sc2">// ************ Implementação das funções declaradas *************************
+// --------------- n = menu() gera um menu de escolhas -----------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">txt_carregar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"\t 1- Carregar arquivo \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">txt_gravar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"\t 2- Gravar arquivo \n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">txt_escolher</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"\n\t------------------------ \n\t Digite sua escolha: "</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">txt_carregar</span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">txt_gravar</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">txt_escolher</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">nEscolha</span><span class="sc10">;</span><span class="sc0">    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//  fim da funcao menu()
+</span></div>
+
+<b><u>Abertura do arquivo binário para leitura e gravação</b></u> <font color="darkblue">
+ifstream hfile("binfile.dat", ios::binary); // leitura
+ofstream hfile("binfile.dat", ios::binary); // gravação </font>
+Perceba no código acima que para abrir um arquivo no modo binário você
+precisa apenas passar o argumento <b>ios::binary</b> para o contrutor das
+classes <b>ifstream/ofstream</b> ou no método <b>.open().</b>
+
+<b><u>Lendo e gravando os dados no arquivo binário</b></u> 
+O processo de leitura e gravação de dados é mais trabalhoso e exige um pouco 
+mais de cuidado: para gravação, você precisa passar para o método <b>.write()</b> 
+do objeto da classe ofstream um ponteiro (char *) para o item que será gravado 
+e o tamanho em bytes desse item: <b class="cpp1-preprocessor">ofstream.write ( char *dado, int nTamanho);</b>
+
+<font color="darkblue">hfile.write ( (char *) &m_fase, sizeof(int));</font>
+Note que aplicamos um cast tranformando a propriedade inteira <b>m_fase</b> em um
+ponteiro (<b>(char *)</b>) e passando para esse ponteiro o endereço de referência
+(<b>&m_fase</b>) dessa propriedade; <b>sizeof(int)</b> informa o tamanho em bytes que
+o tipo inteiro ocupa de memória.	
+
+O procedimento de leitura é semelhante, vai um ponteiro de memória com a 
+referência de endereço para guardar o dado e o tamanho desse dado:
+<b class="cpp1-preprocessor">ifstream.read ( char *dado, int nTamanho);</b><font color="darkblue">
+hfile.read ( (char *) &m_fase, sizeof(int)); </font>
+
+<b><u>Cuidado na gravação e leitura do tipo c-string</u></b>
+De forma geral o tipo de dado c-string geralmente se apresenta como uma
+array de dados do tipo char (<b>char *</b>), e essa array de dados contém um
+byte a mais para armazenar a marca de final de string, o byte zero:
+<font color="darkblue">// cuidado na hora de ler a string
+char  temp[255];		// c-string temporária
+hfile.read ( (char *) temp, <b>6</b>); // A string lida 'Mario' tem 6 bytes de tamanho!
+m_nome.assign(temp);		// Joga a c-string na string c++
+
+// Salvando os dados - repare no cuidado da gravacao da string
+// A string Mario ocupa 5 letras + um byte para a marca de fim de string
+hfile.write ( m_nome.c_str(), <b>m_nome.size()+1</b>);		</font>
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track20.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track22.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>

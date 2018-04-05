@@ -1,0 +1,464 @@
+﻿<html>
+<head>
+<title>C_Sharp_11-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 11-1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track11-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track11"></a>
+<h3 style="background-color:#ead5ff">11-1 Atributos e reflexão</h3><pre>
+<b><u>1. Visão geral</b></u>
+<img src=images\prj_Atributos.png>
+
+O propósito geral dos atributos é qualificar os elementos dentro de uma 
+aplicação embutindo neles informações específicas. Por exemplo, podemos
+criar  um atributo que vai prover informações a uma classe para ligá-la
+com o manual de ajuda de uma aplicação. Os atributos são objetos de uma
+classe e podem aparecer dessas formas na aplicação:
+			
+<span class=prg>
+<b>[Serializable]
+[Qualificador(v1, v2, v3)
+[Manualizador("Jogador()", "classe Jogador", "ajuda.html#track11-1", 
+                                           Autor="Gameprog do Brasil")]</b>
+public class Jogador 
+{ 
+  (...)
+}
+</span>
+			
+No exemplo acima, percebemos que os atributos chamam os construtores de
+suas respectivas  classes.   E  essa  chamada  fica  contida dentro dos 
+colchetes.  Na  questão  dos atributos, as propriedades são chamadas de 
+<b>parâmetros  nomeados</b>  e  são  configuradas na forma <b>propriedade = valor</b>
+dentro da chamada do atributo.
+
+Os atributos devem preceder os elementos que qualificam. No exemplo 
+acima, qualificamos  a  classe  Jogador que trará embutida em si as 
+funcionalidades  oferecidas  pelos  objetos gerados pelos atributos
+que a qualificam.
+
+O processo da aplicação recuperar informações sobre si mesma ou de
+outros blocos da biblioteca .net é chamado  de <b>reflexão</b> e esta é a 
+via de se obter as informações ou serviços gerados pelos atributos.
+
+As informações sobre si mesma embutida dentro das  aplicações  são 
+chamadas de  <b>metadados</b>  e, entre outras coisas, trazem informações
+sobre  os  métodos  e  outros  componentes  presentes na aplicação.
+
+Vamos passar neste e nos próximos tópicos como produzir e recuperar
+atributos sobre uma classe mas sem muito aprofundamento.A construção
+de atributos e o uso de reflexão abre espaço para muitas aplicações,
+porém todas as suas possibilidades  não  serão cobertas neste curso
+cujo foco é  servir base para os cursos de programação de jogos com
+XNA e DirectX gerenciado.
+
+Esse capítulo fará uso do namespace <b class=prg>System.Reflection</b>.	
+
+<b><u>2. Elaboração de um atributo</u></b>
+<div class=niceview>
+<span class="sc2">// É necessário o atributo AttributeUsageAttribute para construir 
+// um atributo. É necessário herdar a classe base System.Attribute.
+</span><span class="sc10">[</span><span class="sc11">AttributeUsage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">AttributeTargets</span><span class="sc10">.</span><span class="sc11">Class</span><span class="sc10">, </span><span class="sc11">AllowMultiple</span><span class="sc10">=</span><span class="sc5">true</span><span class="sc10">)]</span><span class="sc0">
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">ManualizadorAttribute</span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Attribute</span><span class="sc0"> 
+
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Campos do atributo
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">elemento</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">elemento_descr</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_ajuda</span><span class="sc10">;</span><span class="sc0">
+
+ </span><span class="sc2">// Para teste de parâmetros nomeados
+</span><span class="sc0"> </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">Autor</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc11">set</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+ </span><span class="sc2">// Construtor da classe
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">ManualizadorAttribute</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">descr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">elemento</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">elemento_descr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">descr</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">arquivo_ajuda</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Fim do construtor</span>
+</div>
+
+<u>Nomeamento da classe</u>
+Os atributos são classes. É uma convenção da biblioteca .net  terminar
+o nome das classes de atributos com o sufixo  <b>Attribute</b>. Isso favorece
+o processo  de  pesquisa  interna  por  atributos durante o runtime da
+aplicação. Entretanto,  na  aplicação  do  atributo ao longo do código
+pode ser suprimido o sufixo <b>Attribute</b>.
+
+<u>Herança</u>
+A classe deve herdar a classe base <b class=prg>System.Attribute</b>.
+
+<u>Qualificação</u>
+Para espanto da comunidade programadora, é necessário usar um atributo
+nativo da biblioteca .net  para produzir outro atributo. O atributo em
+questão é <b class=prg>[AttributeUsage()]</b> no qual é especificado  as  entidades  da 
+linguagem C#  que podem ser qualificadas pelo atributo sendo elaborado
+e se múltiplas instâncias do atributo podem ser aplicadas  através  da
+configuração da propriedade booleana <b class=prg>AllowMultiple</b>.
+
+Em nosso exemplo, com AttributeTargets.Class, especificamos que nosso 
+atributo só qualifica classes. Pode-se concatenar vários elementos da
+enumeração AttributeTargets usando operador de bit or (|):
+
+	<span class=prg> AttributeTargets.Class | AttributeTargets.Method</span>
+	
+Os demais membros da classe  atributo,  como  campos,  propriedades  e 
+métodos não recebem nenhum outro cuidado especial para serem definidos
+seguindo a forma normal da linguagem c#. O método principal do atribu-
+to é o construtor ao qual deve ser dado mais atenção.
+
+<b><u>3. Aplicação do atributo</u></b>
+O atributo <b>Manualizador</b> elaborado acima pode ser aplicado dessa forma
+sobre as classes:
+<div class=niceview>
+<span class="sc2">// Os atributos devem preceder o item que qualificam
+</span><span class="sc10">[</span><span class="sc11">Manualizador</span><span class="sc10">(</span><span class="sc6">"Jogador()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"classe"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"track11-1.html"</span><span class="sc10">,</span><span class="sc0"> 
+</span><span class="sc11">Autor</span><span class="sc10">=</span><span class="sc6">"Produzido por Gameprog"</span><span class="sc10">)]</span><span class="sc0">
+
+</span><span class="sc10">[</span><span class="sc11">Manualizador</span><span class="sc10">(</span><span class="sc6">"m_nome   "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"nome do jogador"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"#track11"</span><span class="sc10">)]</span><span class="sc0">
+</span><span class="sc10">[</span><span class="sc11">ManualizadorAttribute</span><span class="sc10">(</span><span class="sc6">"m_idade  "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"idade do jogador"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"tópico 1"</span><span class="sc10">)]</span><span class="sc0">  
+
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc10">(...)</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+
+Repare,  no código acima,  o  uso  do  nome abreviado da classe e na forma
+como foi configurada a propriedade <b>Autor</b> do atributo <b>ManualizadorAttribute</b>.
+
+<b><u>4. Recuperando o atributo</u></b>
+
+Segue abaixo o código exemplo para recuperar o atributo dentro da classe
+cliente:
+
+<div class=niceview>
+
+<span class="sc2">// Criando os objetos para o trabalho de recuperar atributos
+</span><span class="sc5">object</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_atributos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="prg">MemberInfo</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Obtém a lista de atributos
+</span><span class="sc11">lista_atributos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">info.GetCustomAttributes</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">ManualizadorAttribute</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">);</span><span class="sc0">      
+
+</span><span class="sc2">// Exibe os atributos na tela
+</span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">atributo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">lista_atributos</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Faz um casting do objeto obtido para o tipo ManualizadorAttribute
+</span> <b>ManualizadorAttribute</b><span class="sc0"> </span><span class="sc11">manual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><b>ManualizadorAttribute</b><span class="sc10">)</span><span class="sc11">atributo</span><span class="sc10">;</span><span class="sc0">        
+
+ </span><span class="sc2">// Mostra autor de tiver sido definido
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">Autor</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">Autor</span><span class="sc10">);</span><span class="sc0">        
+
+ </span><span class="sc2">// Exibe as informações do objeto corrente
+</span><span class="sc0"> </span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor        </span>
+</div>
+
+<b class=prg>MemberInfo</b> produz o objeto <b>info</b> que recebe a referência das informações da 
+classe tipo <b>Jogador</b>.
+
+Por sua vez, <b>info.GetCustomAttributes()</b> coleta  os  objetos  gerados  pelo
+atributo especificado e retorna-os numa array que chamamos <b>lista_atributos.</b>
+
+E por fim, foi utilizado um <b class=prg>foreach</b> para acessar os objetos presentes na
+array <b>lista_atributos</b>. Repare no <b>casting</b>  utilizado  para  converter  os
+objetos para o tipo <b>ManualizadorAttribute</b>.
+
+<b><u>5. Código fonte do projeto de exemplo</u></b>
+
+<div class=prg-code>
+<img src=images\prj_Atributos.png>
+
+<span class="sc2">// Projeto prj_Atributos - Arquivo: Jogador.cs
+// Este programa mostra como elaborar e mostrar atributos
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Reflection</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Atributos</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Os atributos devem preceder o item que qualificam
+</span><span class="sc0">  </span><span class="sc10">[</span><span class="sc11">Manualizador</span><span class="sc10">(</span><span class="sc6">"Jogador()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"classe"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"track11-1.html"</span><span class="sc10">,</span><span class="sc0"> 
+    </span><span class="sc11">Autor</span><span class="sc10">=</span><span class="sc6">"Produzido por Gameprog"</span><span class="sc10">)]</span><span class="sc0">
+
+  </span><span class="sc10">[</span><span class="sc11">Manualizador</span><span class="sc10">(</span><span class="sc6">"m_nome   "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"nome do jogador"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"#track11"</span><span class="sc10">)]</span><span class="sc0">
+  </span><span class="sc10">[</span><span class="sc11">ManualizadorAttribute</span><span class="sc10">(</span><span class="sc6">"m_idade  "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"idade do jogador"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"tópico 1"</span><span class="sc10">)]</span><span class="sc0">  
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    
+    </span><span class="sc2">// Campos do objeto
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">;</span><span class="sc0">  
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Construtor da classe
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">m_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">m_idade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">idade</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe dados do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">" Jogador ({0},{1}) \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">m_idade</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+</span><span class="sc2">// Projeto prj_Atributos - Arquivo: ManualizadorAttribute.cs
+// Este programa mostra como elaborar e mostrar atributos
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Reflection</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Atributos</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// É necessário o atributo AttributeUsageAttribute para construir 
+</span><span class="sc0">  </span><span class="sc2">// um atributo. É necessário herdar a classe base System.Attribute.
+</span><span class="sc0">  </span><span class="sc10">[</span><span class="sc11">AttributeUsage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">AttributeTargets</span><span class="sc10">.</span><span class="sc11">Class</span><span class="sc10">,</span><span class="sc11">AllowMultiple</span><span class="sc10">=</span><span class="sc5">true</span><span class="sc10">)]</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">ManualizadorAttribute</span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Attribute</span><span class="sc0">  
+  
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Campos do atributo
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">elemento</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">elemento_descr</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_ajuda</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Para teste de parâmetros nomeados
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">Autor</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc11">set</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc2">// Construtor da classe
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">ManualizadorAttribute</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">descr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">elemento</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">elemento_descr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">descr</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">arquivo_ajuda</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe os dados do objeto corrente.
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">;</span><span class="sc0">      
+      </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">" {0}: {1} - Localização:{2}\n"</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">elemento</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">elemento_descr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">arquivo_ajuda</span><span class="sc10">);</span><span class="sc0"> 
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<span class="sc15"><div class=prg-code>
+</span><span class="sc2">// Projeto prj_Atributos - Arquivo: Program.cs
+// Este programa mostra como elaborar e mostrar atributos
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Reflection</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Atributos</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ 
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a janela
+</span><span class="sc0">      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Atributos"</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc2">// Produz um objeto jogador
+</span><span class="sc0">      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">atacante</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Neimar"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">23</span><span class="sc10">);</span><span class="sc0">
+     </span><span class="sc11">atacante</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">""</span><span class="sc10">);</span><span class="sc0">
+           
+      </span><span class="sc2">// Criando os objetos para o trabalho de recuperar atributos
+</span><span class="sc0">      </span><span class="sc5">object</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">lista_atributos</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">MemberInfo</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">   // Obtém a lista de atributos
+</span><span class="sc0">   </span><span class="sc11">lista_atributos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">.</span><span class="sc11">GetCustomAttributes</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">ManualizadorAttribute</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">);</span><span class="sc0">      
+      
+     </span><span class="sc2">// Exibe os atributos na tela
+</span><span class="sc0">      </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">atributo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">lista_atributos</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Faz um casting do objeto obtido para o tipo ManualizadorAttribute
+</span><span class="sc0">        </span><span class="sc11">ManualizadorAttribute</span><span class="sc0"> </span><span class="sc11">manual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ManualizadorAttribute</span><span class="sc10">)</span><span class="sc11">atributo</span><span class="sc10">;</span><span class="sc0">        
+        
+        </span><span class="sc2">// Mostra autor de tiver sido definido
+</span><span class="sc0">        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">Autor</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">Autor</span><span class="sc10">);</span><span class="sc0">        
+        
+        </span><span class="sc2">// Exibe as informações do objeto corrente
+</span><span class="sc0">        </span><span class="sc11">manual</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor        
+</span><span class="sc0">  
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe um texto na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Atributos
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track10-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track11-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

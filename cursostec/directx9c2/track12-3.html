@@ -1,0 +1,652 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-3</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-3</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.3 Projeto Hierarquia Animada: Parte 2 - Ferramentas</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe Tools</a>
+<a href=#2.1>2.1 Especificação da classe Tools: Tools.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo Tools.cpp</a>
+<a href=#2.3>2.3 DebugString()            - Mensagem no painel de saída do Visual Studio</a>
+<a href=#2.4>2.4 FailedHr()               - Verificação de falha do directx</a>
+<a href=#2.5>2.5 DuplicateCharString()    - Duplicação de string</a>
+<a href=#2.6>2.6 FindFile()               - Localização de arquivo</a>
+<a href=#2.7>2.7 DoesFileExist()          - Verificação de existência de arquivo</a>
+<a href=#2.8>2.8 SplitPath()              - Separação dos elementos de um caminho</a>
+<a href=#2.9>2.9 GetTheCurrentDirectory() - Obtendo o diretório corrente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png></div>
+Neste capítulo nós vamos examinar a classe <b>Tools</b> que  define  funções
+de utilidade  geral  para  manipulação  de  aspectos  relacionados  a
+arquivos, strings e erros.Os propósitos específicos dessas funções na
+aplicação são simplificar os processos mais básicos da verificação de
+arquivos  de  texturas,  produzir  cópias  dos  nomes  atrelados  aos
+componentes da hierarquia 3d e auxiliar na manipulação de  erros  que
+podem ocorrer nas operações do directx.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da classe Tools</b></u>
+<div class=prg-code>
+<img src=images\ctools_diagrama.png></div>
+
+<u>Métodos especiais</u>
+A classe <b>Tools</b> foi desenvolvida para ser usada sem  o  instanciamento
+de objetos e devido a isso o construtor e o destrutor  da  classe não
+são implementados extensamente  sendo  então  definidos  simplesmente
+desse forma:
+<div class=prg-code><b>
+private:
+	~Tools(void) {};
+public:
+	Tools(void) {};
+</b></div>
+
+<u>Manipulação de erros</u>
+
+<b class=prg-code>DebugString()</b>
+Conforme a fonte original essa função exibe uma mensagem  de  erro ou
+de debug no painel de saída do  Visual Studio  quando  a  aplicação é
+construída  no  modo  DEBUG.  A Gameprog  não  testou  a  efetividade 
+dessa função  e onde  foi  possível  substituiu  suas  ocorrências na
+aplicação por <b class=prg>MessageBox()</b> para o código ficar mais limpo e familiar.
+
+<b class=prg-code>FailedHr()</b>
+Essa função verifica  a ocorrência de falhas nas operações do directx
+e utiliza <b>DebugString()</b>  para  exibir  as  mensagens  pertinentes  no
+painel de saída do Visual Studio.
+
+<u>Manipulação de strings</u>
+
+<b class=prg-code>DuplicateCharString()</b>
+Essa função duplica uma string de entrada  e isso  é  utilizado  para
+carregar para as variáveis da aplicação os nomes  dos  componentes da
+hierarquia 3d tais como os nomes dos ossos  que  estiverem  difinidos
+dentro do arquivo do modelo 3d.
+
+<b class=prg-code>ToString()</b>
+Essa função genérica retorna o tipo de entrada na forma de uma string.
+
+<u>Manipulação do sistema de arquivos</u>
+
+<b class=prg-code>GetTheCurrentDirectory()</b>
+Essa função verifica qual é a pasta ou diretório corrente retornando-o
+numa string.
+
+<b class=prg-code>DoesFileExist()</b>
+Essa função verifica a existência de um arquivo.
+
+<b class=prg-code>SplitPath()</b>
+Essa função quebra um  nome  de  arquivo  em  componentes  produzindo
+uma string apenas com o nome do arquivo e outra string como o caminho
+do arquivo. 
+
+<b class=prg-code>FindFile()</b>
+Essa função procura  por  um  arquivo  especificado.  Basicamente ela
+verifica a existência do  arquivo  utilizando  seu  nome  completo  e
+depois  verifica  a  existência  do  arquivo  no  diretório  corrente 
+utilizando o nome puro do arquivo.
+
+O código das funções está destacado mas não  será  explicado.  Leia o
+código e os comentários do código atentamente.  O  mais  importante é
+entender o propósito da função  com  seus  argumentos  de  entrada  e
+valor de retorno do trabalho produzido.
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Especificação da classe Tools: Tools.h </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Tools.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#pragma </span>once 
+<span class=sc16>#include </span>&lt;string&gt; 
+<span class=sc16>#include </span>&lt;sstream&gt; 
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;assert.h&gt;</span>
+
+<span class=sc2>// Template para converter tipos padrões em strings</span>
+template &lt;class T&gt; 
+<b class=prg>std::string</b> ToString(<span class=sc16>const </span>T & t) 
+<span class=sc16>{</span>
+  std::ostringstream oss; 
+  <span class=prg>oss.clear</span>();  
+  oss &lt;&lt; t; 
+  <span class=sc6>return </span><span class=prg>oss.str</span>();  
+<span class=sc16>}</span>
+
+<span class=sc2>// A classe Tools possui um conjunto de funções úteis</span>
+<span class=sc2>// que podem ser usadas sem o instanciamento da classe</span>
+<span class=prg>class </span>Tools 
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+  ~Tools(<span class=prg>void</span>) {}; 
+<span class=sc16>public:</span>
+  Tools(<span class=prg>void</span>) {}; 
+
+  <span class=sc2>// Verificação de falha nas operações do directx</span>
+  <span class=sc16>static </span><span class=prg>bool </span>FailedHr(<span class=sc16>HRESULT </span>hr);  
+
+  <span class=sc2>// Emite uma mensagem no painel de saída do Visual Studio</span>
+  <span class=sc16>static </span><span class=prg>void </span>DebugString(<span class=sc16>const </span><b class=prg>std::string</b> &str);  
+
+  <span class=sc2>// Duplica uma string</span>
+  <span class=sc16>static </span><span class=prg>char* </span>DuplicateCharString(<span class=sc16>const </span><span class=prg>char* </span>c_str);  
+
+  <span class=sc2>// Localização de arquivo</span>
+  <span class=sc16>static </span><span class=prg>bool </span>FindFile(<b class=prg>std::string</b> *filename);  
+
+  <span class=sc2>// Verificação da existência de um arquivo</span>
+  <span class=sc16>static </span><span class=prg>bool </span>DoesFileExist(<span class=sc16>const </span><b class=prg>std::string</b> &filename);  
+
+  <span class=sc2>// Separação dos elementos de um caminho</span>
+  <span class=sc16>static </span><span class=prg>void </span>SplitPath(<span class=sc16>const </span><b class=prg>std::string</b>& inputPath, 
+      <b class=prg>std::string</b>* pathOnly, <b class=prg>std::string</b>* filenameOnly);  
+
+  <span class=sc2>// Verificação do diretório corrente</span>
+  <span class=sc16>static </span><b class=prg>std::string</b> GetTheCurrentDirectory();  
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe Tools</span>
+<span class=sc2>// fim do arquivo Tools.h</span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais: arquivo Tools.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Tools.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Dxerr.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;io.h&gt;</span>
+<span class=sc16>#include </span>&lt;algorithm&gt; 
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 DebugString() - Mensagem no painel de saída do Visual Studio </u></b>
+<div class=niceview><b><span class=sc2>// Emite uma string no painel de saída do Visual Studio</span>
+<span class=prg>void </span>Tools::DebugString( <span class=sc16>const </span><b class=prg>std::string</b> &str ) 
+<span class=sc16>{</span>
+  OutputDebugString( <span class=prg>str.c_str</span>() );  
+<span class=sc16>} <span class=sc2>// DebugString().fim</span></span>
+</b></div>
+
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 FailedHr() - Verificação de falha do directx </u></b>
+<div class=niceview><b><span class=sc2>// Emite uma string de erro em caso de falha nas operações do directx</span>
+<span class=prg>bool </span>Tools::FailedHr(<span class=sc16>HRESULT </span>hr) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(hr)) 
+  <span class=sc16>{</span>
+    DebugString(<span class=sc6>"DirectX Reported Error: " </span>+ 
+      ToString( DXGetErrorString(hr) ) + <span class=sc6>" - " </span>+ 
+      ToString( DXGetErrorDescription(hr) ) + <span class=sc6>"\n"</span>);  
+
+    <span class=sc6>return </span><span class=prg>true</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc6>return </span><span class=prg>false</span>; 
+<span class=sc16>} <span class=sc2>// FailedHr().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 DuplicateCharString() - Duplicação de string </u></b>
+<div class=niceview><b><span class=sc2>// Duplica e retorna a string passada ( charString )</span>
+<span class=sc2>// A função caller é responsável por liberar a memória</span>
+<span class=prg>char* </span>Tools::DuplicateCharString(<span class=sc16>const </span><span class=prg>char* </span>charString) 
+<span class=sc16>{</span>
+    <span class=sc9>if </span>(!charString) 
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  size_t len = <span class=prg>strlen</span>(charString) + <span class=sc4>1</span>; 
+  <span class=prg>char </span>*newString = <span class=prg>new </span><span class=prg>char</span>[len];  
+  <span class=prg>memcpy</span>( newString, charString, len*sizeof(<span class=prg>char</span>)  );  
+
+  <span class=sc6>return </span>newString; 
+<span class=sc16>} <span class=sc2>// DuplicateCharString().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 FindFile() - Localização de arquivo </u></b>
+<div class=niceview><b><span class=sc2>// Tools::FindFile() Esta função tenta localizar o arquivo passado</span>
+<span class=sc2>// Pode ser  sofrido  localizar  um  arquivo  de  textura  pois  o</span>
+<span class=sc2>// caminho do arquivo pode estar ou não  com  o  nome  da  textura</span>
+<span class=sc2>// Para descobrir a configuração do nome da textura salve o modelo</span>
+<span class=sc2>// 3d(.x) em forma de texto e verifique diretamente o  arquivo  em</span>
+<span class=sc2>// um editor de texto</span>
+<span class=prg>bool </span>Tools::FindFile(<b class=prg>std::string</b> *filename) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(!filename) 
+    <span class=sc6>return </span><span class=prg>false</span>; 
+
+  <span class=sc2>// Procure primeiro utilizando o nome original do arquivo que</span>
+  <span class=sc2>// presume-se aqui estar com o caminho atrelado</span>
+  <span class=sc9>if </span>(DoesFileExist(*filename)) 
+    <span class=sc6>return </span><span class=prg>true</span>; 
+
+  <span class=sc2>// Agora vamos tirar o caminho e testar apenas com o nome do</span>
+  <span class=sc2>// arquivo</span>
+  <b class=prg>std::string</b> pathOnly; 
+  <b class=prg>std::string</b> filenameOnly; 
+  SplitPath(*filename, &pathOnly, &filenameOnly);  
+
+  <span class=sc9>if</span>(DoesFileExist(filenameOnly) ) 
+  <span class=sc16>{</span>
+    *filename = filenameOnly; 
+    <span class=sc6>return </span><span class=prg>true</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Poderia-se tentar agora olhar numa pasta específica...</span>
+  <span class=sc6>return </span><span class=prg>false</span>; 
+<span class=sc16>} <span class=sc2>// FindFile().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 DoesFileExist() - Verificação de existência de arquivo </u></b>
+<div class=niceview><b><span class=sc2>// Aqui vamos verificar se o arquivo existe utilizando</span>
+<span class=sc2>// uma função padrão da linguagem C</span>
+<span class=prg>bool </span>Tools::DoesFileExist(<span class=sc16>const </span><b class=prg>std::string</b> &filename) 
+<span class=sc16>{</span>
+  <span class=sc6>return</span>(<span class=prg>_access</span>( <span class=prg>filename.c_str</span>(), <span class=sc4>0</span>) != <span class=sc4>-1</span>);  
+<span class=sc16>} <span class=sc2>// DoesFileExist().fim</span></span>
+</b></div>
+
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 SplitPath()- Separação dos elementos de um caminho </u></b>
+<div class=niceview><b><span class=sc2>// Tools::SplitPath() - Esta função divide  uma  string  produzindo</span>
+<span class=sc2>// uma string em separado para o nome do arquivo e  o  seu  caminho</span>
+<span class=sc2>// pathOnly ou filenameOnly podem ser null se não forem necessários</span>
+<span class=prg>void </span>Tools::SplitPath(<span class=sc16>const </span><b class=prg>std::string</b>& inputPath, 
+            <b class=prg>std::string</b>* pathOnly, 
+            <b class=prg>std::string</b>* filenameOnly) 
+<span class=sc16>{</span>
+  <b class=prg>std::string</b> fullPath( inputPath );  
+  std::replace( <span class=prg>fullPath.begin</span>(), <span class=prg>fullPath.end</span>(), '\\', '/' );  
+
+  <b class=prg>std::string</b>::size_type <span class=prg>lastSlashPos=fullPath.find_last_of</span>('/');  
+
+
+  <span class=sc2>// Verificar a inexistência de um caminho na string de entrada</span>
+  <span class=sc9>if </span>(lastSlashPos == <b class=prg>std::string</b>::npos) 
+  <span class=sc16>{</span>
+    *pathOnly = <span class=sc6>""</span>; 
+    *filenameOnly = fullPath; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc9>else</span>
+  <span class=sc2>// Realiza a separação das substrings</span>
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(pathOnly) 
+      *pathOnly = <span class=prg>fullPath.substr</span>(<span class=sc4>0</span>, lastSlashPos);  
+
+    <span class=sc9>if </span>(filenameOnly) 
+      *filenameOnly = <span class=prg>fullPath.substr</span>( lastSlashPos + <span class=sc4>1</span>, 
+      <span class=prg>fullPath.size</span>() - <span class=sc4>lastSlashPos-1</span>);  
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+<span class=sc16>} <span class=sc2>// Tools::SplitPath().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 GetTheCurrentDirectory() - Obtendo o diretório corrente </u></b>
+<div class=niceview><b><span class=sc2>// Obtém o nome do diretório corrente</span>
+<b class=prg>std::string</b> Tools::GetTheCurrentDirectory() 
+<span class=sc16>{</span>
+  <span class=prg>int </span>bufferSize = <span class=prg>GetCurrentDirectory</span>(<span class=sc4>0</span>, <span class=prg>NULL</span>);   
+  <span class=prg>char </span>*buffer = <span class=prg>new </span><span class=prg>char</span>[bufferSize];  
+
+  <span class=prg>GetCurrentDirectory</span>( bufferSize, buffer);  
+  <b class=prg>std::string</b> directory( buffer );  
+  <span class=prg>delete </span>[]buffer; 
+
+  <span class=sc6>return </span>directory; 
+<span class=sc16>} <span class=sc2>// Tools::GetTheCurrentDirectory().fim</span></span>
+<span class=sc2>// fim do arquivo Tools.cpp</span>
+</b></div>
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</u></b>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Tools.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#pragma </span>once 
+<span class=sc16>#include </span>&lt;string&gt; 
+<span class=sc16>#include </span>&lt;sstream&gt; 
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;assert.h&gt;</span>
+
+<span class=sc2>// Template para converter tipos padrões em strings</span>
+template &lt;class T&gt; 
+<b class=prg>std::string</b> ToString(<span class=sc16>const </span>T & t) 
+<span class=sc16>{</span>
+  std::ostringstream oss; 
+  <span class=prg>oss.clear</span>();  
+  oss &lt;&lt; t; 
+  <span class=sc6>return </span><span class=prg>oss.str</span>();  
+<span class=sc16>}</span>
+
+<span class=sc2>// A classe Tools possui um conjunto de funções úteis</span>
+<span class=sc2>// que podem ser usadas sem o instanciamento da classe</span>
+<span class=prg>class </span>Tools 
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+  ~Tools(<span class=prg>void</span>) {}; 
+<span class=sc16>public:</span>
+  Tools(<span class=prg>void</span>) {}; 
+
+  <span class=sc2>// Verificação de falha nas operações do directx</span>
+  <span class=sc16>static </span><span class=prg>bool </span>FailedHr(<span class=sc16>HRESULT </span>hr);  
+
+  <span class=sc2>// Emite uma mensagem no painel de saída do Visual Studio</span>
+  <span class=sc16>static </span><span class=prg>void </span>DebugString(<span class=sc16>const </span><b class=prg>std::string</b> &str);  
+
+  <span class=sc2>// Duplica uma string</span>
+  <span class=sc16>static </span><span class=prg>char* </span>DuplicateCharString(<span class=sc16>const </span><span class=prg>char* </span>c_str);  
+
+  <span class=sc2>// Localização de arquivo</span>
+  <span class=sc16>static </span><span class=prg>bool </span>FindFile(<b class=prg>std::string</b> *filename);  
+
+  <span class=sc2>// Verificação da existência de um arquivo</span>
+  <span class=sc16>static </span><span class=prg>bool </span>DoesFileExist(<span class=sc16>const </span><b class=prg>std::string</b> &filename);  
+
+  <span class=sc2>// Separação dos elementos de um caminho</span>
+  <span class=sc16>static </span><span class=prg>void </span>SplitPath(<span class=sc16>const </span><b class=prg>std::string</b>& inputPath, 
+      <b class=prg>std::string</b>* pathOnly, <b class=prg>std::string</b>* filenameOnly);  
+
+  <span class=sc2>// Verificação do diretório corrente</span>
+  <span class=sc16>static </span><b class=prg>std::string</b> GetTheCurrentDirectory();  
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe Tools</span>
+<span class=sc2>// fim do arquivo Tools.h</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Tools.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Dxerr.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;io.h&gt;</span>
+<span class=sc16>#include </span>&lt;algorithm&gt; 
+
+
+<span class=sc2>// Emite uma string no painel de saída do Visual Studio</span>
+<span class=prg>void </span>Tools::DebugString( <span class=sc16>const </span><b class=prg>std::string</b> &str ) 
+<span class=sc16>{</span>
+  OutputDebugString( <span class=prg>str.c_str</span>() );  
+<span class=sc16>} <span class=sc2>// DebugString().fim</span></span>
+
+
+<span class=sc2>// Emite uma string de erro em caso de falha nas operações do directx</span>
+<span class=prg>bool </span>Tools::FailedHr(<span class=sc16>HRESULT </span>hr) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(hr)) 
+  <span class=sc16>{</span>
+    DebugString(<span class=sc6>"DirectX Reported Error: " </span>+ 
+      ToString( DXGetErrorString(hr) ) + <span class=sc6>" - " </span>+ 
+      ToString( DXGetErrorDescription(hr) ) + <span class=sc6>"\n"</span>);  
+
+    <span class=sc6>return </span><span class=prg>true</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc6>return </span><span class=prg>false</span>; 
+<span class=sc16>} <span class=sc2>// FailedHr().fim</span></span>
+
+
+<span class=sc2>// Duplica e retorna a string passada ( charString )</span>
+<span class=sc2>// A função caller é responsável por liberar a memória</span>
+<span class=prg>char* </span>Tools::DuplicateCharString(<span class=sc16>const </span><span class=prg>char* </span>charString) 
+<span class=sc16>{</span>
+    <span class=sc9>if </span>(!charString) 
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  size_t len = <span class=prg>strlen</span>(charString) + <span class=sc4>1</span>; 
+  <span class=prg>char </span>*newString = <span class=prg>new </span><span class=prg>char</span>[len];  
+  <span class=prg>memcpy</span>( newString, charString, len*sizeof(<span class=prg>char</span>)  );  
+
+  <span class=sc6>return </span>newString; 
+<span class=sc16>} <span class=sc2>// DuplicateCharString().fim</span></span>
+
+
+<span class=sc2>// Tools::FindFile() Esta função tenta localizar o arquivo passado</span>
+<span class=sc2>// Pode ser  sofrido  localizar  um  arquivo  de  textura  pois  o</span>
+<span class=sc2>// caminho do arquivo pode estar ou não  com  o  nome  da  textura</span>
+<span class=sc2>// Para descobrir a configuração do nome da textura salve o modelo</span>
+<span class=sc2>// 3d(.x) em forma de texto e verifique diretamente o  arquivo  em</span>
+<span class=sc2>// um editor de texto</span>
+<span class=prg>bool </span>Tools::FindFile(<b class=prg>std::string</b> *filename) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(!filename) 
+    <span class=sc6>return </span><span class=prg>false</span>; 
+
+  <span class=sc2>// Procure primeiro utilizando o nome original do arquivo que</span>
+  <span class=sc2>// presume-se aqui estar com o caminho atrelado</span>
+  <span class=sc9>if </span>(DoesFileExist(*filename)) 
+    <span class=sc6>return </span><span class=prg>true</span>; 
+
+  <span class=sc2>// Agora vamos tirar o caminho e testar apenas com o nome do</span>
+  <span class=sc2>// arquivo</span>
+  <b class=prg>std::string</b> pathOnly; 
+  <b class=prg>std::string</b> filenameOnly; 
+  SplitPath(*filename, &pathOnly, &filenameOnly);  
+
+  <span class=sc9>if</span>(DoesFileExist(filenameOnly) ) 
+  <span class=sc16>{</span>
+    *filename = filenameOnly; 
+    <span class=sc6>return </span><span class=prg>true</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Poderia-se tentar agora olhar numa pasta específica...</span>
+  <span class=sc6>return </span><span class=prg>false</span>; 
+<span class=sc16>} <span class=sc2>// FindFile().fim</span></span>
+
+
+<span class=sc2>// Aqui vamos verificar se o arquivo existe utilizando</span>
+<span class=sc2>// uma função padrão da linguagem C</span>
+<span class=prg>bool </span>Tools::DoesFileExist(<span class=sc16>const </span><b class=prg>std::string</b> &filename) 
+<span class=sc16>{</span>
+  <span class=sc6>return</span>(<span class=prg>_access</span>( <span class=prg>filename.c_str</span>(), <span class=sc4>0</span>) != <span class=sc4>-1</span>);  
+<span class=sc16>} <span class=sc2>// DoesFileExist().fim</span></span>
+
+
+<span class=sc2>// Tools::SplitPath() - Esta função divide  uma  string  produzindo</span>
+<span class=sc2>// uma string em separado para o nome do arquivo e  o  seu  caminho</span>
+<span class=sc2>// pathOnly ou filenameOnly podem ser null se não forem necessários</span>
+<span class=prg>void </span>Tools::SplitPath(<span class=sc16>const </span><b class=prg>std::string</b>& inputPath, 
+            <b class=prg>std::string</b>* pathOnly, 
+            <b class=prg>std::string</b>* filenameOnly) 
+<span class=sc16>{</span>
+  <b class=prg>std::string</b> fullPath( inputPath );  
+  std::replace( <span class=prg>fullPath.begin</span>(), <span class=prg>fullPath.end</span>(), '\\', '/' );  
+
+  <b class=prg>std::string</b>::size_type <span class=prg>lastSlashPos=fullPath.find_last_of</span>('/');  
+
+
+  <span class=sc2>// Verificar a inexistência de um caminho na string de entrada</span>
+  <span class=sc9>if </span>(lastSlashPos == <b class=prg>std::string</b>::npos) 
+  <span class=sc16>{</span>
+    *pathOnly = <span class=sc6>""</span>; 
+    *filenameOnly = fullPath; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc9>else</span>
+  <span class=sc2>// Realiza a separação das substrings</span>
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(pathOnly) 
+      *pathOnly = <span class=prg>fullPath.substr</span>(<span class=sc4>0</span>, lastSlashPos);  
+
+    <span class=sc9>if </span>(filenameOnly) 
+      *filenameOnly = <span class=prg>fullPath.substr</span>( lastSlashPos + <span class=sc4>1</span>, 
+      <span class=prg>fullPath.size</span>() - <span class=sc4>lastSlashPos-1</span>);  
+  <span class=sc16>} <span class=sc2>// end else</span></span>
+<span class=sc16>} <span class=sc2>// Tools::SplitPath().fim</span></span>
+
+
+<span class=sc2>// Obtém o nome do diretório corrente</span>
+<b class=prg>std::string</b> Tools::GetTheCurrentDirectory() 
+<span class=sc16>{</span>
+  <span class=prg>int </span>bufferSize = <span class=prg>GetCurrentDirectory</span>(<span class=sc4>0</span>, <span class=prg>NULL</span>);   
+  <span class=prg>char </span>*buffer = <span class=prg>new </span><span class=prg>char</span>[bufferSize];  
+
+  <span class=prg>GetCurrentDirectory</span>( bufferSize, buffer);  
+  <b class=prg>std::string</b> directory( buffer );  
+  <span class=prg>delete </span>[]buffer; 
+
+  <span class=sc6>return </span>directory; 
+<span class=sc16>} <span class=sc2>// Tools::GetTheCurrentDirectory().fim</span></span>
+<span class=sc2>// fim do arquivo Tools.cpp</span>
+</div>
+
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da classe Tools</a>
+<a href=#2.1>2.1 Especificação da classe Tools: Tools.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo Tools.cpp</a>
+<a href=#2.3>2.3 DebugString()            - Mensagem no painel de saída do Visual Studio</a>
+<a href=#2.4>2.4 FailedHr()               - Verificação de falha do directx</a>
+<a href=#2.5>2.5 DuplicateCharString()    - Duplicação de string</a>
+<a href=#2.6>2.6 FindFile()               - Localização de arquivo</a>
+<a href=#2.7>2.7 DoesFileExist()          - Verificação de existência de arquivo</a>
+<a href=#2.8>2.8 SplitPath()              - Separação dos elementos de um caminho</a>
+<a href=#2.9>2.9 GetTheCurrentDirectory() - Obtendo o diretório corrente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

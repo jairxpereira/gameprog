@@ -1,0 +1,303 @@
+﻿<html>
+<head>
+<title>Gameprog_CPP_fase_17</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track17.html</b></center>
+<hr>
+<table border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track16.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track18.html" style="color:blue">&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track06"></a><h3 style="background-color:#80ff80">17. Classes genéricas</h3>
+<b><u>17.1 Visão geral</b></u>
+A linguagem c++ oferece recursos de programação genérica, isto  é,  você  pode
+criar classes, propriedades e métodos que são preparados  para  trabalhar  com
+qualquer tipo de dado, podendo  este  tipo  de  dado  ser  os  primitivos (int, 
+float...) ou os tipos de dados definidos pelo usuário como struct e ainda mesmo
+os objetos das classes. É um recurso poderoso e complexo da linguagem c++ que
+deve ser explorado com cuidado e vagarosamente.
+
+No capítulo 5 sobre funções implementamos uma função <b>diga()</b> para exibir qualquer
+tipo de dado primitivo como argumento:
+	<font color="darkblue">
+// protótipo das funções genéricas
+<b>template &lt;typename tipo_geral&gt;</b> void diga (tipo_geral nval);
+
+//******************* implementação das funções genéricas
+<b>template &lt;typename tipo_geral&gt;</b>	void diga (tipo_geral nval) {
+cout &lt;&lt; "\t Argumento: " &lt;&lt; nval << "\n";	
+} // endfunction: diga(tipo_geral) </font>
+
+O mecanismo de funcionamento das funções genéricas é simples: se seu programa
+chama a função diga() com o tipo inteiro ou outro tipo, o compilador cria
+uma versão dessa função com esse tipo de dado, fazendo a substituição do
+placeholder tipo_geral pelo tipo primitivo utilizado.
+(*) <u>placeholder</u> numa tradução ruim é 'guardador de lugar' que identifica ou mantém
+um espaço reservado enquanto o dono principal do espaço não chega. Outro termo
+utilizado em inglês com sentido semelhante é <u>dummy</u>. 
+
+Continuando, então se você chamou a função diga() com o tipo float, o compilador
+cria essa versão da função diga: <font color="darkblue">
+void diga (float nval) {
+cout &lt;&lt; "\t Argumento: " &lt;&lt; nval << "\n";	
+}</font>
+
+Essa recapitulação da função genérica diga() é só um aquecimento, vamos ver
+agora no subtópico abaixo a sintaxe de definição de classes genéricas que é
+um pouco diferente da definição de funções genéricas.
+
+<b><u>17.2 Definindo uma classe genérica</b></u>
+<div class=prg-code>
+<img src="images\cls_generica.png">
+
+<span class="sc2">// cls_generica.cpp
+// Este programa ilustra o uso de classe genérica
+</span><span class="sc9">#include &lt;iostream&gt;
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// definicao da classe genérica Megafone
+</span><span class="sc16">template</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc16">typename</span><span class="sc0"> </span><span class="sc11">tipo_geral</span><span class="sc10">&gt;</span><span class="sc0">
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Megafone</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+
+</span><span class="sc11">tipo_geral</span><span class="sc0"> </span><span class="sc11">m_dado</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">Megafone</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tipo_geral</span><span class="sc0"> </span><span class="sc11">dado</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">diga</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nvezes</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc0">
+</span><span class="sc2">// definição do construtor
+</span><span class="sc16">template</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc16">typename</span><span class="sc0"> </span><span class="sc11">tipo_geral</span><span class="sc10">&gt;</span><span class="sc0">
+</span><span class="sc11">Megafone</span><span class="sc10">&lt;</span><span class="sc11">tipo_geral</span><span class="sc10">&gt;::</span><span class="sc11">Megafone</span><span class="sc10">(</span><span class="sc11">tipo_geral</span><span class="sc0"> </span><span class="sc11">dado</span><span class="sc10">):</span><span class="sc0"> </span><span class="sc11">m_dado</span><span class="sc10">(</span><span class="sc11">dado</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{}</span><span class="sc0">
+
+</span><span class="sc2">// definição do método diga
+</span><span class="sc16">template</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc16">typename</span><span class="sc0"> </span><span class="sc11">tipo_geral</span><span class="sc10">&gt;</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Megafone</span><span class="sc10">&lt;</span><span class="sc11">tipo_geral</span><span class="sc10">&gt;::</span><span class="sc11">diga</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nvezes</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nvezes</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">nvezes</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">m_dado</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">else</span><span class="sc0"> </span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">m_dado</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">    
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método diga()
+</span><span class="sc0">
+</span><span class="sc2">// protótipo das nossas funções básicas
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">inicio</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">fim</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// --------------- Nossa função principal começa aqui...
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">inicio</span><span class="sc10">();</span><span class="sc0">   
+
+</span><span class="sc2">// Instanciamento de um objeto de classe genérica
+</span><span class="sc11">Megafone</span><span class="sc10">&lt;</span><span class="sc11">string</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">(</span><span class="sc6">"-"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">Megafone</span><span class="sc10">&lt;</span><span class="sc11">string</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">aviso</span><span class="sc10">(</span><span class="sc6">"\tPress start to play"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">Megafone</span><span class="sc10">&lt;</span><span class="sc16">int</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">credito</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// uso normal dos métodos
+</span><span class="sc11">linha</span><span class="sc10">.</span><span class="sc11">diga</span><span class="sc10">(</span><span class="sc4">40</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">aviso</span><span class="sc10">.</span><span class="sc11">diga</span><span class="sc10">();</span><span class="sc0"> 
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\tCredits: "</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">credito</span><span class="sc10">.</span><span class="sc11">diga</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">linha</span><span class="sc10">.</span><span class="sc11">diga</span><span class="sc10">(</span><span class="sc4">40</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">fim</span><span class="sc10">();</span><span class="sc0">  
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endmain
+</span><span class="sc0">
+</span><span class="sc2">// -------------------------- funções ----------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">inicio</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"title cls_generica.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color f0"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: inicio()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">fim</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">endl</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"pause"</span><span class="sc10">);</span><span class="sc0">    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: fim()</span></div>
+	
+
+<b><u>Definição da classe genérica</b></u><font color="darkblue">
+// definicao da classe generica Megafone
+<b>template &lt;typename tipo_geral&gt;</b>
+class Megafone {	
+public:
+<b>tipo_geral m_dado;</b>
+Megafone (<b>tipo_geral dado</b>);
+void diga(int nvezes = 1);
+}; // fim da classe </font>
+Tal como nas funções genéricas você deve definir um nome para o tipo genérico.
+Aqui chamamos nosso tipo genérico de <b>tipo_geral</b>: <b class="cpp1-preprocessor">template &lt;typename tipo_geral&gt;</b>
+
+<b><u>Definição dos métodos</b></u><font color="darkblue">	
+// definicao do construtor
+<b>template &lt;typename tipo_geral&gt;</b>
+Megafone<b>&lt;tipo_geral&gt;</b>::Megafone(tipo_geral dado): m_dado(dado) {}
+
+// definicao do metodo diga
+<b>template &lt;typename tipo_geral&gt;</b>
+void Megafone<b>&lt;tipo_geral&gt;</b>::diga (int nvezes) {
+if (nvezes > 1)	for (int ncx=0; ncx < nvezes; ncx++) cout << m_dado;
+else cout << m_dado << "\n";	
+cout << "\n";
+} // fim do metodo diga() </font>
+Na implementação dos métodos de classe genérica eles devem ser precedidos pela
+sintaxe de declaração do tipo genérico:<b>template &lt;typename tipo_geral&gt;</b>
+E após o nome da classe você deve colocar o nome do tipo geral dessa forma:     
+<b class="cpp1-preprocessor">tipo_de_retorno Nome_da_classe&lt;tipo_geral&gt;::Método() { // código }</b>
+
+<b><u>Instanciando os objetos</b></u><font color="darkblue">
+// Instanciamento de um objeto de classe generica
+Megafone<b>&lt;string&gt</b>; linha("-");
+Megafone&lt;string&gt; aviso("\tPress start to play");
+Megafone&lt;int&gt; credito(2);
+// uso normal dos metodos
+linha.diga(40); aviso.diga(); 
+cout << "\tCredits: "; credito.diga();
+linha.diga(40);	</font>
+Veja que após o nome da classe você deve colocar o tipo de dado entre os bicos.
+Note que nosso método diga() é capaz de mostrar um objeto da classe string;
+isso somente é possível porque a classe string sobrecarrega o operador &lt;&lt;
+( operador&lt;&lt() ) que retorna uma c-string ao objeto cout.
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track16.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track18.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>
