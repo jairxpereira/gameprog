@@ -1,0 +1,376 @@
+﻿<html>
+<head>
+<title>C_Sharp_13-4</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 13-4</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track13-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track14-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track13"></a>
+<h3 style="background-color:#ead5ff">13-4 Recursos compartilhados: lock</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+A tranca  é um desses cuidados básicos que precisa haver quando há várias
+linhas querendo  acessar um objeto que permite apenas uma linha  por  vez.
+Imagine um objeto banheiro que apenas  permite um linha por vez. A  linha
+deve  bater  na  porta  desse  objeto,  verificar se está desocupado e ao 
+assumir esse objeto deve trancá-lo  para que  nenhuma  outra linha  possa
+usá-lo naquele momento. Depois  de usá-lo deve destrancá-lo  e  sinalizar
+que está desocupado para as outras linhas que estão na fila ou realizando
+outra tarefa enquanto o objeto está ocupado. Esse pequeno exemplo ilustra
+o  quanto  o  assunto  traz  complexidade para dentro de uma aplicação de 
+software e dá uma ideia vaga do quanto  de  código adicional isso precisa
+para funcionar corretamente.
+
+No entanto, a linguagem C# possui a instrução <b class=prg>lock</b> que realiza o papel de
+tranca citado acima e vai ser utilizada no programa exemplo desse tópico.
+
+<b><u>1.2 Contexto da aplicação</b></u>
+- Em nossa aplicação  vamos iniciar duas linhas de execução.  Em ambas as
+linhas a variável inteira  <b>energia</b>  será  incrementada dentro de um bloco
+protegido e trancado  com a instrução  <b class=prg>lock</b>  que  permite  realizar  esse 
+trabalho  gerenciando as sutilidades do acesso concorrente,  trancando  e
+liberando o objeto quando necessário.
+
+<b><u>2. Incrementado energia de forma protegida</u></b>
+<div class=niceview>
+<span class="sc2">// Aumenta o valor de energia
+</span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">subindo02</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  
+  </span><span class="sc5">try</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">lock</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">energia</span><span class="sc10">++;</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" subindo02():"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endlock          
+</span><span class="sc0">      
+      </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endwhile
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+  </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> 
+      </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc2">// subindo02()</span>
+</div>
+Veja pelo exemplo acima que <b class=prg>lock</b> é usada para trancar o objeto que está
+em uso.  Assim que o bloco de <b class=prg>lock</b> for encerrado o objeto é destrancado
+para o uso de outra linha de execução. Nesse cenário, é recomendado que 
+os membros  do  objeto sejam <b class=prg>private</b>  e que o acesso seja protegido por 
+<b class=prg>lock</b> dentro dos métodos. 
+
+<b><u>3. Sintonizando a aplicação</u></b>
+
+Na saída final do nosso programa foi exibido uma sequência crescente de
+números de 1 a 11. Assim, o resultado saiu com falhas porque a variável
+extrapolou  o  limite  da  expressão <b class=prg>while (energia &lt; 10)</b> o que poderia
+causar danos para processos dependentes. 
+
+Isso reforça  ainda mais a imprevisibilidade que vários threads rodando
+podem trazer para a aplicação e o grande cuidado que se deve ter no uso
+desse recurso.
+
+Aonde usar threads com sucesso e segurança sem o fardo da complexidade?
+
+- Em métodos com processamento demorado para permitir dar feedback  do
+progresso ao usuário e permitir que ele pare a aplicação quando quiser;
+
+- Com cada linha de execução tendo seus recursos exclusivos desaparece
+a necessidade da complicada gestão de recursos compartilhados e acesso
+concorrente. Por exemplo,  em  um  jogo  de  videogame,  uma  linha de 
+execução  pode  cuidar  dos efeitos visuais de fundo que não interagem 
+com o jogador.
+
+<b><u>4. Código fonte do projeto de exemplo: prj_Lock</u></b>
+<div class=prg-code>
+<img src=images\prj_Lock.png>
+
+<span class="sc2">// Projeto prj_Lock - Arquivo: Jogador.cs
+// Este programa mostra o uso de Lock no ambiente de threads
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Lock</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">  
+    </span><span class="sc2">// Aumenta o valor de energia
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">subindo01</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+          </span><span class="sc5">lock</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">)</span><span class="sc0">
+          </span><span class="sc10">{</span><span class="sc0">
+
+            </span><span class="sc11">energia</span><span class="sc10">++;</span><span class="sc0">
+            </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" subindo01():"</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endlock
+</span><span class="sc0">
+          </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endwhile
+</span><span class="sc0">      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> 
+          </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//subindo01().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Aumenta o valor de energia
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">subindo02</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      
+      </span><span class="sc5">try</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+          </span><span class="sc5">lock</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">)</span><span class="sc0">
+          </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">energia</span><span class="sc10">++;</span><span class="sc0">
+            </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" subindo02():"</span><span class="sc10">);</span><span class="sc0">
+          </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endlock          
+</span><span class="sc0">          
+          </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endwhile
+</span><span class="sc0">      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endtry
+</span><span class="sc0">
+      </span><span class="sc5">catch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ThreadAbortException</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0} finalizado antes do final! "</span><span class="sc10">,</span><span class="sc0"> 
+          </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">CurrentThread</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ambiente foi limpo!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endcatch
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// subindo02()   
+</span><span class="sc0">
+    </span><span class="sc2">// Mostra um texto e a variável temp
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"{0} {1} \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar()
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_Lock - Arquivo: Program.cs
+// Este programa mostra o uso de Lock no ambiente de threads
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Lock</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">  
+    </span><span class="sc2">// Linhas paraleas de execução
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc0"> </span><span class="sc11">linha01</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// energia++
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc0"> </span><span class="sc11">linha02</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// energia++
+</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Lock"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Vamos criar um novo jogador
+</span><span class="sc0">      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">player01</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">();</span><span class="sc0">      
+
+      </span><span class="sc2">// Assinala as funções às linhas de execução
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">ThreadStart</span><span class="sc10">(</span><span class="sc11">player01</span><span class="sc10">.</span><span class="sc11">subindo01</span><span class="sc10">));</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Thread</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">ThreadStart</span><span class="sc10">(</span><span class="sc11">player01</span><span class="sc10">.</span><span class="sc11">subindo02</span><span class="sc10">));</span><span class="sc0">
+
+      </span><span class="sc2">// Nomeando os threads
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"subindo01()"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"subindo02()"</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// As linhas começa o trabalho em paralelo com Start()
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">  </span><span class="sc2">// energia++
+</span><span class="sc0">      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">  </span><span class="sc2">// ylin--       
+</span><span class="sc0">
+      </span><span class="sc2">// O programa aguarda o completamento das tarefas para finalizar-se
+</span><span class="sc0">      </span><span class="sc11">linha01</span><span class="sc10">.</span><span class="sc11">Join</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">linha02</span><span class="sc10">.</span><span class="sc11">Join</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\n Pressione ENTER novamente para encerrar"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">25</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Lock
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track13-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track14-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

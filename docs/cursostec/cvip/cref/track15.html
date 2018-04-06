@@ -1,0 +1,548 @@
+<html><head>
+<title>cbiblioteca_track15_alloc</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track15.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track14.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track16.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="15.00">
+<CENTER><H2>15.00 alloc.h</H2></CENTER>
+<A HREF="#15.01">15.01</a> brk...............Muda o espaço de alocação do segmento de dados
+<A HREF="#15.02">15.02</a> calloc............Aloca memória principal em bytes
+<A HREF="#15.03">15.03</a> coreleft..........Obtém o total de memória livre
+<A HREF="#15.04">15.04</a> farcalloc.........Aloca memória da far heap em bytes
+<A HREF="#15.05">15.05</a> farcoreleft.......Obtém o total de memória livre da far heap
+<A HREF="#15.06">15.06</a> farfree...........Libera bloco de memória far alocado
+
+<A HREF="#15.07">15.07</a> farmalloc.........Aloca memória da far heap em bytes
+<A HREF="#15.08">15.08</a> farrealloc........Reajusta o tamanho do bloco alocado na far heap
+<A HREF="#15.09">15.09</a> free..............Libera memória que foi alocada com malloc() e calloc()
+<A HREF="#15.10">15.10</a> malloc............Aloca memória principal em bytes
+<A HREF="#15.11">15.11</a> realloc...........Realoca memória em bytes
+<A HREF="#15.12">15.12</a> sbrk..............Muda o espaço de alocação do segmento de dados
+
+<A NAME="15.01"><B>15.01 brk</B></a>
+        Esta função muda o espaço de alocação do segmento de dados.
+        <b style="color:green">
+        int brk(void *endds);
+        nSts = brk(sMem);</b>
+
+        nSts....O valor de retorno é 0 em caso de sucesso, -1 para falha
+        sMem....brk() configura o topo de DS para este valor.
+        Este remanejamento vai refletir no total de espaço livre.
+
+        Ex.:    char *sMem;
+                sMem = (char *) malloc (1000);
+                brk (sMem+16);
+
+        Veja programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "alloc.h"
+
+        int main(void) {
+        char *sMem;
+
+        clrscr();
+
+        printf("Mudando a alocação com brk()\n");
+        sMem = (char *) malloc(1);
+        printf("Antes de brk(): %lu bytes livres\n", coreleft());
+        brk(sMem+1000);
+        printf("Depois de brk(): %lu bytes livres\n", coreleft());
+
+        getch();
+        return 0;}</font>
+
+        Mudando a alocação com brk()
+        Antes de brk(): 15136950 bytes livres
+        Depois de brk(): 15135954 bytes livres
+
+.......................................................................................
+<A NAME="15.02"><B>15.02 calloc</B></a>
+        Esta função aloca memória principal para nElementos de nBytes cada
+        um, sendo o total de bytes dado por nElementos * nBytes.
+        <b style="color:green">
+        void *calloc (size_t nelem, size_t elsize);
+        MemPtr = (DataType *) calloc (nNumber,nBytes);</b>
+
+        MemPtr........A função retorna um ponteiro que aponta para a área alocada
+        (DataType *)..Você precisa usar um casting para garantir que o ponteiro
+                      retornado seja do tipo certo.
+        nNumber.......A quantidade de elementos
+        nBytes........O tamanho em bytes de cada elemento
+
+        Ex.:    char *sNomes;
+                int nNome = 10;
+                int nBytes = sizeof(char) * 20;
+                sNome = (char *) calloc (nNome,nBytes);
+
+        Em caso de falha ou memória insuficiente, o valor de retorno
+        do ponteiro é NULL. Os bytes da área alocada são zerados.
+        Para outros detalhes veja a função malloc().
+
+        Veja mais este programinha:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "string.h"
+        #include "alloc.h"
+
+        int main(void) {
+        char *str = NULL;
+
+        clrscr();
+
+        str = (char *) calloc(10, sizeof(char));
+        if (str==NULL) {
+        printf("Memória insuficiente\n");
+        abort();}
+
+        strcpy(str, "Reservado");
+
+        printf("%s\n", str);
+
+        free(str);
+        getch();
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="15.03"><B>15.03 coreleft</B></a>
+        Esta função obtém o total de memória livre.
+        <b style="color:green">
+        unsigned long coreleft(void);
+        unsigned int coreleft(void);
+        nFreeMem = coreleft();</b>
+
+        Para programas cujo modelo de memória for tiny, small ou medium
+        o tipo de retorno desta função é unsigned int; caso o modelo de
+        memória for compact, large ou huge o tipo de retorno é unsigned long.
+
+        Ex.:    unsigned long nFreeMem;
+                nFreeMem = coreleft();
+                printf ("%lu\n",nFreeMem);
+                /* Resultou em 63738 */
+
+.......................................................................................
+<A NAME="15.04"><B>15.04 farcalloc</B></a>
+        Esta função aloca memória da far heap. Blocos maiores de 64K podem
+        ser alocados, toda memória que estiver disponível pode ser alocada.
+        Não use farcalloc() em programas com modelo de memória tiny.
+        <b style="color:green">
+        void far *farcalloc(unsigned long nunits, unsigned long unitssize);
+        fMem = (DataType *) farcalloc (nElementos, nTamElementos);</b>
+
+        fMem......Um ponteiro far é retornado, em caso de falha o valor é NULL
+
+        Ex.:    char far *fMem;
+                unsigned long nElemento = 100;
+                unsigned long nTamElemento = 650;
+                fMem = (char *) farcalloc (nElemento, nTamElemento);
+
+        Para trabalhar melhor com esta função use movedata(), FP_SEG(),
+        FP_OFF() de dos.h para manipular este espaço alocado.
+
+        Veja programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "alloc.h"
+        #include "string.h"
+        #include "dos.h"
+
+        int main(void) {
+        int nTam = 0;
+        int nMsgs = 1000;
+        char far *fMem;
+        char *sMsg = "Testando farcalloc()";
+
+        nTam = strlen(sMsg) + 1;
+        fMem = (char far *) farcalloc(nMsgs,nTam);
+
+        if (fMem==NULL) {
+        printf ("Mem¢ria insuficiente :-( ");
+        getch();
+        exit(1); }
+
+        /* Vamos copiar sMsg para a mem¢ria alocada
+        Perceba que nós usamos movedata() porque o modelo de memória
+        do programa por ser small, o que no caso uma rotina de cópia
+        de string não poderia ser usada visto que ela assume que o
+        tamanho do ponteiro seja near. */
+
+        movedata(FP_SEG(sMsg), FP_OFF(sMsg),FP_SEG(fMem), FP_OFF(fMem),nTam);
+
+        clrscr();
+        printf("Far sMsg: %Fs\n", fMem);
+        printf("Endereço: %Fp\n",fMem);
+
+        farfree(fMem);
+        getch();
+        return 0; }</font>
+
+        Saída:
+        Far sMsg: Testando farmalloc()
+        Endereço: 7534:0008
+
+.......................................................................................
+<A NAME="15.05"><B>15.05 farcoreleft</B></a>
+        Esta função obtém o total de memória livre entre o mais alto
+        bloco alocado e o final da far heap. Não use esta função em
+        programa de modelo de memória tiny.
+        <b style="color:green">
+        unsigned long farcoreleft(void);
+        nFarFreeMem = farcoreleft();</b>
+
+        Ex.:    unsigned long nFarFreeMem;
+                nFarFreeMem = farcoreleft();
+                printf ("%lu\n",nFarFreeMem);
+                /* Resultou em 177944 */
+
+.......................................................................................
+<A NAME="15.06"><B>15.06 farfree</B></a>
+        Esta função libera um bloco de memória far alocado previamente com
+        farmalloc() ou farcalloc().
+        <b style="color:green">
+        void farfree (void far *block);
+        farfree(fMem);</b>
+
+        Ex.:    farfree(fMem);
+
+.......................................................................................
+<A NAME="15.07"><B>15.07 farmalloc</B></a>
+        Esta função aloca memória da far heap, isto é, ela aloca memória
+        fora do segmento corrente. Esta função é capaz de alocar blocos
+        maiores de 64K, podendo alocar até toda memória que estiver
+        disponível. Programas cuja modelo de memória é tiny não podem usar
+        farmalloc().
+        <b style="color:green">
+        void far *farmalloc(unsigned long nbytes);
+        fMem = (DataType *) farmalloc (nBytes);</b>
+
+        fMem......Um ponteiro far é retornado, em caso de falha o valor é NULL
+
+        Ex.:    char far *sMemoria;
+                unsigned long nTam = 64000;
+                sMemoria = (char *) farmalloc (nTam);
+
+        Para melhor trabalhar com esta função use movedata() de dos.h para
+        copiar dados para a memória alocada.
+
+        Veja este programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "alloc.h"
+        #include "string.h"
+        #include "dos.h"
+
+        int main(void) {
+        int nTam = 0;
+        char far *fMem;
+        char *sMsg = "Testando farmalloc()";
+
+        nTam = strlen(sMsg) + 1;
+        fMem = (char far *) farmalloc(nTam);
+
+        /* Vamos copiar sMsg para a memória alocada
+        Perceba que nós usamos movedata() porque o modelo de memória
+        do programa por ser small, o que no caso uma rotina de cópia
+        de string não poderia ser usada visto que ela assume que o
+        tamanho do ponteiro seja near. */
+
+        movedata(FP_SEG(sMsg), FP_OFF(sMsg),FP_SEG(fMem), FP_OFF(fMem),nTam);
+
+        clrscr();
+        printf("Far sMsg: %Fs\n", fMem);
+        printf("Endereço: %Fp\n",fMem);
+
+        farfree(fMem);
+        getch();
+        return 0; }</font>
+
+        Saída:
+        Far sMsg: Testando farmalloc()
+        Endereço: 751B:0008
+
+.......................................................................................
+<A NAME="15.08"><B>15.08 farrealloc</B></a>
+        Esta função reajusta o tamanho do bloco alocado na far heap,
+        expandido ou contraindo o bloco alocado conforme a nova
+        requisição de memória.
+        <b style="color:green">
+        void far *farrealloc(void far *oldblock, unsigned long nbytes);
+        sNewMem = (DataType *) farrealloc(sMem, nNewTam);</b>
+
+        Ex.:    char far *sMem;
+                char far *sNewMem;
+                sMem = (char far *) farmalloc(16);
+                sNewMem = (char far *) farrealloc(sMem,64);
+
+        Veja o programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "alloc.h"
+        #include "string.h"
+        #include "dos.h"
+
+        int main(void) {
+        char far *sMem;
+        char far *sNewMem;
+
+        clrscr();
+        sMem = (char far *) farmalloc(16);
+        printf("Primeiro endereço: %Fp\n", sMem);
+
+        /*  Nós usamos um segundo ponteiro, sNewMem, a fim de preservar */
+        /*  o primeiro ponteiro no caso de farrealloc() retornar NULL,  */
+        /*  situação que invalidaria o trabalho da primeira alocação    */
+
+        sNewMem = (char far *) farrealloc(sMem,64);
+        printf("    Novo endereço: %Fp\n", sNewMem);
+        if (sNewMem != NULL)
+        farfree(sNewMem);
+        getch();
+        return 0; }</font>
+
+        Saída:
+        Primeiro endereço: 7519:0008
+            Novo endereço: 751B:0008
+
+.......................................................................................
+<A NAME="15.09"><B>15.09 free</B></a>
+        Esta função libera para o sistema operacional o bloco de memória
+        que foi alocada com malloc() ou calloc() anteriormente.
+        <b style ="color:green">
+        void free( void *block);
+        free(BlockPtr);</b>
+
+        Ex.:            free(IntPtr);
+
+.......................................................................................
+<A NAME="15.10"><B>15.10 malloc</B></a>
+        Esta função aloca memória principal do sistema.
+        <b style="color:green">
+        void *malloc(size_t size);
+        Ptr = malloc(nBytes);</b>
+
+        Ex.:    int *IntPtr;
+                IntPtr = (int *) malloc(100 * sizeof(int));
+
+        Aqui neste exemplo, declaramos um ponteiro para inteiros.
+        Em seguida,alocamos 100 lugares para inteiros, supondo que o
+        tipo inteiro tenha 2 bytes cada um, o total de memória alocada
+        é de 200 bytes para guardar estes 100 números inteiros.
+
+        Sizeof(TipoDeDado) é de extrema importância na alocação da
+        quantidade certa de memória, pois ele obtém o número exato de
+        bytes exigido para cada tipo de dado e até de estruturas.
+
+        Precedendo malloc() nós colocamos um cast (int *) para garantir
+        que o ponteiro retornado seja do tipo inteiro ou do tipo que
+        necessitamos.
+
+        Caso não haja a memória requisitada, o ponteiro retornado
+        apresenta valor NULL.
+
+        Vejas mais estes exemplos:<font color="darkblue">
+        /* Alocando espaço para inteiros */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "alloc.h"
+
+        int main( int nCmd, char **sCmd) {
+
+        /* void *malloc(size_t size) */
+
+        int *IntPtr;
+        int nBytes=200;
+
+        clrscr();
+
+        IntPtr = (int *) malloc (nBytes * sizeof(int));
+
+        if (IntPtr==NULL) printf("Não conseguimos alocar a memória requisitada.");
+        else printf("%d bytes foram alocados com sucesso.",nBytes*sizeof(int));
+
+        getch();
+        puts("End of Program."); }</font>
+
+        Exemplo 02, alocando espaço para floats: <font color="darkblue">
+        /* Alocando memória para números flutuantes */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "alloc.h"
+
+        int main( int nCmd, char **sCmd) {
+
+        /* void *malloc(size_t size) */
+
+        float *FloatPtr;
+        int nNumber=200;
+
+        clrscr();
+
+        FloatPtr = (float *) malloc (nNumber * sizeof(float));
+
+        if (FloatPtr==NULL) printf("Não conseguimos alocar a memória requisitada.");
+        else printf("%d bytes foram alocados com sucesso.",nNumber*sizeof(float));
+
+        getch();
+        puts("End of Program."); }</font>
+
+        Exemplo 03, alocando espaço para estruturas:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "alloc.h"
+
+        typedef struct {
+        int x;
+        int y;
+        int z;
+        } ponto3d;
+
+        int main( int nCmd, char **sCmd) {
+
+        /* void *malloc(size_t size) */
+
+        ponto3d *Stru3dPtr;
+        int nNumber,nBytes;
+
+        nNumber = 100;
+
+        clrscr();
+
+        nBytes = nNumber * sizeof(ponto3d);
+
+        Stru3dPtr = (ponto3d *) malloc (nBytes);
+
+        if (Stru3dPtr==NULL) printf("Falha na alocação de mem¢ria.");
+        else printf("%d bytes alocados com sucesso\n",nBytes);
+
+        printf("Tamanho  da estrutura ponto3d: %d \n",sizeof(ponto3d));
+
+        puts("End of Program.");
+        getch(); }</font>
+
+.......................................................................................
+<A NAME="15.11"><B>15.11 realloc</B></a>
+        Esta função realoca memória para um bloco que foi pré-alocado com malloc()
+        ou calloc(). O bloco pode ter seu tamanho reduzido ou aumentado
+        conforme a requisição do novo pedido de memória for maior ou menor
+        que o tamanho do bloco atual.
+        <b style="color:green">
+        void *realloc (void *block, size_t size);
+        MemPtr = (DataType *) realloc(MemPtr, nBytes);</b>
+
+        MemPtr....Bloco alocado anteriormente com calloc() ou malloc()
+        nBytes....Nova requisição de tamanho do bloco
+
+        Ex.:    char *sNomes;
+                int nNome = 10;
+                int nBytes = sizeof(char) * 20;
+                sNome = (char *) calloc (nNome,nBytes);
+                sNome = (char *) realloc (sNome,5000);
+
+        Em caso de falha, o valor de retorno é NULL.
+        O tamanho máximo do bloco que pode ser alocado com
+        malloc(), calloc() e realloc() é de 64K.
+
+        Veja mais este programa:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "string.h"
+        #include "alloc.h"
+
+        int main(void)  {
+        char *str = NULL;
+
+        clrscr();
+
+        str = (char *) calloc(10, sizeof(char));
+        if (str==NULL) {
+        printf("Memória insuficiente\n");
+        abort();}
+
+        strcpy(str, "Reservado");
+
+        printf("%s \t %p \n", str,str);
+
+        str = (char *) realloc (str,2000);
+        if (str==NULL) {
+        printf("Memória insuficiente\n");
+        getch();
+        abort();}
+
+        printf("%s \t %p \n", str,str);
+
+        free(str);
+        getch();
+        return 0; }</font>
+
+.......................................................................................
+<A NAME="15.12"><B>15.12 sbrk</B></a>
+        Esta função altera o espaço de alocação do segmento de dados.
+        O argumento é somado ao atual valor de quebra do segmento,
+        estabelecendo assim um novo valor para o topo de DS.
+        <b style="color:green">
+        void *sbrk (int incr);
+        sOldMem = sbrk(nInc);</b>
+
+        sOldMem....Em caso de sucesso o valor de retorno é o antigo valor do topo
+                   de DS, em caso de erro o valor é -1.
+
+        Ex:     char *sMem;
+                sMem = (char *) malloc (1000);
+                brk (sMem+16);
+                sbrk(16);
+
+        Veja a função bkr() para maior domínio desta função.
+
+
+</BODY></HTML>
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track14.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track16.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

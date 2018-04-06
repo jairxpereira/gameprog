@@ -1,0 +1,472 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase05-2</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 5.2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">05.2 Bitmap</h3><pre>
+<b><u>05.2 Visão geral</b></u>
+
+ Bitmap é um tipo de arquivo de imagem que pode ser usado para as seguintes
+ finalidades: ilustração, textura ou servir como célula de desenho animado.
+ O nome deste arquivo geralmente termina com a extensão bmp.
+ 
+ A cada bitmap carregado deve ser dado um número de identificação através
+ do qual esse bitmap vai ser manipulado e sofrer os efeitos que a DarkGdk
+ oferece. 
+ 
+ A tela visível é tratada como um arquivo de bitmap, o bitmap zero. Você pode
+ copiar conteúdo de um bitmap para outro, fazendo assim montagem de cenários
+ e animação. Para você exibir um bitmap você deve carregá-lo e copiá-lo
+ para o bitmap zero que vimos que é a sua tela visível.
+
+ O bitmap que é identificado com zero é mostrado imediatamente na tela.
+ 
+ <b><u>Testando funções de bitmap</b></u>
+ <img src="images/bitmap01.png">
+<div class=prg-code><span class="sc2">// bitmap01.cpp
+// Esse programa testa funções de bitmap
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                     </span><span class="sc2">// inicializa o sisema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_bitmap01</span><span class="sc10">();</span><span class="sc0">                </span><span class="sc2">// testa funções de bitmap
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">virar_bmp</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">               </span><span class="sc2">// Vira a imagem bitmap
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">espelhar_bmp</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">            </span><span class="sc2">// Espelha a imagem bitmap
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">                    </span><span class="sc2">// Apresenta um menu de opções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">info_bmp</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">                </span><span class="sc2">// Mostra informações sobre o bitmap
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">carregar_mostrar_bmp</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">    </span><span class="sc2">// Carrega e mostra o bitmap
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Compara duas strins
+</span><span class="sc0">
+</span><span class="sc2">// Copia parte de um bitmap para uma área de destino
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_copiar_bmp</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEsquerda</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nTopo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nDireita</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nFundo</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+</span><span class="sc11">carregar_mostrar_bmp</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+
+</span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">tst_bitmap01</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">info_bmp</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbEscapeKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">MessageBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc6">"Saindo do programa"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"bitmap01.cpp"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">MB_OK</span><span class="sc10">);</span><span class="sc0">
+	</span><span class="sc11">dbDeleteBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+	</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDisableEscapeKey</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// Configurando a janela
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"bitmap01.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetTextOpaque</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_bitmap01</span><span class="sc0"> </span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0"> 
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"l"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">carregar_mostrar_bmp</span><span class="sc10">();</span><span class="sc0">     
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"f"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">virar_bmp</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"m"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">espelhar_bmp</span><span class="sc10">();</span><span class="sc0">         
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"c"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">tst_copiar_bmp</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">127</span><span class="sc10">,</span><span class="sc4">127</span><span class="sc10">);</span><span class="sc0">        
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"b"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">dbBlurBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">5</span><span class="sc10">);</span><span class="sc0">
+	</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"d"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc11">dbFadeBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">80</span><span class="sc10">);</span><span class="sc0">
+	</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim tst_bitmap01()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">       
+</span><span class="sc11">dbSetCurrentBitmap</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">  
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"l- dbLoadBitmap()"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">210</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"d- dbFadeBitmap()"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">320</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"m- dbMirrorBitmap()"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">210</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">320</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"b- dbBlurBitmap()"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">340</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"f- dbFlipBitmap()"</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc4">210</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">340</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"c- dbCopyBitmap()"</span><span class="sc10">);</span><span class="sc0">  
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim menu()
+</span><span class="sc0">
+
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">igual</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">txt</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">!</span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim igual()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">carregar_mostrar_bmp</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbLoadBitmap</span><span class="sc10">(</span><span class="sc6">"c://gameprog//gdkmedia//bitmap//textura.bmp"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim loadbmp()
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_copiar_bmp</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEsquerda</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nTopo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nDireita</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nFundo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">   
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">bmpFonte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">bmpDestino</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">esquerdaAlvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">300</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">topoAlvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">   
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">direitaAlvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">428</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">fundoAlvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">120</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc11">bmpFonte</span><span class="sc10">,</span><span class="sc0">
+		 </span><span class="sc11">nEsquerda</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nTopo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nDireita</span><span class="sc10">,</span><span class="sc11">nFundo</span><span class="sc10">,</span><span class="sc0">
+		 </span><span class="sc11">bmpDestino</span><span class="sc10">,</span><span class="sc0">
+		 </span><span class="sc11">esquerdaAlvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">topoAlvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">direitaAlvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">fundoAlvo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim tst_copiar_bmp
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">virar_bmp</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbFlipBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">      
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim virar_bmp()
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">espelhar_bmp</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbMirrorBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCopyBitmap</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">  
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim espelhar_bmp()
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">info_bmp</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nlargura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nprofundidade</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nvirado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nEspelhado</span><span class="sc10">;</span><span class="sc0">    
+
+</span><span class="sc2">// Obtendo os dados do bitmap 1
+</span><span class="sc0">    </span><span class="sc11">nlargura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapWidth</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">nAltura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapHeight</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">nprofundidade</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapDepth</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">nvirado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapFlipped</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">nEspelhado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbBitmapMirrored</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostrando os dados
+</span><span class="sc0">    </span><span class="sc11">dbSetCurrentBitmap</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Largura: %d Altura:%d Profundidade: %d"</span><span class="sc10">,</span><span class="sc0"> 
+	</span><span class="sc11">nlargura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAltura</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nprofundidade</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">260</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">txt</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Virado: %d Espelhado: %d"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nvirado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nEspelhado</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">280</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim info_bmp()
+</span></div>
+
+
+<b><u>Carregando o bitmap</b></u> <b class=sc2>
+dbLoadBitmap ( sArquivo )	
+void dbLoadBitmap ( char* szFilename ) </b> <b <b class=prg>
+dbLoadBitmap("c://gameprog//gdkmedia//bitmap//textura.bmp"); </b>
+Nesta primeira versão, esta função carrega e mostra o arquivo bitmap
+especificado. <b class=sc2>
+
+dbLoadBitmap ( sArquivo, nbmp)		
+void dbLoadBitmap ( char* szFilename, int iBitmap ) </b><b class=prg>
+dbLoadBitmap("c://gameprog//gdkmedia//bitmap//textura.bmp",1); </b>
+Nesta segunda versão, esta função carrega o arquivo bitmap especificado
+assinalando ao mesmo o número de handle <b>nbmp</b>. Repare que para mostrar
+esse bitmap você deve copiá-lo para o bitmap zero com <b>dbCopyBitmap(nbmp,0).</b>
+
+
+<b><u>Deletando o bitmap</b></u> <b class=sc2>
+dbDeleteBitmap ( nbmp )
+void dbDeleteBitmap ( int iBitmap ) </b> <span class=prg>
+
+dbDisableEscapeKey();
+ if (dbEscapeKey()==1) {
+	MessageBox (0,"Saindo do programa", "bitmap01.cpp", MB_OK);
+	<b>dbDeleteBitmap(1);</b>
+	return;
+  } // fim do if </span>
+Quando não for mais utilizar o bitmap delete-o com <b>dbDeleteBitmap()</b>. Isso
+libera mais memória para seu programa.	Em nosso programa tivemos o cuidado
+de mudar o fechamento do programa para	garantir a deleção do bitmap 
+utilizado.
+
+
+<b><u>Aplicando efeitos sobre o bitmap</b></u>
+Na Darkgdk você pode virar e/ou espelhar o bitmap, pode aplicar o efeito de
+esmaecimento (fade) ou pode aplicar o efeito de borrar (blur). Veja abaixo
+as funções que aplicam esses efeitos:	
+<img src="images\virada_chaleira.png">
+<b class=sc2>	
+dbFlipBitmap (nbmp)
+void dbFlipBitmap ( int iBitmap )</b><span class=prg>
+dbFlipBitmap(1);</span>
+Inverte verticalmente o bitmap nbmp especificado.
+---------------------------------------------------------------------------
+
+
+<img src="images\espelhada_chaleira.png">
+<b class=sc2>
+dbMirrorBitmap (nbmp)
+void dbMirrorBitmap ( int iBitmap )</b><span class=prg>
+dbMirrorBitmap(1);</span>
+Inverte horizontalmente o bitmap nbmp especificado.	
+<img src="images\virada_espelhada_chaleira.png">
+---------------------------------------------------------------------------
+
+
+<img src="images\fade80_chaleira.png">
+<b class=sc2>
+dbFadeBitmap (nbmp, nfade)
+void dbFadeBitmap ( int iBitmap, int iFade )</b><span class=prg>
+dbBlurBitmap(1,5);</span>
+Aplica uma taxa (nfade) de esmaecimento no bitmap (nbmp) especificado.
+---------------------------------------------------------------------------
+
+
+<img src="images\blur3_chaleira.png">
+<b class=sc2>
+dbBlurBitmap (nbmp, nblur)
+void dbBlurBitmap ( int iBitmap, int iBlur )</b><span class=prg>
+dbFadeBitmap(1,80);</span>
+Aplica uma taxa (nblur) do efeito borrar no bitmap (nbmp) especificado.
+---------------------------------------------------------------------------
+
+
+<b><u>Obtendo os dados do bitmap</b></u><span class=prg>
+nlargura = dbBitmapWidth(1);		// Retorna a largura do bitmap
+nAltura = dbBitmapHeight(1);		// Retorna a altura do bitmap
+nprofundidade = dbBitmapDepth(1); 	// Profundidade de cor do bitmap
+nvirado = dbBitmapFlipped(1);		// Retorna 1 se bitmap está virado
+nEspelhado = dbBitmapMirrored(1); 	// Retorna 1 se bitmap está espelhado</span>
+
+As funções acima obtém informações importantes do bitmap como largura, altura,
+profundidade de cor, se o bitmap está virado e/ou espelhado. Você precisa
+passar um bitmap como referência e definir uma variável inteira para receber
+o resultado.
+
+<b><u>Copiando bitmaps - primeira sintaxe</b></u><b class=sc2>
+dbCopyBitmap ( nbmp_fonte, nbmp_destino)
+void dbCopyBitmap ( int iFrom, int iTo )</b><b class=prg>
+dbCopyBitmap(1,0);  </b>
+Nesta sintaxe mais simples essa função copia um bitmap fonte (<b>nbmp_fonte</b>) 
+para dentro de um bitmap destino (<b>nbmp_destino</b>).
+
+<b><u>Copiando bitmaps - segunda sintaxe</b></u>
+Agora na sintaxe abaixo, você consegue copiar um quadro parcial do bitmap
+fonte para um quadro parcial do bitmap de destino. E isso dá origem a uma
+função muito complexa com 10 argumentos: <b class=sc2>
+
+dbCopyBitmap(bmpFonte, nEsquerda, nTopo, nDireita,nFundo,
+	bmpDestino, esquerdaAlvo, topoAlvo, direitaAlvo, fundoAlvo); </b>
+
+Observe atentamente o desenho abaixo que ilustra os argumentos dessa função:
+<img src="images/dbcopybitmap_info.png">
+
+<b class=prg>
+void tst_copiar_bmp(int nEsquerda, int nTopo, int nDireita, int nFundo) {   
+const int bmpFonte = 1;
+const int bmpDestino = 0;
+
+int esquerdaAlvo = 300;
+int topoAlvo = 0;   
+int direitaAlvo = 428;
+int fundoAlvo = 120;
+
+dbCopyBitmap(nbmpFonte,
+	nEsquerda, nTopo, nDireita,nFundo,
+	nbmpDestino,
+	esquerdaAlvo, topoAlvo, direitaAlvo, fundoAlvo);
+} // fim tst_copiar_bmp </b>
+
+Descrição dos argumentos:
+<b>nbmpFonte</b> 			- Bitmap fonte
+<b>nbmpDestino</b>			- Bitmap de destino
+
+<b>nEsquerda, nTop</b>			- Canto superior esquerdo do bitmap fonte
+<b>nDireita, nFundo</b>		- Canto inferior direito do bitmap fonte
+<b>esquerdaAlvo, topoAlvo</b>		- Canto superior esquerdo do bitmap destino
+<b>direitaAlvo, fundoAlvo</b> 		- Canto inferior direito do bitmap de destino
+
+<div class=dica>
+(*) Com apenas dois pontos diagonais qualquer função consegue mapear
+um quadrado completo, fazendo um jogo de somas e subtrações com esses 
+dois pontos para localizar os pontos restantes.  Algumas  funções  da 
+Darkgdk e muitas funções da biblioteca do Windows utilizam esse esquema
+para tratar regiões quadradas.</div>	
+
+<b><u>Estabelecendo o bitmap corrente para as operações gráficas</b></u>
+<b class=sc2>dbSetCurrentBitmap(nbmp)</b>
+Esta função configura o bitmap <b>nbmp</b> para receber as operações gráficas. 
+Todas as funções gráficas vão operar sobre esse bitmap selecionado.
+É interessante que você pode desenhar sobre um bitmap nos bastidores do
+programa e depois mostrar o resultado.
+
+<b class=sc2>nbmp = dbCurrentBitmap()</b>
+Esta função retorna o bitmap corrente o qual está sofrendo as operações
+gráficas.
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-3.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

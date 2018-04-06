@@ -1,0 +1,464 @@
+<html><head>
+<title>cbiblioteca_track09_dir</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track09.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track08.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track10.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="9.00"></A>
+<CENTER><H2>9.00 dir.h</H2></CENTER>
+<A HREF="#09.01">09.01</a> chdir.............Troca o diretório corrente
+<A HREF="#09.02">09.02</a> findfirst.........Procura pela primeira ocorrência de arquivo
+<A HREF="#09.03">09.03</a> findnext..........Continua a pesquisa de arquivo iniciada por findfirst()
+<A HREF="#09.04">09.04</a> fnmerge...........Concatena as partes de um caminho numa só string
+<A HREF="#09.05">09.05</a> fnsplit...........Reparte um caminho em seus componentes básicos
+<A HREF="#09.06">09.06</a> getcurdir.........Obtém o diretório corrente do drive especificado
+<A HREF="#09.07">09.07</a> getcwd............Obtém o diretório corrente
+
+<A HREF="#09.08">09.08</a> getdisk...........Obtém o drive corrente
+<A HREF="#09.09">09.09</a> mkdir.............Cria um novo diretório no diretório corrente
+<A HREF="#09.10">09.10</a> mktemp............Cria um nome único de arquivo
+<A HREF="#09.11">09.11</a> rmdir.............Deleta um subdiretório do diretório corrente
+<A HREF="#09.12">09.12</a> searchpath........Procura por um arquivo nos caminhos apontados por Path
+<A HREF="#09.13">09.13</a> setdisk...........Estabelece o drive corrente
+
+<A NAME="09.01"> <B>09.01 chdir</B></A>
+        Esta função muda o diretório corrente para o diretório especificado.
+      <B style="color:green">
+        int chdir(const char *path);
+        nSts = chdir(sDir);</B>
+
+        Ex.:    char sDir[]="\\WINDOWS";
+                chdir(sDir);
+
+        Esta função retorna 0 para sucesso, -1 em caso de falha.
+
+.......................................................................................
+<A NAME="09.02"> <B>09.02 findfirst</B></A>
+        Esta função procura pela primeira ocorrência de arquivo no diretório
+        corrente.
+      <B style="color:green">
+        int findfirst(const char *filename, struct ffblk *ffblk, int attrib);
+        nSts = findfirst(sFileName,&xList, nAttrib);</B>
+
+        nSts........A função retorna 0 para sucesso, -1 em caso de insucesso.
+        sFileName...Nome do arquivo ou especificações de procura tipo ? ou *.
+        &xList......Estrutura criada com a struct ffblk que recebe as informações
+                    do arquivo quando localizado.
+        nAttrib.....Atributo de arquivo para os quais a procura deve ser feita
+
+        Elementos da estrutura xList criada com a struct ffblk:
+        char xList.ff_reserved..........Reservado pelo MsDos
+        char xList.ff_attrib............Atributo do arquivo
+        unsigned xList.ff_ftime.........Horas de criação do arquivo
+        unsigned xList.ff_fsize.........Tamanho do arquivo
+        char xList.ff_name..............Nome do arquivo
+
+        Constantes de dos.h que você pode usar para prover nAttrib:
+
+        FA_RDONLY     Atributo de arquivo apenas para leitura
+        FA_HIDDEN     Arquivo oculto
+        FA_SYSTEM     Arquivo de sistema
+        FA_LABEL      Rótulo de unidade
+        FA_DIREC      Diretório
+        FA_ARCH       Arquivo geral
+
+        Ex.:    struct ffblk xList;
+                findfirst("*.txt",&xList, 0);
+                printf("%s\n",xList.ff_name);
+
+        /* Resulta na impressão do primeiro arquivo txt encontrado. */
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "dir.h"
+        #include "dos.h"
+
+        int main (int nCmd, char **sCmd) {
+        struct ffblk xList;
+
+        clrscr();
+        findfirst("*.txt",&xList,FA_ARCH);
+        printf("%s\n",xList.ff_name);
+        findnext(&xList);
+        printf("%s\n",xList.ff_name);
+
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+        MYFILE.TXT
+        TESTE.TXT
+
+        End of Program
+
+
+.......................................................................................
+<A NAME="09.03"> <B>09.03 findnext</B></A>
+        Continua a pesquisa por arquivos iniciada por findfirst().
+      <B style="color:green">
+        int findnext(struct ffblk *ffblk);
+        nSts = findnext(&xList);</B>
+
+        nSts........A função retorna 0 para sucesso, -1 em caso de insucesso.
+        &xList......Estrutura criada com a struct ffblk que recebe as informações
+                    do arquivo quando localizado.
+
+        Elementos da estrutura xList criada com a struct ffblk:
+        char xList.ff_reserved..........Reservado pelo MsDos
+        char xList.ff_attrib............Atributo do arquivo
+        unsigned xList.ff_ftime.........Horas de criação do arquivo
+        unsigned xList.ff_fsize.........Tamanho do arquivo
+        char xList.ff_name..............Nome do arquivo
+
+        Ex.:    struct ffblk xList;
+                findfirst("*.txt",&xList, 0);
+                findnext(&xList);
+                printf("%s\n",xList.ff_name);
+
+        /* Resulta na impressão do segundo arquivo txt encontrado no diretório. */
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "dir.h"
+        #include "dos.h"
+
+        int main (int nCmd, char **sCmd) {
+        struct ffblk xList;
+
+        clrscr();
+        findfirst("*.txt",&xList,FA_ARCH);
+        printf("%s\n",xList.ff_name);
+        findnext(&xList);
+        printf("%s\n",xList.ff_name);
+
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+        MYFILE.TXT
+        TESTE.TXT
+
+        End of Program
+
+
+.......................................................................................
+<A NAME="09.04"> <B>09.04 fnmerge</B></A>
+        Esta função concatena as várias partes de um caminho numa só string.
+      <B style="color:green">
+        void fnmerge(char *path, const char *drive, const char *dir,
+                                const char *name, const char *ext);
+        fnmerge(sPath,sDrive,sDir,sFileName, sExt);</b>
+
+        sPath..........Buffer para receber o caminho completo
+        sDrive.........forneça o drive na forma a:, b:, c: e assim por diante
+        sDir...........forneça nome do diretório
+        sFileName......forneça o nome principal do arquivo
+        sExt...........forneça a extensão do arquivo na forma ".txt" e assim por diante.
+
+        O tamanho destas variáveis strings pode ser declarado usando as constantes que
+        trazem o tamanho adeqüado para cada uma delas. Veja as constantes abaixo:
+
+        MAXPATH.......80.....sPath
+        MAXDRIVE......3......sDrive
+        MAXDIR........66.....sDir
+        MAXFILE.......9......sFileName
+        MAXEXT........5......sExt
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "dir.h"
+        #include "string.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPath[MAXPATH];
+        char sDrive[MAXDRIVE]="C:";
+        char sDir[MAXDIR]="\\WINDOWS\\";
+        char sFileName[MAXFILE]="program";
+        char sExt[MAXEXT]=".exe";
+
+        clrscr();
+        fnmerge(sPath,sDrive,sDir,sFileName,sExt);
+        puts(sPath);
+        printf("\n");
+
+        printf("MAXPATH.......%d\n",MAXPATH);
+        printf("MAXDRIVE......%d\n",MAXDRIVE);
+        printf("MAXDIR........%d\n",MAXDIR);
+        printf("MAXFILE.......%d\n",MAXFILE);
+        printf("MAXEXT........%d\n\n",MAXEXT);
+
+        printf("sDrive........%s\n",sDrive);
+        printf("sDir..........%s\n",sDir);
+        printf("sFileName.....%s\n",sFileName);
+        printf("sExt.........%s\n",sExt);
+
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+        C:\WINDOWS\program.exe
+
+        MAXPATH.......80
+        MAXDRIVE......3
+        MAXDIR........66
+        MAXFILE.......9
+        MAXEXT........5
+
+        sDrive........C:
+        sDir..........\WINDOWS\
+        sFileName.....program
+        sExt..........exe
+
+        End of Program
+
+.......................................................................................
+<A NAME="09.05"> <B>09.05 fnsplit</B></A>
+        Esta função reparte um caminho em seus compentes básicos.
+      <B style="color:green">
+        int fnsplit(const char *path, char *drive, char *dir,
+                                char *name, char *ext);
+        nFlags = fnsplit(sPath, sDrive, sDir, sFileName, sExt);</B>
+
+        sPath..........forneça aqui o caminho e o nome do arquivo
+        sDrive.........Recebe o drive na forma a:, b:, c: e assim por diante
+        sDir...........Recebe o nome do diretório
+        sFileName......Recebe o nome principal do arquivo
+        sExt...........Recebe a extensão do arquivo na forma ".txt" e assim por diante.
+        nFlags.........A função retorna um flag de cinco bits
+
+        O tamanho destas variáveis strings pode ser declarado usando as constantes que
+        trazem o tamanho adeqüado para cada uma delas. Veja as constantes abaixo:
+
+        MAXPATH.......80.....sPath
+        MAXDRIVE......3......sDrive
+        MAXDIR........66.....sDir
+        MAXFILE.......9......sFileName
+        MAXEXT........5......sExt
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "dir.h"
+        #include "string.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPath[MAXPATH]="C:\\TC\\INCLUDE\\dir.h";
+        char sDrive[MAXDRIVE];
+        char sDir[MAXDIR];
+        char sFileName[MAXFILE];
+        char sExt[MAXEXT];
+        char sNumber[32];
+
+        clrscr();
+
+        fnsplit(sPath,sDrive,sDir,sFileName,sExt);
+        puts(sPath);
+
+        printf("\n");
+
+        printf("MAXPATH.......%d\n",MAXPATH);
+        printf("MAXDRIVE......%d\n",MAXDRIVE);
+        printf("MAXDIR........%d\n",MAXDIR);
+        printf("MAXFILE.......%d\n",MAXFILE);
+        printf("MAXEXT........%d\n\n",MAXEXT);
+
+        printf("sDrive........%s\n",sDrive);
+        printf("sDir..........%s\n",sDir);
+        printf("sFileName.....%s\n",sFileName);
+        printf("sExt.........%s\n",sExt);
+
+        puts("\nEnd of Program");
+
+        getch();}</font>
+
+        Saída:
+        C:\TC\INCLUDE\dir.h
+
+        MAXPATH.......80
+        MAXDRIVE......3
+        MAXDIR........66
+        MAXFILE.......9
+        MAXEXT........5
+
+        sDrive........C:
+        sDir..........\TC\INCLUDE\
+        sFileName.....dir
+        sExt..........h
+
+        End of Program
+.......................................................................................
+<A NAME="09.06"> <B>09.06 getcurdir</B></A>
+        Esta função obtém o diretório corrente do drive especificado.
+      <B style="color:green">
+        int getcurdir(int drive, char *directory);
+        nSts = getcurdir(nDrive,sDir);</B>
+
+        nSts.........Em caso de falha a função retorna -1
+        nDrive.......Forneça o drive para o qual obter o diretório corrente
+        sDir.........forneça o buffer para receber o nome do diretório
+
+        Ex.:    int nSts;
+                int nDrive=0;
+                char sDir[128];
+                nSts = getcurdir(nDrive,sDir);
+                printf("Diretório corrente: %s\n",sDir);
+                /* Resulta em Diretório corrente: TC */
+
+        Detalhes:       Configure nDrive como zero para obter o diretório corrente
+                        do drive default, 1 para drive A:, e assim por diante.
+
+.......................................................................................
+<A NAME="09.07"> <B>09.07 getcwd</B></A>
+        Esta função obtém o diretório corrente.
+      <B style="color:green">
+        char *getcwd(char *buf, int buflen);
+        sBuffer = getcwd (char sBuffer, nTam);</b>
+
+        sBuffer.......Você deve prover o buffer para receber o caminho corrente
+        nTam..........Você deve informar o tamanho do buffer
+
+        Ex.:    char sBuffer[128];
+                int nTam=128;
+                getcwd(sBuffer,nTam);
+                printf("Diretório corrente: %s\n",sBuffer);
+                /* Resulta em Diretório corrente: C:\TC */
+
+        Esta função retorna um ponteiro para sBuffer. Para usá-lo você pode declará-lo
+        desta forma char *pGeral;
+
+.......................................................................................
+<A NAME="09.08"> <B>09.08 getdisk</B></A>
+        Esta função obtém o drive corrente.
+      <B style="color:green">
+        int getdisk(void);
+        nDrive = getdisk(void);</B>
+
+        Ex.:    int nDrive;
+                nDrive = getdisk();
+                printf("nDrive: %d\n",nDrive);
+                /* Resulta em nDrive: 2 */
+
+        Detalhes:       nDrive retorna 0 para drive A, 1 para drive B e assim por diante.
+.......................................................................................
+<A NAME="09.09"> <B>09.09 mkdir</B></A>
+        Esta função cria um novo subdiretório no diretório corrente.
+      <B style="color:green">
+        int mkdir(const char *path);
+        nSts = mkdir(sNewDir);</B>
+
+        Ex.:    char sNewDir[]="mydir";
+                mkdir(sNewDir);
+
+        Em caso de sucesso a função retorna 0, -1 em caso de falha.
+
+.......................................................................................
+<A NAME="09.10"> <B>09.10 mktemp</B></A>
+        Esta função cria um nome único de arquivo, isto é, um nome de
+        arquivo que não existe no diretório para ser usado no decorrer
+        do programa.
+      <B style="color:green">
+        char *mktemp(char *template)
+        sFileName = mktemp(sNome);</B>
+
+        sNome.......Você deve fornecer uma parte do nome do arquivo seguido
+                    de seis X consecutivos.
+        sFileName...A função retorna um nome baseado na string sNome que vc forneceu
+
+        Ex.:    char sNome[]="fotoXXXXXX";
+                char *sFileName;
+                sFileName = mktemp(sNome);
+                printf("sFileName: %s\n",sFileName);
+                /* Resulta em fotoAA.AAA */
+
+.......................................................................................
+<A NAME="09.11"> <B>09.11 rmdir</B></A>
+        Esta função deleta um subdiretório do diretório corrente.
+      <B style="color:green">
+        int rmdir(const char *path);
+        nSts = rmdir(sDir);</B>
+
+        Ex.:    char sDir[]="mydir";
+                rmdir(sDir);
+
+        Esta função retorna 0 em caso de sucesso, -1 em caso de falha.
+
+.......................................................................................
+<A NAME="09.12"> <B>09.12 searchpath</B></A>
+        Esta função procura por um arquivo nos caminhos apontados pela
+        variável de sistema Path.
+      <B style="color:green">
+        char *searchpath(const char *file);
+        sPath = searchpath(sFileName);</B>
+
+        sPath........Em caso de sucesso a função retorna o caminho com o nome do arquivo
+        sFileName....Forneça o nome do arquivo que será procurado
+
+        Ex.:    char sFileName[]="command.com";
+                char *sPath;
+                sPath = searchpath(sFileName);
+                printf("%s\n",sPath);
+                /* Resulta em C:\WINDOWS\COMMAND.COM */
+
+.......................................................................................
+<A NAME="09.13"> <B>09.13 setdisk</B></A>
+        Esta função estabelece o drive corrente, isto é, ela define o drive
+        atual de trabalho.
+      <B style="color:green">
+        int setdisk(int drive);
+        nTotal = setdisk(nDrive);</B>
+
+        nTotal.......Esta função retorna o número de drives possíveis
+        nDrive.......Forneça o drive, 0=A, 1=B, 2=C, 3=D e assim por diante.
+
+        Ex.:    setdisk(2);
+
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track08.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track10.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

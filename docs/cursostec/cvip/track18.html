@@ -1,0 +1,461 @@
+<html><head>
+<title>CVip_track18</title>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+-webkit-border-radius: 40px 40px 40px 40px;
+-moz-border-radius: 40px 40px 40px 40px;
+border-radius: 15px 15px 15px 15px;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('backdrop.jpg');
+}
+</style>
+</head>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track18.html</b></center>
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr>
+<td><a href=cvip.html style='color:blue'> index </a></td><td><a href='track17.html'style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track19.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track16"></a><h3 style="background-color:#80ff80">18. Ponteiros ou apontadores 5/5</h3>
+<b style="background-color:lightgreen">18.1 *pPonteiro - Determinando o endereço de ponteiros</b>
+
+Você pode determinar exatamente o endereço do ponteiro.  Este recurso
+era  usado  antigamente  para  produzir  gráficos  rápidos através da
+manipulação   direta   da   memória  de  vídeo  no  sistema  Ms  Dos.
+
+A possibilidade de se determinar o endereço do ponteiro pode ser útil
+na  programação  de  um  emulador  cuja  simulação dos sistemas possa
+exigir  endereços  exatos  de  memória  para  certos dados e funções.
+Atualmente este recurso pode ser útil para hackeamento desde que você
+conheça exatamente que área da memória você quer examinar e modificar.
+
+Vamos  alistar  aqui  como  era  feito  antigamente para se acessar a
+memória  de  vídeo  para  melhorar o seu entendimento durante o exame
+de código fonte de programas antigos:
+<div class=niceview>
+<font color="darkblue">
+Ponteiro de acesso ao vídeo em modo gráfico:
+unsigned char far *video_gfx = (char far *)0xA000<b>0000L</b>;
+
+Ponteiro de acesso ao vídeo em modo texto:
+unsigned char far *video_txt = (char far *)0xB800<b>0000L</b>;</font>
+
+Em  modo  gráfico,  o  endereço  do  vídeo  começa em A000:0000. Cada
+deslocamento  ou  cada byte representa a cor do pixel. Para usar este
+ponteiro de vídeo você precisa configurar o vídeo para  modo  gráfico
+primeiro. O <b>L</b> usado  no  final  do  endereço do ponteiro é necessário
+para  indicar  de  que  o  número  se  trata de um inteiro longo, mas
+lembrando   que   o   dado   que   vai  neste  endereço  é  um  <span class=prg>char</span>;
+o ponteiro é <span class=prg>far</span> porque estamos lidando com outro segmento  diferente
+do  segmento  aonde  nosso  programa  fica  alocado.
+
+O endereço de vídeo em modo texto é B800:0000,  sendo  que o primeiro
+byte  recebe  o  código  ascii  do  carácter  e o byte ao lado recebe
+o  atributo  do  carácter  que  se  constitui  na  cor de frente e de
+fundo do carácter.
+
+Posteriormente no seu programa,   vamos lembrar que você pode colocar
+dados na região de memória apontada usando a sintaxe de array.  Assim,
+para   imprimir  um  "A"  na  tela  sem  precisar  de  printf()  você
+simplesmente pode por uma linha assim no seu código <span class=prg>video_txt[0]= 'A';</span>
+A   escrita  direta  na  memória  do  vídeo  ocasiona  imediamente  o
+aparecimento do carácter em modo texto e do pixel se o vídeo  estiver
+em modo gráfico.  Esta operação direta na memória é a via de se obter
+a máxima performance de velocidade do vídeo.</div>
+<div class=prg-code style="color:darkblue; font-weight:bold">
+/* Programa antigo: ptr09.c                                         */
+/* Determinando endereço de ponteiro                                */
+/* Este programa só funciona compilado com Turbo C\C++ Borland 3.1  */
+/* com o modelo de memória configurado como huge                    */
+
+#include "stdio.h"
+
+unsigned char far *video_txt = (char far *) 0xB8000000L;
+int ncx;
+
+int main(void)  {
+
+clrscr();
+
+for (ncx=0; ncx < 60; ncx++) {
+*video_txt = 'x';
+video_txt++;
+*video_txt = 0x1f;
+video_txt++; }
+
+getchar();
+
+return 1;}</div>
+<div class=prg-saida>
+<p  style="background-color:blue;color:white">
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</p>
+</div>
+	Veja agora o programa exemplo desse capítulo:
+
+<div class=prg-saida>
+ <img src=images\ptr09.png>
+<br></div>
+<div class=prg-code>
+<span class="sc1">/* Programa: ptr09.c - track 18            */</span><span class="sc0">
+</span><span class="sc1">/* Determinando o endereço do ponteiro     */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* Determinando o endereço de um ponteiro */</span><span class="sc0">
+</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0">  </span><span class="sc10">*</span><span class="sc11">myint_ptr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*)</span><span class="sc0"> </span><span class="sc4">0x0022FF18L</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc1">/* Definição de nval e seu ponteiro */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">nval_ptr</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">nval_ptr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">nval</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title ptr09.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" *nval_ptr: %i  &amp;nval_ptr:  %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">nval_ptr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nval_ptr</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" *myint_ptr:%i  &amp;myint_ptr: %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">myint_ptr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">myint_ptr</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">*</span><span class="sc11">myint_ptr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">999</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" nval foi hackeada pelo ponteiro com endereco determinado\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" *nval_ptr: %i  &amp;nval_ptr:  %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">nval_ptr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nval_ptr</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" *myint_ptr:%i  &amp;myint_ptr: %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">myint_ptr</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">myint_ptr</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+
+
+<b style="background-color:lightgreen">18.2 **pPonteiro - Ponteiros para ponteiros!</b>
+
+Você  viu  que  você pode ter ponteiros para todos os tipos de dados,
+incluindo estruturas e funções.  Você ainda pode declarar um ponteiro
+para um ponteiro, e através deste <b>ponteiro para um ponteiro</b> manipular
+indiretamente  o  dado  apontado  pelo  primeiro  ponteiro.  Exemplo:
+<font color="darkblue">
+int nValor = 16;
+int *np, **pnp;
+
+np = &nValor;           /* Inicializando o primeiro ponteiro */
+pnp = &np;              /* Inicializando o ponteiro para um ponteiro */
+
+printf("nValor: %d\n",nValor);
+printf("*np...: %d\n",*np);
+printf("**pnp.: %d\n",**pnp);</font>
+
+Resulta em:
+
+nValor: 16
+*np...: 16
+**pnp.: 16
+
+Vamos  lembrar  que  tudo  o  que  você faz com um ponteiro normal, é
+aplicável      com      um     <b>ponteiro     para     um     ponteiro</b>.
+Sintaticamente  é  possível,  embora  na  realidade não seja prático,
+aumentar  a  complexidade  e  a  profundidade  de  "indireção" usando
+um  ponteiro  para  um  <b>ponteiro  de  ponteiros</b>  e  assim  por diante
+aumentando      o     número     de     asteríscos     para     isso.
+
+Para finalizar o tema ponteiros,   resta a nossa última recomendação,
+antes  de  usar  um  ponteiro,  certifique-se  primeiro  que  este já
+foi  inicializado  para  evitar  travamento  do  seu  programa  e  do
+sistema.  A  assimilação  do  uso dos ponteiros é a parte mais penosa
+do  aprendizado  da  linguagem  c,  porém  é a parte que mais confere
+vantagens  em  termos  de  velocidade  e  de  acesso  aos recursos do
+computador  que  não  é  possível  com outras linguagens. Nós fizemos
+questão aqui de mostrar todas as possibilidades de uso de  ponteiros,
+de forma que nenhum outro curso já visto o fez por causa da  espinhez
+e da complexidade do tema.
+
+
+
+<b style="background-color:lightgreen">18.3 Alocação de memória</b>
+
+O  processo  de  alocação de memória passa por um ponteiro que recebe
+o   endereço   inicial   da   área   alocada   para   seu   programa.
+
+Geralmente,  o  processo  de definição de variáveis é na realidade um
+processo  estático  de  alocação  de  memória,  na  qual o compilador
+reserva  antecipadamente  o  espaço  que  as  variáveis  vão  ocupar.
+Neste   processo   estático   de   alocação   podem   surgir   alguns
+inconvenientes:
+
+a) Memória estática alocada não usada.  Seu programa pode reservar um
+espaço  e  não  fazer  uso  dele.  Isso retém memória que poderia ser
+liberada para uso do sistema operacional.
+
+b) Memória alocada abaixo da necessidade.  Seu programa pode reservar
+um  espaço  e  pode  se deparar com uma situação na qual ele se torna
+insuficiente.  Isso  pode  ocorrer  quando você vai carregar arquivos
+dos    quais    você   não   conhece   antecipadamente   o   tamanho.
+
+Em ambos os casos,  o processo de alocar memória dinamicamente no ato
+da  necessidade  e  na  quantidade  certa  resolve as duas situações.
+
+A alocação dinâmica de memória é realizada com a função <span class=prg>malloc()</span>  que
+retorna um ponteiro para o início da  área  alocada;  como  argumento
+essa   função   recebe   a   quantidade   que   você   quer   alocar.
+
+
+<div class=niceview>
+<span class="sc1">/* Definição dos ponteiro que vão receber o endereço     */</span><span class="sc0">
+</span><span class="sc1">/* inicial da área alocada.                              */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">memoria_inicio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span>
+</span>
+<span class="sc1">/* ------------------ Aloca espaço para 100 inteiros ----- */</span><span class="sc0">
+</span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">malloc</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">qtd</span><span class="sc10">);</span><span class="sc0">
+<span class="sc11">memoria_inicio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">memoria</span><span class="sc10">;</span>
+</div>
+
+<b><u>memoria_inicio = memoria;</u></b>
+É importante fazer um backup do endereço  inicial  de  memória  visto
+que durante seu programa você vai submeter o  ponteiro  a  avanços  e
+retrocessos. E na hora de acessar os dados, você vai   precisar saber
+o  endereço  da área inicial.
+
+<b><u>Verificação de falha na alocação</u></b>
+Se  houver  falha  na alocação, o ponteiro retornado por <span class=prg>malloc()</span> tem
+valor <span class=prg>NULL</span>. É importante checar isso porque o sistema  pode  não  ter
+disponível a memória solicitada.
+
+<b><u>Liberação da memória alocada</u></b>
+Após  o  término  do  seu  programa  ou  do  uso efetivo da memória é
+necessário  liberar  a  área alocada de volta ao sistema operacional.
+Isso é feito com a função <span class=prg>free()</span>.
+
+Ex.:
+<b class=prg>free (memoria);</b>
+As  funções  <span class=prg>free()</span>  e  <span class=prg>malloc()</span> ambas pertencem ao arquivo <span class=prg>stdlib.h</span>.
+
+Veja abaixo o programa exemplo:
+
+<div class=prg-saida>
+<img src=images\memoria.png>
+<br></div>
+<div class=prg-code>
+<span class="sc1">/* Programa: memoria.c - track 18            */</span><span class="sc0">
+</span><span class="sc1">/* Alocação de memória                     */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função main()  ------------------- */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc1">/* Definição dos ponteiro que vão receber o endereço     */</span><span class="sc0">
+</span><span class="sc1">/* inicial da área alocada.                              */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">memoria_inicio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title memoria.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Aloca espaço para 100 inteiros ----- */</span><span class="sc0">
+</span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc5">sizeof</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">malloc</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">qtd</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Memória foi concedida? ------------- */</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Memoria nao concedida!"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">getch</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc11">memoria_inicio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">memoria</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Endereco da area de memoria: %p \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">memoria</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Tamanho: %u bytes. \n\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">qtd</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ---- Grava dados na memória --------------------------- */</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc10">*</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">+</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">memoria</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ---- Retorna o ponteiro para o início da area --------- */</span><span class="sc0">
+</span><span class="sc11">memoria</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">memoria_inicio</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc1">/* ---- Mostra o conteúdo da área de memória ------------- */</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" %i"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">memoria</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ---- Pule uma linha a cada dez nros mostrados --------- */</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">+</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">%</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">memoria</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ---- Libera a memória alocada ------------------------- */</span><span class="sc0">
+</span><span class="sc11">free</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">memoria</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  ------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cvip.html style='color:blue'> index </a></td><td><a href='track17.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track19.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>
+

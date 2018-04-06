@@ -1,0 +1,439 @@
+﻿<html>
+<head>
+<title>mdx9_fase04-6</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 04-6</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>04.6 Linhas</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Linhas.png></div>
+O Direct3D apresenta  a  classe  <b class=prg>Line</b>  que simplifica  o  trabalho de
+desenhar linhas dando ainda a opção de controlar a espessura da linha
+e de aplicar facilmente o filtro antialias para suavizar o serrilhado
+desagradável que pode surgir nas linhas diagonais.
+
+Para utilizar esta classe é necessário adicionar  como  referência  a 
+biblioteca de  extensão  <span class=prg>Microsoft.DirectX.Direct3DX</span>
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Linhas.png></div>
+
+As linhas serão desenhadas utilizando  coordenadas finais de tela que
+dispensa as funções de configuração de luzes  e  câmeras.  Se  houver
+algum  elemento  3D  que  necessite  camera e luz, você pode misturar
+linhas,  textos  simples  e  outros  elementos  2D sem tomar qualquer
+cuidado especial para separar o que é 2D e 3D na cena.  Porém,  o que
+você desenha por último se sobrepõe ao que foi desenhado primeiro.
+
+Os pontos das linhas são estocados numa array  de objetos <b class=prg>Vector2</b> que
+aceita uma coordenada em termos de (x, y). O objeto <b>sorteio</b> da classe
+<b class=prg>Random</b> será utilizado para gerar valores aleatórios para alimentar a
+array (<b>g_pontos</b>) de pontos para formar as linhas.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Branco cor de fundo para nossa janela</span>
+ <span class=prg>private </span><span class=prg>int </span>cor_fundo = 0xFFFFFF; 
+
+<b><span class=sc2>// Vetores no formato (x,y) para guardar os pontos de formação</span>
+<span class=sc2>// das linhas.</span>
+<span class=sc5>Vector2</span>[] g_pontos; 
+
+<span class=sc2>// Vamos usar um objeto Random para sortear coordenadas (x,y)</span>
+<span class=sc5>Random </span>sorteio = <span class=prg>null;</span></b>
+
+<span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div>
+
+<b><span class=sc2>// Vetores no formato (x,y) para guardar os pontos de formação</span>
+<span class=sc2>// das linhas.</span>
+<span class=sc5>Vector2</span>[] g_pontos; </b>
+A variável <b>g_pontos</b> vai comportar várias coordenadas (x, y) que serão
+ligadas para formar as linhas.
+
+<b><span class=sc2>// Vamos usar um objeto Random para sortear coordenadas (x,y)</span>
+<span class=sc5>Random </span>sorteio = <span class=prg>null;</span></b>
+As coordenadas (x, y) para  os  pontos  das  linhas  serão  sorteadas
+utilizando este objeto <b class=prg>Random</b>, <b>sorteio</b>.
+
+<b><u>2.2 Inicializando as variáveis</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+ <span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice no</span>
+ <span class=sc2>// software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+<b>
+<span class=sc2>// As linhas serão montadas a partir de 7 pontos</span>
+g_pontos = <span class=prg>new </span><span class=sc5>Vector2</span>[<span class=sc4>7</span>];  
+
+<span class=sc2>// Inicializa o objeto Random</span>
+sorteio = <span class=prg>new </span><span class=sc5>Random</span>();</b>
+
+<span class=sc16>} <span class=sc2>// initGfx()</span></span></div>
+
+Abaixo destacamos o código de inicialização das variáveis  utilizadas
+no desenho das linhas:   
+
+<b><span class=sc2>// As linhas serão montadas a partir de 7 pontos</span>
+g_pontos = <span class=prg>new </span><span class=sc5>Vector2</span>[<span class=sc4>7</span>];  
+
+<span class=sc2>// Inicializa o objeto Random</span>
+sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+</b>
+
+<b><u>2.3 Renderizando as linhas</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+ <span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, cor_fundo, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+<b>
+ <span class=sc2>//  Sorteia os valores dos pontos (x,y) baseado no tamanho da tela</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_pontos.Length; </span>ncx++) 
+ <span class=sc16>{</span>
+ <span class=prg>int </span>xcol = <span class=prg>sorteio.Next</span>(<span class=prg>this.Width</span>);  
+ <span class=prg>int </span>ylin = <span class=prg>sorteio.Next</span>(<span class=prg>this.Height</span>);  
+ g_pontos[ncx] = <span class=prg>new </span><span class=sc5>Vector2</span>(xcol, ylin);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+ <span class=sc5>Line </span>linhas = <span class=prg>new </span><span class=sc5>Line</span>(device);  
+
+ <span class=sc2>// Configura largura da linha</span>
+ <span class=prg>linhas.Width </span>= <span class=sc4>3.0f;</span>
+
+ <span class=sc2>// Ativa recurso Antialias que evita serrilhado feio</span>
+ <span class=prg>linhas.Antialias </span>= <span class=prg>true;</span>
+
+ <span class=prg>linhas.Begin</span>();  
+
+ <span class=sc2>// Desenha as linhas entre .Begin() e .End()</span>
+ <span class=prg>linhas.Draw</span>(g_pontos, <span class=prg>Color.BlueViolet</span>);  
+
+ <span class=prg>linhas.End</span>();</b>
+
+<span class=prg>device.EndScene</span>();  
+<span class=sc2>// Apresenta a cena renderizada na tela</span>
+<span class=prg>device.Present</span>();  
+
+<span class=sc2>// Aguarda um momento para a 'leitura' da tela</span>
+<span class=prg>System.Threading.Thread.Sleep</span>(1000);  
+
+<span class=sc2>// Libera a janela para processar outros eventos</span>
+<span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar.fim()</span></span>
+</div>
+<b>
+<span class=sc2>//  Sorteia os valores dos pontos (x,y) baseado no tamanho da tela</span>
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_pontos.Length; </span>ncx++) 
+<span class=sc16>{</span>
+ <span class=prg>int </span>xcol = <span class=prg>sorteio.Next</span>(<span class=prg>this.Width</span>);  
+ <span class=prg>int </span>ylin = <span class=prg>sorteio.Next</span>(<span class=prg>this.Height</span>); 
+ g_pontos[ncx] = <span class=prg>new </span><span class=sc5>Vector2</span>(xcol, ylin);  
+<span class=sc16>} <span class=sc2>// endfor</span></span></b>
+O  bloco  acima  preenche  os  valores  das  coordenadas  com  valores
+aleatórios com <b>xcol</b> limitando-se a largura da tela e <b>ylin</b> limitando-se
+a altura da tela.
+
+<span class=sc5>Line </span>linhas = <span class=prg>new </span><span class=sc5>Line</span>(device);  
+<span class=sc2>// Configura largura da linha</span>
+<span class=prg>linhas.Width </span>= <span class=sc4>3.0f;</span>
+<span class=sc2>// Ativa recurso Antialias que evita serrilhado feio</span>
+<span class=prg>linhas.Antialias </span>= <span class=prg>true;</span>
+O bloco  acima  declara  o objeto <b>linhas</b> e configura largura e liga o
+filtro antialias desse objeto.
+
+<span class=prg>linhas.Begin</span>();  
+<span class=sc2>// Desenha as linhas entre .Begin() e .End()</span>
+<span class=prg>linhas.Draw</span>(g_pontos, <span class=prg>Color.BlueViolet</span>);  
+<span class=prg>linhas.End</span>();</b>
+Simplesmente o objeto <span class=prg>.Draw()</span> do objeto <b class=prg>Line</b> desenha as linhas com a
+cor configurada. <b class=prg>Line.Begin()</b>  e  <b class=prg>Line.Draw()</b> são  necessários  para
+preservar  a configuração de estados de renderização do dispositivo.
+
+<span class=prg>System.Threading.Thread.Sleep</span>(1000);  
+Depois que as linhas foram apresentadas na tela, ocorre  uma  pequena
+pausa  para  o  usuário  vê-las  antes  da  próxima  renderização.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Linhas</u></b>
+<div class=prg-code>
+<img src=images\prj_Linhas.png>
+
+<span class=sc2>// prj_Linhas - Arquivo: Janela.cs</span>
+<span class=sc2>// Esse projeto ilustra como renderizar linhas de maneira fácil</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_Linhas 
+<span class=sc16>{</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Branco cor de fundo para nossa janela</span>
+    <span class=prg>private </span><span class=prg>int </span>cor_fundo = 0xFFFFFF;
+
+    <span class=sc2>// Vetores no formato (x,y) para guardar os pontos de formação</span>
+    <span class=sc2>// das linhas.</span>
+    <span class=sc5>Vector2</span>[] g_pontos; 
+
+    <span class=sc2>// Vamos usar um objeto Random para sortear coordenadas (x,y)</span>
+    <span class=sc5>Random </span>sorteio = <span class=prg>null;</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Qualquer configuração em algum componente, faça depois dessa função!</span>
+      <span class=sc2>// Pois a geração automática de código pode suprimir algo que você</span>
+      <span class=sc2>// fizer antes dela</span>
+      InitializeComponent();  
+      <span class=prg>this.Size </span>= <span class=prg>new </span>Size(640, 480);  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice no</span>
+      <span class=sc2>// software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// As linhas serão montadas a partir de 7 pontos</span>
+      g_pontos = <span class=prg>new </span><span class=sc5>Vector2</span>[<span class=sc4>7 </span>];  
+
+      <span class=sc2>// Inicializa o objeto Random</span>
+      sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, cor_fundo, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+       <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>//  Sorteia os valores dos pontos (x,y) baseado no tamanho da tela</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_pontos.Length; </span>ncx++) 
+       <span class=sc16>{</span>
+         <span class=prg>int </span>xcol = <span class=prg>sorteio.Next</span>(<span class=prg>this.Width</span>);  
+         <span class=prg>int </span>ylin = <span class=prg>sorteio.Next</span>(<span class=prg>this.Height</span>);  
+         g_pontos[ncx] = <span class=prg>new </span><span class=sc5>Vector2</span>(xcol, ylin);  
+       <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+      <span class=sc5>Line </span>linhas = <span class=prg>new </span><span class=sc5>Line</span>(device);  
+
+      <span class=sc2>// Configura largura da linha</span>
+      <span class=prg>linhas.Width </span>= <span class=sc4>3.0f;</span>
+
+      <span class=sc2>// Ativa recurso Antialias que evita serrilhado feio</span>
+      <span class=prg>linhas.Antialias </span>= <span class=prg>true;</span>
+
+      <span class=prg>linhas.Begin</span>();  
+
+      <span class=sc2>// Desenha as linhas entre .Begin() e .End()</span>
+      <span class=prg>linhas.Draw</span>(g_pontos, <span class=prg>Color.BlueViolet</span>);  
+
+      <span class=prg>linhas.End</span>();  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+      <span class=prg>System.Threading.Thread.Sleep</span>(1000);  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar.fim()</span></span>
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

@@ -1,0 +1,423 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase06.2</title>
+<head>
+<style type="text/css">
+
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 6.2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track06-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track07-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">06.2 Funções numéricas úteis</h3><pre>
+<b><u>01.1 Visão geral</b></u>
+<div class=prg-code>
+<img src="images/utilidades.png">
+</div>
+Neste capítulo  nós vamos verificar algumas funções indispensáveis
+da DarkGdk para compor um bom jogo. Uma destas funções é <b class=prg>dbTimer()</b>
+que retorna  o tempo decorrido em milessegundos.  Geralmente você
+vai  usá-la  para  controlar  a  ocorrência de eventos em seu jogo
+de acordo com a passagem do tempo, por exemplo, é comum  em  jogos
+o surgimento de monstros e inimigos conforme certo tempo decorrido.
+
+Vamos verificar também funções que geram números aleatórios que 
+geralmente são usadas para compor o elemento surpresa do jogo
+tal como inimigos que surgem em tempos e espaços em intervalos
+imprevisíveis.
+
+<b><u>01.2 Gerando números aleatórios</b></u>
+<b class=prg>nValor = dbRnd(nLimite)</b>
+Esta  função  retorna  um  número  aleatório  dentro  do  limite 
+estabelecido por nLimite.
+
+Exemplo:
+	
+	<b class=prg>xpos = dbRnd(640);</b>
+	
+<b class=prg>dbRandomize( nValor);</b>
+Esta função insere uma variação nos números aleatórios gerados. 
+Na ausência dela dbRnd() retorna sempre os mesmos valores.
+O uso mais comum desta função é dada no exemplo abaixo:
+
+	<b class=prg>dbRandomize( dbTimer() );</b>
+	
+
+<b><u>01.3 Controle de eventos em função do tempo</b></u>
+
+Com muita frequência você vai querer nos seus jogos fazer ocorrer
+eventos em função da passagem do tempo. Por exemplo, o surgimento
+de vários tipos de inimigos conforme o tempo decorrido do início
+do jogo ou o tempo decorrido em relação ao surgimento anterior
+do próprio inimigo.
+
+Nesta situação de exemplo, cada inimigo precisa ser dotado de um
+timer ou relógio temporizador para controlar o tempo decorrido
+que vai surgir da diferença entre o tempo final e o tempo inicial
+da contagem. O tempo final deve ser verificado a cada instante do
+jogo e o tempo inicial vai ser reconfigurado depois de cada 
+surgimento do inimigo na tela. Possivelmente você vai precisar de
+uma estrutura assim no seu código:
+<div class=prg>
+struct Relogio
+{
+	int tmpInicial;	  // tempo inicial
+	int tmpFinal;     // tempo final
+	int tmpDecorrido; // tempo decorrido
+	int gatilho;      // gatilho de controle do disparo do evento
+	int limite;       // Limite de monstros na tela
+	int qtd;          // Quantidade de monstros na tela
+};</div>
+
+Em cada ciclo do jogo você vai verificar o tempo decorrido e se este
+tempo for igual ao tempo do gatilho pré-configurado você então dispara
+o evento na tela chamando uma função. Em nosso programa exemplo 
+colocamos um monstro_a na tela a cada 500 milissegundos.
+
+Exemplo do relógio do monstro_a criado com a estrutura acima:
+<div class=prg>
+// Configura relógio do monstro A
+Relogio rel_ma; // Relógio do monstro_a
+rel_ma.tmpInicial	= dbTimer();
+rel_ma.gatilho		= 500;
+rel_ma.tmpDecorrido 	= 0;
+rel_ma.limite		= 7;
+rel_ma.qtd		= 0;
+</div>
+O relógio acima é multifuncional, além de controlar o tempo ele 
+controla a quantidade e o limite de monstros colocados na tela.
+Os monstros vão parar de aparecer quando a quantidade atingir o
+limite estabelecido.
+<div class=prg>
+ // Coloca monstro se gatilho de tempo foi atingido!
+ if (verifica_relogio(&rel_ma) == true) coloca_monstro(monstro_a);
+ </div>
+ A função verifica_relógio() verifica o relógio do monstro, verifica
+ o tempo decorrido e caso este tempo seja igual ao tempo do gatilho
+ ela retorna verdadeiro e na sequência a lógica do programa coloca
+ mais um monstro na tela com a função coloca_monstro().
+ A função verifica_relogio() retorna falso se a quantidade de monstros
+ atingiu a quantidade limite.
+ 
+ Veja abaixo o código desta função com os seus comentários:
+<div class=prg-code>
+<span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verifica_relogio</span><span class="sc10">(</span><span class="sc11">Relogio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">rel</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Encerre aqui se a quantidade alcançou o limite 
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">limite</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Calcula tempo decorrido deltaTempo = tempoFinal - tempoInicial
+</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpFinal</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0"> 
+ </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpFinal</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpInicial</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Avisa 'verdadeiro' se o tempo de gatilho foi atingido
+</span><span class="sc0">  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">gatilho</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpInicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">qtd</span><span class="sc10">++;</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">  </span><span class="sc5">else</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// else
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// verifica_relogio().fim
+</span></div>
+A função <b class=prg>coloca_monstro()</b> é muito simples e faz o teste
+da função <b class=prg>dbRnd()</b> colocando numa posição aleatória da
+tela a legenda do monstro gerado:
+<div class=prg-code>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">coloca_monstro</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">monstro</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc2">// Gera uma posição aleatório com dbRnd()
+</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">460</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc2">// Coloca monstro A
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">monstro</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVermelho</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"monstro_a"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Coloca monstro B
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">monstro</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVerde</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"monstro_b"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// coloca_monstro().fim
+</span></div>	
+Veja agora o programa exemplo completo:
+<div class=prg-saida>
+ <img src=images\utilidades.png>
+ <br></div>
+ <div class=prg-code>
+// utilidades.cpp
+// Demonstra o uso de dbTimer(), dbRandomize() e dbRnd()
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Relógio multifuncional do monstro
+// Controla tempo de aparecimento do monstro e quantidade
+</span><span class="sc16">struct</span><span class="sc0"> </span><span class="sc11">Relogio</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tmpInicial</span><span class="sc10">;</span><span class="sc0">   </span><span class="sc2">// tempo inicial
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tmpFinal</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// tempo final
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tmpDecorrido</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// tempo decorrido
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">gatilho</span><span class="sc10">;</span><span class="sc0">      </span><span class="sc2">// gatilho de controle do disparo do evento
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">limite</span><span class="sc10">;</span><span class="sc0">       </span><span class="sc2">// Limite de monstros na tela
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">qtd</span><span class="sc10">;</span><span class="sc0">          </span><span class="sc2">// Quantidade de monstros na tela
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                      </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">utilidade</span><span class="sc10">();</span><span class="sc0">                    </span><span class="sc2">// Testa funções úteis
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">coloca_monstro</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">monstro</span><span class="sc10">);</span><span class="sc0">    </span><span class="sc2">// Coloca monstro na tela
+</span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verifica_relogio</span><span class="sc10">(</span><span class="sc11">Relogio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">rel</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Verifica relogio do monstro
+</span><span class="sc0">
+</span><span class="sc2">// Nossos monstrinhos imaginários
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">monstro_a</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">monstro_b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nVermelho</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFF0000</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nVerde</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x00FF00</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Relógios dos monstros a e b
+</span><span class="sc11">Relogio</span><span class="sc0"> </span><span class="sc11">rel_ma</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">Relogio</span><span class="sc0"> </span><span class="sc11">rel_mb</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc2">// Configura relógio do monstro A
+</span><span class="sc11">rel_ma</span><span class="sc10">.</span><span class="sc11">tmpInicial</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">rel_ma</span><span class="sc10">.</span><span class="sc11">gatilho</span><span class="sc0">      </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">500</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_ma</span><span class="sc10">.</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_ma</span><span class="sc10">.</span><span class="sc11">limite</span><span class="sc0">       </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">7</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_ma</span><span class="sc10">.</span><span class="sc11">qtd</span><span class="sc0">          </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Configura relógio do monstro B
+</span><span class="sc11">rel_mb</span><span class="sc10">.</span><span class="sc11">tmpInicial</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">rel_mb</span><span class="sc10">.</span><span class="sc11">gatilho</span><span class="sc0">      </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">800</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_mb</span><span class="sc10">.</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_mb</span><span class="sc10">.</span><span class="sc11">limite</span><span class="sc0">       </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">12</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">rel_mb</span><span class="sc10">.</span><span class="sc11">qtd</span><span class="sc0">          </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+
+</span><span class="sc11">utilidade</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"utilidades.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetTextOpaque</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Inicializa gerador de números aleatórios
+</span><span class="sc11">dbRandomize</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">utilidade</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">  
+ </span><span class="sc2">// Coloca monstro se gatilho de tempo foi atingido!
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">verifica_relogio</span><span class="sc10">(&amp;</span><span class="sc11">rel_ma</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">coloca_monstro</span><span class="sc10">(</span><span class="sc11">monstro_a</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc2">// Coloca monstro se gatilho de tempo foi atingido!
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">verifica_relogio</span><span class="sc10">(&amp;</span><span class="sc11">rel_mb</span><span class="sc10">))</span><span class="sc0">
+    </span><span class="sc11">coloca_monstro</span><span class="sc10">(</span><span class="sc11">monstro_b</span><span class="sc10">);</span><span class="sc0">
+    
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// utilidade().fim
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">coloca_monstro</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">monstro</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc2">// Gera uma posição aleatório com dbRnd()
+</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">460</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc2">// Coloca monstro A
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">monstro</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVermelho</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"monstro_a"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Coloca monstro B
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">monstro</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nVerde</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"monstro_b"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// coloca_monstro().fim
+</span><span class="sc0">
+
+</span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verifica_relogio</span><span class="sc10">(</span><span class="sc11">Relogio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">rel</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc2">// Encerre aqui se a quantidade alcançou o limite 
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">qtd</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">limite</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Calcula tempo decorrido deltaTempo = tempoFinal - tempoInicial
+</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpFinal</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0"> 
+ </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpFinal</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpInicial</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Avisa 'verdadeiro' se o tempo de gatilho foi atingido
+</span><span class="sc0">  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpDecorrido</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">gatilho</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">tmpInicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc11">rel</span><span class="sc10">-&gt;</span><span class="sc11">qtd</span><span class="sc10">++;</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">  </span><span class="sc5">else</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// else
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// verifica_relogio().fim
+</span></div>	
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track06-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track07-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

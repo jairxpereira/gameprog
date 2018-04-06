@@ -1,0 +1,428 @@
+﻿<html>
+<head>
+<title>C_Sharp_09-4</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 09-4</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track09"></a>
+<h3 style="background-color:#ead5ff">09-4 Tarefas paralelas</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+O sistema  Windows  é  multitarefa.  Você pode ouvir música enquanto trabalha em um
+texto no Word, pode descarregar um arquivo da Internet, e o próprio editor de texto
+roda um corretor ortográfico nos bastidores enquanto você escreve seu texto.
+
+Através do uso de <b>delegates</b> os métodos podem ser configurados para rodar em paralelo
+e  quando terminarem sua tarefa eles chamam uma função para notificar o status final
+de  seu  trabalho. Geralmente, as funções criadas para serem chamadas periodicamente 
+são  chamadas de  <b>callback functions</b> e geralmente são usadas o tempo todo no sistema
+Windows  para  proverem  respostas a eventos. Em aplicativos de download de arquivos,
+geralmente  é chamada uma função callback no evento do download estiver completo que
+avisa o usuário desse status.
+
+<b><u>1.2 Contexto da aplicação de exemplo</b></u>
+
+Nossa aplicação vai simular um ambiente de vendas em uma empresa.    Vamos  ter  os 
+seguintes atores nesse contexto que vão ser representados por 3 objetos, o vendedor,
+o gerente e a empresa.
+
+  o Vendedor - Esta vai ser a classe principal do nosso aplicativo.  O vendedor vai 
+  produzir 3 eventos gerados pelo seu trabalho: <b>TrablhoIniciado()</b> quando ele começa
+  o seu trabalho;  <b>TrabalhoProgredindo()</b>  quando seu trabalho estiver em processo e
+  o evento  mais importante <b>TrabalhoCompleto()</b>  que vai ocorrer quando seu trabalho
+  estiver completo e terminado.
+
+  O gerente e a empresa vão se alistar para receber notificações  desses eventos,
+  especialmente do evento <b>TrabalhoCompleto()</b> que traz <b>renda (R$)</b> para o vendedor,
+  a empresa e o gerente.  Por sua vez,  o vendedor  vai receber uma comissão para
+  cada <b>TrabalhoCompleto()</b>.  O  gerente  vai dar uma comissão parcial ao vendedor, 
+  e a empresa dará uma comissão final.
+
+  O vendedor não vai receber sua comissão no ato do <b>TrabalhoCompleto()</b>. O gerente e
+  a empresa  vão demorar um pouco para avaliar e recompensar o trabalho do vendedor.
+  O vendedor  retornará  de  imediato  ao seu trabalho porque perder tempo é perder
+  dinheiro. Ele não aguardará o seu trabalho ser avaliado mas será notificado quando
+  o seu trabalho for avaliado e ficará interessado em saber o valor da sua comissão
+  a receber.
+ 
+<b><u>2. Declaração dos delegates e dos eventos </u></b>
+<div class=niceview><span class=prg><b>
+<span class=sc2>// Assinatura dos eventos e das funções tratadoras dos eventos</span>
+delegate void <span class=sc0>TrabalhoIniciado();</span>
+delegate void <span class=sc0>TrabalhoProgredindo();</span>
+delegate int <span class=sc0>TrabalhoCompleto();</span>
+
+<span class=sc2>// Eventos da classe vendedor</span>
+public event TrabalhoIniciado <span class=sc0>iniciado;</span>
+public event TrabalhoProgredindo <span class=sc0>progredindo;</span>
+public event TrabalhoCompleto <span class=sc0>terminado;</span></b>
+</span></div>
+
+<b><u>3. Função auxiliar: Vendedor.RealizarTrabalho()</u></b>
+Nesta função auxiliar, <b class=prg>RealizarTrabalho()</b>,  o  vendedor  notificará  os seus 
+assinantes do status do seu trabalho: <b>iniciado(), progredindo() e terminado().</b>
+
+Porém, o evento <b>terminado()</b> é chamado de maneira assíncrona, isto é,  a chamada
+retorna de maneira imediada não esperando a finalização do trabalho dos métodos
+que tratam este evento.  No entato,  no final  do  tratamento  dos  eventos, os 
+assinantes avisam  o vendedor chamando o método <b class=prg>TrabalhoAvaliado()</b> passando-lhe
+o status do tratamento realizado do evento:
+
+<div class=niceview>
+<span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">TrabalhoCompleto</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">terminado</span><span class="sc10">.</span><span class="sc11">GetInvocationList</span><span class="sc10">())</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+	
+   </span><span class="sc11">tc_metodo</span><span class="sc10">.</span><span class="sc11">BeginInvoke</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc11">TrabalhoAvaliado</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc10">);</span><span class="sc0">
+ 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor each</span>
+</div>
+
+O método <b class=prg>BeginInvoke( função, objeto-informação)</b>  do  delegate recebe como
+argumento  uma  função callback  o qual  passamos <b>TrabalhoAvaliado()</b>, e no
+segundo  argumento  recebe  um  objeto que vai ser repassado na chamada ao
+próprio método <b>TrabalhoAvaliado()</b> como informação. Passamos para o segundo
+argumento  o  delegate  <b>tc_método()</b>  do  qual  a função <b>TrabalhoAvaliado() </b>
+aproveitará  o <b>inteiro</b> retornado conforme assinatura do evento <b>terminado().</b>
+
+Quando o assinante completar o trabalho de tratar o evento, <b>TrabalhoAvaliado()</b>
+será chamado. Dentro desse método é chamado <b class=prg>tc_metodo.EndInvoke()</b> que retorna
+o valor inteiro que representa a comissão do vendedor.
+<div class=prg-code>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">RealizarTrabalho</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Vendedor: trabalho começou"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">iniciado</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">iniciado</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Vendedor: trabalho progredindo"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">progredindo</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">progredindo</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Vendedor: trabalho completo"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminado</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">TrabalhoCompleto</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">terminado</span><span class="sc10">.</span><span class="sc11">GetInvocationList</span><span class="sc10">())</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">tc_metodo</span><span class="sc10">.</span><span class="sc11">BeginInvoke</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc11">TrabalhoAvaliado</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor each
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// RealizarTrabalho().end</span>
+</div>
+
+<b><u>4. Função callback: Vendedor.TrabalhoAvaliado()</u></b>
+<span class="prg">TrabalhoCompleto tc_metodo = (TrabalhoCompleto) res.AsyncState</span><span class="sc10">;</span>
+Com  esta  linha  recuperamos  <b>tc_metodo()</b> que foi passado como argumento por
+<b>BeginInvoke()</b> que preenche o objeto <b>res</b> com as especificações de <b>IAsyncResult</b>
+que por sua vez representa os resultados de uma operação assincrona.
+
+<span class="sc11">ncomissao</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="prg">tc_metodo.EndInvoke (res);</span>
+O vendedor recupera aqui a sua comissão retornada na finalização do tratamento
+do evento <b>terminado()</b> que retorna um valor inteiro.    
+<div class=prg-code>
+<span class="sc0"></span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">TrabalhoAvaliado</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="prg">TrabalhoCompleto tc_metodo = (TrabalhoCompleto) res.AsyncState</span><span class="sc10">;</span><span class="sc0">
+  
+  </span><span class="sc11">ncomissao</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="prg">tc_metodo.EndInvoke (res);</span><span class="sc0">
+  
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Vendedor.TrabalhoAvaliado(): comissão= "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ncomissao</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">    
+</span></div>
+
+<b><u>5. Código fonte do projeto prj_Events</u></b>
+Veja na sequência o código fonte completo do projeto de exemplo deste tópico.
+
+<img src=images\prj_Events.png>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_events - Arquivo: Gerente.cs
+// Mostrar como rodar métodos de forma paralela (multitarefa)
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_events</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Gerente</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Executa quando o trabalho do vendedor for terminado
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">TrabalhoCompleto</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">3000</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc13">@" gerente.TrabalhoCompleto():
+      gerente recompensa o trabalho do vendedor"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0"> 
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// TrabalhoCompleto().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_events - Arquivo: Empresa.cs
+// Mostrar como rodar métodos de forma paralela (multitarefa)
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_events</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Empresa</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Executa quando o trabalho do vendedor for iniciado
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">VendedorTrabalhoIniciado</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc13">@" Empresa.VendedorTrabalhoIniciado():
+      Vendedor começa o trabalho."</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// VendedorTrabalhoIniciado().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Executa quando o trabalho do vendedor for terminado
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">VendedorTrabalhoTerminado</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Thread</span><span class="sc10">.</span><span class="sc11">Sleep</span><span class="sc10">(</span><span class="sc4">4000</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc13">@" Empresa.VendedorTrabalhoTerminado():
+      Empresa recompensa o trabalho completo do Vendedor!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">7</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// VendedorTrabalhoTerminado().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_events - Arquivo: Vendedor.cs
+// Mostrar como rodar métodos de forma paralela (multitarefa)
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Threading</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Assinatura para os eventos e handlers (funções tratadoras)
+</span><span class="sc5">delegate</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">TrabalhoIniciado</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">delegate</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">TrabalhoProgredindo</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">delegate</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">TrabalhoCompleto</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_events</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Vendedor</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Comissão do vendedor (R$)
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncomissao</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Eventos da classe Vendedor
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc5">event</span><span class="sc0"> </span><span class="sc11">TrabalhoIniciado</span><span class="sc0"> </span><span class="sc11">iniciado</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc5">event</span><span class="sc0"> </span><span class="sc11">TrabalhoProgredindo</span><span class="sc0"> </span><span class="sc11">progredindo</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc5">event</span><span class="sc0"> </span><span class="sc11">TrabalhoCompleto</span><span class="sc0"> </span><span class="sc11">terminado</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">RealizarTrabalho</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Vendedor: trabalho começou"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">iniciado</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">iniciado</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Vendedor: trabalho progredindo"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">progredindo</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">progredindo</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Vendedor: trabalho completo"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminado</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">TrabalhoCompleto</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">terminado</span><span class="sc10">.</span><span class="sc11">GetInvocationList</span><span class="sc10">())</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+          </span><span class="sc11">tc_metodo</span><span class="sc10">.</span><span class="sc11">BeginInvoke</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc11">TrabalhoAvaliado</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor each
+</span><span class="sc0">      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// RealizarTrabalho().end
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Função chamada quando o tratamento dos eventos são finalizados
+</span><span class="sc0">    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">TrabalhoAvaliado</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">TrabalhoCompleto</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">TrabalhoCompleto</span><span class="sc10">)</span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">AsyncState</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">ncomissao</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc11">tc_metodo</span><span class="sc10">.</span><span class="sc11">EndInvoke</span><span class="sc10">(</span><span class="sc11">res</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Vendedor.TrabalhoAvaliado(): comissão= "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ncomissao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// TrabalhoAvaliado().fim
+</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_events"</span><span class="sc10">);</span><span class="sc0">
+            
+      </span><span class="sc2">// Vamos criar os objetos
+</span><span class="sc0">      </span><span class="sc11">Vendedor</span><span class="sc0"> </span><span class="sc11">pedro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vendedor</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Gerente</span><span class="sc0"> </span><span class="sc11">gerente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Gerente</span><span class="sc10">();</span><span class="sc0">      
+
+      </span><span class="sc2">// Pedro se prepara para notificar o gerente e a empresa do andamento 
+</span><span class="sc0">      </span><span class="sc2">// do seu trabalho
+</span><span class="sc0">      </span><span class="sc11">pedro</span><span class="sc10">.</span><span class="sc11">terminado</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TrabalhoCompleto</span><span class="sc10">(</span><span class="sc11">gerente</span><span class="sc10">.</span><span class="sc11">TrabalhoCompleto</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">pedro</span><span class="sc10">.</span><span class="sc11">terminado</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TrabalhoCompleto</span><span class="sc10">(</span><span class="sc11">Empresa</span><span class="sc10">.</span><span class="sc11">VendedorTrabalhoTerminado</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">pedro</span><span class="sc10">.</span><span class="sc11">iniciado</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TrabalhoIniciado</span><span class="sc10">(</span><span class="sc11">Empresa</span><span class="sc10">.</span><span class="sc11">VendedorTrabalhoIniciado</span><span class="sc10">);</span><span class="sc0">
+   
+      </span><span class="sc2">// Pedro realizar o seu trabalho e produz os eventos durante isso
+</span><span class="sc0">      </span><span class="sc11">pedro</span><span class="sc10">.</span><span class="sc11">RealizarTrabalho</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Isso executa de maneira não-linear.
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Main(): Vendedor completou o trabalho!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n *** Pressione enter para encerrar. *** \n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ReadLine</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Main().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim   
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace</span></div>
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track10-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

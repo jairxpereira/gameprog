@@ -1,0 +1,475 @@
+﻿<html>
+<head>
+<title>C_Sharp_14-6</title>
+<head>
+<style type="text/css">
+
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 14-6</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-5.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track14"></a>
+<h3 style="background-color:#ead5ff">14-6 Serialização</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+O processo de <b>serialização</b> consiste em transformar um objeto em uma
+sequência  de bytes geralmente para ser gravado ou transportado por
+outros meios. <b>Desserialização</b> é  o  processo de remontar o objeto a
+partir  da  leitura  da  sequência de bytes estocada em algum lugar.
+
+Para  que  uma  aplicação  possa gravar um objeto e que outra possa
+recuperá-lo  é necessário que o objeto gravado esteja formatado com
+uma codifição que ambas as  aplicações  entendam.  O  formato  mais 
+comum  é  o  <b>binário</b>  indicado para gravações locais. Outro formato 
+interessante  é  o <b>SOAP</b> que produz uma versão em XML do objeto para
+troca de dados entre aplicações na Internet.
+
+Para serializar o objeto é necessário alguns passos gerais:
+- Assinalar a classe com o atributo <b class=prg>[Serializable];</b>
+- Criar um <b class=prg>FileStream</b>;
+- Selecionar o <b>formatador</b> dos dados;
+- Passar para o formatador o stream e o objeto a ser gravado no
+disco.
+
+<b><u>1.2 Contexto da aplicação de exemplo</b></u>
+<img src=images\prj_Serializacao.png>
+
+Nossa aplicação vai realizar  a gravação e leitura de dados de um
+jogador de  videogame;  dados como nome do jogador, quantidade de
+energia, vidas, fase e subfase. Em resumo, um processo simples de
+salvar e recuperar o status do jogo.
+
+<b><u>2.1 A classe auto serializável Jogador</u></b>
+<div class=niceview>
+<span class=sc2>// A classe precisa ser assinalada como serializável</span>
+<b class=prg>[Serializable]</b><span class=prg>
+class Jogador
+{
+<span class=sc2>// (...)</span>
+{ </prg>
+</div>
+Em primeiro lugar a classe precisa ser assinalada como serializável
+conforme exemplo acima. Se  a  classe  contiver  objetos de outras 
+classes, estas classes também devem ter essa marca da serialização.
+
+<b><u>2.2 Gravando o objeto no disco</u></b>
+
+salvar()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc2">// Grava os dados de configuração
+</span><span class="sc0"></span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">salvar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_nome</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Cria um arquivo
+  </span><span class="sc0"></span><span class="sc5">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Create</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Cria um formatador
+  </span><span class="sc0"></span><span class="sc5">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new BinaryFormatter</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc2">// Grava o objeto no disco
+  </span><span class="sc0"></span><span class="sc5">tipobin.Serialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Verifica se o arquivo foi criado com sucesso
+  </span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Exists</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">))</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Arquivo salvo com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">else</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Falha no processo de gravação."</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// salvar().fim
+</span></div>
+
+<span class="sc0"></span><span class="sc5">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Create</span><span class="sc10">);</span>
+<span class="sc0"></span><span class="sc5">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new BinaryFormatter</span><span class="sc10">();</span>
+<span class="sc0"></span><span class="sc5">tipobin.Serialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">);</span>
+Note que é criado um objeto <b>FileStream</b> que aponta para um arquivo
+que será criado; é criado uma formatador que codifica os dados na
+forma binária e  o  formatador se encarrega de salvar os dados no
+disco.
+
+<b><u>2.3 Carregando o objeto no disco</u></b>
+carregar()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">carregar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_nome</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc2">// Verifica se o arquivo existe...
+  </span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Exists</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">))</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ok arquivo localizado...."</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">else</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Arquivo não localizado"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// end else
+</span><span class="sc0">
+
+  </span><span class="sc5">Jogador</span><span class="sc0"> </span><span class="sc11">obj_config</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Cria um arquivo
+  </span><span class="sc0"></span><span class="sc5">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Open</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc2">// Cria um formatador
+  </span><span class="sc0"></span><span class="sc5">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new BinaryFormatter</span><span class="sc10">();</span><span class="sc0">
+
+  </span><span class="sc2">// Carrega o objeto do arquivo. O cast é necessário.
+  </span><span class="sc0"></span><span class="sc11">obj_config</span> = (<b class=prg>Jogador)</b><span class="sc5"> tipobin.Deserialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">);</span><span class="sc0">
+
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">obj_config</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// carregar().fim
+</span></div>
+
+<span class="sc0"></span><span class="sc5">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Open</span><span class="sc10">);</span>
+<span class="sc0"></span><span class="sc5">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new BinaryFormatter</span><span class="sc10">();</span>
+<span class="sc0"></span><span class="sc11">obj_config</span> = (<b class=prg>Jogador)</b><span class="sc5"> tipobin.Deserialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">);</span>
+
+O código de carregar é muito similar ao processo de gravação, mas
+note que o arquivo foi aberto com <b class=prg>FileMode.Open</b>. Deve se fazer um
+<b>cast</b> para transferir o objeto carregado para uma variável do tipo
+do objeto.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Serializacao</u></b>
+<div class=prg-code>
+<img src=images\prj_Serializacao.png>
+
+<span class="sc2">// Projeto prj_Serializacao: arquivo: Jogador.cs
+// Este programa testa gravação e leitura de arquivos
+// pelo processo serialização e desserialização.
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Runtime</span><span class="sc10">.</span><span class="sc11">Serialization</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Runtime</span><span class="sc10">.</span><span class="sc11">Serialization</span><span class="sc10">.</span><span class="sc11">Formatters</span><span class="sc10">.</span><span class="sc11">Binary</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Serializacao</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// A classe precisa ser assinalada como serializável
+</span><span class="sc0">  </span><span class="sc10">[</span><span class="sc11">Serializable</span><span class="sc10">]</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Dados do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">jogador_nome</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vidas</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">fase</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">subfase</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Construtor
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">jogador_nome</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nome</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">vidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">7</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">fase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">19</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">subfase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">
+    </span><span class="sc2">// Exibe os dados do jogador
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n Jogador: {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">jogador_nome</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">" Energia: {0} \t"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">energia</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">" Vidas: {0} \t\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">vidas</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">" Fase: {0} \t"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">fase</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">" Subfase: {0}\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">subfase</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Grava os dados de configuração
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">salvar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_nome</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Cria um arquivo
+</span><span class="sc0">      </span><span class="sc11">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Create</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Cria um formatador
+</span><span class="sc0">      </span><span class="sc11">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">BinaryFormatter</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Grava o objeto no disco
+</span><span class="sc0">      </span><span class="sc11">tipobin</span><span class="sc10">.</span><span class="sc11">Serialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Verifica se o arquivo foi criado com sucesso
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Exists</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">))</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Arquivo salvo com sucesso!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">else</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Falha no processo de gravação."</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// salvar().fim
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">carregar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">arquivo_nome</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Verifica se o arquivo existe...
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">File</span><span class="sc10">.</span><span class="sc11">Exists</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">))</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Ok arquivo localizado...."</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">else</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Arquivo não localizado"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// end else
+</span><span class="sc0">
+
+      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">obj_config</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Abre o arquivo
+</span><span class="sc0">      </span><span class="sc11">FileStream</span><span class="sc0"> </span><span class="sc11">arquivo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">FileStream</span><span class="sc10">(</span><span class="sc11">arquivo_nome</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FileMode</span><span class="sc10">.</span><span class="sc11">Open</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Cria o formatador
+</span><span class="sc0">      </span><span class="sc11">BinaryFormatter</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">BinaryFormatter</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Carrega o objeto do arquivo. O cast é necessário.
+</span><span class="sc0">      </span><span class="sc11">obj_config</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">Jogador</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">tipobin</span><span class="sc10">.</span><span class="sc11">Deserialize</span><span class="sc10">(</span><span class="sc11">arquivo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">obj_config</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// carregar().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc15"></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_Serializacao: arquivo: Program.cs
+// Este programa testa gravação e leitura de arquivos
+// pelo processo serialização e desserialização.
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Serializacao</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Serializacao"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Cria um jogador para ser salvo
+</span><span class="sc0">      </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">megaman</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"Megaman"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">vidas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">15</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">energia</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">999</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">fase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">12</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">subfase</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Usuário seleciona gravar ou carregar
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Grave se o usuário escolheu gravar
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">megaman</span><span class="sc10">.</span><span class="sc11">salvar</span><span class="sc10">(</span><span class="sc6">"jogador.bin"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Carregue o arquivo se o jogador escolheu ler
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">escolha</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc2">// Cria um jogador
+</span><span class="sc0">        </span><span class="sc11">Jogador</span><span class="sc0"> </span><span class="sc11">mega</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Jogador</span><span class="sc10">(</span><span class="sc6">"mega"</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc2">// Mostra os valores iniciais
+</span><span class="sc0">        </span><span class="sc11">mega</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc2">// Carrega nova configuração do jogador do disco
+</span><span class="sc0">        </span><span class="sc11">mega</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">mega</span><span class="sc10">.</span><span class="sc11">carregar</span><span class="sc10">(</span><span class="sc6">"jogador.bin"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Dados atualizados do disco:"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mega</span><span class="sc10">.</span><span class="sc11">mostrar</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n\t Pressione ENTER para encerrar!"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Pausa para a leitura!
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// menu() - Apresenta um menu com duas opções
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \n \t Menu - Arquivo: jogador.bin\n \t"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0">
+        </span><span class="sc6">"---------------------------------------\n"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \t G- Gravar dados no arquivo \n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" \t L- Ler dados do arquivo \n\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\t Escolha sua opção (G, L): "</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">ConsoleKeyInfo</span><span class="sc0"> </span><span class="sc11">tecla</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">tecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ConsoleKeyInfo</span><span class="sc10">)</span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ReadKey</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">G</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// A linha Main() trava e aguarda o final do processamento das linhas.
+</span><span class="sc0">        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">arquivo_gravar</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">.</span><span class="sc11">Key</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">ConsoleKey</span><span class="sc10">.</span><span class="sc11">L</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">arquivo_ler</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">nulo</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// menu().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janel
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Serializacao
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track14-5.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

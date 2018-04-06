@@ -1,0 +1,975 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-6</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:555pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:525pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-6</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.6 Triângulo 2d</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Triangulo01.png></div>
+
+O triângulo é a menor célula de um objeto tridimensional. O triângulo
+acima  é  composto  por  3  vértices  cada  um contendo informação de 
+posição na forma <b>(x, y, z)</b>. Matematicamente o vértice  está  completo
+mas dentro do directx apenas posição  é  insuficiente  para  fazer  o
+melhor uso dos vértices e assim dependendo dos efeitos que  se   quer
+obter muitas outras informações vão sendo adicionadas  aos  vértices.
+Essa necessidade de agregação de informações aos vértices dá  origem
+ao <b>formato de vértice</b> que varia conforme a intenção da aplicação  no
+tocante ao uso de cor, luz, textura, animação e outros aspectos.
+
+Na aplicação deste tópico, cada  vértice  recebe ainda informação  de
+cor e de intensidade de cor. No triângulo acima  os  vértices tem uma
+cor  básica  de  vermelho,  verde  e  azul  que  se  esparramam e  se 
+misturam  pelo  triângulo com a mesma intensidade ( <b>1.0f</b> ).
+
+Ainda para ter o triângulo  ou  qualquer  outra  forma  desenhada, os 
+vértices  precisam  ser  posicionados seguindo uma direção regular do
+relógio na linha horária ou anti-horária.  No  triângulo  acima foram
+colocados  primeiro o vértice vermelho <b>p0</b>, depois  o vértice verde <b>p1</b>
+e por último o vértice azul <b>p2</b>; ou seja,  os  vértices  seguiram  uma
+direção horária.   Essa  disposição organizada dos vértices permite a
+aplicação  de  uma técnica  pelo directx chamada <b>culling</b> que corta da
+renderização triângulos que estão de costas  para  a  câmera  e  isso
+economiza processamento improdutivo da cpu ou da placa de vídeo.
+
+<u>Tranformações</u>
+Normalmente, um triângulo para ser exibido sofre ainda  uma sequência 
+de operações matemáticas ou geométricas chamadas  <b>transformações</b>.  No 
+triângulo acima  cada vértice está posicionado com relação aos outros
+vértices do próprio triângulo, esse posicionamento é chamado de <b>espaço
+local</b>. Quando o triângulo ou objeto é posicionado em um mundo virtual
+ocorre a primeira transformação quando seus vértices são recalculados
+para posicionar de fato o objeto neste mundo virtual.
+
+Nessa primeira transformação, o objeto é transportado do <b>espaço local</b>
+para o <b>espaço mundial</b>. Mas para ser visto o objeto precisa ser trazido
+do espaço mundial para o <b>espaço de tela</b> ou  <b>espaço  de  visualização</b>.
+Geralmente  estas  transformações  são multiplicações matemáticas que 
+são feitas no posicionamento dos vértices até chegar na posição (x,y)
+final do vértice para compor a imagem na tela.
+
+Falamos sobre a transformação de posicionamento chamada de <b>translação</b> 
+mas existem outras e mais outras  para aplicação  de escala, rotação, 
+correções de visualização e aplicação de efeitos especiais. 
+É importante destacar que as transformações são  feitas  internamente
+pelo directx  utilizando os  dados   numéricos  dispostos  geralmente
+em matrizes e vetores matemáticos.
+
+<u>Formato de vértice</u>
+Nosso triângulo não vai sofrer  nenhuma  transformação  uma  vez  que
+vamos  passar  a  coordenada  2D  final  do  vértice  acompanhada  da
+informação de cor.  Dizemos  então que o <b>formato  de vértice</b> do nosso 
+triângulo é <b>transformado e colorido</b>, <b class=prg>TransformedColored</b> como  se  diz
+em  directx. Outros formatos de  vértice  podem  incluir  informações
+sobre texturas ou  posicionamento que vai sofrer cálculos futuros  de
+transformações.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+	<b class=sc16><u>chama montar_Geometria() para configurar os vértices</u></b>
+	
+<b class=sc16><u>montar_Geometria()</u>
+	Configura posição dos vértices</b>	
+	
+<b class=sc16><u>renderizar_Geometria()</u>
+	Declara o formato de vértice utilizado ao directx
+	Renderiza os vértices com g_device->DrawPrimitiveUP()</b>	
+
+Renderizar()
+	Limpa a tela
+	Desenha a cena
+	<b class=sc16><u>chama renderizar_Geometria() para desenhar o triângulo</u></b>
+	Apresenta a cena
+
+Limpar()	
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Triangulo01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um triângulo</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+<b>
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+</b>
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div><b>
+<span class=sc2>// Essa função monta formas geométricas</span>
+<span class=prg>void </span>montar_Geometria (<span class=prg>void</span>); </b>
+Essa função configura os vértices que  vão  compor  o  triângulo  que
+será renderizado.   O  triângulo  está  representado por uma array de
+3 vértices <b>g_Vertices</b>. Os vértices por sua vez estão formatados  numa
+estrutura chamada <b class=prg>CustomVertex_TransformedColored</b>  com informação  de
+posição, cor e intensidade de  cor  de  cada  vértice  utilizado.   O
+prefixo <b>CustomVertex_</b> do nome dessa estrutura é traduzido como vértice 
+customizado ou personalizado ou ainda também de <b>vértice flexível</b> pois
+o directx dá  a liberdade ao programador de compor o vértice conforme
+a necessidade particular da aplicação. O restante do nome da estrutura
+<b>TransformedColored</b> indica que os vértices são  coloridos  e  já  estão 
+posicionados em <b>coordenadas de tela</b> e não necessitam de transformações
+ou ainda do uso de uma câmera em cena.
+
+<b><span class=sc2>// Renderiza os vértices em formas geométricas</span>
+<span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);</b>
+Essa função desenha o triângulo na cena. Lembramos que todo  processo
+de  desenhar  ocorre  entre  as funções <span class=prg>BeginScene()</span> e <span class=prg>EndScene()</span>  do
+dispositivo  renderizador.   Então essa função e outras como ela  que 
+desenham as formas geométricas são chamadas pela função  <b>Renderizar()</b>
+que contém essas funções  obrigatórias  de  início  e  finalização do
+processo de renderização.
+
+A  função  <b>renderizar_Geometria()</b>  antes  de  desenhar  a  cena  deve
+informar  ou  declarar  ao  dispositivo  renderizador  o  formato  de 
+vértice utilizado. De forma geral,  antes  de  desenhar  alguma coisa
+é configurado vários estados internos do dispositivo renderizador que
+vão impactar como a cena  vai  ser  desenhada  tais como visualização
+sólida ou em wireframe (aramado) entre centenas de outros estados que
+podem ser configurados.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um triângulo</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = 0xFF00FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul   = 0xFF0000FF; 
+
+<span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_TransformedColored_Format</span>(<span class=sc4>D3DFVF_XYZRHW </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_TransformedColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>float </span>rhw; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  <span class=prg>float </span>_rhw, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    rhw = _rhw; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_TransformedColored</span></span>
+
+<span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_TransformedColored </span>g_Vertices[<span class=sc4>3 </span>];   
+</div>
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = 0xFF00FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul   = 0xFF0000FF;</div>
+Estas  contantes  de  cores  definidas vão  facilitar  a  leitura  de
+informação de cor na configuração dos vértices. 
+
+<b><span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_TransformedColored_Format</span>( <span class=sc4>D3DFVF_XYZRHW </span>| <span class=sc4>D3DFVF_DIFFUSE</span> ) </b>
+Aqui é definido a composição do formato de vértice que será utilizado
+no  desenho  de  formas  geométricas  nesta  aplicação.   O  elemento
+<b>D3DFVF_XYZRHW</b> indica que o vértice vai  ter  quatro  floats  iniciais
+<span class=prg>(x,y,z,rhw)</span> seguido por um  elemento  do  tipo <span class=prg>DWORD</span>  que  indica cor
+<b>D3DFVF_DIFFUSE</b>.   Estes  elementos estão declarados dentro do arquivo
+<b>d3d9types.h</b>  junto com outros valores interessantes para  formato  de
+vértice.   Por fim,    <span class=prg>CustomVertex_TransformedColored_Format</span>  traz a
+combinação  coletiva   de    <b>D3DFVF_XYZRHW</b>   e   <b>D3DFVF_DIFFUSE</b>   que 
+posteriormente  é utilizado na declaração ao dispositivo renderizador
+do formato de vértice utilizado pela aplicação.
+
+<div class=niceview style="border-style:dashed;"><span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_TransformedColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>float </span>rhw; 
+  <span class=prg>DWORD </span>cor; 
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  
+							<span class=prg>float </span>_rhw, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    rhw = _rhw; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_TransformedColored</span></span></div>
+Com relação aos seus membros <b>(x, y, z)</b> representa a coordenada 2d  de
+tela sendo que <b>z</b> fica ignorado nesta aplicação.  O  membro <b>cor</b> é auto
+explicativo. O float <b>rhw</b>  é  um  quarto  float  que  nesta  aplicação 
+representa  a  intensidade  da cor do vértice; esse quarto float pode
+representar  outros  aspectos  em  outros  contextos.  Se configurado 
+como <b>1.0f (x, y, z)</b> significa uma posição; se configurado  como  <b>zero
+(x, y, z)</b> significa um vetor que indica direção.  Reafirmando, <b>rhw</b> no
+contexto dessa aplicação  varia  de  0.0f  a  1.0f  e  representa   a
+intensidade com a qual a cor do vértice se esparrama pelo triângulo.
+
+<b><span class=sc5>CustomVertex_TransformedColored</span>() {} </b>
+Este construtor é para permitir a declaração desta estrutura sem  uma
+inicialização explícita dos valores dos membros pela aplicação.
+
+<b><span class=sc5>CustomVertex_TransformedColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  
+							<span class=prg>float </span>_rhw, <span class=prg>DWORD </span>_cor) </b>
+Este construtor é para permitir a inicialização explícita  dos  membros
+da estrutura pela aplicação. Esse construtor permitiu <b>montar_Geometria()</b>
+apresentar uma linha como esta na configuração dos vértices: <b>
+g_Vertices[2] = <span class=prg>CustomVertex_TransformedColored</span>( 128.0f, 384.0f, zpos, 1.0f, azul); </b>
+
+<b><span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_TransformedColored </span>g_Vertices[<span class=sc4>3</span>];</b>
+Aqui  declaramos  inicialmente os 3 vértices que vão  ser  plenamente
+configurados em <b>montar_Geometria().</b>
+
+<b><u>2.1 Inicializando o motor gráfico</u></b>
+Veja no destaque que  <b>initGfx()</b>  chama  a  função  <b>montar_Geometria()</b>
+para a trabalho de configuração inicial dos vértices.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=sc2>// Monta as formas geométricas</span>
+  montar_Geometria();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.2 Construção das formas geométricas</u></b>
+<div class=niceview><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// p0 - primeiro vértice</span>
+  g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>,  <span class=sc4>50.0f</span>, zpos, <span class=sc4>1.0f</span>, vermelho);  
+
+  <span class=sc2>// p1 - segundo vértice</span>
+  g_Vertices[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, verde);  
+
+  <span class=sc2>// p2 - terceiro vértice</span>
+  g_Vertices[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, azul);  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+</div><b>
+<span class=sc2>// Posicionamento de profundidade</span>
+<span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; </b>
+Aqui é a configuração de profundidade do triângulo mas este valor não
+será utilizado efetivamente por  esta  aplicação.    O  essencial  da
+coordenada vai ser <b>(x, y)</b> que apontam direto para a tela.
+
+<div class=niceview style="border-style:dashed;">
+<span class=sc2>// p0 - primeiro vértice</span>
+g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>,  <span class=sc4>50.0f</span>, zpos, <span class=sc4>1.0f</span>, vermelho);  
+<span class=sc2>// p1 - segundo vértice</span>
+g_Vertices[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, verde);  
+
+<b><span class=sc2>// p2 - terceiro vértice</span>
+g_Vertices[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, azul);</b>  </div>
+Aqui é um aspecto fundamental de uma  aplicação  3d:  o  processo  de
+posicionamento dos vértices que produz com isso  as  diversas  formas 
+geométricas. O valor <b>1.0f</b> é o <b>rhw</b>  que  nesse  contexto  determina  a
+intensidade de cor; faça variações nestes valores para ver os efeitos
+de colorimento que isso  provoca  no  triângulo.   Aqui  montamos  um 
+triângulo  manualmente  para  mostrar  como  o  directx  funciona mas 
+geralmente os objetos 3d são carregados de arquivos como o arquivo  x
+nativo do directx depois de terem sido criados em  outras  aplicações
+de modelagem gráfica.
+
+
+<b><u>2.3 Renderização das formas geométricas </u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  
+
+  <span class=sc2>// Quantidade de primitivas possíveis de acordo com o uso de vértices</span>
+  <span class=prg>UINT </span>nContagem = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tamanho do passo para achar o próximo vértice</span>
+  <span class=prg>UINT </span>nPasso =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   
+
+  <span class=sc2>// Desenha forma geométrica</span>
+  <span class=prg>g_device-&gt;DrawPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nContagem, &g_Vertices, nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div><b>
+<span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+<span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  </b>
+Aqui é informado ao dispositivo renderizador  o  formato  de  vértice
+utilizado pela aplicação.
+
+<b><span class=sc2>// Quantidade de primitivas possíveis de acordo com o uso de vértices</span>
+<span class=prg>UINT </span>nContagem = <span class=sc4>1</span>; </b>
+Esta variável representa a quantidade de formas primitivas que  serão
+renderizadas com o conjunto de (3) vértices  apresentados.   Aqui é a
+indicação  de  quantos  (1)  triângulos  serão  produzidos.   O mesmo
+conjunto  de  vértices  pode  dar  origem a quantidades diferentes de
+outros  tipos de formas primitivas. Por exemplo, se a forma primitiva
+fosse  pontos  finais  na  tela,  a  variável  <b>nContagem</b>  poderia ser 
+configurada para três.
+
+<b><span class=sc2>// Tamanho do passo para achar o próximo vértice</span>
+<span class=prg>UINT </span>nPasso =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   </b>
+A função que renderiza os vértices precisa saber qual é o espaçamento
+entre um vértice e outro.   Esse  espaçamento é obtido pela instrução
+<span class=prg>sizeof()</span>  com  a  estrutura  do formato de vértice como seu argumento.
+
+<b><span class=sc2>// Desenha forma geométrica</span>
+<span class=prg>g_device-&gt;DrawPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nContagem, &g_Vertices, nPasso);  </b>
+A função <span class=prg>DrawPrimitiveUP()</span> renderiza os vértices de usuário presentes
+numa array ( <b>&g_Vertices</b> ) na quantidade determinada ( <b>nContagem</b> ) da
+forma primitiva escolhida <b>D3DPT_TRIANGLELIST</b> (lista de triângulos). 
+Vamos conhecer as outras formas primitivas em um outro tópico.
+
+<b><u>2.4 Renderizando a cena</u></b>
+A função <b>Renderizar()</b> prepara o contexto obrigatório de renderização
+e chama a função  <b>renderizar_Geometria()</b> para o desenho do triângulo.
+
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <b><span class=sc2>// Vamos renderizar as formas geométricas</span>
+    renderizar_Geometria();  </b>
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Triangulo01</u></b>
+<div class=prg-code><img src=images\prj_Triangulo01.png>
+<span class=sc2>// Projeto: prj_Triangulo01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um triângulo</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um triângulo</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = 0xFF00FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul   = 0xFF0000FF; 
+
+<span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_TransformedColored_Format</span>(<span class=sc4>D3DFVF_XYZRHW </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_TransformedColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>float </span>rhw; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_TransformedColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z,  <span class=prg>float </span>_rhw, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    rhw = _rhw; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_TransformedColored</span></span>
+
+<span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_TransformedColored </span>g_Vertices[<span class=sc4>3 </span>];   
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta as formas geométricas</span>
+  montar_Geometria();  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar as formas geométricas</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// p0 - primeiro vértice</span>
+  g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>,  <span class=sc4>50.0f</span>, zpos, <span class=sc4>1.0f</span>, vermelho);  
+
+  <span class=sc2>// p1 - segundo vértice</span>
+  g_Vertices[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>512.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, verde);  
+
+  <span class=sc2>// p2 - terceiro vértice</span>
+  g_Vertices[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_TransformedColored</span>( <span class=sc4>128.0f</span>, <span class=sc4>384.0f</span>, zpos, <span class=sc4>1.0f</span>, azul);  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_TransformedColored_Format</span>);  
+
+  <span class=sc2>// Quantidade de primitivas possíveis de acordo com o uso de vértices</span>
+  <span class=prg>UINT </span>nContagem = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tamanho do passo para achar o próximo vértice</span>
+  <span class=prg>UINT </span>nPasso =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_TransformedColored</span>);   
+
+  <span class=sc2>// Desenha forma geométrica</span>
+  <span class=prg>g_device-&gt;DrawPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nContagem, &g_Vertices, nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo01 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como renderizar um triângulo</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Triangulo01"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-7.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

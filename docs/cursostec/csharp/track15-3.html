@@ -1,0 +1,715 @@
+﻿<html>
+<head>
+<title>C_Sharp_15-3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 15-3</b></center>
+<hr>
+
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track15-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track15"></a>
+<h3 style="background-color:#ead5ff">15-3 Comunicação assíncrona de dados via tcp\ip - parte 2\3: servidor</h3><pre>
+<b><u>1. Visão geral</b></u>
+<img src=images\esquema_PoliServidor.png>
+
+Para facilitar a compreensão esta aplicação servidora de dados foi
+dividida em três classes:
+
+- <b>Servidor</b>: é a classe que inicializa a aplicação, a  escuta  de 
+comunicação  e  produz  uma instância da classe <b>Atendimento</b> toda 
+vez que um cliente se conecta com sucesso.
+
+- <b>Atendimento</b>:é a classe principal da aplicação que contém toda a
+funcionalidade de atendimento ao cliente. Cada vez que um cliente
+se conecta o Servidor produz  um objeto Atendimento para tratar o 
+fluxo de entrada e saída de dados  da  conversa estabelecida pela
+aplicação cliente com esta aplicação servidora.
+
+- <b>Ferramentas:</b>  é  uma  classe  estática que oferece métodos que 
+interpretam  e  mostram  o comando advindo da aplicação cliente.
+
+<b><u>2. Os métodos da classe Ferramentas</u></b>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">montarBytes</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">texto</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Variáveis para o trabalho de conversão
+</span><span class="sc16">char</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">txt_char</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// string para char[]
+</span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">txt_byte</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// char[] para byte[]
+</span><span class="sc11">txt_char</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">texto</span><span class="sc10">.</span><span class="sc5">ToCharArray</span><span class="sc10">();</span><span class="sc0">
+<span class="sc11">txt_byte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Encoding.UTF8.GetBytes</span>(txt_char);
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">txt_byte</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montarBytes().fim
+</span></div>
+Esse método é utilizado  para  transformar  o  texto  da  resposta 
+produzida na forma de bytes que serão enviados para o cliente pelo
+método  <b class=prg>BeginWrite()</b>  dentro  da função <b>quandoLeituraCompleta()</b> da 
+classe <b>Atendimento</b>.
+
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_comando</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncliente</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">.</span><span class="sc11">Trim</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente: #{0} \t Comando: {1}"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">ncliente</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar_comando().fim</span>
+</div>
+Esse método mostra o comando que chegou do cliente especificado por
+<b>ncliente</b>.
+
+A função <b>interpretar_cmd()</b> produz e retorna uma resposta conforme o
+comando recebido do cliente.  O  comando é recebido, interpretado e
+produz uma identificação numérica que permite realizar o roteamento
+para a produção da resposta adequada dentro do bloco <b class=prg>switch</b>:
+<div class=niceview>
+<span class="sc2">// Interpreta os comandos vindo do cliente
+</span><span class="sc0"></span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">interpretar_cmd</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">comando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+  </span><span class="sc2">// Resposta padrão para comandos não identificados
+</span><span class="sc0">  </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Comando não encontrado!"</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Limpeza das strings 
+</span><span class="sc0">  </span><span class="sc11">comando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Trim</span><span class="sc10">();</span><span class="sc0">
+  </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"             "</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Faz a interpretação dos comandos
+  </span><span class="sc0"></span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"windir"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"olá"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"ola"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"parar"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Prepara uma resposta conforme a interpretação realizada
+</span><span class="sc0">  </span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncomando</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+	</span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">:</span><span class="sc0">
+	  </span><span class="sc2">// Pega o diretório aonde está instalado o sistema
+</span><span class="sc0">          </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">GetEnvironmentVariable</span><span class="sc10">(</span><span class="sc6">"SystemRoot"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+	  </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+	</span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">:</span><span class="sc0">
+	  </span><span class="sc2">// Os espaços limpam o buffer anterior
+</span><span class="sc0">          </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Olá usuário #"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+	  </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+	</span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">:</span><span class="sc0">
+	  </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Até logo, usuário #"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+	  </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc2">// endswitch  
+</span><span class="sc0">
+  </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// interpretar_cmd().fim
+</span></div>
+
+<b><u>3. O método iniciar_servidor() da classe Servidor</u></b>
+Dentro da classe <b>Servidor</b>, o método que demanda maiores explicações
+é o método <b>iniciar_servidor()</b>:
+
+<div class=niceview>
+<span class="sc2">// Roda o código de monitoramento e estabelecimento das conexões
+</span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_servidor</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2"> // Define um objeto endereço de ip      
+</span><span class="sc0"> </span><span class="sc11">IPAddress</span><span class="sc0"> </span><span class="sc11">endereco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">IPAddress</span><span class="sc10">.</span><span class="sc11">Parse</span><span class="sc10">(</span><span class="sc6">"127.0.0.1"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2"> // Define um listener (ouvinte) para o endereço de ip em uma
+</span><span class="sc0"> </span><span class="sc2">// porta específica
+</span><span class="sc0"> </span><span class="sc11">TcpListener</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TcpListener</span><span class="sc10">(</span><span class="sc11">endereco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11"> avisar</span><span class="sc10">(</span><span class="sc6">"Esperando conexão..."</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11"> porteiro</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2"> // Continua monitorando enquando os dados vem e vão
+</span><span class="sc0"> </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(;</span><span class="sc0"> </span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10"> {</span><span class="sc0">
+</span><span class="sc2"> // Se um cliente conectar, aceite a conexão e retorne
+</span><span class="sc0"></span> <span class="sc2">// um novo soquete nomeado tomada_cliente enquanto o 
+</span><span class="sc0"></span> <span class="sc2">// 'porteiro' continua ouvindo
+</span><span class="sc0"></span> <span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">AcceptSocket</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11"> avisar</span><span class="sc10">(</span><span class="sc6">"\n Cliente conectado Ok"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2"> // Inicia um novo atendimento a cada nova conexão
+</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc0"> </span><span class="sc11">conexao_ativa</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc10">(</span><span class="sc11">tomada_cliente</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11"> conexao_ativa</span><span class="sc10">.</span><span class="sc11">iniciarLeitura</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10"> }</span><span class="sc0"> </span><span class="sc2">// endfor 
+</span><span class="sc0"></span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_servidor().fim
+</span></div>
+
+<b class=prg>IPAddress</b> endereco = <b class=prg>IPAddress.Parse</b>("127.0.0.1");
+<b class=prg>TcpListener</b> porteiro = <b class=prg>new TcpListener</b>(endereco, 65000);
+Neste bloco definimos o ip e porta de conexão e com eles criamos
+o objeto <b>porteiro</b> para ficar ouvindo conexões neste endereço.
+
+<span class=prg>porteiro.Start();</span>
+Aqui o objeto <b>porteiro</b> inicia o processo de monitorar a porta para
+verificar contatos de conexão.  Quando ocorre a conexão a tomada é
+retornada por <span class=prg>porteiro.AcceptSocket()</span> no bloco <b class=prg>for</b> abaixo.
+
+<div class=niceview>
+<b class=sc2>// Continua monitorando enquando os dados vem e vão</b>
+<b class=prg>for (; ; )</b><span class=prg>
+{</span>
+<b class=sc2>// Se um cliente conectar, aceite a conexão e retorne
+// um novo soquete nomeado tomada_cliente enquanto o 
+// 'porteiro' continua ouvindo</b>
+<b class=prg>Socket</b> tomada_cliente = <b class=prg>porteiro.AcceptSocket();</b>
+<span class=prg>avisar("\n Cliente conectado Ok");</span>
+
+<b class=sc2>// Inicia um novo atendimento a cada nova conexão</b>
+<b class=prg>Atendimento</b> conexao_ativa = <b class=prg>new Atendimento(tomada_cliente);</b>
+<span class=prg>conexao_ativa.iniciarLeitura();
+}</span></div>
+A execução desse bloco congela-se em  <b class=prg>AcceptSocket()</b>  que  fica  no
+aguardo de uma nova conexão. Quando essa  conexão  ocorre,  um novo
+objeto <b>Atendimento</b> é criado e o método <span class=prg>iniciarLeitura()</span> é  acionado
+criando dentro desse objeto um ciclo de leitura e gravação de dados
+em  paralelo  a  esta  linha  de escuta da porta por novas conexões.
+
+<b><u>4.1 Propriedades da classe Atendimento</u></b>
+<div class=niceview>
+<span class="sc2">// Buffer de memória para receber e enviar dados
+</span><span class="sc0"></span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">;</span>
+
+<span class="sc2">// Objetos para manipular o fluxo de dados</span>
+<span class="sc0"></span><span class="sc5">private Socket</span><span class="sc0"> </span><span class="sc11">tomada</span><span class="sc10">;</span>
+<span class="sc5">private NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc10">;</span>
+
+</span><span class="sc2">// Delegates para receber as funções que vão notificar quando</span>
+<span class="sc0"></span><span class="sc2">// o processo de leitura e escrita estiverem completos.</span>
+<span class="sc0"></span><span class="sc5">private AsyncCallback</span><span class="sc0"> </span><span class="sc11">avisoLeituraCompleta</span><span class="sc10">;</span>
+<span class="sc5">private AsyncCallback</span><span class="sc0"> </span><span class="sc11">avisoGravacaoCompleta</span><span class="sc10">;</span>
+
+<span class="sc2">// Controle do número de conexões </span>
+<span class="sc0"></span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span>
+<span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;
+</div>
+As variáveis acima foram declaradas como campos privados da classe
+para  que  possam  ser vistos e utilizados por todos os métodos da 
+classe <b>Atendimento</b> que tenham necessidade deles. 
+
+<b><u>4.2 Métodos da classe Atendimento</u></b>
+
+Atendimento()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc2">// Construtor 
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc10">(</span><span class="sc5">Socket</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc10">)</span>
+<span class="sc10">{</span></span>
+<span class="sc2">// Contabiliza a conexão que chegou e inicializa o buffer</span>
+<span class="sc11">contador</span><span class="sc10">++;</span>
+<span class="sc11">ncliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc10">;</span>
+<span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new byte</span><span class="sc10">[</span><span class="sc4">256</span><span class="sc10">];</span>
+
+<span class="sc2">// Inicializa os objetos de manipulação do fluxo de dados</span>
+<span class="sc11">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc10">;</span>
+<span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new NetworkStream</span><span class="sc10">(</span><span class="sc11">tomada_cliente</span><span class="sc10">);</span>
+
+<span class="sc2">// Configura os delegates</span>
+<span class="sc11">avisoLeituraCompleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="prg">quandoLeituraCompleta</span><span class="sc10">);</span>
+<span class="sc11">avisoGravacaoCompleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="prg">quandoGravacaoCompleta</span><span class="sc10">);</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor</span>
+</div>
+O  construtor  realiza  o  trabalho  fundamental de  inicializar as 
+variáveis  e  objetos  que  serão  utilizados  ao  longo  da classe. 
+O soquete <b>tomada_cliente</b>  que  alimenta o construtor é originado de  
+<span class=prg>porteiro.AcceptSocket()</span>  executado  em  <span class=prg>Servidor.iniciar_servidor().</span>
+
+iniciarLeitura()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc2">// Inicia o trabalho de leitura do cliente</span>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciarLeitura</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">BeginRead</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">avisoLeituraCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_leitura().fim        
+</span></div>
+Essa função dispara o trabalho de atender a  demanda  dos  clientes
+conectados fazendo a primeira leitura do primeiro cliente conectado.
+A função <b>quandoLeituraCompleta()</b> acionada por ela  ainda por via do
+<b>delegate</b> realiza o trabalho de responder, utilizando  <b class=prg>BeginWrite()</b>,
+o comando  recebido.  
+Por sua vez <b class=prg>BeginWrite()</b> aciona <b>quandoGravacaoCompleta()</b> que aciona
+<b class=prg>BeginRead()</b> que aciona <b class>quandoLeituraCompleta()</b>. Em resumo, a função
+<b>iniciar_leitura()</b> estabelece um laço contínuo de  monitoramento  do
+processo de comunicação com cada lado  (leitura\escrita) chamando o 
+outro.
+
+quandoLeituraCompleta()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc2">// Chamado quando o processo de leitura está completo</span>
+<span class="sc0"></span><span class="sc2">// Pega o comando, interpreta-o e manda a resposta ao cliente</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">(</span><span class="sc5">IAsyncResult</span><span class="sc0"> </span><span class="sc11">ar</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc2">// Variáveis de trabalho para guardar tamanho e bytes lidos
+  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nLidos</span><span class="sc10">;</span><span class="sc0">
+
+  </span><span class="sc2">// Strings para o processamento de comandos</span>
+  <span class="sc16">string</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+  
+  </span><span class="sc2">// Finaliza o trabalho de leitura</span>
+  <span class="sc11">nLidos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="prg">fluxo_rede.EndRead</span><span class="sc10">(</span><span class="sc11">ar</span><span class="sc10">);</span><span class="sc0">      
+
+  </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nLidos</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span>
+	
+	<span class="sc2">// Transforma o comando em string e mostra-o</span>
+	<span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Encoding.UTF8.GetString</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nLidos</span><span class="sc10">);</span>
+	<span class="prg">Ferramentas.mostrar_comando</span><span class="sc10">(</span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="prg">this.ncliente</span><span class="sc10">);</span>
+
+	<span class="sc2">// Obtém a resposta correspondente ao comando</span>
+	<span class="sc11">resposta</span> <span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Ferramentas.interpretar_cmd</span><span class="sc10">(</span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="prg">this.ncliente</span><span class="sc10">);</span>
+
+	<span class="sc2">// Transforma a resposta em bytes para serem enviados</span>
+	<span class="prg">byte[]</span><span class="sc0"> </span><span class="sc11">msg_byte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Ferramentas.montarBytes</span><span class="sc10">(</span><span class="sc11">resposta</span><span class="sc10">);</span>
+
+	<span class="sc2">// Pega tamanho em bytes da string convertida</span>
+	<span class="sc11">ntam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">msg_byte</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span>
+
+	<span class="sc2">// Envia a resposta formatada em bytes</span>
+	<span class="prg">fluxo_rede.BeginWrite</span><span class="sc10">(</span><span class="sc11">msg_byte</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">avisoGravacaoCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span>
+
+    <span class="sc10">}</span><span class="sc2">// endif</span>
+    <span class="sc2">// Fecha a conexão se não tiver dados lidos</span>
+    <span class="sc5">else</span>
+  <span class="sc10">{</span>
+	<span class="sc11">Console.WriteLine</span><span class="sc10">(</span><span class="sc6">" Conexão de leitura caiu"</span><span class="sc10">);</span><span class="sc0">
+	</span><span class="prg">fluxo_rede.Close</span><span class="sc10">();</span><span class="sc0">
+	</span><span class="prg">tomada.Close</span><span class="sc10">();</span><span class="sc0">
+	</span><span class="prg">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+	</span><span class="prg">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc2">// end else
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoLeituraCompleta().fim   
+</span></div>   
+Essa função é o coração da aplicação. Quando o comando foi recebido
+por completo, essa função prepara a resposta, formata e envia-a  ao
+cliente. Se não houve dados lidos os streams são fechados.
+
+
+quandoGravacaoCompleta()
+-------------------------------------------------------------------------------
+<div class=niceview>
+<span class="sc2">// Depois de gravar a resposta continue lendo</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">(</span><span class="sc5">IAsyncResult</span><span class="sc0"> </span><span class="sc11">ar</span><span class="sc10">)</span>
+<span class="sc10">{</span></span>
+	<span class="sc2">// Finaliza o gravação (envio) de dados no fluxo de rede
+	<span class="prg">fluxo_rede.EndWrite</span><span class="sc10">(</span><span class="sc11">ar</span><span class="sc10">);</span>
+
+	<span class="sc2">// Recomece um processo de leitura
+	<span class="prg">fluxo_rede.BeginRead</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">avisoLeituraCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span>
+<span class="sc10">}</span><span class="sc2">// quandoGracacaoCompleta().fim   
+</span></div>
+Essa função finaliza o processo de gravação e aplica outro giro na
+roda  da  comunicação  iniciando outro processo de leitura que vai
+acionar o restante das funções do programa.
+
+<b><u>5. Código fonte da aplicação servidor: prj_PoliServidor</u></b>
+<div class=prg-code>
+<img src=images\prj_PoliServidor.png>
+
+<span class="sc2">// Projeto prj_PoliServidor - Arquivo: Ferramentas.cs
+// Este programa testa comunicação assíncrona de dados e 
+// múltiplas conexões clientes
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_PoliServidor</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Ferramentas</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Transforma texto em uma array de bytes
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">montarBytes</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">texto</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Variáveis para o trabalho de conversão
+</span><span class="sc0">      </span><span class="sc16">char</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">txt_char</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// string para char[]
+</span><span class="sc0">      </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">txt_byte</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc2">// char[] para byte[]
+</span><span class="sc0">      </span><span class="sc11">txt_char</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">texto</span><span class="sc10">.</span><span class="sc11">ToCharArray</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">txt_byte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Encoding</span><span class="sc10">.</span><span class="sc11">UTF8</span><span class="sc10">.</span><span class="sc11">GetBytes</span><span class="sc10">(</span><span class="sc11">txt_char</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">txt_byte</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montarBytes().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Mostra o comando que chegou do cliente
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_comando</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncliente</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">.</span><span class="sc11">Trim</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente: #{0} \t Comando: {1}"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">ncliente</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar_comando().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Interpreta os comandos vindo do cliente
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">interpretar_cmd</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">comando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Resposta padrão para comandos não identificados
+</span><span class="sc0">      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Comando não encontrado!"</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Limpeza das strings 
+</span><span class="sc0">      </span><span class="sc11">comando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Trim</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"             "</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Faz a interpretação dos comandos
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"windir"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"olá"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"ola"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">comando</span><span class="sc10">.</span><span class="sc11">Equals</span><span class="sc10">(</span><span class="sc6">"parar"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">ncomando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Prepara uma resposta conforme a interpretação realizada
+</span><span class="sc0">      </span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncomando</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc2">// Pega o diretório aonde está instalado o sistema
+</span><span class="sc0">          </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">GetEnvironmentVariable</span><span class="sc10">(</span><span class="sc6">"SystemRoot"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc2">// Os espaços limpam o buffer anterior
+</span><span class="sc0">          </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Olá usuário #"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Até logo, usuário #"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nId</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">brancos</span><span class="sc10">;</span><span class="sc0">
+          </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc2">// endswitch  
+</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// interpretar_cmd().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+<span class="sc2">// Projeto prj_PoliServidor - Arquivo: Atendimento.cs
+// Este programa testa comunicação assíncrona de dados e 
+// múltiplas conexões clientes
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Serviços de recodificação de texto
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Text</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">.</span><span class="sc11">Sockets</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_PoliServidor</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Buffer de memória para receber e enviar dados
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Objetos para manipular o fluxo de dados
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomada</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">NetworkStream</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Delegates para receber as funções que vão notificar quando
+</span><span class="sc0">    </span><span class="sc2">// o processo de leitura e escrita estiverem completos.
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc0"> </span><span class="sc11">avisoLeituraCompleta</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc0"> </span><span class="sc11">avisoGravacaoCompleta</span><span class="sc10">;</span><span class="sc0">   
+    
+    </span><span class="sc2">// Controle do número de conexões 
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Construtor 
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc10">(</span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">      
+      </span><span class="sc2">// Contabiliza a conexão que chegou e inicializa o buffer
+</span><span class="sc0">      </span><span class="sc11">contador</span><span class="sc10">++;</span><span class="sc0">
+      </span><span class="sc11">ncliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">contador</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">byte</span><span class="sc10">[</span><span class="sc4">256</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc2">// Inicializa os objetos de manipulação do fluxo de dados
+</span><span class="sc0">      </span><span class="sc11">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc10">;</span><span class="sc0">      
+      </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">NetworkStream</span><span class="sc10">(</span><span class="sc11">tomada_cliente</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Configura os delegates
+</span><span class="sc0">      </span><span class="sc11">avisoLeituraCompleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">avisoGravacaoCompleta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">AsyncCallback</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do construtor
+</span><span class="sc0">   
+    </span><span class="sc2">// Inicia o trabalho de leitura do cliente
+</span><span class="sc0">    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciarLeitura</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">BeginRead</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">avisoLeituraCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// StartRead().fim        
+</span><span class="sc0">
+    </span><span class="sc2">// Chamado quando o processo de leitura está completo
+</span><span class="sc0">    </span><span class="sc2">// Pega o comando, interpreta-o e manda a resposta ao cliente
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoLeituraCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">ar</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Variáveis de trabalho para guardar tamanho e bytes lidos
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nLidos</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Strings para o processamento de comandos
+</span><span class="sc0">      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+      
+     </span><span class="sc2">// Finaliza o trabalho de leitura
+</span><span class="sc0">      </span><span class="sc11">nLidos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">EndRead</span><span class="sc10">(</span><span class="sc11">ar</span><span class="sc10">);</span><span class="sc0">      
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nLidos</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc2">// Transforma o comando em string e mostra-o
+</span><span class="sc0">        </span><span class="sc11">sComando</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Encoding</span><span class="sc10">.</span><span class="sc11">UTF8</span><span class="sc10">.</span><span class="sc11">GetString</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nLidos</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Ferramentas</span><span class="sc10">.</span><span class="sc11">mostrar_comando</span><span class="sc10">(</span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">ncliente</span><span class="sc10">);</span><span class="sc0">
+      
+        </span><span class="sc2">// Obtém a resposta correspondente ao comando
+</span><span class="sc0">        </span><span class="sc11">resposta</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Ferramentas</span><span class="sc10">.</span><span class="sc11">interpretar_cmd</span><span class="sc10">(</span><span class="sc11">sComando</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">ncliente</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc2">// Transforma a resposta em bytes para serem enviados
+</span><span class="sc0">        </span><span class="sc16">byte</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">msg_byte</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Ferramentas</span><span class="sc10">.</span><span class="sc11">montarBytes</span><span class="sc10">(</span><span class="sc11">resposta</span><span class="sc10">);</span><span class="sc0">
+        
+        </span><span class="sc2">// Pega tamanho em bytes da string convertida
+</span><span class="sc0">        </span><span class="sc11">ntam</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">msg_byte</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc2">// Envia a resposta formatada em bytes
+</span><span class="sc0">        </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">BeginWrite</span><span class="sc10">(</span><span class="sc11">msg_byte</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ntam</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">avisoGravacaoCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">      </span><span class="sc2">// Fecha a conexão se não tiver dados lidos
+</span><span class="sc0">      </span><span class="sc5">else</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">      
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Conexão de leitura caiu"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">tomada</span><span class="sc10">.</span><span class="sc11">Close</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">fluxo_rede</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">tomada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc2">// end else
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoLeituraCompleta().fim   
+</span><span class="sc0">   
+    </span><span class="sc2">// Depois de gravar a resposta continue lendo
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoGravacaoCompleta</span><span class="sc10">(</span><span class="sc11">IAsyncResult</span><span class="sc0"> </span><span class="sc11">ar</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Finaliza o gravação (envio) de dados no fluxo de rede
+</span><span class="sc0">      </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">EndWrite</span><span class="sc10">(</span><span class="sc11">ar</span><span class="sc10">);</span><span class="sc0">     
+
+      </span><span class="sc2">// Recomece um processo de leitura
+</span><span class="sc0">      </span><span class="sc11">fluxo_rede</span><span class="sc10">.</span><span class="sc11">BeginRead</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">avisoLeituraCompleta</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc2">// quandoGracacaoCompleta().fim   
+</span><span class="sc0">  
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+
+<div class=prg-code>
+</span><span class="sc2">// Projeto prj_PoliServidor - Arquivo: Program.cs
+// Este programa testa comunicação assíncrona de dados 
+// e múltiplas conexões clientes
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">IO</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Net</span><span class="sc10">.</span><span class="sc11">Sockets</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_PoliServidor</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Servidor</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_PoliServidor"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">iniciar_servidor</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main().fim
+</span><span class="sc0">
+    </span><span class="sc2">// Roda o código de monitoramento e estabelecimento das conexões
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">iniciar_servidor</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Define um objeto endereço de ip      
+</span><span class="sc0">      </span><span class="sc11">IPAddress</span><span class="sc0"> </span><span class="sc11">endereco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">IPAddress</span><span class="sc10">.</span><span class="sc11">Parse</span><span class="sc10">(</span><span class="sc6">"127.0.0.1"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Define um listener (ouvinte) para o endereço de ip em uma
+</span><span class="sc0">      </span><span class="sc2">// porta específica
+</span><span class="sc0">      </span><span class="sc11">TcpListener</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">TcpListener</span><span class="sc10">(</span><span class="sc11">endereco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">65000</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"Esperando conexão..."</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">Start</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Continua monitorando enquando os dados vem e vão
+</span><span class="sc0">      </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(;</span><span class="sc0"> </span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Se um cliente conectar, aceite a conexão e retorne
+</span><span class="sc0">        </span><span class="sc2">// um novo soquete nomeado tomada_cliente enquanto o 
+</span><span class="sc0">        </span><span class="sc2">// 'porteiro' continua ouvindo
+</span><span class="sc0">        </span><span class="sc11">Socket</span><span class="sc0"> </span><span class="sc11">tomada_cliente</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">porteiro</span><span class="sc10">.</span><span class="sc11">AcceptSocket</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc6">"\n Cliente conectado Ok"</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc2">// Inicia um novo atendimento a cada nova conexão
+</span><span class="sc0">        </span><span class="sc11">Atendimento</span><span class="sc0"> </span><span class="sc11">conexao_ativa</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Atendimento</span><span class="sc10">(</span><span class="sc11">tomada_cliente</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">conexao_ativa</span><span class="sc10">.</span><span class="sc11">iniciarLeitura</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor 
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// iniciar_servidor().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Mostra uma mensagem na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">avisar</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">mensagem</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Write</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_PoliServidor
+</span><span class="sc0">
+</span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track15-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track15-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,501 @@
+﻿<html>
+<head>
+<title>mdx9_fase03-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 03-1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track02-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track03-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track03"></a>
+<h3 style="background-color:#80ff80">03.1 Renderizando um quadrado</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_Lab02.png>
+</div>
+Neste tópico não vamos apresentar nada novo.  Vamos nos aprofundar na
+assimilação  do  que  já  foi exposto desenhando um quadrado com dois
+triângulos renderizados.  Vamos  também  estimular  a  percepção  das
+coordenadas 3D do mundo do DirectX com  a  experiência prática de uso
+da aplicação <b>Lab02</b> que tem esse propósito. 
+
+O difícil de desenhar um quadrado é  configurar  com  as  coordenadas 
+certas os seis vértices necessários para desenhá-lo. Para achar essas
+coordenadas você pode desenhar quatro esferas em  uma aplicação  3D e
+basear-se nas coordenadas de posição delas para definir a posição dos
+vértices do quadrado a ser desenhado.  Ou  você  pode  utilizar nossa 
+aplicação <b>Lab02</b> para acostumar-se  com  as  localizações de avanço ou 
+retrocesso nos eixos x, y, z dos vértices. Outro recurso que ajuda na
+visualização das coordenadas é a cor  de  emissão  dos  vértices;  na 
+ilustração acima p0 e p3 são vermelhos, p1 e p5 são verdes no exemplo.
+
+Conforme   pode   ser  visto  na  aplicação  <b>Lab02</b>,  o  ponto  (0,0,0) 
+encontra-se no centro  da  área gráfica e o deslocamento dos vértices
+segue esse esquema:
+<div class=niceview>
+	x++ movimento para a esquerda
+	x-- movimento para a direita
+	y++ movimento para cima
+	y-- movimento para baixo
+	z++ movimento para fora
+	z-- movimento para dentro
+</div>
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<img src=images\prj_Quadrado.png>
+<img src=images\esquema_prj_Quadrado.png>
+Esta aplicação foi baseada no projeto do tópico 1.4  prj_Triângulo3D
+e  apresenta  apenas  a mudança para comportar os seis vértices para
+compor os dois triângulos do quadrado. 
+
+<b><u>2.1 Definindo o recipiente do quadrado</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span>
+<span class="sc10">{</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// Para criação do dispositivo gráfico</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Branco cor de fundo para nossa janela</span>       
+<b>
+<span class="sc2">// Recipiente para os vértices dos triângulos</span>
+<span class="sc2">// SetPosition() desse formato de vértice aceita uma</span>
+<span class="sc2">// estrutura Vector3 com uma posição (x, y, z)</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span>
+</b>
+<span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação</span>
+<span class="sc2">// do quadrado </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span>
+
+<b class=sc2>// (...) </b>
+
+<b class=prg>}</b><span class=sc2> // fim da classe</span>
+</div>
+Posteriormente,  o membro <b>triangulo</b> da classe  é configurado como uma 
+array de 6 vértices.
+
+<b><u>2.2 Montando os triângulos</b></u>
+Repare que a função sofreu mudanças para comportar os seis vértices
+do quadrado:
+
+<div class=niceview><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulos</span><span class="sc10">()</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Cores para os vértices</span>
+<span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFF0000</span><span class="sc10">;</span>
+<span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x00FF00</span><span class="sc10">;</span>
+<span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span>
+
+<span class="sc2">// É necessário 3 vértices para compor o triângulo</span>
+<span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">];</span>
+
+<span class="sc2">// Vetores para guardar a posição (x,y,z) dos vértices </span>     
+<span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">p0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p4</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p5</span><span class="sc10">;</span>
+
+<span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade </span>
+<span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span>
+
+<span class="sc2">// Define a cor dos vértices </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc10">;</span>
+
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc10">;</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc10">;</span>
+
+<span class="sc2">// Posições para os 3 vértices do primeiro triangulo</span>
+<span class="sc11">p0</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+
+<span class="sc2">// Posições para os 3 vértices do segundo triangulo</span>
+<span class="sc11">p3</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p4</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+<span class="sc11">p5</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span>
+
+<span class="sc2">// Primeiro triângulo</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p0</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p1</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p2</span><span class="sc10">);</span>
+
+<span class="sc2">// Segundo triângulo  </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p3</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p4</span><span class="sc10">);</span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p5</span><span class="sc10">);</span>
+
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulos().fim 
+</span></div>
+
+<b><u>2.3 Renderizando o quadrado</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Limpa os dispositivos e os buffers de apoio</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span>
+
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span>
+<span class="sc2">// (...) Todo o código de desenhar vai aqui</span>
+
+<span class="sc2">// Configura formato do vértice</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">VertexFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">;</span>
+
+<span class="sc2">// Monta o triângulo</span>
+<span class="sc11">montar_triangulos</span><span class="sc10">();</span>
+
+<span class="sc2">// Atualiza a câmera</span>
+<span class="sc11">AtualizarCamera</span><span class="sc10">();</span>
+<b>
+<span class="sc2">// Renderiza os dois triângulos</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawUserPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">);</span>
+</b>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span>
+
+<span class="sc2">// Apresenta a cena renderizada na tela</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span>
+
+<span class="sc2">// Libera a janela para processar outros eventos</span>
+<span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span></div>
+
+<span class=prg>device.DrawUserPrimitives(<b>PrimitiveType.TriangleList, 2, triangulo</b>);</span>
+O método  <span class=prg>DrawUserPrimitives()</span>  deve  ser  atualizado  com  a  nova
+quantidade de triângulos presente na array <b>triangulo</b>.
+
+<b><u>2.4 Exercício prático do tópico: prj_Lab02</b></u>
+Faça experiências práticas de movimentação dos vértices através dos
+eixos (x, y, z) para desenvolver e reforçar  sua  noção  de  espaço
+dentro  do  mundo  3d  do  DirectX.   O caminho de referência dessa 
+aplicação é este:
+
+C:\gameprog\cursostec\mdx9\codigo_fonte\Fase03\prj_Lab02\prj_Lab02\
+bin\Debug
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Quadrado</b></u>
+<div class=prg-code>
+<img src=images\prj_Quadrado.png>
+
+<span class="sc2">// Prj_Quadrado - Arquivo: Tela.cs
+// Esse projeto ilustra como renderizar um quadrado
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Quadrado</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">     </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Branco cor de fundo para nossa janela       
+</span><span class="sc0">
+    </span><span class="sc2">// Recipiente para os vértices dos triângulos
+</span><span class="sc0">    </span><span class="sc2">// SetPosition() desse formato de vértice aceita uma
+</span><span class="sc0">    </span><span class="sc2">// estrutura Vector3 com uma posição (x, y, z)
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação
+</span><span class="sc0">    </span><span class="sc2">// do quadrado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Qualquer configuração em algum componente, faça depois dessa função!
+</span><span class="sc0">      </span><span class="sc2">// Pois a geração automática de código pode suprimir algo que você
+</span><span class="sc0">      </span><span class="sc2">// fizer antes dela
+</span><span class="sc0">      </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Toda renderização deverá ocorrer dentro do evento onPaint()
+</span><span class="sc0">      </span><span class="sc2">// Isso evita interferência estrangeira de processamento default
+</span><span class="sc0">      </span><span class="sc2">// do sistema Windows
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc0">      </span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice no
+</span><span class="sc0">      </span><span class="sc2">// software, janela (this), parâmetros de apresentação (pps)
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">AtualizarCamera</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Dados para a configuração da matriz de projeção
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza angulo para dar movivento
+</span><span class="sc0">      </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">0.05f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Mostra a parte interna do polígono
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário      
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">CullMode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Cull</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Utiliza iluminação default
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário  
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Lighting</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0">
+          </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Rotaciona o triangulo indiretamente através da rotação dos
+</span><span class="sc0">      </span><span class="sc2">// eixos da matriz mundial.
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">World</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationZ</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Dados para a configuração da matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Posição da camera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Alvo da câmera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Orientação da câmera          
+</span><span class="sc0">
+      </span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// AtualizarCamera()
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Limpa os dispositivos e os buffers de apoio
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc2">// (...) Todo o código de desenhar vai aqui   
+</span><span class="sc0">
+      </span><span class="sc2">// Configura formato do vértice
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">VertexFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Monta o triângulo
+</span><span class="sc0">      </span><span class="sc11">montar_triangulos</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza a câmera
+</span><span class="sc0">      </span><span class="sc11">AtualizarCamera</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Renderiza os dois triângulos
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawUserPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Apresenta a cena renderizada na tela
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Libera a janela para processar outros eventos
+</span><span class="sc0">      </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span><span class="sc0">
+    </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Trate outros processos padrões
+</span><span class="sc0">      </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Renderize a cena
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Invalide para chamar novamente onPaint()
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulos</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Cores para os vértices
+</span><span class="sc0">      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFF0000</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x00FF00</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// É necessário 3 vértices para compor o triângulo
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionColored</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc2">// Vetores para guardar a posição (x,y,z) dos vértices        
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">p0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p4</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">p5</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Define a cor dos vértices
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vermelho</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">azul</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">Color</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verde</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Posições para os 3 vértices do primeiro triangulo
+</span><span class="sc0">      </span><span class="sc11">p0</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Posições para os 3 vértices do segundo triangulo
+</span><span class="sc0">      </span><span class="sc11">p3</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p4</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">p5</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Primeiro triângulo
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p0</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p1</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p2</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Segundo triângulo  
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p3</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p4</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">SetPosition</span><span class="sc10">(</span><span class="sc11">p5</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulos().fim 
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track02-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track03-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

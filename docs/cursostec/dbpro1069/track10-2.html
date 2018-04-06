@@ -1,0 +1,494 @@
+<html><head>
+<title>darkbasicPro_track10-2</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff0000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:50px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:50px;
+width:45.0em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+body
+{
+margin-left:60px;
+}
+
+
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Curso completo de Darkbasic Pro Versão 1.069</b><br><b>track10-2.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track10-1.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track10-3.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+
+<a name="track10"></a>
+<h3 style="background-color:#80ff80">10-2. Bitmaps</h3>
+ <b><u>VISÃO GERAL</u></b>
+ <div class=prg-code>
+ <img src=images\textura.png>
+ </div> 
+ Bitmap  é  um  tipo  de  arquivo  de  imagem que pode ser usado para as 
+ seguintes finalidades: ilustração, textura ou  servir  como  célula  de 
+ desenho animado. O nome deste arquivo geralmente termina com a extensão
+ <b>.bmp.</b>
+
+ <span class=sc5>A tela visível é tratada como um arquivo de bitmap, o bitmap zero. </span>Você
+ pode copiar conteúdo de um bitmap para  outro, fazendo  assim  montagem 
+ de  cenários  e  animação.  <span class=sc5>Para   você  exibir  um  bitmap  você  deve 
+ carregá-lo ou copiá-lo para o bitmap zero que vimos que é  a  sua  tela
+ visível.</span>
+
+ A cada bitmap carregado deve ser dado um número de identificação através
+ do qual esse bitmap vai ser manipulado e sofrer os vários efeitos que  o
+ Darkbasic oferece. Esse número  de  identificação  geralmente é  chamado 
+ <b>handle</b> ou alça de manipulação. O bitmap que é  identificado  com  zero é 
+ mostrado imediatamente na tela.
+ 
+ 
+<b style="background-color:#80ff80">1. Funções de manipulação de bitmap</b> 
+ -------------------------------------------------------------------------------
+ <b class=sc5>load bitmap bmp$, nHandle</b>
+ Esta função carrega o arquivo  bitmap bmp$ e identifica esse bitmap com
+ o número dado em nHandle. Você pode carregar até 32 bitmaps, sendo este
+ então  o  limite  para  nHandle.  Se nHandle do bitmap for omitido, ele 
+ recebe o valor zero, sendo por isso imediamente exibido na tela.
+
+ Exemplo: <b class=prg>
+ ' Carrega e mostra o bitmap textura.bmp 
+ load bitmap "c:\media\textura.bmp" </b>
+
+ <b class=prg>copy bitmap nbmpFonte, nbmpDestino</b>
+ Esta função tem duas sintaxes, nesta primeira sintaxe o bitmap fonte
+ é copiado para o bitmap de destino.
+
+ Ex.: <b class=prg>
+ load bitmap "c:\media\textura.txt", 1
+ copy bitmap 1, 0 </b>
+
+ <b class=prg>copy bitmap nbmpFonte, nTop, nLeft, nBottom, nRight, nbmpDestino,
+ nTop, nLeft, nBottom, nRight</b>
+ Nesta sintaxe, a parte especificada do bitmap fonte é copiado para
+ a parte especificada do bitmap de destino.
+
+ nbmpFonte      - Handle do bitmap fonte
+ nbmpDestino    - Handle do bitmap destino
+
+ nTop, nLeft    - Coordenada que demarca o inicio do quadrado
+ nBottom, nRight - Coordenada que demarca o final do quadrado.
+
+<div class=prg-code><b class=prg>
+rem Testando Copy bitmap()
+
+hide mouse
+
+load bitmap "c:\media\textura.bmp",1
+
+copy bitmap 1,0,0,128,128,0,10,10,138,138
+
+rem Copiamos (0,0)-(128,128) de textura.bmp
+rem para (10,10)-(138,138) do bitmap zero
+
+suspend for key </b></div>
+
+ O programa pára se o bitmap fonte transferido for maior do que a área total
+ do bitmap de destino.
+ A parte do bitmap fonte transferida torna-se parte do  bitmap  de  destino.
+ A parte fonte é reescalada quando a área de destino é dada numa área maior.
+ Esta função de copiar bitmap é muito útil para animação e efeitos gráficos
+ uma vez que podemos manipular os bitmaps na memória  antes  de  mostrá-los.
+ 
+
+ -------------------------------------------------------------------------------
+ <b class=prg>fade bitmap nBmp, nFade</b>
+ Este comando aplica um efeito fade no bitmap especificado.
+
+ nBmp           é o handle identificador do bitmap
+
+ nFade          é a taxa de aplicação do efeito. A faixa é de 0 a 100.
+
+ Ex.:<font color="darkgreen">   fade bitmap 1,50 </font>
+
+ * Este comando é bom para simular um anoitecer, ou tirar personagens
+ de foco quando eles morrem.
+
+
+ -------------------------------------------------------------------------------
+  <b class=prg>blur bitmap nBmp, nBlur</b>
+ Aplica um efeito blur ou borrão no bitmap, a faixa de valores para nBlur pode
+ variar de 0 a 8.
+
+ ex.: <font color="darkgreen">  blur bitmap 0,6 </font>
+
+ * Este efeito é bom para simular a visão de uma personagem recuperando
+ da inconsciência, ou visão através de vidro embaçado.
+
+ 
+ -------------------------------------------------------------------------------
+  <b class=prg>mirror bitmap nBmp</b>
+ Este comando aplica um efeito espelho no bitmap nBmp.
+ O espelhamento é horizontal. O que estava na direita aparece
+ na esquerda invertido e vice-versa.
+
+ Ex.: <font color="darkgreen">  mirror bitmap 1 </font>
+
+ * O primeiro mirror inverte e o segundo faz o bitmap voltar a
+ sua forma natural.
+
+ 
+ -------------------------------------------------------------------------------
+  <b class=prg>flip bitmap nBmp</b>
+ Este comando aplica um espelhamento vertical no bitmap. O que estava
+ em baixo aparece em cima invertido e vice-versa.
+
+ * Primeiro flip inverte o bitmap, o segundo flip faz o bitmap
+ voltar a sua forma original.
+
+ Para espelhamentos com mais acurácia use <b>mirror</b> seguido de um <b>flip.</b>
+
+ Ex.: <font color="darkgreen">  flip bitmap 1 </font>
+
+ -------------------------------------------------------------------------------
+  <b class=prg>delete bitmap nBmp</b>
+ Deleta o bitmap especificado. A deleção de bitmaps ociosos aumenta a
+ performance do sistema, aumenta a quantidade de memória disponível.
+
+ Ex.: <font color="darkgreen">  delete bitmap 1 </font>
+
+
+ -------------------------------------------------------------------------------
+  <b class=prg>create bitmap nBmp, nLargura, nAltura</b>
+ Cria um bitmap com o handle nBmp, com a largura e altura especificada.
+ Este bitmap criado torna-se o bitmap corrente. Use <b class=prg>set current bitmap 0</b>
+ para deixar tudo como estava.
+
+ nBmp           é número do bitmap criado, é o seu handle.
+
+ nLargura       é a largura do bitmap (xcol final)
+
+ nAltura        é a altura do bitmap (ylin final)
+
+ Veja nosso programinha exemplo:
+
+<div class=prg-code><b class=prg>
+rem Testando CREATE BITMAP nBmp, xLargura,yAltura
+
+load bitmap "c:\media\textura.bmp",0
+
+create bitmap 2,256,256
+
+set current bitmap 0
+
+copy bitmap 0,0,0,128,128,2,0,0,255,255
+
+copy bitmap 2,0
+
+print "Ok" : suspend for key</b> </div>
+ O primeiro ponto deste bitmap criado é o ponto (0,0) e o último ponto é
+ o (255,255), veja que o ponto final é um a menos em largura e altura
+ especificados na criação. Você deve tomar cuidado ao referir-se ao último
+ ponto do bitmap para não ultrapassar a área do bitmap e causar erro
+ em outras funções.
+
+  <b class=prg>set current bitmap nBmp</b>
+ Este comando estabelece um bitmap como sendo o corrente, isto é,
+ é o bitmap que vai sofrer todas as operações de desenhos, extração
+ e colagem.
+
+ Ex.: <font color="darkgreen">  set current bitmap 2 </font>
+
+ * Este comando é útil para estabelecer o bitmap vítima,
+ o qual vamos submeter a algum processo, e depois mostrá-lo em
+ sua nova aparência.
+ 
+ 
+ <b style="background-color:#80ff80">2. Obtendo configurações de bitmap</b> 
+-------------------------------------------------------------------------------
+ <b class=prg>nLargura	= bitmap width(nBmp)
+ nAltura	= bitmap height(ntBmp)
+ nProfundidade 	= bitmap depth(nBmp)</b>
+ Estas funções retornam números inteiros contendo,  a  largura  do  bitmap, 
+ a altura e a profundidade do bitmap especificado. Profundidade é o número
+ de bits que é usado para compor as cores do bitmap. A  profundidade  mais 
+ comum atualmente é a de 24 bits, sendo 8 bits para cada componente da cor,
+ vermelho (R), verde (G) e azul (B).
+
+ Usadas sem o argumento nBmp, estas funções retornam a informação do bitmap
+ corrente.
+
+ Ex.: <font color="darkgreen">
+
+ print "Largura(Width):",bitmap width(1)
+
+ print "Altura(Height): ",bitmap height(1)
+
+ print "Profundidade(Depth): ",bitmap depth(1)
+
+ print bitmap width() </font>
+ 
+
+ -------------------------------------------------------------------------------
+ <b class=prg>nBool = bitmap exist(nBmp)
+ nBool = bitmap mirrored(nBmp)
+ nBool = bitmap flipped(nBmp)</b>
+
+ Estas funções retornam informações com relação ao estado do bitmap
+ nBmp especificado. nBool vai ser <b>um</b> quando o estado verificado for
+ verdadeiro, <b>zero</b> quando o estado verificado estiver desligado.
+
+ <b>bitmap exists()</b> retorna 1 caso o bitmap exista, nBmp nesta função é
+ obrigatório.
+ <b>bitmap mirrored()</b> retorna 1 caso o bitmap esteja espelhado.
+ <b>bitmap flipped()</b> retorna 1 caso o bitmap esteja flipado.
+
+ O retorno falso é representado por zero. Caso nBmp não seja
+ provido, a verificação é feita no bitmap corrente.
+
+ 
+ -------------------------------------------------------------------------------
+  <b class=prg>nBmp = current bitmap()</b>
+ Esta função retorna o número do bitmap que está corrente.
+ 
+ 
+ Veja o programa exemplo desta seção:
+ <div class=prg-saida>
+ <img src=images\bitmaps.png>
+ <br></div>
+ <div class=prg-code>
+ 
+<span class="sc1">Rem Project: bitmaps
+Rem Created: 18/08/2013 14:33:05
+</span><span class="sc0">
+</span><span class="sc7">inicio</span><span class="sc6">:</span><span class="sc0">
+</span><span class="sc3">global</span><span class="sc0"> </span><span class="sc7">branco</span><span class="sc0"> </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc7">xffffff</span><span class="sc0">
+</span><span class="sc3">global</span><span class="sc0"> </span><span class="sc7">azul</span><span class="sc0">   </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc7">x0000ff</span><span class="sc0">
+
+</span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc5">as string</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">""</span><span class="sc0">
+
+</span><span class="sc7">initsys</span><span class="sc6">(</span><span class="sc4">"bitmaps.dba - Pressione 'q' para sair"</span><span class="sc6">)</span><span class="sc0">
+
+</span><span class="sc1">' Mostra menu e bitmap
+</span><span class="sc7">menu</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc7">carregar_mostrar_bmp</span><span class="sc6">()</span><span class="sc0">
+
+
+</span><span class="sc1">' Faz leitura do teclado
+</span><span class="sc7">teclado</span><span class="sc6">:</span><span class="sc0">
+</span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">inkey$</span><span class="sc6">()</span><span class="sc0">
+
+</span><span class="sc3">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"q"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc3">goto</span><span class="sc0"> </span><span class="sc7">final</span><span class="sc0">
+
+</span><span class="sc1">' Manipulação do bitmap
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"b"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">borrar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"c"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">tst_copiar_bmp</span><span class="sc6">(</span><span class="sc2">0</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc6">,</span><span class="sc2">127</span><span class="sc6">,</span><span class="sc2">127</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"d"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">sumir_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"f"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">virar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"l"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">carregar_mostrar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc7">tecla</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">"m"</span><span class="sc0"> </span><span class="sc5">then</span><span class="sc0"> </span><span class="sc7">espelhar_bmp</span><span class="sc6">()</span><span class="sc0">
+
+</span><span class="sc1">' Mostra informações sobre o bitmap 1
+</span><span class="sc7">info_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">goto</span><span class="sc0"> </span><span class="sc7">teclado</span><span class="sc0">
+
+</span><span class="sc7">final</span><span class="sc6">:</span><span class="sc0">
+</span><span class="sc5">delete bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc0">
+</span><span class="sc5">print</span><span class="sc0">
+</span><span class="sc5">print</span><span class="sc0"> </span><span class="sc4">" Pressione qualquer tecla para encerrar"</span><span class="sc0">
+</span><span class="sc5">suspend for key</span><span class="sc0">
+</span><span class="sc5">end</span><span class="sc0">
+
+</span><span class="sc1">' ----- initsys() - Configuração básica da aplicação -----
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">initsys</span><span class="sc6">(</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc5">as string</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc1">' configurando a janela
+</span><span class="sc5">set window on</span><span class="sc0">
+</span><span class="sc5">set window title</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0">
+</span><span class="sc5">ink</span><span class="sc0"> </span><span class="sc7">azul</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">branco</span><span class="sc0">
+</span><span class="sc5">cls</span><span class="sc0"> </span><span class="sc7">branco</span><span class="sc0">
+</span><span class="sc5">set text opaque</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ menu() - Apresenta menu da aplicação
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">menu</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Set Current Bitmap</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">Text</span><span class="sc0">  </span><span class="sc2">10</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">300</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"l- Load Bitmap()"</span><span class="sc6">:</span><span class="sc0">    </span><span class="sc7">Text</span><span class="sc0"> </span><span class="sc2">210</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">300</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"d- Fade Bitmap()"</span><span class="sc0">
+</span><span class="sc5">Text</span><span class="sc0">  </span><span class="sc2">10</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">320</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"m- Mirror Bitmap()"</span><span class="sc6">:</span><span class="sc0">  </span><span class="sc7">Text</span><span class="sc0"> </span><span class="sc2">210</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">320</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"b- Blur Bitmap()"</span><span class="sc0">
+</span><span class="sc5">Text</span><span class="sc0">  </span><span class="sc2">10</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">340</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"f- Flip Bitmap()"</span><span class="sc6">:</span><span class="sc0">    </span><span class="sc7">Text</span><span class="sc0"> </span><span class="sc2">210</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc2">340</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc4">"c- Copy Bitmap()"</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ carregar_mostrar_bmp() - Carrega e mostra um bitmap
+</span><span class="sc5">function</span><span class="sc0">  </span><span class="sc7">carregar_mostrar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Load Bitmap</span><span class="sc0"> </span><span class="sc4">"c:\gdkmedia\bitmap\textura.bmp"</span><span class="sc6">,</span><span class="sc2">1</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ espelhar_bmp() - Testa Mirror Bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">espelhar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Mirror Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ virar_bmp() - Testa Flip Bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">virar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Flip Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ sumir_bmp() - Testa Fade Bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">sumir_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Fade Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">80</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+</span><span class="sc1">' ------ borrar_bmp() - Testa Blur Bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">borrar_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc5">Blur Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">5</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc6">,</span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+
+</span><span class="sc1">' ------ tst_copiar_bmp() - Testa Copy Bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">tst_copiar_bmp</span><span class="sc6">(</span><span class="sc7">nEsq</span><span class="sc0"> </span><span class="sc5">as integer</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">nTop</span><span class="sc0"> </span><span class="sc5">as integer</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">nDir</span><span class="sc0"> </span><span class="sc5">as integer</span><span class="sc6">,
+								</span><span class="sc0"> </span><span class="sc7">nFun</span><span class="sc0"> </span><span class="sc5">as integer</span><span class="sc6">)</span><span class="sc0">
+
+</span><span class="sc1">' Font = bmp fonte  -  Dest = bmp destino
+</span><span class="sc7">Font</span><span class="sc0">   </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">1</span><span class="sc0">
+</span><span class="sc7">Dest</span><span class="sc0">   </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc0">
+
+</span><span class="sc1">' esqAlvo dirAlvo = ponto esquerdo e direito do destino
+' topAlvo funAlvo = ponto superior e inferior do destino
+</span><span class="sc7">esqAlvo</span><span class="sc0">     </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">300</span><span class="sc0">
+</span><span class="sc7">topAlvo</span><span class="sc0">     </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc7">dirAlvo</span><span class="sc0">     </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">428</span><span class="sc0">
+</span><span class="sc7">funAlvo</span><span class="sc0">     </span><span class="sc5">as integer</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">120</span><span class="sc0">
+</span><span class="sc5">Copy Bitmap</span><span class="sc0"> </span><span class="sc7">Font</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">nEsq</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">nTop</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">nDir</span><span class="sc6">,</span><span class="sc7">nFun</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">Dest</span><span class="sc6">,</span><span class="sc7">esqAlvo</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">topAlvo</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">dirAlvo</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">funAlvo</span><span class="sc0">
+</span><span class="sc5">endfunction</span><span class="sc0">
+
+
+</span><span class="sc1">' ------ info_bmp() - Mostra configurações do bitmap
+</span><span class="sc5">function</span><span class="sc0"> </span><span class="sc7">info_bmp</span><span class="sc6">()</span><span class="sc0">
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc5">as string</span><span class="sc0">
+
+</span><span class="sc1">' Dados de configuração do bitmap
+</span><span class="sc7">nlargura</span><span class="sc0">       </span><span class="sc5">as integer</span><span class="sc0">
+</span><span class="sc7">nAltura</span><span class="sc0">        </span><span class="sc5">as integer</span><span class="sc0">
+</span><span class="sc7">nprofundidade</span><span class="sc0">  </span><span class="sc5">as integer</span><span class="sc0">
+</span><span class="sc7">nvirado</span><span class="sc0">        </span><span class="sc5">as integer</span><span class="sc0">
+</span><span class="sc7">nEspelhado</span><span class="sc0">     </span><span class="sc5">as integer</span><span class="sc0">
+
+</span><span class="sc1">' Obtendo os dados do bitmap 1
+</span><span class="sc7">nlargura</span><span class="sc0">      </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">Bitmap Width</span><span class="sc6">(</span><span class="sc2">1</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">nAltura</span><span class="sc0">       </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">Bitmap Height</span><span class="sc6">(</span><span class="sc2">1</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">nprofundidade</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">Bitmap Depth</span><span class="sc6">(</span><span class="sc2">1</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">nvirado</span><span class="sc0">       </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">Bitmap Flipped</span><span class="sc6">(</span><span class="sc2">1</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">nEspelhado</span><span class="sc0">    </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">Bitmap Mirrored</span><span class="sc6">(</span><span class="sc2">1</span><span class="sc6">)</span><span class="sc0">
+
+</span><span class="sc1">' Mostrando os dados
+</span><span class="sc5">Set Current Bitmap</span><span class="sc0"> </span><span class="sc2">0</span><span class="sc0">
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">" Largura: "</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc5">str$</span><span class="sc6">(</span><span class="sc7">nLargura</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc4">" Altura: "</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc5">str$</span><span class="sc6">(</span><span class="sc7">nAltura</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc4">" Profundidade: "</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc5">str$</span><span class="sc6">(</span><span class="sc7">nprofundidade</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">Text</span><span class="sc0">  </span><span class="sc2">10</span><span class="sc6">,</span><span class="sc2">260</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0">
+
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0">  </span><span class="sc4">" Virado: "</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc5">str$</span><span class="sc6">(</span><span class="sc7">nvirado</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc4">" Espelhado: "</span><span class="sc0"> </span><span class="sc6">+</span><span class="sc0"> </span><span class="sc5">str$</span><span class="sc6">(</span><span class="sc7">nEspelhado</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc5">Text</span><span class="sc0"> </span><span class="sc2">10</span><span class="sc6">,</span><span class="sc2">280</span><span class="sc6">,</span><span class="sc0"> </span><span class="sc7">txt</span><span class="sc0">
+</span><span class="sc5">endfunction</span></div>
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track10-2.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track10-3.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div>
+</body></html>
+

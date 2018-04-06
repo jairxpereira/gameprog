@@ -1,0 +1,1377 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase05-3</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+
+
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-3</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.3 Mouse via DirectInput</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo: motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Inicialização do DirectInput</a>
+<a href=#2.5>2.5 Inicialização do mouse</a>
+<a href=#2.6>2.6 Tratamento do mouse via DirectInput</a>
+<a href=#2.7>2.7 Renderização da cena</a>
+<a href=#2.8>2.8 Limpeza dos objetos do DirectInput</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_diMouse</a>
+
+<a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_diMouse.png></div>
+O processo de acessar o mouse com o DirectInput é muito semelhante ao
+processo de acessar o  teclado  com  pequenas  mudanças  naturalmente
+lógicas para acomodar as particularidades do mouse. 
+A estrutura da aplicação é  a  mesma  do  projeto  <b>prj_Teclado01</b>  com
+as  poucas  mudanças  que  se  fizeram  necessárias  para  acomodar a
+natureza do mouse.
+
+Esta aplicação está mais simples e mais rústica  porque  o  foco  foi
+dado apenas em  como se conectar e utilizar o mouse com o DirectInput
+evitando-se código extra que numa aplicação final deve ser adicionado
+para contornar o baixo nível de suporte do DirectInput.
+
+Informamos  que esse projeto foi baseado nos exemplos oficiais anexos
+ao  directx  8  e  em  alguns  momentos  predominou os comentários da
+Microsoft que foram apenas traduzidos.
+
+<a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+inicializar_DirectInput()
+	inicializa o objeto DirectInput ( g_DirectInput ) 
+	
+<b class=sc16>inicializar_Mouse()</b>
+	Inicializa o dispositivo de entrada ( g_mouse )
+	
+initGfx()
+	Inicializa o motor gráfico	
+	Inicializa o objeto DirectInput via inicializar_DirectInput()
+	<b class=sc16>Inicializa o objeto g_mouse via inicializar_Mouse()</b>		
+
+Renderizar()
+	<b class=sc16>Verifica e processa o mouse via tratarMouse()</b>
+	Verifica e processa o teclado via tratarTeclado()
+	Limpa a tela	
+	mostra o jogador simbólico	
+
+<b class=sc16>limpar_DirectInput()	 </b>
+	Libera o objeto DirectInput ( g_DirectInput )
+	Libera o dispositivo de entrada ( g_mouse ) </b>
+</div></div>
+
+<a name='2.1'><b><u>2.1 Aspectos globais: arquivo: motor.h </u></b>
+<div class=niceview>//------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_diMouse - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o mouse via</span>
+<span class=sc2>// DirectInput. Produzido por www.gameprog.com.br</span>
+//------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+<span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+<span class=prg>void </span>inicializarTexto();  
+
+<span class=sc2>// Verifica e processa o pressionamento das teclas</span>
+<span class=prg>void </span>tratarTeclado(<span class=prg>void</span>);   
+
+<span class=sc2>// Configura posição do jogador</span>
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos);  
+
+<span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+<span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+<span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput();  
+
+<span class=sc2>// Inicialização do dispositivo de acesso ao mouse</span>
+<span class=prg>bool </span>inicializar_Mouse();  
+
+<span class=sc2>// Essa função trata o mouse via DirectInput</span>
+<span class=sc16>HRESULT </span>tratarMouse(<span class=prg>void</span>);   
+
+<span class=sc2>// Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput();  
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+
+</div>
+<b><span class=prg>bool </span>inicializar_DirectInput();  </b>
+Esta  função  inicializa  o  DirectInput  e nesse aspecto inicial é o
+mesmo código para mouse, teclado ou joystick.
+
+<b><span class=prg>bool </span>inicializar_Mouse();  </b>
+Esta função inicializa o dispositivo de entrada de acesso  ao  mouse.
+
+<b><span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  </b>
+Além  de  inicializar  o  motor  gráfico esta função chama as devidas
+funções que inicializam o DirectInput e o mouse.
+
+<b><span class=sc16>HRESULT </span>tratarMouse(<span class=prg>void</span>);   </b>
+Essa função faz a leitura do status do mouse e atualiza a movimentação
+do jogador conforme o uso do mouse.
+
+<b><span class=prg>void </span>Renderizar();  </b>
+Antes  de  renderizar  a  cena  esta  função  chama <b>tratarTeclado()</b> e
+<b>tratarMouse()</b>  para  atualizar  a  lógica da aplicação conforme o uso
+que usuário faz do mouse e do teclado.
+
+<b><span class=prg>void </span>limpar_DirectInput();  </b>
+Esta  função  libera  os  objetos  do directInput. Ela é chamada pela
+função <b>limpar()</b> na finalização da aplicação.
+
+<a name='2.2'><b><u>2.2 Aspectos globais: arquivo: motor.cpp </u></b>
+<div class=niceview><span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>) 
+
+<span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8 </span>*g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de teclado</span>
+<span class=sc5>IDirectInputDevice8 </span> *g_mouse = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Texto para coletar e mostrar informação sobre o mouse</span>
+<span class=prg>char </span>g_text[128] = <span class=sc6>"\0"</span>; 
+
+<span class=sc2>// Alça e dimensões da janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Represeñtação simbólica do jogador</span>
+<span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;</span>(<span class=sc6>-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-</span>)<span class=sc6>&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimento</span>
+<span class=prg>int </span>xcol = 320; 
+<span class=prg>int </span>ylin = 240; 
+<span class=prg>int </span>nVelocidade = <span class=sc4>2</span>; 
+</div>
+
+<b><span class=sc5>IDirectInputDevice8 </span> *g_mouse = <span class=prg>NULL</span>; </b>
+Este é a interface de manipulação do dispositivo de entrada,  o mouse
+aqui neste exemplo.  É a mesma interface que se usa igualmente para o
+teclado e o joystick.
+
+<b><span class=prg>char </span>g_text[128] = <span class=sc6>"\0"</span>; </b>
+Essa  variável  será  usada  para  reunir e mostrar as informações de
+estado do mouse.
+
+<a name='2.3'><b><u>2.3 Inicialização do motor gráfico </u></b>
+Veja  no  código  em destaque que <b>initGfx()</b> define a forma  e posição
+inicial do jogador simbólico. Na sequência inicializa o DirectInput e
+o   mouse   chamando   respectivamente   <b>inicializar_DirectInput()</b>  e
+<b>inicializar_Mouse()</b>.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+<b>
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_esquerda; 
+
+  <span class=sc2>// Reset posição do jogador</span>
+  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Inicializa DirectInput e o dispositivo de mouse depois</span>
+  inicializar_DirectInput();  
+  inicializar_Mouse();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<a name='2.4'><b><u>2.4 Inicialização do DirectInput </u></b>
+Segue abaixo a simples listagem da função <b>inicializar_DirectInput()</b>.
+
+<div class=niceview><span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc5>IID_IDirectInput8</span>, (<span class=prg>void**</span>)  &g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+</div>
+
+<a name='2.5'><b><u>2.5 Inicialização do mouse </u></b>
+<div class=niceview><span class=sc2>// inicializar_Mouse() - Essa função inicializa o mouse</span>
+<span class=prg>bool </span>inicializar_Mouse() 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do ponteiro para uma interface IDirectInputDevice8</span>
+  g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysMouse</span>, &g_mouse, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_DirectInput-&gt;CreateDevice</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Mouse</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do formato de dados do dispositivo com uma constante</span>
+  <span class=sc2>// pré-definida de mouse do DirectInput ( c_dfDIMouse2 )</span>
+  g_hr = <span class=prg>g_mouse-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIMouse2</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_mouse-&gt;SetDataFormat</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Mouse</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do nível de cooperação</span>
+  <span class=prg>DWORD </span>cooperacao_flags = <span class=sc4>DISCL_BACKGROUND </span>| <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+  g_hr = <span class=prg>g_mouse-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_mouse-&gt;SetCooperativeLevel</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pega acesso ao dispositivo de entrada.</span>
+  g_hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>TRUE</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Mouse().fim</span></span>
+</div>
+<b>g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysMouse</span>, &g_mouse, <span class=prg>NULL</span>);   </b>
+Aqui é a criação do dispositivo de entrada  para acesso e manipulação
+do mouse.
+
+<b>g_hr = <span class=prg>g_mouse-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIMouse2</span>);   </b>´
+Aqui é a configuração do formato de dados do dispositivo  de  entrada
+que define-o como realmente um mouse para o DirectInput.
+
+<b><span class=prg>DWORD </span>cooperacao_flags = <span class=sc4>DISCL_BACKGROUND </span>| <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+g_hr = <span class=prg>g_mouse-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  </b>
+Aqui é a configuração do nível de cooperação  que  harmoniza o uso do
+mouse em concorrência com as outras aplicações.
+
+<b>g_hr = <span class=prg>g_mouse-&gt;Acquire</span>();  </b>
+Aqui o acesso ao mouse é adquirido e trazido para a aplicação.
+
+<a name='2.6'><b><u>2.6 Tratamento do mouse via DirectInput </u></b>
+<div class=niceview><span class=sc16>HRESULT </span>tratarMouse( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Resultado das operações</span>
+  <span class=sc16>HRESULT </span>      hr; 
+
+  <span class=sc2>// estrutura para coletar status do mouse</span>
+  <span class=sc5>DIMOUSESTATE2 </span>stsMouse; 
+
+  <span class=sc2>// Retorne se não houver um mouse ok</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_mouse )  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Limpe a estrutura e colete o estado do mouse</span>
+  <span class=prg>ZeroMemory</span>( &stsMouse, <span class=sc16>sizeof</span>(stsMouse) );  
+  hr = <span class=prg>g_mouse-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIMOUSESTATE2</span>), &stsMouse );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+    <span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+    <span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+    <span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+    <span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+    <span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+    <span class=sc2>// continue tentando a reaquisição.</span>
+    hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+    <span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+
+    <span class=sc2>// Retorne se houver algum erro</span>
+    <span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+    <span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+    <span class=sc2>// transição. Então, tente mais tarde...</span>
+    <span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+        <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Prepara a string de informação do estado do mouse</span>
+  <span class=prg>sprintf</span>( g_text, (<span class=sc6>"</span>(<span class=prg>X=% 3.3d</span>, <span class=prg> Y=% 3.3d</span>, <span class=prg> Z=% 3.3d</span>) <span class=sc6> B0=%c B1=%c B2=%c "</span>), 
+    <span class=prg>stsMouse.lX</span>, <span class=prg>stsMouse.lY</span>, <span class=prg>stsMouse.lZ</span>, 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>2</span>] & <span class=sc4>0x80</span>)  ? '1' : '0');  
+
+  <span class=sc2>// Testa botão esquerdo</span>
+  <span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+
+  <span class=sc2>// Testa botão direito</span>
+  <span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Declara variáveis de estados das setas</span>
+  <span class=prg>int </span>seta_direita, seta_esquerda, seta_cima, seta_baixo; 
+  seta_direita  = <span class=sc4>0</span>; 
+  seta_esquerda = <span class=sc4>0</span>; 
+  seta_cima = <span class=sc4>0</span>; 
+  seta_baixo = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a movimentação dos eixos e atualiza os flags de movimento</span>
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&lt; <span class=sc4>0</span>)  seta_esquerda = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&gt; <span class=sc4>0</span>)  seta_direita  = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&lt; <span class=sc4>0</span>)  seta_cima     = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&gt; <span class=sc4>0</span>)  seta_baixo    = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tratamento da seta esquerda</span>
+  <span class=sc9>if</span>( seta_esquerda ) 
+  <span class=sc16>{</span>
+    xcol = xcol - nVelocidade; 
+    sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// endif seta_esquerda</span></span>
+
+  <span class=sc2>// Tratamento da seta direita</span>
+  <span class=sc9>if</span>( seta_direita ) 
+  <span class=sc16>{</span>
+    xcol = xcol + nVelocidade; 
+    sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif seta_direita</span></span>
+
+  <span class=sc2>// Tratamento da seta cima \ seta baixo</span>
+  <span class=sc9>if</span>( seta_cima  ) ylin = ylin - nVelocidade; 
+  <span class=sc9>if</span>( seta_baixo ) ylin = ylin + nVelocidade; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// tratarMouse().fim</span></span>
+</div>
+<b><span class=sc16>HRESULT </span>      hr; </b>
+Esta variável será utilizada para monitorar o resultado das operações.
+
+<b><span class=sc5>DIMOUSESTATE2 </span>stsMouse; </b>
+Essa  é  a  estrutura  para  coletar  as informações sobre o mouse, a
+movimentação  nos  eixos  x,  y,  z  e o estado de pressionamento dos
+botões.
+
+<b><span class=sc9>if</span>( <span class=prg>NULL </span>== g_mouse )  <span class=sc6>return </span><span class=sc4>S_OK</span>; </b>
+A função retorna caso o dispositivo esteja nulo o  que  pode  indicar
+uma falha ocorrida na inicialização do mouse.
+
+<b>hr = <span class=prg>g_mouse-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIMOUSESTATE2</span>), &stsMouse );  </b>
+Aqui obtemos as informações sobre o estado do mouse.  Aqui o directx
+pode indicar alguma falha que é verificada no bloco de código abaixo.
+
+<u>Verificação de erro na captura de dados do mouse</u>
+<div class=niceview><b><span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+<span class=sc16>{</span>
+<span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+<span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+<span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+<span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+<span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+<span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+<span class=sc2>// continue tentando a reaquisição.</span>
+hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+<span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+
+
+<span class=sc2>// Retorne se houver algum erro</span>
+<span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+<span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+<span class=sc2>// transição. Então, tente mais tarde...</span>
+<span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+	<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span></b></div>
+Essa código vai persistir na reaquisição do mouse  caso tenha perdido
+acesso a esse dispositivo.
+
+<u>Preparação da string de informação do estado do mouse</u>
+<div class=niceview><b><span class=prg>sprintf</span>( g_text, (<span class=sc6>"(X=% 3.3d  Y=% 3.3d  Z=% 3.3d) B0=%c B1=%c B2=%c "</span>), 
+<span class=prg>stsMouse.lX</span>, <span class=prg>stsMouse.lY</span>, <span class=prg>stsMouse.lZ</span>, 
+(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>2</span>] & <span class=sc4>0x80</span>)  ? '1' : '0');  </b></div>
+Aqui montamos uma string que  transcreve  informações  sobre  alguns
+estados do mouse especialmente os 3 primeiros botões e  os  3  eixos.
+
+<b><span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+<span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  </b>
+Aqui  recolocamos  o  jogador  em outra posição no pressionamento dos
+botões esquerdo ou direito.
+
+<b><span class=prg>int </span>seta_direita, seta_esquerda, seta_cima, seta_baixo; 
+seta_direita  = <span class=sc4>0</span>; seta_esquerda = <span class=sc4>0</span>; 
+seta_cima = <span class=sc4>0</span>; seta_baixo = <span class=sc4>0</span>; </b>
+Aqui é a declaração e a limpeza inicial dos flags que acusam movimento.
+
+<b><span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&lt; <span class=sc4>0</span>)  seta_esquerda = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&gt; <span class=sc4>0</span>)  seta_direita  = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&lt; <span class=sc4>0</span>)  seta_cima     = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&gt; <span class=sc4>0</span>)  seta_baixo    = <span class=sc4>1</span>; </b>
+Esse bloco aproveita a movimentação nos eixos do mouse para atualizar
+os flags de movimento.
+
+<b><span class=sc9>if</span>( seta_esquerda ) <span class=sc16>{</span>
+xcol = xcol - nVelocidade; sjogador = smove_esquerda; <span class=sc16>} <span class=sc2>// endif seta_esquerda</span></span> </b>
+Depois fazemos normalmente a atualização das variáveis que movimentam
+o jogador simbólico.
+
+<a name='2.7'><b><u>2.7 Renderização da cena - Renderizar() </u></b>
+Antes  de  renderizar  a  cena  esta  função  chama <b>tratarTeclado()</b> e
+<b>tratarMouse()</b>  para  atualizar  a  lógica da aplicação conforme o uso
+que o usuário faz do mouse e do teclado.
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+	<b>
+  <span class=sc2>// Verifica e trata teclado</span>
+  tratarTeclado();  
+
+  <span class=sc2>// Verifica e trata mouse</span>
+  tratarMouse();  
+  </b>  
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, 
+    <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+<b>
+    <span class=sc2>// Desenha jogador</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Desenha mensagens</span>
+    mostrarTexto (10, 10, <span class=sc6>"Mouse: movimentação"</span>);   
+    mostrarTexto (10, 50, <span class=sc6>"R ou Botão direito: Resseta posição"</span>);   
+
+    <span class=sc2>// Mostra informações sobre o mouse</span>
+    mostrarTexto (10, 90, g_text);  
+</b>
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<a name='2.8'><b><u>2.8 Limpeza dos objetos do DirectInput </u></b>
+Destacamos nessa função que  o mouse precisa  ser  <i>desadequirido</i>  com
+<span class=prg>g_mouse-&gt;Unacquire</span>() antes de ser liberado.
+
+<div class=niceview><span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_mouse) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do mouse</span> <b>
+      <span class=sc2>// Chame primeiro Unacquire() antes de chamar Release().</span>
+      <span class=prg>g_mouse-&gt;Unacquire</span>(); </b> 
+      <span class=prg>g_mouse-&gt;Release</span>();  
+      g_mouse = <span class=prg>NULL</span>; 
+    <span class=sc16>} <span class=sc2>// endif (g_mouse)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+</div>
+
+<hr><a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_diMouse</u></b>
+<div class=prg-code><img src=images\prj_diMouse.png>
+
+//------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_diMouse - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o mouse via</span>
+<span class=sc2>// DirectInput. Produzido por www.gameprog.com.br</span>
+//------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+<span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+<span class=prg>void </span>inicializarTexto();  
+
+<span class=sc2>// Verifica e processa o pressionamento das teclas</span>
+<span class=prg>void </span>tratarTeclado(<span class=prg>void</span>);   
+
+<span class=sc2>// Configura posição do jogador</span>
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos);  
+
+<span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+<span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+<span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput();  
+
+<span class=sc2>// Inicialização do dispositivo de acesso ao mouse</span>
+<span class=prg>bool </span>inicializar_Mouse();  
+
+<span class=sc2>// Essa função trata o mouse via DirectInput</span>
+<span class=sc16>HRESULT </span>tratarMouse(<span class=prg>void</span>);   
+
+<span class=sc2>// Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput();  
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code>//------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_diMouse - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o mouse via</span>
+<span class=sc2>// DirectInput. Produzido por www.gameprog.com.br</span>
+//------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+
+<span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>) 
+
+<span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8 </span>*g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de teclado</span>
+<span class=sc5>IDirectInputDevice8 </span> *g_mouse = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Texto para coletar e mostrar informação sobre o mouse</span>
+<span class=prg>char </span>g_text[128] = <span class=sc6>"\0"</span>; 
+
+<span class=sc2>// Alça e dimensões da janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Represeñtação simbólica do jogador</span>
+<span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;</span>(<span class=sc6>-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-</span>)<span class=sc6>&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimento</span>
+<span class=prg>int </span>xcol = 320; 
+<span class=prg>int </span>ylin = 240; 
+<span class=prg>int </span>nVelocidade = <span class=sc4>2</span>; 
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9 </span>      *g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+ID3DXFont        *gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_esquerda; 
+
+  <span class=sc2>// Reset posição do jogador</span>
+  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Inicializa DirectInput e o dispositivo de mouse depois</span>
+  inicializar_DirectInput();  
+  inicializar_Mouse();  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc5>IID_IDirectInput8</span>, (<span class=prg>void**</span>)  &g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+
+
+<span class=sc2>// inicializar_Mouse() - Essa função inicializa o mouse</span>
+<span class=prg>bool </span>inicializar_Mouse() 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do ponteiro para uma interface IDirectInputDevice8</span>
+  g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysMouse</span>, &g_mouse, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_DirectInput-&gt;CreateDevice</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Mouse</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do formato de dados do dispositivo com uma constante</span>
+  <span class=sc2>// pré-definida de mouse do DirectInput ( c_dfDIMouse2 )</span>
+  g_hr = <span class=prg>g_mouse-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIMouse2</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_mouse-&gt;SetDataFormat</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Mouse</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do nível de cooperação</span>
+  <span class=prg>DWORD </span>cooperacao_flags = <span class=sc4>DISCL_BACKGROUND </span>| <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+  g_hr = <span class=prg>g_mouse-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_mouse-&gt;SetCooperativeLevel</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pega acesso ao dispositivo de entrada.</span>
+  g_hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>TRUE</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Mouse().fim</span></span>
+
+
+<span class=sc16>HRESULT </span>tratarMouse( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Resultado das operações</span>
+  <span class=sc16>HRESULT </span>      hr; 
+
+  <span class=sc2>// estrutura para coletar status do mouse</span>
+  <span class=sc5>DIMOUSESTATE2 </span>stsMouse; 
+
+  <span class=sc2>// Retorne se não houver um mouse ok</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_mouse )  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Limpe a estrutura e colete o estado do mouse</span>
+  <span class=prg>ZeroMemory</span>( &stsMouse, <span class=sc16>sizeof</span>(stsMouse) );  
+  hr = <span class=prg>g_mouse-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIMOUSESTATE2</span>), &stsMouse );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+    <span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+    <span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+    <span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+    <span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+    <span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+    <span class=sc2>// continue tentando a reaquisição.</span>
+    hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+    <span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_mouse-&gt;Acquire</span>();  
+
+    <span class=sc2>// Retorne se houver algum erro</span>
+    <span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+    <span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+    <span class=sc2>// transição. Então, tente mais tarde...</span>
+    <span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+        <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Prepara a string de informação do estado do mouse</span>
+  <span class=prg>sprintf</span>( g_text, (<span class=sc6>"</span>(<span class=prg>X=% 3.3d</span>, <span class=prg> Y=% 3.3d</span>, <span class=prg> Z=% 3.3d</span>) <span class=sc6> B0=%c B1=%c B2=%c "</span>), 
+    <span class=prg>stsMouse.lX</span>, <span class=prg>stsMouse.lY</span>, <span class=prg>stsMouse.lZ</span>, 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  ? '1' : '0', 
+    (<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>2</span>] & <span class=sc4>0x80</span>)  ? '1' : '0');  
+
+  <span class=sc2>// Testa botão esquerdo</span>
+  <span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+
+  <span class=sc2>// Testa botão direito</span>
+  <span class=sc9>if </span>(<span class=prg>stsMouse.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Declara variáveis de estados das setas</span>
+  <span class=prg>int </span>seta_direita, seta_esquerda, seta_cima, seta_baixo; 
+  seta_direita  = <span class=sc4>0</span>; 
+  seta_esquerda = <span class=sc4>0</span>; 
+  seta_cima = <span class=sc4>0</span>; 
+  seta_baixo = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a movimentação dos eixos e atualiza os flags de movimento</span>
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&lt; <span class=sc4>0</span>)  seta_esquerda = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lX </span>&gt; <span class=sc4>0</span>)  seta_direita  = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&lt; <span class=sc4>0</span>)  seta_cima     = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>stsMouse.lY </span>&gt; <span class=sc4>0</span>)  seta_baixo    = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tratamento da seta esquerda</span>
+  <span class=sc9>if</span>( seta_esquerda ) 
+  <span class=sc16>{</span>
+    xcol = xcol - nVelocidade; 
+    sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// endif seta_esquerda</span></span>
+
+  <span class=sc2>// Tratamento da seta direita</span>
+  <span class=sc9>if</span>( seta_direita ) 
+  <span class=sc16>{</span>
+    xcol = xcol + nVelocidade; 
+    sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif seta_direita</span></span>
+
+  <span class=sc2>// Tratamento da seta cima \ seta baixo</span>
+  <span class=sc9>if</span>( seta_cima  ) ylin = ylin - nVelocidade; 
+  <span class=sc9>if</span>( seta_baixo ) ylin = ylin + nVelocidade; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// tratarMouse().fim</span></span>
+
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto()</span></span>
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc2>// Configura a área limite</span>
+  <span class=sc5>RECT </span>area_limite; 
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=sc2>// Desenha o texto</span>
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto(); </span></span>
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Limpe os objetos do DirectInput</span>
+  limpar_DirectInput();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Verifica e trata teclado</span>
+  tratarTeclado();  
+
+  <span class=sc2>// Verifica e trata mouse</span>
+  tratarMouse();  
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, 
+    <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Desenha jogador</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Desenha mensagens</span>
+    mostrarTexto (10, 10, <span class=sc6>"Mouse: movimentação"</span>);   
+    mostrarTexto (10, 50, <span class=sc6>"R ou Botão direito: Resseta posição"</span>);   
+
+    <span class=sc2>// Mostra informações sobre o mouse</span>
+    mostrarTexto (10, 90, g_text);  
+
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+<span class=prg>void </span>tratarTeclado(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Reseta posição do jogador</span>
+  <span class=sc9>if</span>( <span class=prg>GetAsyncKeyState</span>('R') & <span class=sc4>0x8000f</span>) 
+    setJogadorPos(320, 240);  
+
+  <span class=sc2>// Esconde ou Mostra o cursor</span>
+  <span class=sc9>if</span>( <span class=prg>GetAsyncKeyState</span>('E') & <span class=sc4>0x8000f</span>) <span class=prg>ShowCursor</span>(<span class=prg>false</span>);   
+  <span class=sc9>if</span>( <span class=prg>GetAsyncKeyState</span>('M') & <span class=sc4>0x8000f</span>) <span class=prg>ShowCursor</span>(<span class=prg>true</span>);   
+
+<span class=sc16>} <span class=sc2>// tratarTeclado().fim</span></span>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos) 
+<span class=sc16>{</span>
+  <span class=sc2>// Variáveis de apoio: ( pt.x, pt.y )</span>
+  <span class=sc5>POINT </span>pt; 
+
+  <span class=sc2>// Posiciona o mouse convertendo coordenada de janela</span>
+  <span class=sc2>// para coordenada de tela</span>
+  <span class=prg>pt.x </span>= xpos; 
+  <span class=prg>pt.y </span>= ypos; 
+  <span class=prg>ClientToScreen </span>(hJanela, &pt);  
+  <span class=prg>SetCursorPos</span>(<span class=prg>pt.x</span>, <span class=prg>pt.y</span>);  
+
+  <span class=sc2>// Recupera a posição do mouse</span>
+  <span class=prg>GetCursorPos </span>(&pt);  
+
+  <span class=sc2>// Converte coordenada de tela para coordenada de janela</span>
+  <span class=prg>ScreenToClient </span>(hJanela, &pt);  
+
+  <span class=sc2>// Configura posição do jogador</span>
+  xcol = <span class=prg>pt.x </span>+ 20; 
+  ylin = <span class=prg>pt.y </span>+ 20; 
+
+<span class=sc16>} <span class=sc2>// setJogadorPos().fim</span></span>
+
+
+
+<span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_mouse) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do mouse</span>
+      <span class=sc2>// Chame primeiro unacquire() antes de chamar Release().</span>
+      <span class=prg>g_mouse-&gt;Unacquire</span>();  
+      <span class=prg>g_mouse-&gt;Release</span>();  
+      g_mouse = <span class=prg>NULL</span>; 
+    <span class=sc16>} <span class=sc2>// endif (g_mouse)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+</div>
+
+<div class=prg-code>//------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_diMouse - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o mouse via</span>
+<span class=sc2>// DirectInput. Produzido por www.gameprog.com.br</span>
+//------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_diMouse"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-4.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo: motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Inicialização do DirectInput</a>
+<a href=#2.5>2.5 Inicialização do mouse</a>
+<a href=#2.6>2.6 Tratamento do mouse via DirectInput</a>
+<a href=#2.7>2.7 Renderização da cena</a>
+<a href=#2.8>2.8 Limpeza dos objetos do DirectInput</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_diMouse</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,629 @@
+﻿<html>
+<head>
+<title>mdx9_fase03-3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 03-4</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track03-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">03.4 Adicionando textura</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\tex_mapping.png>
+</div>
+O processo de texturizar  consiste  em  mapear  a  textura  sobre  os
+vértices do polígono formado.Geralmente a coordenada (x,y) da textura
+é chamada de (u,v) com u correspondente a x e v correspondente a y.
+
+As coordenadas de mapeamento de textura são expressas pelo tipo <b class=prg>float</b>
+e variam de 0.0f a 1.0f
+
+Por exemplo, no eixo x (expresso por u ), zero (0) quer dizer extremo
+canto esquerdo e 1.0f extremo canto direito. No eixo y (v), zero (0) 
+quer dizer extremo canto superior e 1.0f extremo canto inferior. E o
+valor 0.5f refere-se à metade do caminho. No processo de texturizar,
+a coordenada de textura é associada ao vértice.    Isso  demanda  um 
+formato de vértice que aceite textura.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Textura.png></div>
+O objeto <b class=prg>Texture</b>, <b>tex</b>, representa uma textura. O formato  de  vértice
+que suporta textura é o <b class=prg>CustomVertex.PositionTextured[].</b>
+
+A  função  <b>montar_triangulos()</b>  têm  os vértices  associados  com  as
+coordenadas de textura.
+
+Na função renderizar, o dispositivo vai ser configurado para utilizar
+a textura na renderização com o método <span class=prg>.SetTexture()</span>:
+<span class=prg>int nEstagio = 0;
+<b>device.SetTexture(nEstagio, tex);</b></span>
+A configuração de estágio de textura vamos ver melhor mais adiante no
+curso, por enquanto saiba que está ligado a canais  de  aplicação  de
+efeitos especiais através da combinação de texturas.
+
+<b><u>2.1 Definindo o recipiente do quadrado texturizado</b></u>
+<div class=niceview><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span>
+<span class="sc10">{</span>
+<span class="sc2">// Para criação do dispositivo gráfico </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+
+<span class="sc2">// Branco cor de fundo para nossa janela </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span>
+<b>
+<span class="sc2">// Recipiente para os vértices dos triângulos </span>
+<span class="sc5">private CustomVertex.PositionTextured</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span>
+
+<span class="sc2">// Referência da textura </span>
+<span class="sc5">private Texture</span><span class="sc0"> </span><span class="sc11">tex</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+</b>
+<span class="sc2">// Buffer de vértices para o quadrado </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">VertexBuffer</span><span class="sc0"> </span><span class="sc11">vbQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+
+<span class="sc2">// Caminho de ligação dos vértices para o quadrado </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">short</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">ndxQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+
+<span class="sc2">// Buffer de índices para o quadrado </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc11">IndexBuffer</span><span class="sc0"> </span><span class="sc11">ibQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span>
+
+<span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação
+// do quadrado texturizado </span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span>
+
+<span class=sc2>// (...)</span>
+
+<b class=prg>}</b></span> <span class=sc2>// fim da classe </span>
+</div>
+<span class=prg>private <b>CustomVertex.PositionTextured</b>[] triangulo;</span>
+Aqui definimos que os vértices que vão compor  o  quadrado  aceitarão
+texturas e transformações geométricas.   Naturalmente esse formato de
+vértice vai se estender ao VertexBuffer e ao dispositivo  no  momento 
+da renderização.
+
+
+<span class=prg>private <b>Texture</b> tex = null;</span>
+Aqui definimos um objeto <b class=prg>Texture</b>, <b>tex</b>, para receber nossa textura.
+
+Em <b>initGfx()</b> essa textura é inicializada dessa forma: <span class=prg>
+tex = <b>new Texture</b>(device, <b>new Bitmap(this.GetType(), "textura2x2.png")</b>,
+0, Pool.Managed); </span>
+
+Essa forma de carregar a textura necessita que a  imagem  tenha  sido
+adicionada na aplicação como um recurso embebido.  O  embutimento  da
+imagem é feito dessa maneira dentro do Visual Studio (2008):
+- clique com o botão direito sobre o nome do projeto;
+- Selecione Adicionar Item Existente ( Add - Existing item...);
+- e selecione a imagem nomeada <b>textura2x2.png</b> e depois...
+- ...clique com o botão direito na imagem e configure sua propriedade 
+<b> Build Action</b> para <b>Embedded Resource</b> conforme imagem abaixo:
+ <img src=images\tex_as_resource.png>
+ 
+
+<b><u>2.2 Inicialização gráfica: initGfx()</b></u>
+<div class=niceview>
+<span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+
+<span class="sc2">// Configuração dos parâmetros de apresentação </span>
+<span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span>
+<span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span>
+<span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span>
+
+<span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice no
+// software, janela (this), parâmetros de apresentação (pps) </span>
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span>
+<span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span>
+<span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span>
+<b>
+<span class="sc2">// Carregando a textura </span>
+<span class="sc11">tex</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Texture</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span>
+<span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Bitmap</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">GetType</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc6">"textura2x2.png"</span><span class="sc10">),</span>
+<span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Managed</span><span class="sc10">);</span>
+</b>
+<span class="sc2">// Configuração dos vértices no espaço 3d com mapeamento da textura </span>
+<span class="sc11">montar_triangulos</span><span class="sc10">();</span>
+
+<span class="sc2">// ****** Montagem do buffer de vértices (vertexbuffer) *****
+// O buffer de vértices vbQuadrado é criado.  </span>
+<span class="sc11">vbQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">VertexBuffer</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">),</span>
+<span class="sc4">4</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">Dynamic</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">WriteOnly</span><span class="sc10">,</span>
+<span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">,</span>
+<span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Default</span><span class="sc10">);</span>
+
+<span class="sc2">// Joga os vértices no buffer de vértices </span>
+<span class="sc11">vbQuadrado</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">triangulo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span>
+
+<span class="sc2">// configura o método calback da recriação do buffer de vértices </span>
+<span class="sc11">vbQuadrado</span><span class="sc10">.</span><span class="sc11">Created</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">EventHandler</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoVertexBufferCriado</span><span class="sc10">);</span>
+
+
+<span class="sc2">// ****** Montagem do buffer de índices (indexbuffer) *****
+// Caminho de ligação dos vértices para montar o quadrado
+// 0,1,2 - Primeiro triângulo   2,3,0 - Segundo triângulo </span>
+<span class="sc11">ndxQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">short</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc0"> </span><span class="sc10">};</span>
+
+<span class="sc2">// Inicialização do buffer de índices </span>
+<span class="sc11">ibQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">IndexBuffer</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc16">short</span><span class="sc10">),</span>
+<span class="sc11">ndxQuadrado</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">Dynamic</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">WriteOnly</span><span class="sc10">,</span>
+<span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Default</span><span class="sc10">);</span>
+
+<span class="sc2">// Joga dentro do buffer de índices os elementos da array ndxQuadrado </span>
+<span class="sc11">ibQuadrado</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">ndxQuadrado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span>
+
+<span class="sc2">// configura o método calback da recriação do buffer de índices </span>
+<span class="sc11">ibQuadrado</span><span class="sc10">.</span><span class="sc11">Created</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">EventHandler</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoIndexBufferCriado</span><span class="sc10">);</span>
+
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span></div>
+
+<b><u>2.3 Montando os triângulos</b></u>
+<div class=niceview><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulos</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+
+<span class="sc2">// É necessário apenas 4 vértices para compor o quadrado 
+// utilizando o buffer de índices </span>
+<span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">];</span>
+
+<span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade </span>
+<span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span>
+
+<span class="sc2">// p0 </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">);</span>
+
+<span class="sc2">// p1 </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">);</span>
+
+<span class="sc2">// p2 </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">);</span>
+
+<span class="sc2">// p3 </span>
+<span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">);</span>
+
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulos().fim 
+</span></div>
+<span class=prg>
+triangulo[0] = new CustomVertex.PositionTextured(1.0f, 1.0f, zpos, <b>0.0f, 0.0f</b>); </span>
+Esse formato de vértice aceita coordenadas de mapeamento de textura.
+Aqui nessa linha o canto superior esquerdo da textura  foi  mapeado
+para o canto superior esquerdo do quadrado.    
+
+<b><u>2.4 Renderizando o quadrado texturizado</b></u>
+<div class=niceview><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+<span class="sc2">// Limpa os dispositivos e os buffers de apoio </span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span>
+
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span>
+<span class="sc2">// (...) Todo o código de desenhar vai aqui </span>
+
+<span class="sc2">// Configura formato do vértice </span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">VertexFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">;</span>
+
+<span class="sc2">// Atualiza a câmera </span>
+<span class="sc11">AtualizarCamera</span><span class="sc10">();</span>
+      
+<span class="sc2">// Configura a fonte de vértices </span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">SetStreamSource</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">vbQuadrado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span>
+      
+<span class="sc2">// Configura a fonte de índices </span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Indices</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ibQuadrado</span><span class="sc10">;</span>
+
+<span class="sc2">// Configura a textura </span>
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEstagio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">SetTexture</span><span class="sc10">(</span><span class="sc11">nEstagio</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tex</span><span class="sc10">);</span>
+
+<span class="sc2">// Renderiza o quadrado </span>
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticesQtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span>
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticeInicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticeMenorIndice</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span>
+<span class="sc16">int</span><span class="sc0"> </span><span class="sc11">primitivasQtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ndxQuadrado</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawIndexedPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">verticeInicial</span><span class="sc10">,</span>
+<span class="sc11">verticeMenorIndice</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">verticesQtd</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">primitivasQtd</span><span class="sc0"> </span><span class="sc10">);</span>
+
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span>
+
+<span class="sc2">// Apresenta a cena renderizada na tela </span>
+<span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span>
+
+<span class="sc2">// Libera a janela para processar outros eventos </span>
+<span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span></div> <span class=prg>
+int nEstagio = 0;
+<b>device.SetTexture(nEstagio, tex);</b> </span>
+Aqui informamos ao dispositivo a textura a ser usada na renderização.
+
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Textura</b></u>
+<div class=prg-code>
+<img src=images\prj_Textura.png>
+
+
+<span class="sc2">// Prj_Textura - Arquivo: Tela.cs
+// Esse projeto ilustra como renderizar um quadrado com textura
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Drawing</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">ComponentModel</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">.</span><span class="sc11">Windows</span><span class="sc10">.</span><span class="sc11">Forms</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Textura</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">partial</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">Form</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Para criação do dispositivo gráfico
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Branco cor de fundo para nossa janela       
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0"> 
+
+    </span><span class="sc2">// Recipiente para os vértices dos triângulos 
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Referência da textura
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">Texture</span><span class="sc0"> </span><span class="sc11">tex</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Buffer de vértices para o quadrado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">VertexBuffer</span><span class="sc0"> </span><span class="sc11">vbQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc2">// Caminho de ligação dos vértices para o quadrado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">short</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">ndxQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Buffer de índices para o quadrado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc11">IndexBuffer</span><span class="sc0"> </span><span class="sc11">ibQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Essa variável atualizada a cada ciclo ocasionará a animação
+</span><span class="sc0">    </span><span class="sc2">// do quadrado texturizado
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc11">Tela</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Qualquer configuração em algum componente, faça depois dessa função!
+</span><span class="sc0">      </span><span class="sc2">// Pois a geração automática de código pode suprimir algo que você
+</span><span class="sc0">      </span><span class="sc2">// fizer antes dela
+</span><span class="sc0">      </span><span class="sc11">InitializeComponent</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Toda renderização deverá ocorrer dentro do evento onPaint()
+</span><span class="sc0">      </span><span class="sc2">// Isso evita interferência estrangeira de processamento default
+</span><span class="sc0">      </span><span class="sc2">// do sistema Windows
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">SetStyle</span><span class="sc10">(</span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">AllPaintingInWmPaint</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">ControlStyles</span><span class="sc10">.</span><span class="sc11">Opaque</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// construtor
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initGfx</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// Configuração dos parâmetros de apresentação
+</span><span class="sc0">      </span><span class="sc11">PresentParameters</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">PresentParameters</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">Windowed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">pps</span><span class="sc10">.</span><span class="sc11">SwapEffect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">SwapEffect</span><span class="sc10">.</span><span class="sc11">Discard</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Adaptador default, processamento no hardware, processamento de vértice no
+</span><span class="sc0">      </span><span class="sc2">// software, janela (this), parâmetros de apresentação (pps)
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">adaptador</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Device</span><span class="sc10">(</span><span class="sc11">adaptador</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">CreateFlags</span><span class="sc10">.</span><span class="sc11">SoftwareVertexProcessing</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pps</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Carregando a textura
+</span><span class="sc0">      </span><span class="sc11">tex</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Texture</span><span class="sc10">(</span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Bitmap</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">GetType</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc6">"textura2x2.png"</span><span class="sc10">),</span><span class="sc0"> 
+        </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Managed</span><span class="sc10">);</span><span class="sc0">     
+      
+      </span><span class="sc2">// Configuração dos vértices no espaço 3d com mapeamento da textura
+</span><span class="sc0">      </span><span class="sc11">montar_triangulos</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// ****** Montagem do buffer de vértices (vertexbuffer) *****
+</span><span class="sc0">      </span><span class="sc2">// O buffer de vértices vbQuadrado é criado. 
+</span><span class="sc0">      </span><span class="sc11">vbQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">VertexBuffer</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">),</span><span class="sc0">
+      </span><span class="sc4">4</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">Dynamic</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">WriteOnly</span><span class="sc10">,</span><span class="sc0">
+      </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">,</span><span class="sc0">
+      </span><span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Default</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Joga os vértices no buffer de vértices
+</span><span class="sc0">      </span><span class="sc11">vbQuadrado</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">triangulo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// configura o método calback da recriação do buffer de vértices 
+</span><span class="sc0">      </span><span class="sc11">vbQuadrado</span><span class="sc10">.</span><span class="sc11">Created</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">EventHandler</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoVertexBufferCriado</span><span class="sc10">);</span><span class="sc0">
+
+     
+      </span><span class="sc2">// ****** Montagem do buffer de índices (indexbuffer) *****
+</span><span class="sc0">      </span><span class="sc2">// Caminho de ligação dos vértices para montar o quadrado
+</span><span class="sc0">      </span><span class="sc2">// 0,1,2 - Primeiro triângulo   2,3,0 - Segundo triângulo
+</span><span class="sc0">      </span><span class="sc11">ndxQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">short</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc0"> </span><span class="sc10">};</span><span class="sc0">
+
+      </span><span class="sc2">// Inicialização do buffer de índices
+</span><span class="sc0">      </span><span class="sc11">ibQuadrado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">IndexBuffer</span><span class="sc10">(</span><span class="sc5">typeof</span><span class="sc10">(</span><span class="sc16">short</span><span class="sc10">),</span><span class="sc0">
+        </span><span class="sc11">ndxQuadrado</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">device</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">Dynamic</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">Usage</span><span class="sc10">.</span><span class="sc11">WriteOnly</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">Pool</span><span class="sc10">.</span><span class="sc11">Default</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Joga dentro do buffer de índices os elementos da array ndxQuadrado
+</span><span class="sc0">      </span><span class="sc11">ibQuadrado</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">ndxQuadrado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// configura o método calback da recriação do buffer de índices
+</span><span class="sc0">      </span><span class="sc11">ibQuadrado</span><span class="sc10">.</span><span class="sc11">Created</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">EventHandler</span><span class="sc10">(</span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">quandoIndexBufferCriado</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initGfx()
+</span><span class="sc0">
+    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">AtualizarCamera</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Dados para a configuração da matriz de projeção
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// largura da janela
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// altura da janela      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">aspecto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">largura</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">altura</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// aspecto dos gráficos      
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">campo_visao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">float</span><span class="sc10">)</span><span class="sc11">Math</span><span class="sc10">.</span><span class="sc11">PI</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">// Campo de visão
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">100.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza angulo para dar movivento
+</span><span class="sc0">      </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc4">0.05f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Mostra a parte interna do polígono
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário      
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">CullMode</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Cull</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Utiliza iluminação default
+</span><span class="sc0">      </span><span class="sc2">// Experimente desativar essa linha com a instrução de comentário  
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">RenderState</span><span class="sc10">.</span><span class="sc11">Lighting</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a matriz de projeção
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">Projection</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">PerspectiveFovLH</span><span class="sc10">(</span><span class="sc11">campo_visao</span><span class="sc10">,</span><span class="sc0">
+          </span><span class="sc11">aspecto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_perto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">corte_longe</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Rotaciona o triangulo indiretamente através da rotação dos
+</span><span class="sc0">      </span><span class="sc2">// eixos da matriz mundial.
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">World</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">RotationZ</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Dados para a configuração da matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Posição da camera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Alvo da câmera
+</span><span class="sc0">      </span><span class="sc11">Vector3</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Vector3</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Orientação da câmera          
+</span><span class="sc0">
+      </span><span class="sc2">// Configura a matriz de visualização
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Transform</span><span class="sc10">.</span><span class="sc11">View</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Matrix</span><span class="sc10">.</span><span class="sc11">LookAtLH</span><span class="sc10">(</span><span class="sc11">cam_pos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_alvo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cam_orientacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">  </span><span class="sc2">// AtualizarCamera()
+</span><span class="sc0">
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Renderizar</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Limpa os dispositivos e os buffers de apoio
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">(</span><span class="sc11">ClearFlags</span><span class="sc10">.</span><span class="sc11">Target</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">cor_fundo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">BeginScene</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc2">// (...) Todo o código de desenhar vai aqui   
+</span><span class="sc0">
+      </span><span class="sc2">// Configura formato do vértice
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">VertexFormat</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Atualiza a câmera
+</span><span class="sc0">      </span><span class="sc11">AtualizarCamera</span><span class="sc10">();</span><span class="sc0">
+      
+      </span><span class="sc2">// Configura a fonte de vértices
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">SetStreamSource</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">vbQuadrado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc2">// Configura a fonte de índices
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Indices</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ibQuadrado</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// Configura a textura
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nEstagio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">SetTexture</span><span class="sc10">(</span><span class="sc11">nEstagio</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tex</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Renderiza o quadrado
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticesQtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">triangulo</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticeInicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">verticeMenorIndice</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">primitivasQtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ndxQuadrado</span><span class="sc10">.</span><span class="sc11">Length</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">DrawIndexedPrimitives</span><span class="sc10">(</span><span class="sc11">PrimitiveType</span><span class="sc10">.</span><span class="sc11">TriangleList</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">verticeInicial</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">verticeMenorIndice</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">verticesQtd</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">primitivasQtd</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">EndScene</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Apresenta a cena renderizada na tela
+</span><span class="sc0">      </span><span class="sc11">device</span><span class="sc10">.</span><span class="sc11">Present</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Libera a janela para processar outros eventos
+</span><span class="sc0">      </span><span class="sc11">Application</span><span class="sc10">.</span><span class="sc11">DoEvents</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Renderizar()
+</span><span class="sc0">
+    </span><span class="sc5">protected</span><span class="sc0"> </span><span class="sc5">override</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">PaintEventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Trate outros processos padrões
+</span><span class="sc0">      </span><span class="sc5">base</span><span class="sc10">.</span><span class="sc11">OnPaint</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Renderize a cena
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Renderizar</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Invalide para chamar novamente onPaint()
+</span><span class="sc0">      </span><span class="sc5">this</span><span class="sc10">.</span><span class="sc11">Invalidate</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// onPaint().fim 
+</span><span class="sc0">
+
+    </span><span class="sc5">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">montar_triangulos</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+      </span><span class="sc2">// É necessário apenas 4 vértices para compor o quadrado 
+</span><span class="sc0">      </span><span class="sc2">// utilizando o buffer de índices
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">];</span><span class="sc0">
+
+      </span><span class="sc2">// Os vértices estão alinhados na mesma posição de profundidade
+</span><span class="sc0">      </span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">;</span><span class="sc0">
+
+      </span><span class="sc2">// p0      
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// p1
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// p2
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// p3
+</span><span class="sc0">      </span><span class="sc11">triangulo</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">CustomVertex</span><span class="sc10">.</span><span class="sc11">PositionTextured</span><span class="sc10">(</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">1.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">zpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0.5f</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// montar_triangulos().fim 
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Recupera o buffer de vértices
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoVertexBufferCriado</span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">sender</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">EventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">VertexBuffer</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">VertexBuffer</span><span class="sc10">)</span><span class="sc11">sender</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">triangulo</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoVertexBufferCriado().fim
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Recupera o buffer de índices
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">quandoIndexBufferCriado</span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">sender</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">EventArgs</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">IndexBuffer</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">IndexBuffer</span><span class="sc10">)</span><span class="sc11">sender</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">buffer</span><span class="sc10">.</span><span class="sc11">SetData</span><span class="sc10">(</span><span class="sc11">ndxQuadrado</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">LockFlags</span><span class="sc10">.</span><span class="sc11">None</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quandoIndexBufferCriado()
+</span><span class="sc0">
+
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track03-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track04-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

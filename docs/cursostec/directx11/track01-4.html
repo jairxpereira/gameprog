@@ -1,0 +1,2058 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.4 O primeiro triângulo</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais           - arquivo motor.h</a>
+<a href=#2.2>2.2 Variáveis globais          - Arquivo: motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                  - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 prj_Triangulo.fx           - Código fonte do vertexshader\pixelshader</a>
+<a href=#2.5>2.5 compilarEfeito()           - Compilação do programa em HLSL</a>
+<a href=#2.6>2.6 inicializar_Efeito()       - Inicialização do vertexshader e do pixelshader</a>
+<a href=#2.7>2.7 montar_Geometria()         - Montagem da forma geométrica</a>
+<a href=#2.8>2.8 declarar_Vertexlayout()    - Declaração do layout de vértice</a>
+<a href=#2.9>2.9 inicializar_Vertexbuffer() - Inicialização do vertexbuffer</a>
+<a href=#2.10>2.10 Renderizar()              - Renderização da cena</a>
+<a href=#2.11>2.11 Limpar()                  - Limpeza adequada do ambiente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Triangulo</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'></a><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Triangulo.png></div>
+A aplicação desse capítulo realiza o objetivo de mostrar um triângulo
+na tela.  A  realização  desse objetivo é uma tarefa de vários passos
+que envolve a preparação de vários  objetos  cuja  conceituação  deve
+ser bem compreendida:
+
+<u>Formato de vértice</u>
+O atributo mais básico de um vértice é a sua posição no espaço 3d que
+geralmente vai envolver a presença de 3 floats para guardar  o  valor
+das  coordenadas  (x,  y,  z).  É comum a um modelo 3d trazer em cada
+vértice  um  volume  maior  de  informação  além  da posição tal como
+atributos  de  textura,  atributos  de  iluminação etc. O conjunto de
+atributos que o vértice comporta é chamado de <b>formato de vértice</b>. Por
+exemplo,  o  formato  de  vértice desta aplicação é formado apenas da
+posição    do   vértice   e   está   corporificado   pela   estrutura
+<b class=prg>CustomVertex_Position</b> cujo único membro <b>Pos</b> é constituido de 3 <span class=prg>floats</span>.
+
+<u>layout de vértice</u>
+Para renderizar um modelo 3d a placa de vídeo precisa saber o <b>formato
+de  vértice</b>  utilizado  e  isso é informado a gpu utilizando o objeto
+<b>layout de vértice</b> codificado pela  interface  <b class=prg>ID3D11InputLayout</b>. Cada
+atributo de vértice vai sendo descrito através  do  preenchimento  da
+estrutura <b class=prg>D3D11_INPUT_ELEMENT_DESC</b>.
+
+<u>vertexbuffer</u>
+O  conjunto  de  vértices de um modelo 3d para ser transferido para a
+gpu   precisa  ser  estocado  em  um  buffer  de  memória  denominado
+<b>vertexbuffer</b>. O vertexbuffer é um  objeto  produzido  pela  interface
+<b class=prg>ID3D11Buffer</b> e antes disso é descrito pela estrutura <b class=prg>D3D11_BUFFER_DESC</b>.
+Antes   que   um   vertexbuffer  possa  ser  produzido  é  necessário
+inicialmente  manter  os  vértices  numa variável array do <b>formato de
+vértice</b> previamente definido ( <b class=prg>CustomVertex_Position</b> neste exemplo).
+Para ser introjetado na  gpu  o vertexbuffer precisa ter o formato de
+vértice descrito por um objeto <b>layout de vértice</b>.  O  vertexbuffer  é
+processado em um programa na placa de vídeo chamado de <b>vertexshader</b>.
+
+O   <b>vertexshader</b>  é  limitado  ao  processamento  de  um  determinado
+<b>vertexbuffer</b>  com  um  determinado  <b>layout  de  vértice</b>.  O layout de
+vértice é  também conhecido como a <b>assinatura</b> dos dados de entrada do
+vertexshader.  Antecipadamente  o  vertexshader  faz  a  validação do
+layout  de  vértice  e  este  fato ocasiona a necessidade de primeiro
+compilar  o  vertexshader  para  ter  a  assinatura de  validação que
+vai permitir a criação de um objeto layout  de  vértice  válido.  Uma
+vantagem  é  que  o  layout  confirmado  será  válido  para  qualquer
+vertexshader de mesma assinatura.
+
+Vamos ver posteriormente que a interface <b class=prg>ID3D11Buffer</b> é utilizada para
+criar  mais  dois  tipos  de  dados  estruturados:  o <b>indexbuffer</b> e o
+<b>constantbuffer</b>.  O  indexbuffer é uma sequência numérica que indica a
+ligação dos vértices utilizada para re-aproveitar vértices entre dois
+ou mais triângulos diferentes. O constantbuffer é um buffer utilizado
+para manter constantes e variáveis que  vão ser introjetadas na placa
+de vídeo.
+
+<u>shader</u>
+O shader é um programa escrito em liguagem HLSL e processado pela gpu.
+O shader é dividido em duas partes fundamentais: o  <b>vertexshader</b>  que
+é  o  programa  que  processa  os  vértices  e  o <b>pixelshader</b> que é o
+programa que produz os pixels da imagem final. Um programa escrito em
+HLSL fica estocado em um arquivo com a extensão <b>fx</b> e geralmente  esse
+programa  tem  também  o  nome  de  <b>efeito</b>.  Os programas em HLSL são
+compilados  pela   função  <span class=prg>D3DX11CompileFromFile()</span>. O vertexshader
+produzido   é   gerenciado  pela  interface  <b class=prg>ID3D11VertexShader</b>  e  o
+pixelshader    é   gerenciado   pela   interface   <b class=prg>ID3D11PixelShader</b>.
+A função <span class=prg>D3DX11CompileFromFile()</span> retorna o shader compilado em um
+buffer intermediário da interface <b class=prg>ID3DBlob</b>.   No caso do vertexshader 
+o  objeto  ( <b class=prg>ID3DBlob</b>  ) portando  os dados compilados participa como
+argumento de criação do objeto <b>layout de vértice</b>.
+
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>wWinMain()</b>
+	chama initWindow() para criar a janela da aplicação	
+	chama initGfx() para inicializar o motor gráfico
+	
+	estabelece o laço de mensagens
+		chama Renderizar() para renderizar a cena
+		
+	chama Limpar() para limpar o ambiente na finalização da aplicação.
+
+initWindow()
+	cria, configura e registra a classe da janela
+	cria a janela da aplicação
+	mostra a janela</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	- estabelece antecipadamente os valores iniciais dos objetos do motor gráfico
+	através do preenchimento  de  variáveis  e estruturas descritivas;	
+
+	Obtém  o tamanho da área cliente da janela com <b class=prg>GetClientRect()</b>
+		 
+	preenche a estrutura de descrição da corrente de trocas: <b class=prg>DXGI_SWAP_CHAIN_DESC</b>
+
+	cria a corrente de trocas ou swap chain, cria o dispositivo renderizador, cria 
+	o dispositivo de gestão de recursos todos com <b class=prg>D3D11CreateDeviceAndSwapChain()</b>
+	
+	Obtém o backbuffer ( <b class=prg>ID3D11Texture2D</b> ) com <b class=prg>g_pSwapChain-&gt;GetBuffer()</b>.
+	
+	cria a superfície alvo de renderização ( <b class=prg>ID3D11RenderTargetView</b> ) ou a 'render
+	target view' baseada no backbuffer com <b class=prg>g_pd3dDevice-&gt;CreateRenderTargetView()</b>
+
+	Instala a 'render target view' com <b class=prg>g_pImmediateContext-&gt;OMSetRenderTargets()</b>		
+	
+	Preenche a estrutura ( <b class=prg>D3D11_VIEWPORT</b> ) de criação da janela de visualização
+	ou viewport. Instala a viewport com <b class=prg>g_pImmediateContext-&gt;RSSetViewports()</b>.
+	<b class=sc16>
+	inicializa efeito com <b class=prg>inicializar_Efeito()</b>
+	
+	declara formato de vértice com <b class=prg>declarar_Vertexlayout()</b>
+	
+	inicializa vertexbuffer com <b class=prg>montar_Geometria()</b> e <b class=prg>inicializar_Vertexbuffer()</b>
+	</b>
+<b class=sc16>
+<u>compilarEfeito()</u>
+	Pré-configura variáveis de trabalho
+	
+	Compila o programa do shader, prj_Triangulo.fx,  com <b class=prg>D3DX11CompileFromFile()</b>
+
+<u>inicializar_Efeito()</u>
+	produz o vertexshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreateVertexShader()</b>
+	
+	produz o pixelshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreatePixelShader()</b>
+
+<u>montar_Geometria()</u>
+	monta o triângulo através da configuração dos vértices na array <b style="color:black;">g_Triangulo</b>
+
+<u>declarar_Vertexlayout()</u>
+	Pré-configura as variáveis do primeiro elemento do layout de vértice.
+	
+	Descreve o primeiro elemento com as variáveis pré-configuradas
+	
+	Produz a array de elementos descritivos do layout de vértice.
+	
+	Declara o layout de vértice com <b class=prg>g_pImmediateContext->IASetInputLayout()</b>
+
+<u>inicializar_Vertexbuffer()</u>
+	Descreve o vertexbuffer com a estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+	
+	Descreve os dados do vertexbuffer com a estrutura <b class=prg>D3D11_SUBRESOURCE_DATA</b>
+	
+	Declara o vertexbuffer com <b class=prg>g_pImmediateContext->IASetVertexBuffers()</b>
+	
+	Declara a topologia de renderização dos vértices com 
+				<b class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology()</b>
+	
+</b>
+Renderizar()
+	Limpa a tela representada pela superfície alvo de renderização
+	com <b class=prg>g_pImmediateContext-&gt;ClearRenderTargetView()</b>
+	<b class=sc16>	
+	Declara o vertexshader com <b class=prg>g_pImmediateContext-&gt;VSSetShader()</b>
+	
+	Declara o pixelshader com <b class=prg>g_pImmediateContext-&gt;PSSetShader()</b>
+    
+	Desenha a cena com <b class=prg>g_pImmediateContext-&gt;Draw()</b>
+	</b>
+	Apresenta a cena com <b class=prg>g_pSwapChain-&gt;Present()</b>
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+		Verifica teclado - finaliza aplicação na tecla Escape
+		chama Limpar() na finalização da aplicação		
+	
+Limpar()
+	Libera os objetos utilizados.
+</div></div>
+
+
+<a href=#topo>[topo]</a> <a name='2.1'><b><u>2.1 Aspectos globais: arquivo motor.h </u></b>
+<div class=niceview><span class=sc2>// Formato de vértice apenas com posição</span>
+//--------------------------------------------------------------------------------------</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_Position</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice (Pos.x, Pos.y, Pos.z)</span>
+  <span class=sc5>XMFLOAT3 </span>Pos; 
+
+  <span class=sc2>// Construtor padrão</span>
+  <span class=sc5>CustomVertex_Position</span>() {} 
+
+  <span class=sc5>CustomVertex_Position</span>(<span class=sc5>XMFLOAT3 </span>_Pos) 
+  <span class=sc16>{</span>
+    Pos = _Pos; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+ <span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_Position</span></span>
+
+
+  <span class=sc2>// Esta função compila um programa hlsl produzindo o vertexshader</span>
+  <span class=sc2>// ou o pixelshader</span>
+  <span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, 
+    <span class=prg>LPCSTR </span>sShaderMdl, <span class=sc5>ID3DBlob** </span>hlslCompilado );  
+
+  <span class=sc2>// Essa função chama compilarEfeito() para inicializar o pixelshader e</span>
+  <span class=sc2>// o vertexshader</span>
+  <span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função preenche uma array de vértices montando um triângulo</span>
+  <span class=prg>void </span>montar_Geometria(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função declara o layout de vértice utilizado</span>
+  <span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o vertexbuffer. O vertexshader e a geometria devem</span>
+  <span class=sc2>// ser inicializados antes dele.</span>
+  <span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>);   
+</div>
+<u>Formato de vértice apenas com posição</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;"><span class=prg>struct </span><span class=sc5>CustomVertex_Position</span>
+<span class=sc16>{</span>
+
+  <span class=sc2>// Posição do vértice (Pos.x, Pos.y, Pos.z)</span>
+  <span class=sc5>XMFLOAT3 </span>Pos; 
+
+  <span class=sc2>// Construtor padrão</span>
+  <span class=sc5>CustomVertex_Position</span>() {} 
+  <span class=sc5>CustomVertex_Position</span>(<span class=sc5>XMFLOAT3 </span>_Pos) 
+  <span class=sc16>{</span>
+    Pos = _Pos; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_Position</span></span></div>
+Esta estrutura define o formato de vértice utilizado nesta aplicação.
+A construção desta estrutura da forma que está permite a criação de
+formas geométricas conforme este exemplo:
+<div class=prg-code><span class=sc2>// Configuração inicial dos vértices da forma geométrica</span>
+<span class=sc5>CustomVertex_Position </span>g_Triangulo[<span class=sc4>3 </span>]; 
+<span class=sc2>// Configuração dos vértices do triângulo</span>
+g_Triangulo[<span class=sc4>0</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.5f</span>, <span class=sc4>0.5f</span>);  
+g_Triangulo[<span class=sc4>1</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  
+g_Triangulo[<span class=sc4>2</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>-0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  </div>
+Ao  longo  do  nosso  curso  os  diversos formatos de vértice vão ser
+declarados desta forma. O tipo de dado  <b class=prg>XMFLOAT3</b>  é uma estrutura com
+3 <span class=prg>floats</span> que foi definida na biblioteca <span class=prg>xnamath.h</span>.
+
+
+
+<div class=prg-code><span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, 
+ <span class=prg>LPCSTR </span>sShaderMdl, <span class=sc5>ID3DBlob** </span>hlslCompilado );  </div>
+Esta função compila o shader, programa escrito em HLSL,  produzindo o
+vertexshader  e  o  pixelshader.  Os argumentos de entrada são estes:
+ <b>sArquivo</b> - é o nome do arquivo com extensão fx, neste exemplo
+ prj_Triangulo.fx
+
+ <b>sEntradaFn</b> - é o nome da função principal de entrada do shader. Em
+ nosso exemplo o vertexshader começa com a função <b>gpVertexShader()</b>
+ e o pixelshader começa com a função <b>gpPixelShader().</b>
+
+ <b>sShaderMdl</b> - é o modelo de shader utilizado que geralmente vai ser
+ identificado por strings com esse formato <span class=prg>vs_4_0</span> ou <span class=prg>ps_4_0</span>.
+
+ <b>hlslCompilado</b> - o programa compilado vai ser estocado nesse objeto.
+
+
+<b class=prg-code><span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>); </b>
+Essa função chama <b>compilarEfeito()</b> para inicializar o  pixelshader  e
+o vertexshader. 
+
+
+<b class=prg-code><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>); </b>
+Essa função preenche uma array de vértices (<b>g_Triangulo</b> ) para montar
+o triângulo. 
+
+
+<b class=prg-code>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>); </b>
+Essa função declara o layout de vértice utilizado.   O trabalho desta
+função   depende   do   objeto   <b>g_vsBlocoCompilado</b>  inicializado  em
+<b>iniciar_Efeito()</b>.
+
+
+
+<b class=prg-code><span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>);   </b>
+Essa função inicializa o vertexbuffer ( <b>g_pVertexBuffer</b>  ). O trabalho
+dessa   função   depende   da   array   <b>g_Triangulo</b>  inicializada  em
+<b>montar_Geometria()</b>.
+
+
+<a href=#topo>[topo]</a> <a name='2.2'><b><u>2.2 Variáveis globais - Arquivo: motor.cpp </u></b>
+<div class=niceview><span class=sc2>// Preparação para renderizar o triângulo</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Configuração inicial dos vértices da forma geométrica</span>
+<span class=sc5>CustomVertex_Position </span>g_Triangulo[<span class=sc4>3 </span>];   
+
+<span class=sc2>// Descrição de formato dos vértices para a GPU</span>
+<span class=sc5>ID3D11InputLayout </span>      *g_pVertexLayout = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Dados compilados do vertexshader</span>
+<span class=sc5>ID3DBlob </span>   		  *g_vsBlocoCompilado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o vertexshader</span>
+<span class=sc5>ID3D11VertexShader </span>     *g_pVertexShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o buffer de vértices, buffer de índices e buffer de</span>
+<span class=sc2>// constantes</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pVertexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o pixelshader</span>
+<span class=sc5>ID3D11PixelShader </span>      *g_pPixelShader = <span class=prg>NULL</span>; 
+</div>
+
+Este  conjunto  de  interfaces  está  ligado  com  a    estocagem   e
+renderização  das    formas  geométricas  desde  um  triângulo até um
+complexo modelo 3d:
+
+<b class=prg-code><span class=sc5>CustomVertex_Position </span>g_Triangulo[<span class=sc4>3 </span>]; </b>
+Esta array vai receber a configuração de vértices que  vai  formar  o
+triângulo em <b>montar_Geometria()</b>.  Na sequência estes vértices vão ser
+utilizados  em  <b>inicializar_Vertexbuffer()</b>  para  compor  os dados do
+vertexbuffer ( <b>g_pVertexBuffer</b> ).
+
+<b class=prg-code><span class=sc5>ID3D11InputLayout </span>      *g_pVertexLayout = <span class=prg>NULL</span>; </b>
+Esta  variável  representa  o  objeto  que vai conter a declaração do
+formato   de   vértice  utilizado  no  vertexbuffer.  Este  objeto  é
+inicializado na função <b>declarar_Vertexlayout()</b>.
+
+
+<b class=prg-code><span class=sc5>ID3DBlob </span>   		  *g_vsBlocoCompilado = <span class=prg>NULL</span>; </b>
+Este  objeto  vai  receber  o  programa  vertexshader compilado. Este
+objeto   é   necessário  na  criação  do  objeto  <b>layout  de  vértice</b>
+<b>g_pVertexLayout</b>.  A  assinatura  dos dados de entrada do vertexshader
+deve bater com o layout do formato de vértice definido. Este objeto é
+inicializado na função <b>inicializar_Efeito()</b> e  também  necessário  na
+função <b>declarar_Vertexlayout()</b>.
+
+
+<b class=prg-code><span class=sc5>ID3D11VertexShader </span>     *g_pVertexShader = <span class=prg>NULL</span>; </b>
+Esta  é  a  interface  de  gestão  do  vertexshader  inicializada  em
+<b>inicializar_Efeito()</b>  e utilizada  para  produzir  a  cena  na  função
+<b>Renderizar()</b>.
+
+
+<b class=prg-code><span class=sc5>ID3D11Buffer </span>           *g_pVertexBuffer = <span class=prg>NULL</span>; </b>
+Este objeto é utilizado para conter dados que  vão  ser  introjetados
+na  gpu  que  são  o  vertexbuffer, o indexbuffer e o constantbuffer.
+
+
+<b class=prg-code><span class=sc5>ID3D11PixelShader </span>      *g_pPixelShader = <span class=prg>NULL</span>; </b>
+Esta é a interface de gestão do pixelshader.    Ela é inicializada na
+função  <b>inicializar_Efeito()</b>  e  utilizada  para renderizar a cena na
+função <b>Renderizar()</b>
+
+<a href=#topo>[topo]</a> <a name='2.3'><b><u>2.3 initGfx() - Inicialização do motor gráfico </u></b>
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem initGfx() vair retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+  <span class=sc5>RECT </span>areaCliente; 
+  <span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+  <span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+  <span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+  <span class=sc2>// Configuração da corrente de trocas</span>
+  <span class=sc2>// Inicialização básica da estrutura</span>
+  <span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+  <span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+  <span class=sc2>// Quantidade de backbuffers</span>
+  <span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração da largura e tamanho</span>
+  <span class=prg>sd.BufferDesc.Width </span> = largura; 
+  <span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+  <span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+  <span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+  <span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+  <span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+  <span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+  <span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+  <span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+  <span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+  <span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+  <span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Modo de descarte do backbuffer</span>
+  <span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+  <span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc2>// Indicação do display default</span>
+  <span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+  <span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Configuração dos flags de criação</span>
+  <span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+  <span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+    <span class=sc16>{</span>
+        <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+    <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+  <span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+  <span class=sc2>// motor gráfico do directx 11.</span>
+  g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+    NoRasterSoftware, createDeviceFlags, featureLevels, 
+    numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+    &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+  g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+    ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+    &g_pRenderTargetView );  
+  <span class=prg>pBackBuffer-&gt;Release</span>();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Configuração da textura alvo no dispositivo</span>
+  <span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Configuração da janela de visualização (viewport)</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>D3D11_VIEWPORT </span>vp; 
+  <span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+  <span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+  <span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+  <span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+  <span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+  <span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+  <span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+<b>
+  <span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+  g_hr = inicializar_Efeito();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Montagem do triângulo</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Declaração do layout de vértice</span>
+  declarar_Vertexlayout();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Inicialização do vertexbuffer</span>
+  g_hr = inicializar_Vertexbuffer();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+</b>
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<div class=prg-code> <span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+g_hr = inicializar_Efeito();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+
+<span class=sc2>// Montagem do triângulo</span>
+montar_Geometria();  
+
+
+<span class=sc2>// Declaração do layout de vértice</span>
+declarar_Vertexlayout();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+
+<span class=sc2>// Inicialização do vertexbuffer</span>
+g_hr = inicializar_Vertexbuffer();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; </div>
+Este  conjunto  de  funções  foi  chamado  respeitando  a  lógica  de
+interdependência das tarefas.  Primeiro é produzido o pixelshader e o
+vertexshader necessário  para validar a criação do layout de vértices
+em <b>declarar_Vertexlayout()</b>.
+
+Depois   é  inicializada  a  array  de  vértices  (  <b>g_Triangulo</b>)  em
+<b>montar_Geometria()</b> que é utilizada em  <b>inicializar_Vertexbuffer()</b>  na
+composição dos dados do vertexbuffer.
+
+
+<a href=#topo>[topo]</a> <a name='2.4'><b><u>2.4 prj_Triangulo.fx - Código fonte do vertexshader\pixelshader </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo - Arquivo: prj_Triangulo.fx</span>
+<span class=sc2>// Exemplo de renderização de um triângulo com HLSL</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Vertexshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>float4 </span>gpVertexShader( <span class=prg>float4 </span>Pos : <span class=sc16>POSITION</span>) : <span class=sc16>SV_POSITION</span>
+<span class=sc16>{</span>
+  <span class=sc6>return </span>Pos; 
+<span class=sc16>}</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Pixelshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>float4 </span>gpPixelShader( <span class=prg>float4 </span>Pos : <span class=sc16>SV_POSITION</span>) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+  <span class=prg>float4 </span>azul = <span class=prg>float4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc6>return </span>azul; 
+<span class=sc16>}</span>
+<span class=sc2>// endfile: prj_Triangulo.fx</span>
+</div>
+<u>O vertexshader</u>
+
+<b class=prg-code><span class=prg>float4 </span>gpVertexShader( <span class=prg>float4 </span>Pos : <span class=sc16>POSITION</span>) : <span class=sc16>SV_POSITION</span></b>
+Aqui está a função de entrada do vertexshader com  a  assinatura  dos
+dados de entrada (<b class=sc16>float4 Pos:POSITION</b>)  e saída (<b class=sc16>float4:SV_POSITION</b>). 
+Está entrando e saindo uma posição com ambas estocadas no tipo <span class=prg>float4</span>.
+<b class=sc16>POSITION</b> e <b class=sc16>SV_POSITION</b> são indicações da finalidade dos dados  e  são
+denominadas semânticas. <b class=sc16>POSITION</b> indica uma posição 3d  e <b class=sc16>SV_POSITION</b>
+posição de pixel na superfície destino.
+
+É comum também uma coordenada ser expressa por (x, y, z, w) com  o  w
+acrescentando uma indicação  se  a  coordenada  é  uma  posição    ou
+uma  direção.      A  presença  do  'w'  permite  também  uniformizar
+procedimentos matemáticos ocasionando a presença da multiplicação para
+resolver  simultaneamente  tarefas  de  translação, rotação e escala.
+A cor também é expressa por  quatro   elementos,   o RGBA que contém
+valores para os elementos vermelho, azul, verde e  taxa de opacidade
+de uma cor.   Para ambos os casos o <span class=prg>float4</span> que é uma array de quatro
+floats acomoda perfeitamente os dois contextos.
+
+<b class=prg-code><span class=sc6>return </span>Pos; </b>
+O  nosso  vertexshader  nada  faz  e  apenas  repassa a coordenada de
+entrada para a coordenada de saida. O estágio rasterizador do directx
+toma a tarefa de transformar uma coordenada 3d em uma  coordenada  de
+pixel  que  na  sequência  é  passada  para  o  pixelshader  fazer  a
+colorização.
+
+<u>O pixelshader</u>
+
+<div class=prg-code><span class=prg>float4 </span>gpPixelShader( <span class=prg>float4 </span>Pos : <span class=sc16>SV_POSITION</span>) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+
+  <span class=prg>float4 </span>azul = <span class=prg>float4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);  
+
+  <span class=sc6>return </span>azul; 
+
+<span class=sc16>}</span></div>
+O pixelshader simplesmente recebe uma posição de pixel de entrada
+(<b class=sc16>float4:SV_POSITION</b>) e retorna uma cor  azul  para  a  superfície
+(<b class=sc16>float4:SV_Target</b>). <b class=sc16>SV_Target</b> é a semântica para cor de retorno.
+
+
+<a href=#topo>[topo]</a> <a name='2.5'><b><u>2.5 compilarEfeito() - Compilação do programa em HLSL </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// compilarEfeito() - Esta função compila um programa hlsl produzindo o</span>
+<span class=sc2>// vertexshader ou o pixelshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, <span class=prg>LPCSTR </span>sShaderMdl, 
+             <span class=sc5>ID3DBlob** </span>hlslCompilado ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem esta função retorn S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Flags de compilação de hlsl</span>
+  <span class=prg>DWORD </span>nConfig = <span class=sc4>D3DCOMPILE_ENABLE_STRICTNESS </span>|  <span class=sc4>D3DCOMPILE_DEBUG</span>;  
+
+  <span class=sc2>// Buffer para a mensagem de erro</span>
+  <span class=sc5>ID3DBlob </span>*bufferMensagem; 
+
+  <span class=sc2>// Compilação do shader pixelshader ou vertexshader</span>
+  g_hr = <span class=prg>D3DX11CompileFromFile</span>( sArquivo, <span class=prg>NULL</span>, <span class=prg>NULL</span>, sEntradaFn, sShaderMdl, 
+        nConfig, <span class=sc4>0</span>, <span class=prg>NULL</span>, hlslCompilado, &bufferMensagem, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Tratamento de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr) ) 
+    <span class=sc16>{</span>
+      <span class=sc9>if</span>( bufferMensagem != <span class=prg>NULL</span>) 
+      <span class=prg>MessageBoxA </span>(<span class=sc4>0</span>, (<span class=prg>char*</span>)  <span class=prg>bufferMensagem-&gt;GetBufferPointer</span>(), 
+						<span class=sc6>"compilarEfeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+      <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+      <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// compilarEfeito()</span></span>
+</div>
+<b class=prg-code><span class=prg>DWORD </span>nConfig = <span class=sc4>D3DCOMPILE_ENABLE_STRICTNESS </span>|  <span class=sc4>D3DCOMPILE_DEBUG</span>;  </b>
+Estes  são  flags  de  instrução de compilação do shader. A constante
+<b>D3DCOMPILE_ENABLE_STRICTNESS</b>  define  que  sintaxe  obsoleta indicada
+geralmente  pela  palavra  'deprecated'  na  documentação  do directx
+não vai ser aceita.Este flag é para garantir que o programa do shader
+esteja de acordo com os padrões mais atuais. O flag <b>D3DCOMPILE_DEBUG</b>
+é para embutir informações de 'debug' no shader.
+
+<b class=prg-code><span class=sc5>ID3DBlob </span>*bufferMensagem; </b>
+Este objeto é para receber eventualmente mensagens de erros que possam
+ocorrer na compilação do shader.
+
+
+<div class=prg-code>g_hr = <span class=prg>D3DX11CompileFromFile</span>( sArquivo, <span class=prg>NULL</span>, <span class=prg>NULL</span>, sEntradaFn, sShaderMdl, 
+        nConfig, <span class=sc4>0</span>, <span class=prg>NULL</span>, hlslCompilado, &bufferMensagem, <span class=prg>NULL</span>);  </div>
+Aqui  o  shader  é  compilado. Esta função é chamada duas vezes nesta
+aplicação para produzir o vertexshader e o pixelshader.
+
+
+<u>Verificação de erro</u>
+<div class=prg-code><span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr) ) 
+<span class=sc16>{</span>
+	<span class=sc9>if</span>( bufferMensagem != <span class=prg>NULL</span>) 
+	<span class=prg>MessageBoxA </span>(<span class=sc4>0</span>, (<span class=prg>char*</span>)  <span class=prg>bufferMensagem-&gt;GetBufferPointer</span>(), 
+	<span class=sc6>"compilarEfeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+	<span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>(); 
+	<span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span> </div>
+Este  bloco  pipoca  as  mensagens  na  tela  se ocorrer problemas de
+compilação.
+
+<b><span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  </b>
+Liberamos aqui o buffer de mensagens.
+
+<a href=#topo>[topo]</a> <a name='2.6'><b><u>2.6 inicializar_Efeito() - Inicialização do vertexshader e do pixelshader </u></b>
+<div class=niceview><span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// inicialzar_Efeito() - Essa função chama compilarEfeito() para inicializar o</span>
+<span class=sc2>// pixelshader e o vertexshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Compilação do vertexshader</span>
+  g_hr = compilarEfeito( <span class=sc6>L"prj_Triangulo.fx"</span>, <span class=sc6>"gpVertexShader"</span>, <span class=sc6>"vs_4_0"</span>, 
+    &g_vsBlocoCompilado );  
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+    <span class=sc16>{</span>
+        <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                    <span class=sc6>L"Falha na compilação do arquivo prj_Triangulo.fx"</span>, 
+                    <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+        <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Criação do vertexshader</span>
+  //----------------------------------------------------------------------------</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateVertexShader</span>( <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, &g_pVertexShader );  
+
+  <span class=sc2>// Verificação de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+  <span class=sc16>{</span>
+    <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+    <span class=sc6>return </span>g_hr; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Compilação do pixelshader</span>
+  <span class=sc5>ID3DBlob </span>*psBlocoCompilado = <span class=prg>NULL</span>; 
+  g_hr = compilarEfeito( <span class=sc6>L"prj_Triangulo.fx"</span>, <span class=sc6>"gpPixelShader"</span>, <span class=sc6>"ps_4_0"</span>, 
+								&psBlocoCompilado );  
+
+  <span class=sc2>// Verificação de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+    <span class=sc16>{</span>
+         <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                    <span class=sc6>L"Falha na compilação do arquivo prj_Triangulo.fx"</span>, 
+                    <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+         <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Criação do pixelshader</span>
+  //----------------------------------------------------------------------------</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreatePixelShader</span>( <span class=prg>psBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>psBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, 
+    &g_pPixelShader );  
+
+  <span class=sc2>// Liberação do bloco compilado</span>
+  <span class=prg>psBlocoCompilado-&gt;Release</span>();  
+
+  <span class=sc2>// Encerramento da função</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Efeito().fim</span></span>
+</div>
+
+Observe atentamente o código abaixo e veja que o directx apresenta os
+mesmos   padrões  para  a  criação  do  vertexshader  e  pixelshader:
+-A função <b>compilarEfeito()</b> recebe o nome do arquivo de efeito, o nome
+da  função  de  entrada,  o  modelo ou versão do shader, e devolve um
+bloco  de  dados  com  o  programa  compilado.  Na sequência, o bloco
+compilado é passado para as funções de criação do vertexshader  e  do
+pixelshader.
+
+
+<u>Compilação do vertexshader</u>
+<div class=prg-code>g_hr = compilarEfeito( <span class=sc6>L"prj_Triangulo.fx"</span>, <span class=sc6>"gpVertexShader"</span>, <span class=sc6>"vs_4_0"</span>, 
+   &g_vsBlocoCompilado );  </div>
+
+<u>Criação do vertexshader</u>
+<div class=prg-code>g_hr = <span class=prg>g_pd3dDevice-&gt;CreateVertexShader</span>( <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, &g_pVertexShader );  </div>
+	
+
+	
+<u>Compilação do pixelshader</u>
+<div class=prg-code><span class=sc5>ID3DBlob </span>*psBlocoCompilado = <span class=prg>NULL</span>; 
+    g_hr = compilarEfeito( <span class=sc6>L"prj_Triangulo.fx"</span>, <span class=sc6>"gpPixelShader"</span>, <span class=sc6>"ps_4_0"</span>, 
+	&psBlocoCompilado );  </div>
+
+
+<u>Criação do pixelshader</u>
+<div class=prg-code>g_hr = <span class=prg>g_pd3dDevice-&gt;CreatePixelShader</span>( <span class=prg>psBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>psBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, 
+    &g_pPixelShader );  </div>
+	
+<a href=#topo>[topo]</a> <a name='2.7'><b><u>2.7 montar_Geometria() - Montagem da forma geométrica </u></b>
+Segue abaixo a listagem da construção do triângulo. O código é simples
+mas  essa  simplicidade  adveio  da  boa  definição  da  estrutura do
+formato  de  vértice  com  um  construtor  que  aceita  um  <span class=prg>XMFLOAT3</span>.
+
+<div class=niceview>//------------------------------------------------------------------------------------</span>
+<span class=sc2>// montar_Geometria() - Essa função preenche uma array de vértices montando</span>
+<span class=sc2>// um triângulo.</span>
+//------------------------------------------------------------------------------------</span>
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configuração dos vértices do triângulo</span>
+  g_Triangulo[<span class=sc4>0</span>] = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>0.0f</span>,  <span class=sc4>0.5f</span>, <span class=sc4>0.5f</span>);  
+  g_Triangulo[<span class=sc4>1</span>] = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  
+  g_Triangulo[<span class=sc4>2</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>-0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  
+<span class=sc16>} <span class=sc2>// montar_Geometria().fim</span></span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.8'><b><u>2.8 declarar_Vertexlayout() - Declaração do layout de vértice </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// declarar_Vertexlayout() - Essa função declara o formato de vértice</span>
+<span class=sc2>// presente no vertexbuffer a ser utilizado.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem esta função vai retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Descrição do layout do formato de vértice CustomVertex_Position</span>
+  <span class=prg>LPCSTR </span>sSemantica = <span class=sc6>"POSITION"</span>; 
+  <span class=prg>UINT </span>ndxSemantica = <span class=sc4>0</span>; 
+  <span class=sc5>DXGI_FORMAT </span>formato = <span class=sc4>DXGI_FORMAT_R32G32B32_FLOAT</span>; 
+  <span class=prg>UINT </span>nCanal = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>nAlinhamento = <span class=sc4>0</span>; 
+  <span class=sc5>D3D11_INPUT_CLASSIFICATION </span> clsEntrada = <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>; 
+  <span class=prg>UINT </span>taxaInstanciamento = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Produção do primeiro elemento da declaração de vértices</span>
+  <span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_pos = 
+  <span class=sc16>{</span>
+    sSemantica, 
+    ndxSemantica, 
+    formato, 
+    nCanal, 
+    nAlinhamento, 
+    clsEntrada, 
+    taxaInstanciamento</span>
+  <span class=sc16>}</span>; 
+
+
+  <span class=sc2>// Definição do layout de entrada</span>
+  <span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>layout[] = 
+  <span class=sc16>{</span>
+    atributo_pos</span>
+  <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numElements = <span class=prg>ARRAYSIZE</span>( layout );  
+
+  <span class=sc2>// Criação do objeto layout de entrada</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateInputLayout</span>( layout, numElements, 
+    <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), &g_pVertexLayout );  
+
+  <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Instalação do layout de entrada</span>
+  <span class=prg>g_pImmediateContext-&gt;IASetInputLayout</span>( g_pVertexLayout );  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// declarar_Vertexlayout().fim</span></span>
+</div>
+
+<u>Descrição do layout do formato de vértice CustomVertex_Position</u>
+Segue  abaixo  como  se  descreve o membro <b>Pos</b> do formato de vértice
+que se constitue  no  primeiro  e único elemento do objeto <b>layout de
+vértice</b>:
+
+<b class=prg-code><span class=prg>LPCSTR </span>sSemantica = <span class=sc6>"POSITION"</span>; </b>
+A semântica refere-se a finalidade do dado. A string <b>POSITION</b> informa
+que  <b>Pos</b>  é  uma  posição  3d.  Outros  exemplos de semântica incluem
+<b>TEXCOORD</b> que é usado para indicar coordenada de textura e <b>NORMAL</b>  que
+indica  geralmente  que  a  coordenada  passada  é  um 'vetor normal'
+utilizado na iluminação de uma superfície geométrica.
+
+
+<b class=prg-code><span class=prg>UINT </span>ndxSemantica = <span class=sc4>0</span>; </b>
+Este  aqui  é  o  índice  da  semântica  que aumenta o significado da
+semântica. Por exemplo, em texturização é comum um objeto trazer duas
+texturas que vão ser misturadas e portanto  trazer  duas  coordenadas
+de texturas indicadas pela semântica <b class=sc16>TEXCOORD</b>; a primeira  coordenada
+vai ter índice 0 e a segunda vai ter índice 1.
+
+<b class=prg-code><span class=sc5>DXGI_FORMAT </span>formato = <span class=sc4>DXGI_FORMAT_R32G32B32_FLOAT</span>; </b>
+Este argumento indica o formato de dados.  O formato  passado  indica
+uma  sequência  de  3  floats.  Basicamente  aqui  a placa de vídeo é
+informada  qual  é  o  tipo  de  dado (<span class=prg>float</span>) que está entrando  e  o
+volume básico (3 unidades x 32bits) deste dado.
+
+<b class=prg-code><span class=prg>UINT </span>nCanal = <span class=sc4>0</span>; </b>
+Na  visão  do  directx  11  uma  placa  de  vídeo  tem  vários canais
+independentes de entrada de dados numerados de 0 à 15. A documentação
+do  directx  11  chama  este  argumento  de <b>slot</b> enquanto o directx 9
+chamava-o  de  <b>stream</b>.  Cada  canal pode ser usado para entrar vários
+fluxos de dados diferentes.
+
+<b class=prg-code><span class=prg>UINT </span>nAlinhamento = <span class=sc4>0</span>; </b>
+A documentação chama este argumento de <b>AlignedByteOffset</b> que pode ser
+traduzido como 'deslocamento  do  alinhamento  em  bytes".  Em  nosso
+primeiro exemplo nosso membro <b>Pos</b> tem 12 bytes e  o  12  seria  então
+o  valor de encaixe para o próximo elemento pois  o deslocamento de 0
+à 11 está ocupado com os bytes do elemento <b>Pos</b>.
+
+<div class=prg-code><span class=sc5>D3D11_INPUT_CLASSIFICATION </span> clsEntrada = <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>; 
+<span class=prg>UINT </span>taxaInstanciamento = <span class=sc4>0</span>; </div>
+Estes argumentos não vão ser utilizados de forma diferente  ao  longo
+do nosso curso pois estão ligados  com  aspectos  mais  avançados  do
+directx.  Nesta configuração estes argumentos indicam que os dados se
+relacionam aos vértices.
+
+Na sequência todas estas variáveis discutidas se agregam  formando  a
+descrição do primeiro e único elemento do nosso  layout  de  vértice.
+
+<u>Produção do primeiro elemento da declaração de vértices</span></u>
+<div class=prg-code><span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_pos = 
+<span class=sc16>{</span>
+ sSemantica, 
+ ndxSemantica, 
+ formato, 
+ nCanal, 
+ nAlinhamento, 
+ clsEntrada, 
+ taxaInstanciamento</span>
+<span class=sc16>}</span>; </div>
+Aqui é o exemplo do código de descrição individual de  cada  elemento
+de um formato de vértice.  Depois dos vários  elementos  configurados
+eles  vão  ser  agregados  coletivamente  conforme  o bloco de código
+abaixo:
+
+<div class=prg-code><span class=sc2>// Definição do layout de entrada</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>layout[] = 
+<span class=sc16>{</span>
+atributo_pos</span>
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numElements = <span class=prg>ARRAYSIZE</span>( layout ); </div>  
+
+
+
+<u>Criação do objeto layout de entrada</u>
+<div class=prg-code>g_hr = <span class=prg>g_pd3dDevice-&gt;CreateInputLayout</span>( layout, numElements, 
+<span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+<span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), &g_pVertexLayout );  </div>
+Aqui  está  o  código  exemplo  da  criação final do objeto <b>layout de
+vértice</b> repare que foi utilizado o bloco compilado  do  vertexshader.
+
+
+
+<b class=prg-code><span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  </b>
+Aqui liberamos o bloco compilado do vertexshader pois  ele  não  será
+mais necessário ao longo da aplicação.
+
+
+<u>Instalação do layout de entrada</u>
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;IASetInputLayout</span>( g_pVertexLayout );  </div>
+Conforme  os  padrões  anteriores,  depois  de tudo pronto o objeto é
+embutido  na  linha  de  montagem  do directx 11. Esta linha embute o
+objeto criado no dispositivo renderizador.
+
+<a href=#topo>[topo]</a> <a name='2.9'><b><u>2.9 inicializar_Vertexbuffer() - Inicialização do vertexbuffer </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Vertexbuffer() - Essa função inicializa o vertexbuffer.</span>
+<span class=sc2>// O vertexshader e a geometria devem ser inicializados antes dele.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Descrição do vertexbuffer sendo montado</span>
+  <span class=sc2>// Declaração e preparação inicial da estrutura</span>
+  <span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+  <span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+  <span class=sc2>// Declaração de uso</span>
+  <span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+  <span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+  <span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>) * <span class=sc4>3</span>; 
+
+  <span class=sc2>// Indicação de vertexbuffer</span>
+  <span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_VERTEX_BUFFER</span>; 
+
+  <span class=sc2>// Flags de configuração de acesso</span>
+  <span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Declaração dos dados do vertexbuffer</span>
+  <span class=sc5>D3D11_SUBRESOURCE_DATA </span>vbDados; 
+  <span class=prg>ZeroMemory</span>( &vbDados, <span class=sc16>sizeof</span>(vbDados) );  
+  <span class=prg>vbDados.pSysMem </span>= g_Triangulo; 
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &vbDados, &g_pVertexBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Instalação do vertexbuffer</span>
+  <span class=prg>UINT </span>stride = <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>);  
+  <span class=prg>UINT </span>offset = <span class=sc4>0</span>; 
+  <span class=prg>g_pImmediateContext-&gt;IASetVertexBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pVertexBuffer, &stride, &offset );  
+
+  <span class=sc2>// Definição da topologia primitiva relativa ao vertexbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology</span>( 
+						<span class=sc4>D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST</span>);  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+</div>
+
+Preparação inicial da estrutura descritiva do vertexbuffer
+---------------------------------------------------------------------
+<b class=prg-code><span class=sc5>D3D11_BUFFER_DESC </span>bd; </b>
+Esta é a estrutura que vai conter a descrição do  vertexbuffer  e  em
+outros exemplo vai dar origem ao indexbuffer e constantbuffer. Como é
+rotina, na sequência essa estrutura é limpa com a função <span class=prg>ZeroMemory()</span>.
+
+
+Declaração de uso
+---------------------------------------------------------------------
+<b class=prg-code><span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; </b>
+A declaração de uso informa como vai ser o compartilhamento do objeto
+entre a cpu e a gpu. Nesta configuração a cpu escreve o  dado  apenas
+uma vez e a gpu ganha direitos exclusivos de leitura e escrita.  Essa
+configuração   é a  mais  frenquente.   Outra  configuração  desejada
+especialmente em um sistema de partículas é <b>D3D11_USAGE_DYNAMIC</b> para
+um recurso que a cpu vai atualizar a cada frame. Estes valores estão
+presentes na enumeração <b class=prg>D3D11_USAGE</b>.
+
+Tamanho total do buffer
+---------------------------------------------------------------------
+<b class=prg-code><span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>) * <span class=sc4>3</span>; </b>
+Esta linha recebe o tamanho em bytes do buffer a ser criado.  No caso
+do   vertexbuffer  esse  valor  é  dado  pelo  tamanho  da  estrutura
+do formato de vértice  multiplicado  com  a  quantidade  de  vértices
+conforme está na linha de código acima.
+
+
+Tipo de buffer
+---------------------------------------------------------------------
+<b class=prg-code><span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_VERTEX_BUFFER</span>; </b>
+Esta linha estabelece a identidade e finalidade do buffer.   Esta é a
+configuração  para  a  criação  de  um  vertexbuffer.  A  criação  do
+indexbuffer   vai   trazer   o   valor  <b>D3D11_BIND_INDEX_BUFFER</b>  e  o
+constantbuffer   <b>D3D11_BIND_CONSTANT_BUFFER</b>.   Estes   valores  estão
+presentes na enumeração <b class=prg>D3D11_BIND_FLAG</b> do arquivo <span class=prg>D3D11.h</span>.
+
+Modo de acesso
+---------------------------------------------------------------------
+<b class=prg-code><span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; </b>
+Estes flags indicam  o modo de acesso requerido de leitura ou escrita.
+No processo de criação este valor pode ser zero  (0).   As constantes
+são <b class=sc4>D3D11_CPU_ACCESS_WRITE</b> e\ou  <b class=sc4>D3D11_CPU_ACCESS_READ</b>  presentes  na
+enumeração <b class=prg>D3D11_CPU_ACCESS_FLAG</b>.
+
+
+Declaração dos dados do vertexbuffer
+---------------------------------------------------------------------
+<div class=prg-code><span class=sc5>D3D11_SUBRESOURCE_DATA </span>vbDados; 
+<span class=prg>ZeroMemory</span>( &vbDados, <span class=sc16>sizeof</span>(vbDados) );  
+<span class=prg>vbDados.pSysMem </span>= g_Triangulo; </div>
+Agora aqui entra mais um conceito divisório que  surgiu  na  evolução
+do directx: recursos e subrecursos  do inglês resource e subresource.
+O vertexbuffer é um recurso e os seus dados são um subrecurso.  Este
+bloco de código define os dados ( <b>g_Triangulo</b> ) do vertexbuffer.
+ 
+ 
+ Criação efetiva do vertexbuffer
+ ---------------------------------------------------------------------
+<b class=prg-code>g_hr = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &vbDados, &g_pVertexBuffer );  </b>
+Agora nesta linha é feita  a criação efetiva do vertexbuffer copiando
+para   ele  os  dados  da  array  triângulo  que  pode  ser  deletada
+eventualmente ou reutilizada.
+
+
+Instalação do vertexbuffer
+---------------------------------------------------------------------
+<div class=prg-code><span class=prg>UINT </span>stride = <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>);  </div>
+Este  argumento  indica  o  espaço  entre  um  vértice  e  outro  que
+naturalmente  é  dado  pelo  tamanho total da estrutura de formato de
+vértice.
+
+<div class=prg-code><span class=prg>UINT </span>offset = <span class=sc4>0</span>; </div>
+Este argumento estabelece o deslocamento ou posição inicial a  partir
+da qual o vertexbuffer será utilizado. Este valor é zero  (0)  porque
+os  vértices  que  queremos  renderizados  começam  nessa  posição. O
+conceito aqui é ter várias formas geométricas em diferentes partes de
+um único vertexbuffer e indicar aonde estas  formas  começam  para  o
+processo de renderização.   Ao invés  de  trocar  o  vertexbuffer  na
+renderização que tem um alto custo de tempo troca-se  apenas o offset
+de localização das partes da cena.
+
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;IASetVertexBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, 
+			&g_pVertexBuffer, &stride, &offset );  </div>
+Esta linha faz a instalação efetiva do vertexbuffer.   O zero inicial
+indica o slot\canal de colocação desse vertexbuffer ou de uma coleção
+de vertexbuffers dentro da placa  de  vídeo.  O valor um (1) indica a
+quantidade de backbuffers sendo criada.
+Os  argumentos  <b>g_pVertexBuffer</b>,  <b>stride</b>  e  <b>offset</b> poderiam ter sido
+definidos como array de seus respectivos tipos  para  criar aqui  uma
+array de vertexbuffers.
+
+Definição da topologia primitiva relativa ao vertexbuffer
+---------------------------------------------------------------------
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology</span>( 
+			<span class=sc4>D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST</span>);  </div>
+Esta linha define a topologia primitiva de renderização dos vértices,
+isto  é,  se  vão  ser  renderizados  como pontos, linhas, triângulos
+dentre outras formas possíveis. Configurada  como  está,  esta  linha
+definiu que nossos vértices é uma lista de triângulos. Outros valores
+de exemplo são:
+
+<b>D3D11_PRIMITIVE_TOPOLOGY_POINTLIST</b> - renderização de pontos
+<b>D3D11_PRIMITIVE_TOPOLOGY_LINELIST</b>  - renderização de linhas.
+
+A lista completa dos valores possíveis estão no  arquivo  <span class=prg>D3Dcommon.h</span>
+agregados pela enumeração <b class=prg>D3D_PRIMITIVE_TOPOLOGY</b>.
+
+
+
+<a href=#topo>[topo]</a> <a name='2.10'><b><u>2.10 Renderizar() - Renderização da cena </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Configuração da cor de limpeza</span>
+  <span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+  <span class=sc2>// Limpeza do backbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+  <span class=sc2>// Instala o vertexshader, o pixelshader e desenha o triângulo</span>
+  <span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+  <span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+  <span class=prg>g_pImmediateContext-&gt;Draw</span>( <span class=sc4>3</span>, <span class=sc4>0</span>);  
+
+  <span class=sc2>// Apresentação do backbuffer</span>
+  <span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<u>Instala o vertexshader, o pixelshader e desenha o triângulo</u>
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;Draw</span>( <span class=sc4>3</span>, <span class=sc4>0</span>);  </div>
+O  método  <span class=prg>Draw()</span>  do  dispositivo renderizador recebe inicialmente a
+quantidade  de  vértices  a  ser  renderizada  (3) e a localização ou
+deslocamento (0) destes vértices no vertexbuffer.
+
+É bem evidente que a função <b>Renderizar()</b> se destaca pela simplicidade
+em  relação  às  outras  funções.  Isso  é resultado da estratégia de
+busca  da  alta  performance  do  directx  11 que  foca  primeiro  na
+construção de todos objetos e na configuração antecipada de todos  os
+estados a fim de que não tenha grande fluxo de  mudanças  no  cenário
+durante a renderização. Ao invés de fazer mudança de  estados  em  um
+objeto o melhor caminho é ter um objeto com os estados já modificados
+e apenas trocar o objeto que participará do processo de renderização.
+
+<a href=#topo>[topo]</a> <a name='2.11'><b><u>2.11 Limpar() - Limpeza adequada do ambiente </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+  <span class=sc2>// Retorne se já estiver limpo</span>
+  <span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+
+  <span class=sc2>// Libera o vertexbuffer</span>
+  <span class=sc9>if</span>( g_pVertexBuffer ) <span class=prg>g_pVertexBuffer-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o vertexlayout</span>
+  <span class=sc9>if</span>( g_pVertexLayout ) <span class=prg>g_pVertexLayout-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o vertexshader</span>
+  <span class=sc9>if</span>( g_pVertexShader ) <span class=prg>g_pVertexShader-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o pixelshader</span>
+  <span class=sc9>if</span>( g_pPixelShader ) <span class=prg>g_pPixelShader-&gt;Release</span>();  
+
+
+  <span class=sc2>// Liberação dos demais objetos</span>
+  <span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pSwapChain )        <span class=prg>g_pSwapChain-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pd3dDevice )        <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+  bLimpo = <span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+Alistamos  abaixo  a  liberação  dos  novos objetos adicionados nesta
+aplicação.  Lembramos  que  o  objeto <b>g_vsBlocoCompilado</b> foi liberado
+depois da criação do layout de vértices.
+
+<div class=prg-code><span class=sc2>// Libera o vertexbuffer</span>
+<span class=sc9>if</span>( g_pVertexBuffer ) <span class=prg>g_pVertexBuffer-&gt;Release</span>();  
+
+<span class=sc2>// Libera o vertexlayout</span>
+<span class=sc9>if</span>( g_pVertexLayout ) <span class=prg>g_pVertexLayout-&gt;Release</span>();  
+
+<span class=sc2>// Libera o vertexshader</span>
+<span class=sc9>if</span>( g_pVertexShader ) <span class=prg>g_pVertexShader-&gt;Release</span>();  
+
+<span class=sc2>// Libera o pixelshader</span>
+<span class=sc9>if</span>( g_pPixelShader ) <span class=prg>g_pPixelShader-&gt;Release</span>(); </div>  
+<hr>
+<a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Triangulo</u></b>
+<div class=prg-code><img src=images\prj_Triangulo.png>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo - Arquivo: motor.h</span>
+<span class=sc2>// Exemplo de renderização de um triângulo com HLSL (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+
+<span class=sc16>#if </span>!defined motor_h 
+<span class=sc16>#define </span>motor_h 
+
+
+<span class=sc2>// Formato de vértice apenas com posição</span>
+//--------------------------------------------------------------------------------------</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_Position</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice (Pos.x, Pos.y, Pos.z)</span>
+  <span class=sc5>XMFLOAT3 </span>Pos; 
+
+  <span class=sc2>// Construtor padrão</span>
+  <span class=sc5>CustomVertex_Position</span>() {} 
+
+  <span class=sc5>CustomVertex_Position</span>(<span class=sc5>XMFLOAT3 </span>_Pos) 
+  <span class=sc16>{</span>
+    Pos = _Pos; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_Position</span></span>
+
+
+  <span class=sc2>// Esta função compila um programa hlsl produzindo o vertexshader</span>
+  <span class=sc2>// ou o pixelshader</span>
+  <span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, 
+  <span class=prg>LPCSTR </span>sShaderMdl, <span class=sc5>ID3DBlob** </span>hlslCompilado );  
+
+  <span class=sc2>// Essa função chama compilarEfeito() para inicializar o pixelshader e</span>
+  <span class=sc2>// o vertexshader</span>
+  <span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função preenche uma array de vértices montando um triângulo</span>
+  <span class=prg>void </span>montar_Geometria(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função declara o layout de vértice utilizado</span>
+  <span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o vertexbuffer. O vertexshader e a geometria devem</span>
+  <span class=sc2>// ser inicializados antes dele.</span>
+  <span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>);   
+
+
+  <span class=sc2>// Função de processamento de mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>   processaJanela( <span class=sc16>HWND</span>, <span class=prg>UINT</span>, <span class=sc16>WPARAM</span>, <span class=sc16>LPARAM</span>);  
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=sc16>HRESULT </span>initGfx();  
+
+  <span class=sc2>// Função de renderizar a cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função de liberar os objetos utilizados pela aplicação</span>
+  <span class=prg>void </span>Limpar( <span class=prg>void</span>);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo - Arquivo: motor.cpp</span>
+<span class=sc2>// Exemplo de renderização de um triângulo com HLSL (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx11.h&gt;</span>
+
+<span class=sc2>// Funções matemáticas e compilação de HLSL</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dcompiler.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+
+<span class=sc2>// Bibliotecas do directx 11</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dcompiler.lib"</span>)  
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis definidas em entrada.cpp</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; 
+<span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; 
+
+<span class=sc2>// Corrente de trocas</span>
+<span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; 
+<span class=sc2>// Tipo de driver</span>
+<span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; 
+<span class=sc2>// nível desejado de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; 
+<span class=sc2>// Dispositivo gerenciador de recursos</span>
+<span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; 
+<span class=sc2>// Disposisitivo renderizador</span>
+<span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; 
+<span class=sc2>// Interface de gestão da textura alvo de visualização</span>
+<span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Preparação para renderizar o triângulo</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Configura inicial dos vértices da forma geométrica</span>
+<span class=sc5>CustomVertex_Position </span>g_Triangulo[<span class=sc4>3 </span>];   
+
+<span class=sc2>// Descrição de formato dos vértices para a GPU</span>
+<span class=sc5>ID3D11InputLayout </span>      *g_pVertexLayout = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Dados compilados do vertexshader</span>
+<span class=sc5>ID3DBlob </span>   *g_vsBlocoCompilado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o vertexshader</span>
+<span class=sc5>ID3D11VertexShader </span>     *g_pVertexShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o buffer de vértices, buffer de índices e buffer de</span>
+<span class=sc2>// constantes</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pVertexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o pixelshader</span>
+<span class=sc5>ID3D11PixelShader </span>      *g_pPixelShader = <span class=prg>NULL</span>; 
+
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem initGfx() vair retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+  <span class=sc5>RECT </span>areaCliente; 
+  <span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+  <span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+  <span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+  <span class=sc2>// Configuração da corrente de trocas</span>
+  <span class=sc2>// Inicialização básica da estrutura</span>
+  <span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+  <span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+  <span class=sc2>// Quantidade de backbuffers</span>
+  <span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração da largura e tamanho</span>
+  <span class=prg>sd.BufferDesc.Width </span> = largura; 
+  <span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+  <span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+  <span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+  <span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+  <span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+  <span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+  <span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+  <span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+  <span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+  <span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+  <span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Modo de descarte do backbuffer</span>
+  <span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+  <span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc2>// Indicação do display default</span>
+  <span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+  <span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Configuração dos flags de criação</span>
+  <span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+  <span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+    <span class=sc16>{</span>
+        <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+        <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+    <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+  <span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+  <span class=sc2>// motor gráfico do directx 11.</span>
+  g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+    NoRasterSoftware, createDeviceFlags, featureLevels, 
+    numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+    &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+  g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+    ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+    &g_pRenderTargetView );  
+  <span class=prg>pBackBuffer-&gt;Release</span>();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Configuração da textura alvo no dispositivo</span>
+  <span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Configuração da janela de visualização (viewport)</span>
+  <span class=sc2>// ------------------------------------------------------------------------</span>
+  <span class=sc5>D3D11_VIEWPORT </span>vp; 
+  <span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+  <span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+  <span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+  <span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+  <span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+  <span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+  <span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+  <span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+  g_hr = inicializar_Efeito();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Montagem do triângulo</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Declaração do layout de vértice</span>
+  declarar_Vertexlayout();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Inicialização do vertexbuffer</span>
+  g_hr = inicializar_Vertexbuffer();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo - Arquivo: prj_Triangulo.fx</span>
+<span class=sc2>// Exemplo de renderização de um triângulo com HLSL</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Vertexshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>float4 </span>gpVertexShader( <span class=prg>float4 </span>Pos : <span class=sc16>POSITION</span>) : <span class=sc16>SV_POSITION</span>
+<span class=sc16>{</span>
+  <span class=sc6>return </span>Pos; 
+<span class=sc16>}</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Pixelshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>float4 </span>gpPixelShader( <span class=prg>float4 </span>Pos : <span class=sc16>SV_POSITION</span>) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+  <span class=prg>float4 </span>azul = <span class=prg>float4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);  
+  <span class=sc6>return </span>azul; 
+<span class=sc16>}</span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// compilarEfeito() - Esta função compila um programa hlsl produzindo o</span>
+<span class=sc2>// vertexshader ou o pixelshader</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, <span class=prg>LPCSTR </span>sShaderMdl, 
+             <span class=sc5>ID3DBlob** </span>hlslCompilado ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem esta função retorn S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Flags de compilação de hlsl</span>
+  <span class=prg>DWORD </span>nConfig = <span class=sc4>D3DCOMPILE_ENABLE_STRICTNESS </span>|  <span class=sc4>D3DCOMPILE_DEBUG</span>;  
+
+  <span class=sc2>// Buffer para a mensagem de erro</span>
+  <span class=sc5>ID3DBlob </span>*bufferMensagem; 
+
+  <span class=sc2>// Compilação do shader pixelshader ou vertexshader</span>
+  g_hr = <span class=prg>D3DX11CompileFromFile</span>( sArquivo, <span class=prg>NULL</span>, <span class=prg>NULL</span>, sEntradaFn, sShaderMdl, 
+        nConfig, <span class=sc4>0</span>, <span class=prg>NULL</span>, hlslCompilado, &bufferMensagem, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Tratamento de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr) ) 
+    <span class=sc16>{</span>
+      <span class=sc9>if</span>( bufferMensagem != <span class=prg>NULL</span>) 
+      <span class=prg>MessageBoxA </span>(<span class=sc4>0</span>, (<span class=prg>char*</span>)  <span class=prg>bufferMensagem-&gt;GetBufferPointer</span>(), 
+      <span class=sc6>"compilarEfeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+      <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+      <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// compilarEfeito()</span></span>
+
+
+
+
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Efeito() - Essa função chama compilarEfeito() para inicializar o</span>
+<span class=sc2>// pixelshader e o vertexshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+    <span class=sc2>// Compilação do vertexshader</span>
+  g_hr = compilarEfeito( <span class=sc6>L"prj_Triangulo.fx"</span>, <span class=sc6>"gpVertexShader"</span>, <span class=sc6>"vs_4_0"</span>, 
+    &g_vsBlocoCompilado );  
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+    <span class=sc16>{</span>
+        <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                    <span class=sc6>L"Falha na compilação do arquivo prj_Triangulo.fx"</span>, 
+          <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+        <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Criação do vertexshader</span>
+  //----------------------------------------------------------------------------</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateVertexShader</span>( <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, &g_pVertexShader );  
+
+  <span class=sc2>// Verificação de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+  <span class=sc16>{</span>
+    <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+    <span class=sc6>return </span>g_hr; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Compilação do pixelshader</span>
+  <span class=sc5>ID3DBlob </span>*psBlocoCompilado = <span class=prg>NULL</span>; 
+  g_hr = compilarEfeito(<span class=sc6>L"prj_Triangulo.fx"</span>,<span class=sc6>"gpPixelShader"</span>, <span class=sc6>"ps_4_0"</span>,&psBlocoCompilado);  
+
+  <span class=sc2>// Verificação de erro</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+    <span class=sc16>{</span>
+         <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                    <span class=sc6>L"Falha na compilação do arquivo prj_Triangulo.fx"</span>, 
+          <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+        <span class=sc6>return </span>g_hr; 
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Criação do pixelshader</span>
+  //----------------------------------------------------------------------------</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreatePixelShader</span>( <span class=prg>psBlocoCompilado-&gt;GetBufferPointer</span>(), 
+    <span class=prg>psBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, 
+    &g_pPixelShader );  
+
+  <span class=sc2>// Liberação do bloco compilado</span>
+  <span class=prg>psBlocoCompilado-&gt;Release</span>();  
+
+  <span class=sc2>// Encerramento da função</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+
+<span class=sc16>} <span class=sc2>// inicializar_Efeito().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// montar_Geometria() - Essa função preenche uma array de vértices montando um</span>
+<span class=sc2>// triângulo.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configuração dos vértices do triângulo</span>
+  g_Triangulo[<span class=sc4>0</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.5f</span>, <span class=sc4>0.5f</span>);  
+  g_Triangulo[<span class=sc4>1</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  
+  g_Triangulo[<span class=sc4>2</span>] = <span class=sc5>XMFLOAT3</span>( <span class=sc4>-0.5f</span>, <span class=sc4>-0.5f</span>, <span class=sc4>0.5f</span>);  
+
+<span class=sc16>} <span class=sc2>// montar_Geometria().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// declarar_Vertexlayout() - Essa função declara o formato de vértice</span>
+<span class=sc2>// presente no vertexbuffer a ser utilizado.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Se tudo ocorrer bem esta função vai retornar S_OK</span>
+  g_hr = <span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Descrição do layout do formato de vértice CustomVertex_Position</span>
+  <span class=prg>LPCSTR </span>sSemantica = <span class=sc6>"POSITION"</span>; 
+  <span class=prg>UINT </span>ndxSemantica = <span class=sc4>0</span>; 
+  <span class=sc5>DXGI_FORMAT </span>formato = <span class=sc4>DXGI_FORMAT_R32G32B32_FLOAT</span>; 
+  <span class=prg>UINT </span>nCanal = <span class=sc4>0</span>; 
+  <span class=prg>UINT </span>nAlinhamento = <span class=sc4>0</span>; 
+  <span class=sc5>D3D11_INPUT_CLASSIFICATION </span> clsEntrada = <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>; 
+  <span class=prg>UINT </span>taxaInstanciamento = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Produção do primeiro elemento da declaração de vértices</span>
+  <span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_pos = 
+  <span class=sc16>{</span>
+    sSemantica, 
+    ndxSemantica, 
+    formato, 
+    nCanal, 
+    nAlinhamento, 
+    clsEntrada, 
+    taxaInstanciamento</span>
+  <span class=sc16>}</span>; 
+
+
+  <span class=sc2>// Definição do layout de entrada</span>
+  <span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>layout[] = 
+  <span class=sc16>{</span>
+    atributo_pos</span>
+  <span class=sc16>}</span>; 
+  <span class=prg>UINT </span>numElements = <span class=prg>ARRAYSIZE</span>( layout );  
+
+  <span class=sc2>// Criação do objeto layout de entrada</span>
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateInputLayout</span>( layout, numElements, 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), &g_pVertexLayout );  
+
+  <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Instalação do layout de entrada</span>
+  <span class=prg>g_pImmediateContext-&gt;IASetInputLayout</span>( g_pVertexLayout );  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// declarar_Vertexlayout().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Vertexbuffer() - Essa função inicializa o vertexbuffer.</span>
+<span class=sc2>// O vertexshader e a geometria devem ser inicializados antes dele.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Descrição do vertexbuffer sendo montado</span>
+  <span class=sc2>// Declaração e preparação inicial da estrutura</span>
+  <span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+  <span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+  <span class=sc2>// Declaração de uso</span>
+  <span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+  <span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+  <span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>) * <span class=sc4>3</span>; 
+
+  <span class=sc2>// Indicação de vertexbuffer</span>
+  <span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_VERTEX_BUFFER</span>; 
+
+  <span class=sc2>// Flags de configuração de acesso</span>
+  <span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Declaração dos dados do vertexbuffer</span>
+  <span class=sc5>D3D11_SUBRESOURCE_DATA </span>vbDados; 
+  <span class=prg>ZeroMemory</span>( &vbDados, <span class=sc16>sizeof</span>(vbDados) );  
+  <span class=prg>vbDados.pSysMem </span>= g_Triangulo; 
+  g_hr = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &vbDados, &g_pVertexBuffer );  
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+  <span class=sc2>// Instalação do vertexbuffer</span>
+  <span class=prg>UINT </span>stride = <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_Position</span>);  
+  <span class=prg>UINT </span>offset = <span class=sc4>0</span>; 
+  <span class=prg>g_pImmediateContext-&gt;IASetVertexBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pVertexBuffer, &stride, &offset );  
+
+  <span class=sc2>// Definição da topologia primitiva relativa ao vertexbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology</span>(<span class=sc4>D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST</span>);  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Configuração da cor de limpeza</span>
+  <span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+  <span class=sc2>// Limpeza do backbuffer</span>
+  <span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+  <span class=sc2>// Instala o vertexshader, o pixelshader e desenha o triângulo</span>
+  <span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+  <span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+  <span class=prg>g_pImmediateContext-&gt;Draw</span>( <span class=sc4>3</span>, <span class=sc4>0</span>);  
+
+  <span class=sc2>// Apresentação do backbuffer</span>
+  <span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+  <span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+  <span class=sc2>// Retorne se já estiver limpo</span>
+  <span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+
+  <span class=sc2>// Libera o vertexbuffer</span>
+  <span class=sc9>if</span>( g_pVertexBuffer ) <span class=prg>g_pVertexBuffer-&gt;Release</span>();  
+
+  <span class=sc2>// Liberar o vertexlayout</span>
+  <span class=sc9>if</span>( g_pVertexLayout ) <span class=prg>g_pVertexLayout-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o vertexshader</span>
+  <span class=sc9>if</span>( g_pVertexShader ) <span class=prg>g_pVertexShader-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o pixelshader</span>
+  <span class=sc9>if</span>( g_pPixelShader ) <span class=prg>g_pPixelShader-&gt;Release</span>();  
+
+
+  <span class=sc2>// Liberação dos demais objetos</span>
+  <span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+  <span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+  bLimpo = <span class=prg>true</span>; 
+
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// processaJanela() - Tratamento de mensagens da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) 
+<span class=sc16>{</span>
+    PAINTSTRUCT ps; 
+    <span class=sc16>HDC </span>hdc; 
+
+    <span class=sc9>switch</span>( message ) 
+    <span class=sc16>{</span>
+      <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+            hdc = <span class=prg>BeginPaint</span>( hWnd, &ps );  
+            <span class=prg>EndPaint</span>( hWnd, &ps );  
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>WM_CLOSE:</span>
+        Limpar();  
+        <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+      <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+      <span class=sc16>{</span>
+        Limpar();  
+        <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);   
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+            <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+      <span class=sc6>break</span>; 
+
+      <span class=sc9>default:</span>
+            <span class=sc6>return </span><span class=prg>DefWindowProc</span>( hWnd, message, wParam, lParam );  
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+<span class=sc2>// endfile: motor.cpp</span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo - Arquivo: entrada.cpp</span>
+<span class=sc2>// Exemplo de renderização de um triângulo com HLSL (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais de criação e manutenção da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HINSTANCE </span>  g_hInst   = <span class=prg>NULL</span>; 
+<span class=sc16>HWND </span>       g_hJanela  = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variável global da classe da janela; necessária em initWindow()</span>
+<span class=sc2>// e no encerramento de wWinMain()</span>
+<span class=prg>WCHAR </span> sclasseJanela[] = <span class=sc6>L"cls_directx"</span>; 
+
+<span class=sc2>// Recebimento do retorno das funções do directx</span>
+<span class=sc16>HRESULT </span> g_hr   = <span class=sc4>0</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>  g_xtela  = 640; 
+<span class=prg>int </span>  g_ytela  = 480; 
+
+<span class=sc2>// Título da janela</span>
+<span class=prg>WCHAR </span> janelaTitulo[] = <span class=sc6>L"prj_Triangulo"</span>; 
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Protótipo da função de criação da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>   initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow );  
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Esta função é o ponto de entrada da aplicação. Ela inicializa a janela e</span>
+<span class=sc2>// entra no laço de mensagens. O tempo ocioso é utilizado para renderizar a cena.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>int </span><span class=sc16>WINAPI </span>wWinMain( <span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+          LPWSTR lpCmdLine, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+    UNREFERENCED_PARAMETER( hPrevInstance );  
+    UNREFERENCED_PARAMETER( lpCmdLine );  
+
+  <span class=sc2>// Inicializa a janela</span>
+  g_hr = initWindow( hInstance, nCmdShow );  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span><span class=sc4>0</span>; 
+
+  g_hr = initGfx();  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) 
+  <span class=sc16>{</span>
+
+    Limpar();  
+    <span class=prg>MessageBoxW </span>(<span class=sc4>0</span>, <span class=sc6>L"Falha na inicialização do motor gráfico"</span>, 
+      <span class=sc6>L"prj_Triangulo"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>}</span>
+
+    <span class=sc2>// Main message loop</span>
+  <span class=sc5>MSG </span>msg = {0}; 
+    <span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT</span>) 
+    <span class=sc16>{</span>
+        <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &msg, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, PM_REMOVE ) ) 
+        <span class=sc16>{</span>
+            <span class=prg>TranslateMessage</span>( &msg );  
+            <span class=prg>DispatchMessage</span>( &msg );  
+        <span class=sc16>} <span class=sc2>// endif</span></span>
+        <span class=sc9>else</span>
+        <span class=sc16>{</span>
+            Renderizar();  
+        <span class=sc16>} <span class=sc2>// end else</span></span>
+    <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  Limpar();  
+    <span class=prg>UnregisterClass</span>( sclasseJanela, g_hInst);  
+  <span class=sc6>return</span>(<span class=prg>int</span>)<span class=prg>msg.wParam</span>; 
+<span class=sc16>}</span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Essa função cria e registra a janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+
+    <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Tornando global o handle da aplicação</span>
+  g_hInst = hInstance; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span> = hInstance; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>  = <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW </span>| <span class=sc4>CS_OWNDC</span>; 
+  <span class=prg>wcls.cbSize </span>  = <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span> = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span> = <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span> = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span> = <span class=sc4>0</span>; 
+
+     <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  GetStockObject ( WHITE_BRUSH );  
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Registro falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span> <span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+  <span class=sc2>// Atributos de configuração da janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=prg>DWORD </span>dwEstilo = <span class=sc4>WS_OVERLAPPEDWINDOW </span>- <span class=sc4>WS_MAXIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Criação da janela</span>
+  g_hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    dwEstilo, xpos, ypos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    hInstance, dadoExtra );  
+
+  <span class=sc9>if</span>(g_hJanela == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Criação da janela falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=prg>ShowWindow</span>( g_hJanela, nCmdShow );  
+  <span class=prg>UpdateWindow</span>(g_hJanela );  
+
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initWindow().fim</span></span>
+<span class=sc2>// endfile: entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais           - arquivo motor.h</a>
+<a href=#2.2>2.2 Variáveis globais          - Arquivo: motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                  - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 prj_Triangulo.fx           - Código fonte do vertexshader\pixelshader</a>
+<a href=#2.5>2.5 compilarEfeito()           - Compilação do programa em HLSL</a>
+<a href=#2.6>2.6 inicializar_Efeito()       - Inicialização do vertexshader e do pixelshader</a>
+<a href=#2.7>2.7 montar_Geometria()         - Montagem da forma geométrica</a>
+<a href=#2.8>2.8 declarar_Vertexlayout()    - Declaração do layout de vértice</a>
+<a href=#2.9>2.9 inicializar_Vertexbuffer() - Inicialização do vertexbuffer</a>
+<a href=#2.10>2.10 Renderizar()              - Renderização da cena</a>
+<a href=#2.11>2.11 Limpar()                  - Limpeza adequada do ambiente</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Triangulo</a>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

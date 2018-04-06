@@ -1,0 +1,500 @@
+<html><head>
+<title>cbiblioteca_track10_mem</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track10.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track09.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track11.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="10.00"></A>
+<CENTER><H2>10.00 mem.h</H2></CENTER>
+<A HREF="#10.01">10.01</a> memccpy...........Copia um nro de bytes do bloco fonte para o destino ou até delimitador
+<A HREF="#10.02">10.02</a> memchr............Procura por um byte numa string.
+<A HREF="#10.03">10.03</a> memcmp............Compara os primeiros bytes de duas strings, case sensitive.
+<A HREF="#10.04">10.04</a> memcpy............Copia um número de bytes do bloco fonte para o bloco destino
+<A HREF="#10.05">10.05</a> memicmp...........Compara os primeiros bytes de duas strings.
+
+<A HREF="#10.06">10.06</a> memmove...........Copia um nro determinado de bytes do bloco fonte para o bloco destino
+<A HREF="#10.07">10.07</a> memset............Insere uma quantidade especifíca de um caracter na memória
+<A HREF="#10.08">10.08</a> movedata..........Copia dados de um segmento de memória para outro segmento
+<A HREF="#10.09">10.09</a> movmem............Copia um nro determinado de bytes do bloco fonte para o bloco destino
+<A HREF="#10.10">10.10</a> setmem............Estabelece uma determinada região de memória para um valor específico
+
+<A NAME="10.01"> <B>10.01 memccpy</B></A>
+        Esta função copia um número determinado de bytes de um bloco de memória
+        fonte para um bloco de memória destino ou copia o bloco fonte até encontrar
+        o delimitador que indica o final da fonte.
+        <b style="color:green">
+        void *memccpy(void *dest, const void *src, int c, size_t n);
+        sResult = memccpy(sDest, sFonte, cChar, nBytes);</b>
+
+        sResult...o retorno da função, explicado depois do programa exemplo
+        sDest.....o bloco destino
+        sFonte....o bloco fonte
+        cChar.....o delimitador que indica até onde a string fonte será copiada
+        nBytes....o número de bytes para copiar da fonte para destino
+
+        Ex.:    char sMemoria[]="ABCDEFGHIJKLMNOPQRSTUVWXYZ\x0";
+                char sDestino[80];
+                char *sPtr;
+                char cDelimiter='.';
+                sPtr = memccpy(sDestino,sMemoria,cDelimiter,27);
+                printf("%s %s\n",sDestino,sPtr);
+                /* Resulta em ABCDEFGHIJKLMNOPQRSTUVWXYZ (null)*/
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "string.h"
+
+        /* memccpy() */
+
+        char sFonte[]="Memory.Tests";
+        char  sDest[]="????????????";
+        char cChar='.';
+        char *sResult;
+        int nTam;
+
+        int main (int nCmd, char **sCmd) {
+
+        clrscr();
+        printf("Antes de memccpy():\n");
+        printf("sFonte: %s\n",sFonte);
+        printf(" sDest: %s\n\n",sDest);
+
+        nTam = strlen(sFonte);
+        sResult =memccpy(sDest,sFonte,cChar,nTam);
+
+        printf("Depois de memccpy():\n");
+        printf("sFonte: %s\n",sFonte);
+        printf(" sDest: %s\n",sDest);
+        printf("sResult: %s\n",sResult);
+
+        puts("\nEnd of Program");
+        getch();
+        }</font>
+
+        Saída:
+        Antes de memccpy():
+        sFonte: Memory.Tests
+         sDest: ????????????
+
+        Depois de memccpy():
+        sFonte: Memory.Tests
+         sDest: Memory.?????
+        sResult: ?????
+
+        End of Program
+
+        Detalhes:       Como você pode observar na saída do programa, esta função
+                        quando encontra o delimitador retorna o restante da string
+                        que está depois do delimitador. Caso o delimitador não seja
+                        encontrado e o número de bytes determinado seja exatamente
+                        copiado a função retorna NULL.
+
+.......................................................................................
+<A NAME="10.02"> <B>10.02 memchr</B></A>
+        Esta função procura por um byte numa string.
+      <B style="color:green">
+        void *memchr(const void *s, int c, size_t n);
+        sResult = memchr(sString, cByte, nTam);</B>
+
+        sResult.......Caso o byte seja localizado a função retorna um ponteiro para
+                      este byte, sendo este caracter impresso com o restante da string.
+        sString.......A string que será verificada
+        nTam..........O número de bytes da string a ser pesquisado
+
+        Ex.:    char sMemoria[]="Memory.Tests";
+                char cByte='.';
+                size_t nTam;
+                char *sResult;
+
+                nTam = strlen(sMemoria) + 1;
+                sResult = memchr(sMemoria,cByte,nTam);
+                printf("%s\n",sResult);
+                /* Resulta em .Tests */
+
+        Veja este programa exemplo:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "dir.h"
+        #include "dos.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sNome[]="Jair*Pereira";
+        char cByte=42;
+        char *sResult;
+        int nTam;
+
+        clrscr();
+
+        nTam = strlen(sNome) + 1;
+        sResult = memchr(sNome,cByte,nTam);
+        printf("%s\n",sResult);
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+        *Pereira
+
+        End of Program
+
+.......................................................................................
+<A NAME="10.03"> <B>10.03 memcmp</B></A>
+        Esta função compara os primeiros bytes de duas strings. Essa
+        função é case sensitive ('A' != 'a').
+        <b style="color:green">
+        int memcmp(const void *s1, const void *s2, size_t n);
+        nResult = memcmp(sName, sOtherName, nBytes);</b>
+
+        nBytes.....Determina o número de bytes que serão comparados.
+
+        Ex.:    char sName[]="ordem";
+                char sOtherName[]="ordem";
+                int nResult,nBytes=5;
+                nResult = memcmp(sName,sOtherName,nBytes);
+                if (!nResult) printf("Estas strings são iguais!\n");
+                /* Resulta em Estas strings são iguais! */
+
+        Veja mais este programa:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "string.h"
+
+        /* memcmp() */
+
+        int main (int nCmd, char **sCmd) {
+
+        char sStr_x[]="ordem";
+        char sStr_y[]="ORDEM";
+        char sStr_z[]="ordem";
+        char sStr_u[]="Rigor";
+        int nBytes = 5;
+        int nResult;
+
+        clrscr();
+
+        nResult = memcmp(sStr_x,sStr_y,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_y);
+
+        nResult = memcmp(sStr_x,sStr_z,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_z);
+
+        nResult = memcmp(sStr_x,sStr_u,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_u);
+
+        puts("\nEnd of Program");
+        getch();
+        }</font>
+
+        Saída:
+        ordem 32 ORDEM
+        ordem 0 ordem
+        ordem 29 Rigor
+        End of Program
+
+.......................................................................................
+<A NAME="10.04"> <B>10.04 memcpy</B></A>
+        Esta função copia um número determinado de bytes do bloco fonte para
+        o bloco destino.
+        <b style="color:green">
+        void *memcpy(void *dest, const void *src, size_t n);
+        sDest = memcpy(sDestino,sFonte,nBytes);</b>
+
+        Ex.:    char sFonte[]="Programar é legal!";
+                char sDestino[48];
+                int nBytes;
+                nBytes = strlen(sFonte) + 1;
+                memcpy(sDestino,sFonte,nBytes);
+                printf("%s\n",sDestino);
+                /* Resulta em Programar é legal! */
+
+        Detalhes: A função retorna um ponteiro para sDestino.
+
+.......................................................................................
+<A NAME="10.05"> <B>10.05 memicmp</B></A>
+        Esta função compara os primeiros bytes de duas strings. Essa
+        função ignora caixa ('A' = 'a').
+        <b style="color:green">
+        int memicmp(const void *s1, const void *s2, size_t n);
+        nResult = memicmp(sName, sOtherName, nBytes);</b>
+
+        nBytes.....Determina o número de bytes que serão comparados.
+
+        Ex.:    char sName[]="ordem";
+                char sOtherName[]="Ordem";
+                int nResult,nBytes=5;
+                nResult = memicmp(sName,sOtherName,nBytes);
+                if (!nResult) printf("Estas strings são iguais!\n");
+                /* Resulta em Estas strings são iguais! */
+
+        Veja mais este programa:<font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "string.h"
+
+        /* memicmp() */
+
+        int main (int nCmd, char **sCmd) {
+
+        char sStr_x[]="ordem";
+        char sStr_y[]="ORDEM";
+        char sStr_z[]="ordem";
+        char sStr_u[]="Rigor";
+        int nBytes = 5;
+        int nResult;
+
+        clrscr();
+
+        nResult = memicmp(sStr_x,sStr_y,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_y);
+
+        nResult = memicmp(sStr_x,sStr_z,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_z);
+
+        nResult = memicmp(sStr_x,sStr_u,nBytes);
+        printf("%s %d %s\n",sStr_x,nResult, sStr_u);
+
+        puts("\nEnd of Program");
+        getch();
+        }</font>
+
+        Saída:
+        ordem 0 ORDEM
+        ordem 0 ordem
+        ordem -3 Rigor
+        End of Program
+
+.......................................................................................
+<A NAME="10.06"> <B>10.06 memmove</B></A>
+        Esta função copia um número determinado de bytes de um bloco fonte
+        para um bloco destino.
+        <b style="color:green">
+        void *memmove(void *dest, const void *src, size_t n);
+        sPtr = memmove(sDestino,sFonte, nBytes);</b>
+
+        sPtr......A função retorna um ponteiro para sDestino
+        nBytes....O número de bytes que será copiado
+        sDestino..O bloco receptor
+        sFonte....O bloco fonte
+
+        Ex.:    char sFonte[]="Seja sempre metódico";
+                char sDestino[40];
+                char *sPtr;
+                size_t nBytes=0;
+                nBytes = strlen(sFonte)+1;
+                sPtr = memmove(sDestino,sFonte,nBytes);
+                printf("%s\n%s\n",sDestino,sPtr);
+                /* Resulta em
+                        Seja sempre metódico
+                        Seja sempre metódico */
+
+.......................................................................................
+<A NAME="10.07"> <B>10.07 memset</B></A>
+        Esta função insere num bloco de memória um caracter repetido um número
+        de vezes.
+        <b style="color:green">
+        void *memset(void *s, int c, size_t n);
+        sMemoria = memset(sMemoria,cChar, nBytes);</b>
+
+        sMemoria........A região de memória que se deseja preencher
+        cChar...........O caracter que preencherá a área de memória
+        nBytes..........O número de vezes que o caracter será inserido na memória
+
+        Ex.:    char sMemoria[16]="00000000";
+                char cChar='?';
+                size_t nBytes=4;
+                memset(sMemoria,cChar,nBytes);
+                printf("%s\n",sMemoria);
+                /* Resulta em ????0000 */
+
+        Detalhes:       A função retorna um ponteiro para sMemoria.
+
+
+.......................................................................................
+<A NAME="10.08"> <B>10.08 movedata</B></A>
+        Esta função copia um número determinado de bytes de uma região de memória fonte
+        para uma região de memória destino. As regiões de memória fonte e destino
+        são dadas em termos de segmento e deslocamento.
+
+        Bem, Só o estudo do Assembly em profundidade possilita um maior domínio
+        e uma melhor compreensão dos computadores. Aos mais ousados eu deixo a
+        recomendação de estudar assembly 8086. Neste momento eu vou adiantar
+        apenas o suficiente que vai possibilitar o uso desta função sem embaraços.
+
+        Em MsDos, a memória é dividida em blocos de 64K. Estes blocos são
+        chamados de segmentos. Dentro do segmento cada byte tem sua posição,
+        sendo que esta pode ser de 0 a 65535, esta posição do byte é
+        chamada deslocamento, offset em inglês.
+
+        A localização de um byte na memória é dada assim segmento:deslocamento,
+        então é comum vermos isto 0000:4800 em MsDos. O deslocamento do byte
+        é na verdade um deslocamento do byte em relação ao segmento, por
+        exemplo, 0000:4800 quer dizer que o byte se afastou 4800 bytes do
+        segmento que assinala sua origem. Esta localização é relativa.
+        A localização real do byte na placa de memória é dada pela multiplicação
+        do segmento pelo deslocamento.
+
+        Há vários segmentos especiais de memória, dois deles é o segmento de
+        video em modo texto 0xB800 e o segmento de vídeo em modo gráfico em
+        alta resolução Dos que é 0xA000.
+
+        Em video modo 13, 320x100x256 cores, você pode acender os pixels
+        colocando bytes no endereço de vídeo. Colocando um byte de valor
+        quatorze no endereço A000:0000 você acende a coordenada (0,0) na
+        cor amarela. O acendimento dos outros pixels é realizado colocando
+        valores nos deslocamentos consecutivos. A manipulação da tela por esta
+        via é muito mais rápida do que usando funções para isso. As operações
+        de memória geram efeitos mais rápidos.
+
+        A região de memória de texto, começa em 0xB800, sendo que o deslocamento
+        par recebe o código ascii do carácter, o deslocamento impar recebe o
+        byte de atributo que determina a cor de frente e de fundo do carácter.
+        Assim, para colocar um A na linha 1, coluna 1, na cor de fundo azul
+        e frente branca, você só faz isto:
+
+        pokeb(0xB800,0,65);
+        pokeb(0xB800,1,0x1F);
+
+        Os processadores da série x86 (8086,80286,80386...)possuem variáveis
+        internas básicas para trabalhar com segmentos que são:
+
+        CS....aponta para uma região da memória aonde tem instruções para execução.
+        DS....aponta para região de dados fonte
+        ES....aponta para região de dados destino
+        SS....aponta para a região de memória que é usada como pilha.
+
+        Bem, isto é tudo no momento sobre memória, segmento e deslocamento.
+        <b style="color:green">
+        void movedata(unsigned srcseg, unsigned srcoff,
+                                 unsigned destseg, unsigned destoff, size_t n);
+
+        movedata (nSegmentoFonte,nDeslocamentoFonte,
+                        nSegmentoDestino, nDeslocamentoDestino, nBytes);</b>
+
+        nSegmentoFonte..........Segmento fonte (0 a 65335)
+        nDeslocamentoFonte......Deslocamento fonte (0 a 65535)
+        nSegmentoDestino........Segmento fonte (0 a 65335)
+        nDeslocamentoDestino....Deslocamento fonte (0 a 65535)
+        nBytes..................Número de bytes a ser copiado
+
+        Veja o programa exemplo:<font color="darkblue">
+
+        #include "stdio.h"
+        #include "conio.h"
+        #include "string.h"
+
+        void main (void) {
+        char text[]="d.a.d.o.s. .d.a.d.o.s. .d.a.d.o.s.";
+        int nBytes;
+
+        clrscr();
+
+        nBytes = strlen(text);
+
+        movedata(_DS, (unsigned) text, 0xB800, 0,nBytes);
+
+        puts("\nEnd of Program");
+        getch();
+
+        }</font>
+
+        Saída:
+        <b style="color:yellow;background-color=green">dados dados dados</b>
+        End of Program
+
+        Detalhes:
+        0123456789      Conforme foi dito, o deslocamento par recebe o carácter
+        d.a.d.o.s.      O deslocamento impar, recebe o atributo. O valor do
+                        ponto final é 46, que gera fundo verde e frente amarela.
+
+        <u style="color:blue">movedata(_DS, (unsigned) text, 0xB800, 0,nBytes);</u>
+        _DS...............Aponta para DS, o segmento de dados aonde ficam as strins
+        (unsigned)text....Toda variável string é um ponteiro. O ponteiro sempre aponta
+                          para uma região de memória. Neste caso, text representa o
+                          deslocamento inicial dos dados.
+        0xB800............Segmento de destino que recebe os dados
+        0.................Deslocamento inicial do segmento
+        nBytes............O número de bytes a serem copiados, configuramos para
+                          ter o tamanho da string text.
+
+.......................................................................................
+<A NAME="10.09"> <B>10.09 movmem</B></A>
+        Esta função copia um número determinado de bytes do bloco de memória
+        fonte para o bloco de memória destino.
+        <b style="color:green">
+        void movmem(void *src, void *dest, unsigned length);
+        movmem(sFonte,sDestino,nBytes);</b>
+
+        nBytes....Número de bytes a ser copiado, podendo ser até 64K (65535)
+
+        Ex.:    char sFonte[]="Estude sempre para ser perito!";
+                char sDestino[80];
+                unsigned int nBytes;
+                nBytes = strlen(sFonte)+1;
+                movmem(sFonte,sDestino,nBytes);
+                printf("%s\n",sDestino);
+                /* Resulta em Estude sempre para ser perito! */
+
+.......................................................................................
+<A NAME="10.10"> <B>10.10 setmem</B></A>
+        Esta função insere um mesmo valor dentro de uma região determinada
+        de memória em bytes. Na prática, ela funciona de maneira semelhante
+        a memset().
+        <b style="color:green">
+        void setmem(void *dest, int len, char value);
+        setmem(sMemoria, nBytes, cValue);</b>
+
+        Ex.:    char sMemoria[16]="0000000";
+                char cValor=65;
+                int nBytes=4;
+                setmem(sMemoria,nBytes,cValor);
+                printf("%s\n",sMemoria);
+                /* Resulta em AAAA0000 */
+
+
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track09.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track11.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

@@ -1,0 +1,306 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase06.1</title>
+<head>
+<style type="text/css">
+
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+
+
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 6.1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track06-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">06.1 Matemática</h3><pre>
+<b><u>06.1 Visão geral</b></u>
+<img src="images/trigonometria.png">
+
+Nesse capítulo vamos fazer as pazes com matemática. Vamos concordar que matemática
+é uma ciência azeda e árida, porém é a ciência cujo domínio permite fazer coisas
+geniais em programação de jogos. O limite dos seus jogos vai refletir o limite
+que você tem em matemática. 
+
+As mesmas coisas podemos dizer de física e geometria, porém o conhecimento de 
+matemática é preponderante e perpassa essas matérias. No final de contas, 
+o que você vai precisar compreender de física e geometria são as relações 
+matemáticas das variáveis e grandezas envolvidas.
+
+Neste capítulo vamos apenas explorar superficialmente os poderes gráficos da
+trigonometria que nos permite movimentar objetos numa trajetória circular,
+angular ou elíptica.
+
+Veja nosso programa exemplo, e depois vamos explicar a equação chave que produziu
+os efeitos gráficos da imagem acima.	
+
+<div class=prg-code>
+<span class="sc2">//trigonometria.cpp
+//Esse programa mostra como usar as funções de trigonometria para desenhar círculos 
+//e elipses
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">trigonometria</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">   </span><span class="sc2">// Desenha circulos e elipses
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sorteia_cor</span><span class="sc10">();</span><span class="sc0">          </span><span class="sc2">// Sorteia uma cor aleatória
+</span><span class="sc0">
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc11">trigonometria</span><span class="sc10">();</span><span class="sc0">    
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"trigonometria.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetTextOpaque</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">dbRandomize</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">dbTimer</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span>
+<span class="sc2">// ----------------------------------------------------------------------------</span>
+<span class="sc16">void</span><span class="sc0"> </span><span class="sc11">trigonometria</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">//Centro do círculo e da elipse
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">//Propriedades do ponto a ser desenhado
+</span><span class="sc16">float</span><span class="sc0"> </span><span class="sc11">xraio</span><span class="sc10">,</span><span class="sc11">yraio</span><span class="sc10">,</span><span class="sc11">angulo</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">//Ponto final na tela da extremidade do circulo
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc11">sy</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">//Ponto final na tela da extremidade da elipse
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc11">dy</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">xpos</span><span class="sc10">=</span><span class="sc4">210</span><span class="sc10">;</span><span class="sc11">ypos</span><span class="sc10">=</span><span class="sc4">220</span><span class="sc10">;</span><span class="sc0">
+
+
+</span><span class="sc5">for</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc11">angulo</span><span class="sc10">&lt;=</span><span class="sc4">360</span><span class="sc10">;</span><span class="sc11">angulo</span><span class="sc10">+=</span><span class="sc4">10</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">sorteia_cor</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenha circulo ao redor do olho
+</span><span class="sc0">    </span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">180</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">180</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbCos</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbSin</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">   
+</span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">9</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">8</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenha elipse do olho
+</span><span class="sc0">    </span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">180</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">90</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbCos</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbSin</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0">  </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">9</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">8</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenha a pupila
+</span><span class="sc0">    </span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">60</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">60</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbCos</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">yraio</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">dbSin</span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">   
+</span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">9</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbCircle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">8</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLine</span><span class="sc10">(</span><span class="sc11">sx</span><span class="sc10">,</span><span class="sc11">sy</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">   
+
+</span><span class="sc2">// Mostre o angulo na tela
+</span><span class="sc0">    </span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dbSpaces</span><span class="sc10">(</span><span class="sc4">20</span><span class="sc10">));</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Angulo: "</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc10">));</span><span class="sc0">
+
+</span><span class="sc2">// Mostre os gráficos e espere um pouco
+</span><span class="sc0">    </span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for (angulo)
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// trigonometria().fim
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">sorteia_cor</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//Variáveis de trabalho com cor
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">//Gera uma cor aleatória
+</span><span class="sc11">r</span><span class="sc10">=</span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc11">g</span><span class="sc10">=</span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc11">b</span><span class="sc10">=</span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ncor</span><span class="sc10">=</span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// get_cor().fim</span></div>
+
+<b><u>Explicando o movimento circular</b></u> <b class=prg>
+<img src="images\trigon_explain.png">
+// Desenha circulo ao redor do olho
+xraio = 180; yraio = 180;
+sx = xpos + (xraio * dbCos(angulo) );
+sy = ypos + (yraio * dbSin(angulo) );   </b>
+
+Primeiro lembramos que um circulo é conjunto de pontos <b>(sx,sy)</b> distantes 
+igualmente <b>(raio)</b> de um mesmo centro em comum <b>(xpos,ypos).</b>
+
+Visualize em nosso diagrama que <b>(xpos,ypos)</b> é a posição a partir da qual o 
+ponto <b>(sx,sy)</b> é desenhado. A distância entre <b>(sx,sy)</b> e <b>(xpos,ypos)</b> é dada
+por <b>xraio (= 180)</b> ou <b>yraio (= 180).</b>
+
+<b>(xraio * dbCos(angulo))</b> refere-se a distância horizontal, peculiar a cada 
+angulo, no eixo x do ponto (<b>sx,sy). </b>
+
+<b>(yraio * dbSin(angulo))</b> refere-se a distância vertical, peculiar a cada 
+angulo, no eixo y do ponto <b>(sx,sy).</b> 
+
+A variável angulo que passamos em <b>dbCos() e dbSin()</b> estabelece o angulo do
+ponto no perímetro circular.
+
+Em um círculo o raio horizontal (xraio) e o raio vertical (yraio) tem o 
+mesmo tamanho. A diferença de valores entre esses raios produz a elipse.	
+
+Mantenha em mente que o cosseno (<b>dbCos()</b>) refere-se aos pontos do eixo x,
+e o seno (<b>dbSin()</b>) refere-se aos pontos no eixo y.
+
+<b><u>Movimento em uma direção angular</b></u>
+<img src="images\tank_fx.png">
+
+Em nosso programa exemplo usamos uma estrutura <b>for(;;)</b> para gerar diversos 
+angulos parar desenhar nosso círculo e o raio do circulo ficou imóvel sem 
+alterações.
+Tem uma situação que é o inverso,  por  exemplo, no  deslocamento  de  uma
+bala de canhão, você vai fixar um angulo no qual a bala vai se deslocar e
+você vai usar uma estrutura <b>for(;;)</b> para  aumentar  gradualmente o raio de
+distância para mover a bala percorrendo  a  linha  do  ângulo  determinado.
+
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-6.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track06-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

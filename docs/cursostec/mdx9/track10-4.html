@@ -1,0 +1,894 @@
+﻿<html>
+<head>
+<title>mdx9_fase10-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>10.4 Mesh Texturizado</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HLSL03.png></div>
+A aplicação deste exemplo  vai  mostrar  como  renderizar  um  modelo
+texturizado com hlsl. O programa hlsl vai mostrar duas técnicas:  uma
+que  vai  retornar  a  textura original do objeto e outra técnica que
+vai retornar a textura com um simples efeito visual aplicado.Ainda, o
+programa hlsl  vai  mostrar  uma  forma  alternativa  de  declarar os
+argumentos de entrada e saída das funções.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_HLSL03.png></div>
+A base desta aplicação é o projeto <b>prj_Modelo3d</b> do tópico 4.4.   Essa
+aplicação original foi modificada  para ter o modelo  3d  renderizado
+com o efeito hlsl que foi aplicado duas vezes na função  Renderizar()
+com seleção de técnicas diferentes que produziu um  visual  diferente
+para o mesmo modelo 3d carregado.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+ <span class=sc2>// Variável para guardar uma malha 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para propriedade dos objetos</span>
+ Propriedades3D g_props; 
+
+ <span class=sc2>// Matrizes de composição da camera</span>
+ <span class=prg>private </span><span class=sc5>Matrix </span>mundo; 
+ <span class=prg>private </span><span class=sc5>Matrix </span>visao; 
+ <span class=prg>private </span><span class=sc5>Matrix </span>projecao; 
+ <span class=sc5>Effect </span>efeito = <span class=prg>null;</span>
+ <span class=sc2>// (...)</span>
+</div>
+<b><u>2.2 Listagem da função initGfx()</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Ativando o buffer de profundidade</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento de vértice no</span>
+ <span class=sc2>// hardware, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Carrega o modelo</span>
+ diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+ CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+
+ <span class=sc2>// Inicializa a camera e o efeito</span>
+ inicializarCamera();  
+ inicializarEfeito();  
+
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b><u>2.3 Listagem da função inicializarEfeito()</u></b>
+O destaque desta função é o arquivo <b>mesh-texturizado.fx</b> utilizado que
+produz dois efeitos visuais diferentes com o mesmo modelo  3d  e  sua
+textura.
+
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+ <span class=sc2>// Cria o efeito</span>
+ efeito = <span class=prg>Effect.FromFile</span>(device, 
+ <span class=sc6>@"c:\gameprog\gdkmedia\shader\mesh-texturizado.fx"</span>, 
+ <span class=prg>null</span>, <span class=prg>ShaderFlags.None</span>, <span class=prg>null</span>);  
+
+ <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaOriginal";</span>
+ <span class=sc16>} <span class=sc2>// InicializarEfeito()</span></span>
+</div>
+
+<b><u>2.4 Listagem da função Renderizar()</u></b>
+Essa função mostra  como renderizar o mesmo objeto com o mesmo efeito
+e utilizando técnicas diferentes.
+
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.Azure</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+ <span class=prg>device.BeginScene</span>();  
+<b>
+ <span class=sc2>// Renderiza o mesh usando textura negativa</span>
+ <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaNegativa";</span>
+ <span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+ <span class=sc16>{</span>
+  <span class=prg>efeito.Pass</span>(ncx);  
+  <span class=sc2>// Desenha o primeiro mesh</span>
+  posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-100.0f</span>);  
+  rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+  g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+  desenharObjeto(objeto3D, g_props);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+ <span class=prg>efeito.End</span>();  
+
+ <span class=sc2>// Renderiza o mesh usando textura original</span>
+ <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaOriginal";</span>
+ numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+ <span class=sc16>{</span>
+  <span class=prg>efeito.Pass</span>(ncx);  
+  <span class=sc2>// Desenha o segundo mesh</span>
+  <span class=prg>g_props.position.X </span>= <span class=sc4>100.0f; </span><span class=prg>g_props.position.Y </span>= <span class=sc4>0.2f;</span>
+  desenharObjeto(objeto3D, g_props);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+ <span class=prg>efeito.End</span>();  
+</b>
+ <span class=prg>device.EndScene</span>();  
+ <span class=prg>device.Present</span>();  
+ <span class=prg>Application.DoEvents</span>();  
+ <span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+A técnica somente pode ser selecionada antes da função <span class=prg>efeito.Begin()</span>
+como mostrado nos exemplos abaixo.
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Renderiza o mesh usando textura negativa</span>
+<span class=prg>efeito.Technique </span>= <span class=sc6>"texturaNegativa";</span>
+<span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+<span class=sc16>{</span>
+<span class=prg>efeito.Pass</span>(ncx);  
+<span class=sc2>// Desenha o primeiro mesh</span>
+posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-100.0f</span>);  
+rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+desenharObjeto(objeto3D, g_props);  
+<span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=prg>efeito.End</span>();  </b></div>
+
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Renderiza o mesh usando textura original</span>
+<span class=prg>efeito.Technique </span>= <span class=sc6>"texturaOriginal";</span>
+numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+<span class=sc16>{</span>
+<span class=prg>efeito.Pass</span>(ncx);  
+<span class=sc2>// Desenha o segundo mesh</span>
+<span class=prg>g_props.position.X </span>= <span class=sc4>100.0f; </span><span class=prg>g_props.position.Y </span>= <span class=sc4>0.2f;</span>
+desenharObjeto(objeto3D, g_props);  
+<span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=prg>efeito.End</span>(); </b></div>
+
+<b><u>2.5 Listagem da função desenharObjeto()</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+<span class=sc16>{</span>
+ <span class=sc2>// Ajusta rotação da objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+ <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+ <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+ <span class=sc2>// Ajusta posição do objeto</span>
+ <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+ <span class=sc2>// Atualiza ângulo</span>
+ angulo += <span class=sc4>0.01f;</span>
+
+ <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+ <span class=sc2>// Atualiza variáveis do efeito</span>
+ mundo = obj_rot * obj_pos; 
+ <span class=sc5>Matrix </span>camera = mundo * visao * projecao; 
+ <span class=prg>efeito.SetValue</span>(<span class=sc6>"Camera"</span>, camera);  
+
+ <span class=sc2>// Renderiza o mesh texturizado</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshTex.Length; </span>ncx++) 
+ <span class=sc16>{</span>
+ <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+ <span class=prg>obj.DrawSubset</span>(ncx);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+</div>
+
+<b><u>3.0 Código hlsl para renderização do modelo 3d texturizado</u></b>
+<b><u>3.1 Variáveis globais do shader</u></b>
+<div class=niceview><span class=sc2>// Variáveis globais de camera, textura, estruturas de entrada e saída.</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=sc5>sampler </span>textura; 
+
+<span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+ <span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+ <span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+<span class=sc2>// Dados de entrada: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsEntrada 
+<span class=sc16>{</span>
+ <span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+ <span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+</div>
+<b><span class=sc5>sampler </span>textura; </b>
+Dentro do shader as texturas são acessadas e configuradas através  de
+variáveis do tipo <span class=prg>sampler.</span>   A variável <b>textura</b> vai permitir o acesso
+aos  dados  de  cor da textura  enviados  ao  shader  pela  aplicação.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span></b></div>
+A  novidade  presente  na  estrutura  de  entrada  e  saída que serão
+utilizadas pelo Shader é a variável <b>texCoord</b> do  tipo  <span class=prg>float2</span>.   Este
+tipo possui como subelementos x  e  y  visto  que  a  textura  é  uma
+superfície 2D.A semântica <b class=sc16>TEXCOORD0</b> serve para indicar que a variável
+será utilizada para a manipulação de <b>coordenadas de textura</b>.  É muito
+comum  em  trabalhos  com  coordenadas de textura pensar em termos de
+(u, v) em  correspondência com os elementos (x, y) de uma imagem 2D.
+
+<b><u>3.2 VertexShader: vs_Main()</u></b>
+<div class=niceview><span class=sc2>// Retorna posição e coordenadas de textura</span>
+vsSaida vs_Main ( vsEntrada entrada ) 
+<span class=sc16>{</span>
+<span class=sc2>// Declara estrutura de saída</span>
+ vsSaida saida = (vsSaida) 0; 
+
+ <span class=sc2>// Transforma posição para espaço de mundo</span>
+ <span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  
+
+ <span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+ <span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span>
+
+ <span class=sc2>// Retorna posição transformada e coordenadas originais</span>
+ <span class=sc2>// de textura</span>
+ <span class=sc6>return </span>saida; 
+ <span class=sc16>}</span>
+</div>
+<b>vsSaida vs_Main ( vsEntrada entrada ) </b>
+Com esta assinatura através das estruturas declaradas, esta função do
+vertexshader  que  denominamos  <b>vs_Main()</b>  recebe  posicionamento  de
+vértices  e  coordenadas de textura.  E retorna na estrutura de saída 
+a  posição  transformada  e  as  coordenadas  de textura do jeito que
+entraram.   Na  sequência  deste  shader mostramos uma outra forma de
+declarar valores de entrada e de saída da função.
+
+<b><span class=sc2>// Transforma posição para espaço de mundo</span>
+<span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  </b>
+Esta  linha  simplesmente   devolve  a  posição  3d  transformada  em
+espaço de mundo. Em aplicações mais sofisticadas é comum antes  deste
+trecho a posição 3d sofrer outras transformações em seus subelementos
+xyz que ocasionam efeitos especiais ou animações  particulares  sobre
+os vértices.
+
+<b><span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+<span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span></b>
+Esta linha passa adiante as coordenadas de  textura  com  os  valores
+originais intactos.   É  comum  antes  deste  trecho  modificar estas 
+coordenadas  para  criar através disso efeitos especiais com texturas
+animadas.
+
+<b><span class=sc6>return </span>saida;</b>
+Esta linha retorna a posição transformada  e coordenadas originais de
+textura  que  estão  assinaladas  dentro  desta  estrutura  <b>saida.</b>
+Vamos ver abaixo  que  o  apontamento  antecipado  da  variável  pela
+instrução <b class=prg>out</b> dispensa depois o uso da instrução <span class=prg>return</span>.
+
+<b><u>3.3 Retornando a textura original</u></b>
+<div class=niceview><span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                           <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>    ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Pega a cor do pixel da textura</span>
+ cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+ <span class=sc2>// Retorna cor da textura sem modificações</span>
+ <span class=sc6>return </span>cor_difusa; 
+<span class=sc16>};</span>
+</div>
+
+<b><span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                           <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>   ) : <span class=sc16>COLOR0</span></b>
+Esta aqui é a primeira função do nosso pixelshader.Conforme assinatura
+essa função retorna uma cor.  Na entrada de argumentos, ela recebe  as
+coordenadas  de  textura  e  uma  cor difusa para  ser  trabalhada. Na 
+recepção  de  um  modelo com textura, a função de pixelshader deve ter 
+esta assinatura.
+
+<b><span class=sc2>// Pega a cor do pixel da textura</span>
+cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord); </b>
+A função tex2D() recebe dados de textura como cor e  coordenada,  faz
+uma pesquisa utilizando essa entrada e retorna a  cor  correspondente 
+ao ponto examinado.
+
+<span class=sc2>// Retorna sem modificações</span>
+<span class=sc6>return </span>cor_difusa; 
+Aqui ocorre o retorno da cor para a aplicação. É  comum  antes  disso
+aplicar alterações na cor, em seus  componentes  rgba,  para obtenção
+de  efeitos  visuais  na imagem final; faremos isso na próxima função
+de pixelshader.
+
+<b><u>3.4 Aplicando textura original</u></b>
+Finalmente a seleção desta técnica na aplicação  ocasiona  o  retorno
+da textura original do objeto com seus  vértices  transformados  para
+espaço de mundo.
+
+<div class=niceview><span class=sc5>technique </span>texturaOriginal 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+  <span class=sc16>{</span>
+  <span class=sc2>// Aplicacando textura original</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_TexturaOriginal();  
+  <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+
+<b><u>3.5 PixelShader: Retornando cor negativa</u></b>
+<div class=niceview><span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+				 <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+<span class=sc16>{</span>
+ <span class=sc2>// Pega a cor do pixel da textura</span>
+ cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+ <span class=sc2>// Modifica a cor original</span>
+ <span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+ <span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+ <span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span>
+
+<span class=sc16>}</span>
+</div>
+<span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                         <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+Esta assinatura traz uma forma diferente de declarar os argumentos de
+entrada e saida.  Os argumentos  de  entrada  são  declarados  com  a 
+instrução  <b class=prg>in</b>  enquanto  os  argumentos de saída são declarados com a
+instrução <b class=prg>out</b> e a função é assinalada como <span class=prg>void</span>.
+
+<b><span class=sc2>// Pega a cor do pixel da textura</span>
+cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  </b>
+Pegamos aqui a cor da textura e vamos modificá-la abaixo.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Modifica a cor original</span>
+<span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+<span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+<span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span></b></div>
+Com essa subtração produz-se o efeito de cor negativa. Através da
+manipulação destes três canais da cor pode ser produzido  dezenas
+de efeitos visuais.  Esta função retorna então a cor do pixel com
+essa modificação.
+
+<b><u>3.6 Aplicando textura negativa</u></b>
+A seleção desta técnica retorna então  para  a  aplicação  a  textura
+modificada do objeto e com seus vértices transformados para espaço de
+mundo.
+
+<div class=niceview><span class=sc5>technique </span>texturaNegativa 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+ <span class=sc16>{</span>
+ <span class=sc2>// Aplicando textura negativa</span>
+ <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+ <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_TexturaNegativa();  
+ <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+
+<b><u>3.7 Código fonte do programa hlsl de exemplo:mesh_texturizado.fx</u></b>
+<div class=prg-code>
+<span class=sc2>// prj_HLSL03: Renderizando mesh texturizado com hlsl</span>
+<span class=sc2>// Arquivo: mesh_texturizado.fx</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+
+<span class=sc2>// Variáveis globais de camera, textura, e estruturas de entrada e saída</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=sc5>sampler </span>textura; 
+
+<span class=sc2>// Dados de saída: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsSaida 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+<span class=sc2>// Dados de entrada: posição e coordenada de textura</span>
+<span class=prg>struct </span>vsEntrada 
+<span class=sc16>{</span>
+<span class=prg>float4 </span>pos      : <span class=sc16>POSITION;</span>
+<span class=prg>float2 </span>texCoord : <span class=sc16>TEXCOORD0;</span>
+<span class=sc16>};</span>
+
+
+<span class=sc2>// Retorna posição e coordenadas de textura</span>
+vsSaida vs_Main ( vsEntrada entrada ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Declara estrutura de saída</span>
+  vsSaida saida = (vsSaida) 0; 
+
+  <span class=sc2>// Transforma posição para espaço de mundo</span>
+    <span class=prg>saida.pos </span>= <span class=sc16>mul</span>(<span class=prg>entrada.pos</span>, Camera);  
+
+    <span class=sc2>// Repassa para a saida as coordenadas de textura</span>
+  <span class=prg>saida.texCoord </span>= <span class=prg>entrada.texCoord;</span>
+
+  <span class=sc2>// Retorna posição transformada e coordenadas originais</span>
+  <span class=sc2>// de textura</span>
+  <span class=sc6>return </span>saida; 
+<span class=sc16>}</span>
+
+
+ <span class=prg>float4 </span>ps_TexturaOriginal( <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                            <span class=prg>float4 </span>cor_difusa :  <span class=sc16>COLOR0</span>) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+    <span class=sc2>// Pega a cor do pixel da textura</span>
+  cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+  <span class=sc2>// Retorna sem modificações</span>
+  <span class=sc6>return </span>cor_difusa; 
+<span class=sc16>};</span>
+
+
+<span class=sc5>technique </span>texturaOriginal 
+<span class=sc16>{</span>
+    <span class=sc5>pass </span>P0 
+    <span class=sc16>{</span>
+        <span class=sc2>// Aplicacando textura original</span>
+        <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+        <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_TexturaOriginal();  
+    <span class=sc16>}</span>
+<span class=sc16>}</span>
+
+
+<span class=sc2>// --------------------- Estrutura da segunda técnica -------------------------</span>
+<span class=sc2>// Testando instruções in e out</span>
+<span class=prg>void </span>ps_TexturaNegativa( <span class=prg>in </span> <span class=prg>float2 </span>texCoord   : <span class=sc16>TEXCOORD0</span>, 
+                         <span class=prg>out </span><span class=prg>float4 </span>cor_difusa : <span class=sc16>COLOR0 </span>    ) 
+<span class=sc16>{</span>
+    <span class=sc2>// Pega a cor do pixel da textura</span>
+  cor_difusa = <span class=sc16>tex2D</span>(textura, texCoord);  
+
+  <span class=sc2>// Modifica a cor original</span>
+  <span class=prg>cor_difusa.r </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.r;</span>
+  <span class=prg>cor_difusa.g </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.g;</span>
+  <span class=prg>cor_difusa.b </span>= <span class=sc4>1.0f </span>- <span class=prg>cor_difusa.b;</span>
+
+<span class=sc16>}</span>
+
+
+<span class=sc5>technique </span>texturaNegativa 
+<span class=sc16>{</span>
+    <span class=sc5>pass </span>P0 
+    <span class=sc16>{</span>
+        <span class=sc2>// Aplicando textura negativa</span>
+        <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+        <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_1_1 </span>ps_TexturaNegativa();  
+    <span class=sc16>}</span>
+<span class=sc16>}</span>
+</div>
+<b><u>4.0 Código fonte do projeto de exemplo:prj_HLSL03</u></b>
+<div class=prg-code>
+<img src=images\prj_HLSL03.png>
+
+<span class=sc2>// prj_HLSL03 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como renderizar um modelo 3D</span>
+<span class=sc2>// texturizado com hlsl - By www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_HLSL03 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação e cor</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variável para guardar uma malha 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para propriedade dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=sc2>// Matrizes de composição da camera</span>
+    <span class=prg>private </span><span class=sc5>Matrix </span>mundo; 
+    <span class=prg>private </span><span class=sc5>Matrix </span>visao; 
+    <span class=prg>private </span><span class=sc5>Matrix </span>projecao; 
+    <span class=sc5>Effect </span>efeito = <span class=prg>null;</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento de vértice no</span>
+      <span class=sc2>// hardware, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Carrega o modelo</span>
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+
+      <span class=sc2>// Inicializa a camera e o efeito</span>
+      inicializarCamera();  
+      inicializarEfeito();  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>10000.0f;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      projecao = <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Rotaciona o triangulo indiretamente através da rotação dos</span>
+      <span class=sc2>// eixos da matriz mundial.</span>
+      mundo = <span class=prg>Matrix.RotationZ</span>(angulo);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc5>Vector3 cam_pos = new Vector3(0, 0, 700.0f);  <span class=sc2>// Posição da camera</span></span>
+      <span class=sc5>Vector3 cam_alvo = new Vector3(0, 0.0f, 0);  <span class=sc2>// Alvo da câmera</span></span>
+      <span class=sc5>Vector3 cam_orientacao = new Vector3(0, 1.0f, 0);  <span class=sc2>// Orientação da câmera</span></span>
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      visao = <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+
+    <span class=sc16>}  <span class=sc2>// inicializarCamera()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarEfeito() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria o efeito</span>
+      efeito = <span class=prg>Effect.FromFile</span>(device, 
+    <span class=sc6>@"c:\gameprog\gdkmedia\shader\mesh-texturizado.fx"</span>, 
+    <span class=prg>null</span>, <span class=prg>ShaderFlags.None</span>, <span class=prg>null</span>);  
+
+      <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaOriginal";</span>
+    <span class=sc16>} <span class=sc2>// InicializarEfeito()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.Azure</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+      <span class=prg>device.BeginScene</span>();  
+
+      <span class=sc2>// Renderiza o mesh usando textura negativa</span>
+      <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaNegativa";</span>
+      <span class=prg>int </span>numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+      <span class=sc16>{</span>
+        <span class=prg>efeito.Pass</span>(ncx);  
+        <span class=sc2>// Desenha o primeiro mesh</span>
+        posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-100.0f</span>);  
+        rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+        g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+        desenharObjeto(objeto3D, g_props);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+      <span class=prg>efeito.End</span>();  
+
+      <span class=sc2>// Renderiza o mesh usando textura original</span>
+      <span class=prg>efeito.Technique </span>= <span class=sc6>"texturaOriginal";</span>
+      numPasses = <span class=prg>efeito.Begin</span>(<span class=sc4>0</span>);  
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; numPasses; ncx++) 
+      <span class=sc16>{</span>
+        <span class=prg>efeito.Pass</span>(ncx);  
+        <span class=sc2>// Desenha o segundo mesh</span>
+        <span class=prg>g_props.position.X </span>= <span class=sc4>100.0f; </span><span class=prg>g_props.position.Y </span>= <span class=sc4>0.2f;</span>
+        desenharObjeto(objeto3D, g_props);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+      <span class=prg>efeito.End</span>();  
+
+      <span class=prg>device.EndScene</span>();  
+      <span class=prg>device.Present</span>();  
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Ajusta rotação da objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+      <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+      <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição do objeto</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Atualiza ângulo</span>
+      angulo += <span class=sc4>0.01f;</span>
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=sc2>// Atualiza variáveis do efeito</span>
+      mundo = obj_rot * obj_pos; 
+      <span class=sc5>Matrix </span>camera = mundo * visao * projecao; 
+      <span class=prg>efeito.SetValue</span>(<span class=sc6>"Camera"</span>, camera);  
+
+      <span class=sc2>// Renderiza o mesh texturizado</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshTex.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+        <span class=prg>obj.DrawSubset</span>(ncx);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto().fim</span></span>
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+      <span class=prg>this.Renderizar</span>();  
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+      <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+        device, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Carrega texturas</span>
+          arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+          <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+          <span class=sc16>{</span>
+            g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+              diretorioBase + arquivo_textura);  
+          <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

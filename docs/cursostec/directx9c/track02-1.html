@@ -1,0 +1,1011 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase02-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:left;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 02-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-12.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>02.1 Investigando o adaptador gráfico</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Adaptador.png></div>
+O  objeto  <b>g_Direct3d</b>  produzido  pela  interface  <b class=prg>IDirect3D9</b> possui
+métodos que  permitem investigar as capacidades do adaptador gráfico.
+
+Geralmente  essa investigação sobre a placa de vídeo ocorre no início
+da aplicação  para determinar se a placa  de  vídeo  oferece  suporte 
+para as capacidades ou configurações específicas pretendidas.  Caso a
+capacidade  ou configuração investigada não tenha suporte do hardware
+deve-se  tomar  caminhos  alternativos  ou  encerrar  graciosamente a
+aplicação. Um dos caminhos alternativos, especialmente para aplicações
+de testes  é  utilizar  o dispositivo de referência criado pela opção
+<b class=sc4>D3DDEVTYPE_REF</b> durante a criação do dispositivo renderizador <b>g_device</b>.
+
+Alistamos  abaixo  alguns  métodos  de verificação do dispositivo que
+serão testados por esta aplicação.
+
+<table class="dados" border="1" cellspacing="5px" cellpadding="5px">
+<tr>
+<th>Método</th>
+<th>Descrição</th>
+</tr>   	  
+
+<tr>
+<td><span class=prg>CheckDeviceType()</span></td>
+<td> Verifica se determinada configuração de dispositivo acelerado por hardware pode ser utilizada com o adaptador especificado.</td>
+</tr>
+<tr>
+<td><span class=prg>GetAdapterModeCount()</span></td>
+<td>Retorna o número de modos de vídeo disponíveis no adaptador para o formato especificado. A função <span class=prg>EnumAdapterModes()</span> é utilizada para acessar a configuração particular de cada modo de vídeo disponível.</td>
+</tr>
+<tr>
+<td><span class=prg>EnumAdapterModes()</span></td>
+<td>Esse método é utilizado em um loop para recuperar cada item de uma lista de modos de vídeo disponíveis dentro um formato específico.</td>
+</tr>
+<tr>
+<td><span class=prg>GetAdapterCount()</span></td>
+<td>Retorna o número de adaptadores no sistema.</td>
+</tr>
+<tr>
+<td><span class=prg>GetAdapterDisplayMode()</span></td>
+<td>Retorna informação do modo de vídeo corrente do adaptador.</td>
+</tr>
+<tr>
+<td><span class=prg>GetAdapterIdentifier()</span></td>
+<td>Obtém uma descrição geral do adaptador gráfico.</td>
+</tr>
+
+
+<tr>
+<td><span class=prg>GetDeviceCaps()</span></td>
+<td>Recupera informações específicas sobre as capacidades do adaptador gráfico</td>
+</tr>
+</table>
+
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+
+<div class=prg-code><b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;">
+<b class=sc16>adaptador_exibirInfoGeral()</b>
+	testa as funções:
+		<span class=prg>GetAdapterIdentifier()</span>
+		<span class=prg>GetAdapterCount()</span>
+	
+<b class=sc16>verificar_dispositivo()</b>
+	testa a função <span class=prg>CheckDeviceType()</span>
+	
+<b class=sc16>mostrarcaps()</b>
+	testa a função <span class=prg>GetDeviceCaps()</span>
+
+<b class=sc16>adaptador_exibirVideoCorrente()</b>
+	testa a função <span class=prg>GetAdapterDisplayMode()</span>
+	
+<b class=sc16>adaptador_exibirListaVideoOk()</b>
+	testa as funções:
+		<span class=prg>GetAdapterModeCount()</span>
+		<span class=prg>EnumAdapterModes()</span>
+		
+<b class=sc16>esperar()</b>
+	aplica uma pausa para leitura do conteúdo da janela
+
+<b class=sc16>config_Janela()</b>
+	faz a configuração inicial da janela de console
+
+<b class=sc16>main()</b>
+	inicializa o objeto Direct3d
+	chama todas as funções alistadas acima para verificar
+	algumas capacidades do adaptador gráfico.	
+</div></div>
+
+<b><u>2.1 Aspectos globais - Arquivo: entrada.cpp</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Adaptador - Arquivo: entrada.cpp</span>
+<span class=sc2>// Essa aplicação exemplifica como investigar as capacidades</span>
+<span class=sc2>// do adaptador gráfico. By www.gameprog.com.br</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"d3d9.h"</span>
+<span class=sc16>#include </span><span class=sc6>"d3dx9.h"</span>
+
+<span class=sc2>// Bibliotecas do directx</span>
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3d9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Exibe informações gerais do adaptador gráfico</span>
+<span class=prg>void </span>adaptador_exibirInfoGeral(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe modo de vídeo corrente</span>
+<span class=prg>void </span>adaptador_exibirVideoCorrente(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe a lista de modos de vídeo disponíveis para o formato</span>
+<span class=sc2>// apresentado</span>
+<span class=prg>void </span>adaptador_exibirListaVideoOk(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe algumas capacidades do dispositivo gráfico</span>
+<span class=prg>void </span>mostrarcaps(<span class=prg>void</span>);   
+
+<span class=sc2>// Verifica a possibilidade de uma configuração específica do dispositivo</span>
+<span class=prg>void </span>verificar_dispositivo(<span class=prg>void</span>);   
+
+<span class=sc2>// Faz a configuração inicial da janela</span>
+<span class=prg>void </span>config_Janela(<span class=prg>void</span>);   
+
+<span class=sc2>// Pausa para leitura da tela</span>
+<span class=prg>void </span>esperar(<span class=prg>void</span>);   
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variáveis para coletar o tamanho da resolução corrente</span>
+<span class=prg>UINT </span>g_xtela, g_ytela; 
+
+<span class=sc2>// Formato de vídeo</span>
+<span class=sc4>D3DFORMAT </span>g_formato; 
+
+<span class=sc2>// Adaptador default(0)</span>
+<span class=prg>UINT </span>adaptador_default = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+<span class=sc2>// Coleta de informação de erro do directx</span>
+<span class=sc16>HRESULT </span>g_hr; 
+
+</div>
+<b><span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span> </b>
+Esse arquivo de cabeçalho permite o uso de funções  que  manipulam  a
+janela de console.
+
+<b><span class=prg>void </span>adaptador_exibirInfoGeral(<span class=prg>void</span>);   </b>
+Esta função exibe informações gerais do adaptador de vídeo  usando  a
+função <span class=prg>GetAdapterIdentifier()</span>.
+
+<b><span class=prg>void </span>adaptador_exibirVideoCorrente(<span class=prg>void</span>);   </b>
+Essa função exibe informações do modo de vídeo corrente  utilizando a
+função <span class=prg>GetAdapterDisplayMode()</span>.
+
+<b><span class=prg>void </span>adaptador_exibirListaVideoOk(<span class=prg>void</span>);   </b>
+Esta função exibe uma lista de modos de vídeo disponíveis  dentro  de
+um formato   especificado   utilizando   em    conjunto   as  funções 
+<span class=prg>GetAdapterModeCount()</span>  e  <span class=prg>EnumAdapterModes()</span>.
+
+<b><span class=prg>void </span>mostrarcaps(<span class=prg>void</span>);   </b>
+Esta função mostra algumas capacidades do adaptador  de  vídeo;  isso
+envolve o uso da função <span class=prg>GetDeviceCaps()</span>.
+
+<b><span class=prg>void </span>verificar_dispositivo(<span class=prg>void</span>);   </b>
+Essa  função  verifica  se  é  possível  uma   dada  configuração  do
+dispositivo renderizador a ser criado. Essa verificação é feita com a
+função <span class=prg>CheckDeviceType()</span>.
+
+<b><span class=prg>void </span>config_Janela(<span class=prg>void</span>);   </b>
+Essa  função   utiliza  algumas  funções  do  arquivo  <span class=prg>wincon.h</span>  para
+configurar  algumas  características  da  janela de console tais como
+tamanho da memória interna (buffer) e o tamanho da janela.
+
+<b><span class=prg>void </span>esperar(<span class=prg>void</span>);   </b>
+Esta função adiciona uma pausa no programa para a  leitura  da  tela.
+A pausa é feita com a função  <span class=prg>getchar()</span>  que  aguarda  a  entrada  de
+dados do teclado.
+
+<b><span class=prg>UINT </span>g_xtela, g_ytela; 
+<span class=sc4>D3DFORMAT </span>g_formato; 
+<span class=prg>UINT </span>adaptador_default = <span class=sc4>D3DADAPTER_DEFAULT</span>; </b>
+Estas variáveis são usadas  para coletar informações sobre o adaptador
+de vídeo tais como resolução do modo de vídeo entre outras informações.
+
+<b><u>2.2 A função main()</u></b>
+Segue abaixo a listagem da função <span class=prg>main()</span>. As funções chamadas por ela
+foram descritas acima de maneira geral e são  melhor  detalhadas  nos
+subtópicos que estão adiante.
+
+<div class=niceview><span class=prg>int </span>main(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"main</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a janela</span>
+  config_Janela();  
+
+  <span class=sc2>// Exibe informações gerais do adaptador</span>
+  adaptador_exibirInfoGeral();  
+
+  <span class=sc2>// Exibe o modo de vídeo corrente</span>
+  adaptador_exibirVideoCorrente();  
+
+  <span class=sc2>// Exibe uma lista de modos de vídeo disponíveis para o formato</span>
+  <span class=sc2>// apresentado.</span>
+  adaptador_exibirListaVideoOk();  
+
+  <span class=sc2>// Mostra algumas capacidades do dispositivo</span>
+  mostrarcaps();  
+
+  <span class=sc2>// Testa uma possibilidade de configuração para o dispositivo</span>
+  verificar_dispositivo();  
+
+  <span class=sc2>// Finaliza a aplicação</span>
+  esperar();  
+  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// main().fim</span></span>
+</div>
+
+<b><u>2.3 Descrição geral do adaptador gráfico</u></b>
+<div class=niceview><span class=prg>void </span>adaptador_exibirInfoGeral(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para coletar informações gerais do adaptador gráfico</span>
+  <span class=sc5>D3DADAPTER_IDENTIFIER9 </span>placaVideo; 
+
+  <span class=sc2>// Coleta informações sobre o adaptador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;GetAdapterIdentifier</span>( adaptador_default, 
+    <span class=sc4>0</span>, &placaVideo);  
+
+  <span class=sc2>// Espaços em branco para manter a boa estética do console</span>
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Mostra descrição e o arquivo de driver de vídeo</span>
+  printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Description</span>);   
+  printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Driver</span>);   
+
+  <span class=sc2>// Verifica a quantidade de adaptadores no sistema</span>
+  <span class=prg>UINT </span>nAdaptadores = <span class=sc4>0</span>; 
+  nAdaptadores = <span class=prg>g_Direct3d-&gt;GetAdapterCount</span>();  
+  printf (<span class=sc6>" Número de adaptadores de vídeo: %i \n"</span>, nAdaptadores);  
+
+<span class=sc16>} <span class=sc2>// adaptador_exibirInfoGeral().fim</span></span>
+</div>
+<b><span class=sc5>D3DADAPTER_IDENTIFIER9 </span>placaVideo; </b>
+Esta  estrutura  agrega elementos que descrevem  de  forma  geral  um
+adaptador de vídeo com informações tais como descrição  (<b>Description</b>)
+e dll do driver (<b>Driver</b>) entre outras.
+
+
+<b>g_hr = <span class=prg>g_Direct3d-&gt;GetAdapterIdentifier</span>( adaptador_default, <span class=sc4>0</span>, &placaVideo);  </b>
+Esta função preenche a estrutura <b class=prg>D3DADAPTER_IDENTIFIER9</b> descrita acima
+com informações gerais do adaptador de vídeo.
+
+
+<b><span class=sc2>// Mostra descrição e o arquivo de driver de vídeo</span>
+printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Description</span>);  printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Driver</span>);   </b>
+Aqui mostramos as informações coletadas.
+
+
+<b><span class=prg>UINT </span>nAdaptadores = <span class=sc4>0</span>; 
+nAdaptadores = <span class=prg>g_Direct3d-&gt;GetAdapterCount</span>();  
+printf (<span class=sc6>" Número de adaptadores de vídeo: %i \n"</span>, nAdaptadores);  </b>
+Aqui verificamos e mostramos a quantidade  de  adaptadores  de  vídeo
+instalados no sistema. Pode ocorrer de um computador apresentar  duas
+placas de vídeo ou ter uma placa de vídeo com circuitos independentes
+para controlar dois monitores.
+
+
+<b><u>2.4 Informações do modo de vídeo corrente</u></b>
+<div class=niceview><span class=prg>void </span>adaptador_exibirVideoCorrente(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Estrutura para a coleta de informações sobre o modo de vídeo</span>
+  <span class=sc2>// corrente</span>
+  <span class=sc5>D3DDISPLAYMODE </span>video; 
+
+  <span class=sc2>// Coleta informações sobre o modo de vídeo</span>
+  <span class=prg>g_Direct3d-&gt;GetAdapterDisplayMode </span>(adaptador_default, &video);  
+
+  <span class=sc2>// Transfere essas informações para as variáveis</span>
+  g_xtela = <span class=prg>video.Width</span>; 
+  g_ytela = <span class=prg>video.Height</span>; 
+  g_formato = <span class=prg>video.Format</span>; 
+
+  <span class=sc2>// Exibe as informações</span>
+  printf(<span class=sc6>" Modo de video corrente: </span>(%i, %i)<span class=sc6> Formato: %i \n"</span>, 
+    g_xtela, g_ytela, g_formato);  
+
+<span class=sc16>} <span class=sc2>//  adaptador_exibirVideoCorrente().fim</span></span>
+</div>
+<b><span class=sc5>D3DDISPLAYMODE </span>video; </b>
+Esta estrutura agrega elementos que descrevem um modo de  vídeo  tais
+como largura  (<b>width</b>), altura  (<b>height</b>)  e  formato  da composição do
+pixel.
+
+
+<b><span class=prg>g_Direct3d-&gt;GetAdapterDisplayMode </span>(adaptador_default, &video);  </b>
+Essa  função  preenche  a  estrutura   <b class=sc5>D3DDISPLAYMODE</b>   (<b>&video</b>)  com
+informação do modo de vídeo corrente.
+
+
+<b>g_xtela = <span class=prg>video.Width</span>; 
+g_ytela = <span class=prg>video.Height</span>; 
+g_formato = <span class=prg>video.Format</span>; </b>
+Aqui transferimos as informações do modo de vídeo  corrente  para  as
+variáveis de trabalho.
+
+<b>printf(<span class=sc6>" Modo de video corrente: </span>(%i, %i)<span class=sc6> Formato: %i \n"</span>, 
+g_xtela, g_ytela, g_formato);  </b>
+Aqui mostramos as informações do modo de vídeo corrente.
+
+<b><u>2.5 Lista de modos de video disponíveis para um formato</u></b>
+<div class=niceview><span class=prg>void </span>adaptador_exibirListaVideoOk(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Variável para guardar a quantidade de modos de vídeo</span>
+  <span class=sc2>// disponíveis dentro de um formato</span>
+  <span class=prg>UINT </span>nQtd = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Estrutura com informações básica do modo de vídeo</span>
+  <span class=sc5>D3DDISPLAYMODE </span>video; 
+
+  <span class=sc2>// Obtém a quantidade de modos de vídeo no formato apresentado</span>
+  nQtd = <span class=prg>g_Direct3d-&gt;GetAdapterModeCount</span>( adaptador_default, g_formato);  
+
+  <span class=sc2>// Esta linha exibe o valor numérico do formato apresentado.</span>
+  printf(<span class=sc6>" \n\n Modos de video disponivel no formato %i \n"</span>, g_formato);  
+
+  <span class=sc2>// Mostra as informações dos modos de vídeo disponíveis no formato</span>
+  <span class=prg>for </span>(<span class=prg>UINT </span>ncx=0; ncx &lt; nQtd; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Obtém informação do modo de vídeo apontado por ncx</span>
+    g_hr = <span class=prg>g_Direct3d-&gt;EnumAdapterModes</span>(adaptador_default, g_formato, ncx, &video);  
+
+    <span class=no_fmt><span class=sc2>//Transfere as informações para as variáveis</span></span>
+    g_xtela = <span class=prg>video.Width</span>; 
+    g_ytela = <span class=prg>video.Height</span>; 
+    g_formato = <span class=prg>video.Format</span>; 
+
+    <span class=sc2>// Exibe a informação</span>
+    printf(<span class=sc6>" %i x %i \n"</span>, g_xtela, g_ytela);  
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc16>} <span class=sc2>// adaptador_exibirListaVideoOk().fim</span></span>
+</div>
+<b><span class=prg>UINT </span>nQtd = <span class=sc4>0</span>; </b>
+Esta variável é usada para guardar a quantidade  de  modos  de  vídeo
+disponíveis   dentro   de   um   formato   especificado   na   função 
+<span class=prg>GetAdapterModeCount()</span>.
+
+<span class=sc2>// Estrutura com informações básica do modo de vídeo</span>
+<span class=sc5>D3DDISPLAYMODE </span>video; 
+Esta estrutura agrega elementos que descrevem um modo de  vídeo  tais
+como largura  (<b>width</b>), altura  (<b>height</b>)  e  formato  da composição do
+pixel ( <b>format</b> ).
+
+<b>nQtd = <span class=prg>g_Direct3d-&gt;GetAdapterModeCount</span>( adaptador_default, g_formato);  </b>
+Esta linha obtém a quantidade de modos de vídeo no formato apresentado.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Mostra as informações dos modos de vídeo disponíveis no formato</span>
+<span class=prg>for </span>(<span class=prg>UINT </span>ncx=0; ncx &lt; nQtd; ncx++) 
+<span class=sc16>{</span>
+<span class=sc2>// Obtém informação do modo de vídeo apontado por ncx</span>
+g_hr = <span class=prg>g_Direct3d-&gt;EnumAdapterModes</span>(adaptador_default, g_formato, ncx, &video);  
+
+<span class=no_fmt><span class=sc2>//Transfere as informações para as variáveis</span></span>
+g_xtela = <span class=prg>video.Width</span>; 
+g_ytela = <span class=prg>video.Height</span>; 
+g_formato = <span class=prg>video.Format</span>; 
+
+<span class=sc2>// Exibe a informação</span>
+printf(<span class=sc6>" %i x %i \n"</span>, g_xtela, g_ytela);  
+<span class=sc16>} <span class=sc2>// endfor</span></span></b></div>
+Este  bloco  de  código  perpassa  por  todos  os   modos  de   vídeo
+disponíveis  localizados   para  o  formato  apresentado  e  exibe  a 
+configuração de cada um  deles.
+
+<b><u>2.6 Configuração de criação do dispositivo renderizador</u></b>
+<div class=niceview><span class=prg>void </span>verificar_dispositivo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Resultado da vericação</span>
+  <span class=prg>bool </span>resultado = <span class=prg>false</span>; 
+
+  <span class=sc2>// Argumentos de trabalho do método CheckDeviceType()</span>
+  <span class=prg>D3DDEVTYPE </span>tipo_hardware   = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+  <span class=sc4>D3DFORMAT </span> videoFormato   = <span class=sc4>D3DFMT_X8R8G8B8</span>; 
+  <span class=sc4>D3DFORMAT </span> backbufferFormato = videoFormato; 
+
+  <span class=sc2>// Vai ter janela? sim (true) ou não(false).</span>
+  <span class=prg>bool </span>   telaCheia     = <span class=prg>false</span>; 
+
+  <span class=sc2>// Verifica se a configuração passada é possível</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CheckDeviceType</span>( adaptador_default,  tipo_hardware, 
+    videoFormato, backbufferFormato, telaCheia );  
+
+  <span class=sc2>// Verifica o resultado retornado</span>
+  <span class=sc9>if</span>(<span class=prg>SUCCEEDED</span>(g_hr) ) resultado = <span class=prg>true</span>; 
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>  (g_hr) ) resultado = <span class=prg>false</span>; 
+
+  <span class=sc2>// Exibe resultado</span>
+  printf(<span class=sc6>"\n"</span>);   
+  <span class=sc9>if </span>(resultado) 
+    printf(<span class=sc6>" Aplicação em tela cheia Ok para o formato X8R8G8B8 no hardware!"</span>);   
+  <span class=sc9>if </span>(!resultado) 
+    printf(<span class=sc6>" Configuração impraticável \n"</span>);   
+
+  <span class=sc6>return</span>; 
+
+<span class=sc16>} <span class=sc2>// verificar_dispositivo().fim</span></span>
+</div>
+<span class=sc2>// Resultado da vericação</span>
+<b><span class=prg>bool </span>resultado = <span class=prg>false</span>; </b>
+O valor final desta variável vai espelhar  o  resultado  positivo  ou
+negativo da verificação  da  configuração do dispositivo renderizador
+dada na função <span class=prg>CheckDeviceType()</span>.
+
+
+<b><span class=prg>D3DDEVTYPE </span>tipo_hardware   = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+<span class=sc4>D3DFORMAT </span> videoFormato   = <span class=sc4>D3DFMT_X8R8G8B8</span>; 
+<span class=sc4>D3DFORMAT </span> backbufferFormato = videoFormato; 
+<span class=sc2>// Vai ter janela? sim (true) ou não(false).</span>
+<span class=prg>bool </span>   telaCheia     = <span class=prg>false</span>; </b>
+Estas variáveis representam os argumentos de criação  do  dispositivo 
+renderizador como já vimos nos tópicos anteriores.  Neste caso aqui é
+a configuração particular que vai ser testada se é possível ou não no
+adaptador gráfico default (0).
+
+
+<b>g_hr = <span class=prg>g_Direct3d-&gt;CheckDeviceType</span>( adaptador_default,  tipo_hardware,
+videoFormato, backbufferFormato, telaCheia );  </b>
+Aqui  a  função  <span class=prg>CheckDeviceType()</span>  faz o trabalho  de  verificar  se
+configuração passada é possível ou não.
+
+
+<b><span class=sc9>if</span>(<span class=prg>SUCCEEDED</span>(g_hr) ) resultado = <span class=prg>true</span>; 
+<span class=sc9>if</span>(<span class=prg>FAILED </span>  (g_hr) ) resultado = <span class=prg>false</span>; </b>
+Aqui verificamos o resultado retornado e configuramos apropriadamente
+a variável <b>resultado</b>.
+
+
+<b><span class=sc9>if </span>(resultado) 
+printf(<span class=sc6>" Aplicação em tela cheia Ok para o formato X8R8G8B8 no hardware!"</span>);  
+<span class=sc9>if </span>(!resultado) printf(<span class=sc6>" Configuração impraticável \n"</span>);   </b>
+Exibimos na sequência o resultado.
+
+
+<b><u>2.7 Capacidades específicas do adaptador gráfico</u></b>
+<div class=niceview><span class=prg>void </span>mostrarcaps(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Estrutura que alista as capacidades possíveis de um</span>
+  <span class=sc2>// adaptador gráfico.</span>
+  <span class=sc5>D3DCAPS9 </span>caps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>(&caps, <span class=sc16>sizeof </span>(<span class=sc5>D3DCAPS9</span>) );  
+
+  <span class=sc2>// Obtém as capacidades do adaptador gráfico</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;GetDeviceCaps</span>(adaptador_default, <span class=sc4>D3DDEVTYPE_HAL</span>, &caps);  
+
+  <span class=sc2>// Verifica se ocorreu alguma falha no processo...</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha no processo"</span>, <span class=sc6>"mostrarcaps</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a versão do pixelshader e do vertexshader</span>
+  printf (<span class=sc6>" VertexShaderVersion: %X \n"</span>, <span class=prg>caps.VertexShaderVersion</span>);   
+  printf (<span class=sc6>" PixelShaderVersion : %X \n"</span>, <span class=prg>caps.PixelShaderVersion</span>);   
+
+  <span class=sc2>// Quantidade máxima de luzes ativas simultaneamente</span>
+  printf (<span class=sc6>" MaxActiveLights    : %i \n"</span>, <span class=prg>caps.MaxActiveLights</span>);   
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Mostra algumas capacidades sobre linhas</span>
+  <span class=prg>DWORD </span>linecaps = <span class=prg>caps.LineCaps</span>; 
+  printf(<span class=sc6>" LineCaps    %X: \n"</span>, linecaps);  
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_ANTIALIAS</span>)  &gt; <span class=sc4>0</span>) printf(<span class=sc6>" D3DLINECAPS_ANTIALIAS Ok \n"</span>);   
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_BLEND</span>) &gt; <span class=sc4>0</span>)    printf(<span class=sc6>" D3DLINECAPS_BLEND Ok \n"</span>);   
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_TEXTURE</span>) &gt; <span class=sc4>0</span>)  printf(<span class=sc6>" D3DLINECAPS_TEXTURE Ok \n"</span>);   
+
+<span class=sc16>} <span class=sc2>// mostrarcaps().fim</span></span>
+</div>
+<b><span class=sc5>D3DCAPS9 </span>caps; </b>
+Esta estrutura é gigantesca e agrega elementos que descrevem todas as
+capacidades e característias possíveis em um adaptador gráfico.
+
+<b><span class=prg>ZeroMemory</span>(&caps, <span class=sc16>sizeof </span>(<span class=sc5>D3DCAPS9</span>) ); </b>
+Limpamos a estrutura.
+
+<b>g_hr = <span class=prg>g_Direct3d-&gt;GetDeviceCaps</span>(adaptador_default, <span class=sc4>D3DDEVTYPE_HAL</span>, &caps); </b>
+Aqui a função  <span class=prg>GetDeviceCaps()</span>  preenche  a  estrutura  <b>caps</b>  com  as
+capacidades e características do adaptador gráfico default (0).
+
+<b>printf (<span class=sc6>" VertexShaderVersion: %X \n"</span>, <span class=prg>caps.VertexShaderVersion</span>); 
+printf (<span class=sc6>" PixelShaderVersion : %X \n"</span>, <span class=prg>caps.PixelShaderVersion</span>);  </b>
+Aqui verificamos a versão do <b>VertexShader</b> e do <b>PixelShader</b>  da  placa
+de vídeo. O vertexshader e o pixelshader são chamados de  shaders  em
+conjunto e representam o aspecto programável da placa  de  vídeo  que
+definem a posição final do vértice e a cor final do pixel na  tela. A
+partir do directx9 os shaders são produzidos na  linguagem  <b>HLSL</b>  que 
+tem uma grande semelhança com a linguagem C.
+
+<b>printf (<span class=sc6>" MaxActiveLights    : %i \n"</span>, <span class=prg>caps.MaxActiveLights</span>);  </b>
+Aqui é relatado a quantidade máxima de luzes  que podem estar  ativas
+simultaneamente na cena.
+
+
+<b><span class=prg>DWORD </span>linecaps = <span class=prg>caps.LineCaps</span>; 
+printf(<span class=sc6>" LineCaps    %X: \n"</span>, linecaps);  
+<span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_ANTIALIAS</span>)  &gt; <span class=sc4>0</span>) printf(<span class=sc6>" D3DLINECAPS_ANTIALIAS Ok \n"</span>);   
+<span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_BLEND</span>) &gt; <span class=sc4>0</span>)    printf(<span class=sc6>" D3DLINECAPS_BLEND Ok \n"</span>); 
+<span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_TEXTURE</span>) &gt; <span class=sc4>0</span>)  printf(<span class=sc6>" D3DLINECAPS_TEXTURE Ok \n"</span>);   </b>
+Aqui é exibido algumas capacidades sobre a produção de linhas.
+
+
+<b><u>2.8 Configuração inicial da janela</u></b>
+<div class=niceview><span class=prg>void </span>config_Janela(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configura cor e título da janela</span>
+  <span class=prg>system</span>(<span class=sc6>"color f1"</span>);   
+  <span class=prg>SetConsoleTitle</span> (<span class=sc6>"prj_Adaptador"</span>);   
+
+  <span class=sc2>// Obtém o handle de escrita do console.</span>
+  <span class=sc16>HANDLE </span>hJanela = <span class=prg>GetStdHandle</span>(<span class=sc4>STD_OUTPUT_HANDLE</span>);   
+
+  <span class=sc2>// Configura tamanho do buffer do console</span>
+  <span class=sc5>COORD </span>bufferTam = {80, 90}; 
+  <span class=prg>SetConsoleScreenBufferSize</span>( hJanela, bufferTam);  
+
+  <span class=sc2>// Configura tamanho da janela</span>
+  <span class=sc5>SMALL_RECT </span>janelaTam = { <span class=sc4>0, 0, 79, 29 </span> }; 
+  <span class=prg>SetConsoleWindowInfo</span>(hJanela, <span class=prg>TRUE</span>, &janelaTam);  
+
+  <span class=sc2>// Permite a boa acentuação em português.</span>
+  <span class=prg>SetConsoleOutputCP</span>(1252);  
+  printf(<span class=sc6>"\n"</span>);   
+<span class=sc16>} <span class=sc2>// config_Janela().fim</span></span>
+</div>
+
+<b><b class=prg>system</span></b>(<span class=sc6>"color f1"</span>); </b>  
+Configura a cor  da tela em branco (f) para o fundo e azul (1) para a
+frente.
+
+<b><b class=prg>SetConsoleTitle</b> (<span class=sc6>"prj_Adaptador"</span>);   </b>
+Configura a barra de título da janela.
+
+<b><span class=sc16>HANDLE </span>hJanela = <span class=prg>GetStdHandle</span>(<span class=sc4>STD_OUTPUT_HANDLE</span>);  </b>
+Aqui é obtido o handle de escrita da janela que é argumento de várias
+funções que alteram as características  de  funcionamento  da  janela
+de console.
+
+<b><span class=sc5>COORD </span>bufferTam = {80, 90}; </b>
+Esta estrutura traz a quantidade de colunas (80) e linhas (90) para a
+configuração da memória interna (buffer) da janela de console.  Esses
+valores estão expressos em quantidade  de  caracteres  que  cabem  na
+tela, ou seja 90 linhas com 80 caracteres horizontais.
+
+<b><span class=prg>SetConsoleScreenBufferSize</span>( hJanela, bufferTam);  </b>
+Aqui o tamanho do buffer da janela de console é configurado  de  fato
+com  a  estrutura  <b>bufferTam</b>.
+
+<b><span class=sc5>SMALL_RECT </span>janelaTam = {<span class=sc4>0, 0, 79, 29 </span>}; </b>
+Esta estrutura traz a quantidade de colunas (79) e  linhas  (29)  que
+definem  conjuntamente a largura e altura final da janela de console.
+É importante destacar que o tamanho da janela deve ser  menor  que  o
+tamanho do buffer  em  pelo menos 1 carácter tanto na largura como na
+altura.
+
+<b><span class=prg>SetConsoleWindowInfo</span>(hJanela, <span class=prg>TRUE</span>, &janelaTam);  </b>
+Aqui de fato o tamanho da janela é configurada.
+
+<b><span class=prg>SetConsoleOutputCP</span>(1252);  </b>
+Esta função configura a página de caracteres que permite a utilização
+de caracteres acentuados.   
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Adaptador</u></b>
+<div class=prg-code><img src=images\prj_Adaptador.png>
+<span class=sc2>// Projeto: prj_Adaptador - Arquivo: entrada.cpp</span>
+<span class=sc2>// Essa aplicação exemplifica como investigar as capacidades</span>
+<span class=sc2>// do adaptador gráfico. By www.gameprog.com.br</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;wincon.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdlib.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"d3d9.h"</span>
+<span class=sc16>#include </span><span class=sc6>"d3dx9.h"</span>
+
+<span class=sc2>// Bibliotecas do directx</span>
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3d9.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Exibe informações gerais do adaptador gráfico</span>
+<span class=prg>void </span>adaptador_exibirInfoGeral(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe modo de vídeo corrente</span>
+<span class=prg>void </span>adaptador_exibirVideoCorrente(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe a lista de modos de vídeo disponíveis para o formato</span>
+<span class=sc2>// apresentado</span>
+<span class=prg>void </span>adaptador_exibirListaVideoOk(<span class=prg>void</span>);   
+
+<span class=sc2>// Exibe algumas capacidades do dispositivo gráfico</span>
+<span class=prg>void </span>mostrarcaps(<span class=prg>void</span>);   
+
+<span class=sc2>// Verifica a possibilidade de uma configuração específica do dispositivo</span>
+<span class=prg>void </span>verificar_dispositivo(<span class=prg>void</span>);   
+
+<span class=sc2>// Faz a configuração inicial da janela</span>
+<span class=prg>void </span>config_Janela(<span class=prg>void</span>);   
+
+<span class=sc2>// Pausa para leitura da tela</span>
+<span class=prg>void </span>esperar(<span class=prg>void</span>);   
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variáveis para coletar o tamanho da resolução corrente</span>
+<span class=prg>UINT </span>g_xtela, g_ytela; 
+
+<span class=sc2>// Formato de vídeo</span>
+<span class=sc4>D3DFORMAT </span>g_formato; 
+
+<span class=sc2>// Adaptador default(0)</span>
+<span class=prg>UINT </span>adaptador_default = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+<span class=sc2>// Coleta de informação de erro do directx</span>
+<span class=sc16>HRESULT </span>g_hr; 
+
+
+<span class=prg>int </span>main(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se ocorreu alguma falha no processo...</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"main</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configura a janela</span>
+  config_Janela();  
+
+  <span class=sc2>// Exibe informações gerais do adaptador</span>
+  adaptador_exibirInfoGeral();  
+
+  <span class=sc2>// Exibe o modo de vídeo corrente</span>
+  adaptador_exibirVideoCorrente();  
+
+  <span class=sc2>// Exibe uma lista de modos de vídeo disponíveis para o formato</span>
+  <span class=sc2>// apresentado.</span>
+  adaptador_exibirListaVideoOk();  
+
+  <span class=sc2>// Mostra algumas capacidades do dispositivo</span>
+  mostrarcaps();  
+
+  <span class=sc2>// Testa uma possibilidade de configuração para o dispositivo</span>
+  verificar_dispositivo();  
+
+  <span class=sc2>// Finaliza a aplicação</span>
+  esperar();  
+  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// main().fim</span></span>
+
+
+<span class=prg>void </span>adaptador_exibirInfoGeral(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para coletar informações gerais do adaptador gráfico</span>
+  <span class=sc5>D3DADAPTER_IDENTIFIER9 </span>placaVideo; 
+
+  <span class=sc2>// Coleta informações sobre o adaptador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;GetAdapterIdentifier</span>( adaptador_default, 
+    <span class=sc4>0</span>, &placaVideo);  
+
+  <span class=sc2>// Espaços em branco para manter a boa estética do console</span>
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Mostra descrição e o arquivo de driver de vídeo</span>
+  printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Description</span>);   
+  printf(<span class=sc6>" %s \n"</span>, <span class=prg>placaVideo.Driver</span>);   
+
+  <span class=sc2>// Verifica a quantidade de adaptadores no sistema</span>
+  <span class=prg>UINT </span>nAdaptadores = <span class=sc4>0</span>; 
+  nAdaptadores = <span class=prg>g_Direct3d-&gt;GetAdapterCount</span>();  
+  printf (<span class=sc6>" Número de adaptadores de vídeo: %i \n"</span>, nAdaptadores);  
+
+<span class=sc16>} <span class=sc2>// adaptador_exibirInfoGeral().fim</span></span>
+
+
+<span class=prg>void </span>adaptador_exibirVideoCorrente(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Estrutura para a coleta de informações sobre o modo de vídeo</span>
+  <span class=sc2>// corrente</span>
+  <span class=sc5>D3DDISPLAYMODE </span>video; 
+
+  <span class=sc2>// Coleta informações sobre o modo de vídeo</span>
+  <span class=prg>g_Direct3d-&gt;GetAdapterDisplayMode </span>(adaptador_default, &video);  
+
+  <span class=sc2>// Transfere essas informações para as variáveis</span>
+  g_xtela = <span class=prg>video.Width</span>; 
+  g_ytela = <span class=prg>video.Height</span>; 
+  g_formato = <span class=prg>video.Format</span>; 
+
+  <span class=sc2>// Exibe as informações</span>
+  printf(<span class=sc6>" Modo de video corrente: </span>(%i, %i)<span class=sc6> Formato: %i \n"</span>, 
+    g_xtela, g_ytela, g_formato);  
+
+<span class=sc16>} <span class=sc2>//  adaptador_exibirVideoCorrente().fim</span></span>
+
+
+<span class=prg>void </span>adaptador_exibirListaVideoOk(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Variável para guardar a quantidade de modos de vídeo</span>
+  <span class=sc2>// disponíveis dentro de um formato</span>
+  <span class=prg>UINT </span>nQtd = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Estrutura com informações básica do modo de vídeo</span>
+  <span class=sc5>D3DDISPLAYMODE </span>video; 
+
+  <span class=sc2>// Obtém a quantidade de modos de vídeo no formato apresentado</span>
+  nQtd = <span class=prg>g_Direct3d-&gt;GetAdapterModeCount</span>( adaptador_default, g_formato);  
+
+  <span class=sc2>// Esta linha exibe o valor numérico do formato apresentado.</span>
+  printf(<span class=sc6>" \n\n Modos de video disponivel no formato %i \n"</span>, g_formato);  
+
+  <span class=sc2>// Mostra as informações dos modos de vídeo disponíveis no formato</span>
+  <span class=prg>for </span>(<span class=prg>UINT </span>ncx=0; ncx &lt; nQtd; ncx++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Obtém informação do modo de vídeo apontado por ncx</span>
+    g_hr = <span class=prg>g_Direct3d-&gt;EnumAdapterModes</span>(adaptador_default, g_formato, ncx, &video);  
+
+    <span class=no_fmt><span class=sc2>//Transfere as informações para as variáveis</span></span>
+    g_xtela = <span class=prg>video.Width</span>; 
+    g_ytela = <span class=prg>video.Height</span>; 
+    g_formato = <span class=prg>video.Format</span>; 
+
+    <span class=sc2>// Exibe a informação</span>
+    printf(<span class=sc6>" %i x %i \n"</span>, g_xtela, g_ytela);  
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc16>} <span class=sc2>// adaptador_exibirListaVideoOk().fim</span></span>
+
+
+<span class=prg>void </span>verificar_dispositivo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Resultado da vericação</span>
+  <span class=prg>bool </span>resultado = <span class=prg>false</span>; 
+
+  <span class=sc2>// Argumentos de trabalho do método CheckDeviceType()</span>
+  <span class=prg>D3DDEVTYPE </span>tipo_hardware   = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+  <span class=sc4>D3DFORMAT </span> videoFormato   = <span class=sc4>D3DFMT_X8R8G8B8</span>; 
+  <span class=sc4>D3DFORMAT </span> backbufferFormato = videoFormato; 
+
+  <span class=sc2>// Vai ter janela? sim (true) ou não(false).</span>
+  <span class=prg>bool </span>   telaCheia     = <span class=prg>false</span>; 
+
+  <span class=sc2>// Verifica se a configuração passada é possível</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CheckDeviceType</span>( adaptador_default,  tipo_hardware, 
+    videoFormato, backbufferFormato, telaCheia );  
+
+  <span class=sc2>// Verifica o resultado retornado</span>
+  <span class=sc9>if</span>(<span class=prg>SUCCEEDED</span>(g_hr) ) resultado = <span class=prg>true</span>; 
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>  (g_hr) ) resultado = <span class=prg>false</span>; 
+
+  <span class=sc2>// Exibe resultado</span>
+  printf(<span class=sc6>"\n"</span>);   
+  <span class=sc9>if </span>(resultado) 
+    printf(<span class=sc6>" Aplicação em tela cheia Ok para o formato X8R8G8B8 no hardware!"</span>);   
+  <span class=sc9>if </span>(!resultado) 
+    printf(<span class=sc6>" Configuração impraticável \n"</span>);   
+
+  <span class=sc6>return</span>; 
+
+<span class=sc16>} <span class=sc2>// verificar_dispositivo().fim</span></span>
+
+
+<span class=prg>void </span>mostrarcaps(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Estrutura que alista as capacidades possíveis de um</span>
+  <span class=sc2>// adaptador gráfico.</span>
+  <span class=sc5>D3DCAPS9 </span>caps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>(&caps, <span class=sc16>sizeof </span>(<span class=sc5>D3DCAPS9</span>) );  
+
+  <span class=sc2>// Obtém as capacidades do adaptador gráfico</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;GetDeviceCaps</span>(adaptador_default, <span class=sc4>D3DDEVTYPE_HAL</span>, &caps);  
+
+  <span class=sc2>// Verifica se ocorreu alguma falha no processo...</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha no processo"</span>, <span class=sc6>"mostrarcaps</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a versão do pixelshader e do vertexshader</span>
+  printf (<span class=sc6>" VertexShaderVersion: %X \n"</span>, <span class=prg>caps.VertexShaderVersion</span>);   
+  printf (<span class=sc6>" PixelShaderVersion : %X \n"</span>, <span class=prg>caps.PixelShaderVersion</span>);   
+
+  <span class=sc2>// Quantidade máxima de luzes ativas simultaneamente</span>
+  printf (<span class=sc6>" MaxActiveLights    : %i \n"</span>, <span class=prg>caps.MaxActiveLights</span>);   
+  printf(<span class=sc6>"\n"</span>);   
+
+  <span class=sc2>// Mostra algumas capacidades sobre linhas</span>
+  <span class=prg>DWORD </span>linecaps = <span class=prg>caps.LineCaps</span>; 
+  printf(<span class=sc6>" LineCaps    %X: \n"</span>, linecaps);  
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_ANTIALIAS</span>)  &gt; <span class=sc4>0</span>) printf(<span class=sc6>" D3DLINECAPS_ANTIALIAS Ok \n"</span>);   
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_BLEND</span>) &gt; <span class=sc4>0</span>)    printf(<span class=sc6>" D3DLINECAPS_BLEND Ok \n"</span>);   
+  <span class=sc9>if</span>((linecaps & <span class=sc4>D3DLINECAPS_TEXTURE</span>) &gt; <span class=sc4>0</span>)  printf(<span class=sc6>" D3DLINECAPS_TEXTURE Ok \n"</span>);   
+
+<span class=sc16>} <span class=sc2>// mostrarcaps().fim</span></span>
+
+
+<span class=prg>void </span>esperar(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Aguarda o pressionamento da tecla ENTER para continuar</span>
+  printf(<span class=sc6>"\n\n"</span>);   
+  printf(<span class=sc6>" Pressione ENTER para continuar \n"</span>);   
+  getchar();  
+<span class=sc16>} <span class=sc2>// esperar().fim</span></span>
+
+
+<span class=prg>void </span>config_Janela(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Configura cor e título da janela</span>
+  <span class=prg>system</span>(<span class=sc6>"color f1"</span>);   
+  <span class=prg>SetConsoleTitle</span> (<span class=sc6>"prj_Adaptador"</span>);   
+
+  <span class=sc2>// Obtém o handle de escrita do console.</span>
+  <span class=sc16>HANDLE </span>hJanela = <span class=prg>GetStdHandle</span>(<span class=sc4>STD_OUTPUT_HANDLE</span>);   
+
+  <span class=sc2>// Configura tamanho do buffer do console</span>
+  <span class=sc5>COORD </span>bufferTam = {80, 90}; 
+  <span class=prg>SetConsoleScreenBufferSize</span>( hJanela, bufferTam);  
+
+  <span class=sc2>// Configura tamanho da janela</span>
+  <span class=sc5>SMALL_RECT </span>janelaTam = { <span class=sc4>0, 0, 79, 29</span> }; 
+  <span class=prg>SetConsoleWindowInfo</span>(hJanela, <span class=prg>TRUE</span>, &janelaTam);  
+
+  <span class=sc2>// Permite a boa acentuação em português.</span>
+  <span class=prg>SetConsoleOutputCP</span>(1252);  
+  printf(<span class=sc6>"\n"</span>);   
+<span class=sc16>} <span class=sc2>// config_Janela().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-12.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

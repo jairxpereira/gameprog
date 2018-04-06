@@ -1,0 +1,306 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-7</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-7</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-6.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-8.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.7 Estados internos do renderizador - shader</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 vsInput_PositionColored  ( VS_INPUT )   - estrutura global do shader</a>
+<a href=#2.2>2.2 vsOutput_PositionColored ( VS_OUTPUT )  - estrutura global do shader</a>
+<a href=#2.3>2.3 gpVertexShader() - função de entrada do vertexshader</a>
+<a href=#2.4>2.4 gpPixelShader()  - função de entrada do pixelshader</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Estados</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Estados.png></div>
+As coisas continuam simples neste shader uma vez que os argumentos de
+entrada  são  repassados  para  os  argumentos de  saída sem sofrerem
+transformações. As mudanças ocorridas ficaram por conta da entrada de
+cor  no  shader  advinda  da  aplicação  e pelo fato da utilização de
+estruturas para empacotar os argumentos de entrada e saída.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><div class=niceview style="border-style:dashed;">
+<b class=sc2>// Estrutura para receber os dados advindos da aplicação</b>
+<b class=prg>struct</b> <b class=prg>vsInput_PositionColored</b>
+
+<b class=sc2>// Estrutura para transmitir dados do vertexshader para o pixelshader</b>
+<b class=prg>struct</b>  <b class=prg>vsOutput_PositionColored</b>
+
+<b class=sc16><b class=prg>vsOutput_PositionColored</b> gpVertexShader( <b class=prg>vsInput_PositionColored</b> vs_entrada )</b> 
+Esta função do vertexshader recebe cor e posição através da estrutura
+de entrada e devolve esses argumentos na estrutura de saída.
+
+<b class=sc16><b class=prg>float4</b> gpPixelShader( <b class=prg>vsOutput_PositionColored</b> ps_entrada ) : SV_Target</b>
+Essa função recebe do vertexshader cor e posição e retorna para os
+processos do directx a cor do pixel.
+</div> </div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 vsInput_PositionColored ( VS_INPUT ) - estrutura global do shader </u></b>
+<div class=niceview><span class=sc2>// Estrutura para receber os dados advindos da aplicação</span>
+<span class=prg>struct </span><span class=sc5>vsInput_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float4 </span>pos : <span class=sc16>POSITION</span>; 
+  
+  <span class=sc2>// Cor do vértice</span>
+  <span class=prg>float4 </span>color : <span class=sc16>COLOR</span>; 
+<span class=sc16>}</span>; 
+<span class=sc2>// endstruct: vsInput_PositionColored</span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 vsOutput_PositionColored ( VS_OUTPUT ) - estrutura global do shader </u></b>
+<div class=niceview><span class=sc2>// Estrutura para transmitir dados do vertexshader para o pixelshader</span>
+<span class=prg>struct </span> <span class=sc5>vsOutput_PositionColored</span>
+<span class=sc16>{</span>
+  
+    <span class=sc2>// Posição do pixel</span>
+    <span class=prg>float4 </span>pos : <span class=sc16>SV_POSITION</span>; 
+   
+   <span class=sc2>// Cor do pixel</span>
+   <span class=prg>float4 </span>color : <span class=sc16>COLOR0</span>; 
+<span class=sc16>}</span>; <span class=sc2>// endstruct: vsOutput_PositionColored</span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 gpVertexShader() - função de entrada do vertexshader</u></b>
+<div class=niceview><span class=sc5>vsOutput_PositionColored </span>gpVertexShader( <span class=sc5>vsInput_PositionColored </span>vs_entrada ) 
+<span class=sc16>{</span>
+  <span class=sc5>vsOutput_PositionColored </span>ps_saida = (<span class=sc5>vsOutput_PositionColored</span>)  <span class=sc4>0</span>; 
+  <span class=prg>ps_saida.pos </span>  =   <span class=prg>vs_entrada.pos</span>; 
+  <span class=prg>ps_saida.color </span>= <span class=prg>vs_entrada.color</span>; 
+  <span class=sc6>return </span>ps_saida; 
+<span class=sc16>}</span>
+</div>
+<b class=prg-code><span class=sc5>vsOutput_PositionColored </span>ps_saida = (<span class=sc5>vsOutput_PositionColored</span>)  <span class=sc4>0</span>; </b>
+Aqui  criamos  e  limpamos  uma  instância da estrutura de saída para
+retornar os dados de posição e cor ao pixelshader.
+
+<div class=prg-code>
+<b class=sc2>// Repasse da posição de entrada para a posição de saída </b>
+<span class=prg>ps_saida.pos </span>  =   <span class=prg>vs_entrada.pos</span>; 
+
+<b class=sc2>// Repasse da cor de entrada para a cor de saída </b>
+<span class=prg>ps_saida.color </span>= <span class=prg>vs_entrada.color</span>; </div>
+Note aqui que apenas repassamos para os valores de saída  os  valores
+de entrada.
+
+
+<b class=prg-code><span class=sc6>return </span>ps_saida ; </b>
+Aqui retornamos posição e cor para o pixelshader.
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 gpPixelShader() - função de entrada do pixelshader </u></b>
+<div class=niceview><span class=prg>float4 </span>gpPixelShader( <span class=sc5>vsOutput_PositionColored </span>ps_entrada ) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+  <span class=sc6>return </span><span class=prg>ps_entrada.color</span>; 
+<span class=sc16>}</span>
+</div>
+<b class=prg-code><span class=prg>float4</span>:<span class=sc16>SV_Target</span> </b>
+Esse  aqui  é  o  argumento  da  cor  de saída (<b>float4</b>) lembrando que
+<b>SV_Target</b>   é   a   semântica   para   retornar  uma  cor  de  pixel.
+
+<b class=prg-code><span class=sc6>return </span><span class=prg>ps_entrada.color</span>; </b>
+Aqui retornarmos a cor para os processos de rasterização  do  directx.
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Estados</u></b>
+<div class=prg-code><img src=images\prj_Estados.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Estados - Arquivo: prj_Estados.fx</span>
+<span class=sc2>// Exemplo de renderização de vértices com posição e cor com HLSL</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc2>// Estrutura para receber os dados advindos da aplicação</span>
+<span class=prg>struct </span><span class=sc5>vsInput_PositionColored</span>
+<span class=sc16>{</span>
+
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float4 </span>pos : <span class=sc16>POSITION</span>; 
+
+  <span class=sc2>// Cor do vértice</span>
+  <span class=prg>float4 </span>color : <span class=sc16>COLOR</span>; 
+
+<span class=sc16>}</span>; 
+<span class=sc2>// endstruct: vsInput_PositionColored</span>
+
+
+<span class=sc2>// Estrutura para transmitir dados do vertexshader para o pixelshader</span>
+<span class=prg>struct </span> <span class=sc5>vsOutput_PositionColored</span>
+<span class=sc16>{</span>
+	<span class=sc2>// Posição do pixel</span>
+	<span class=prg>float4 </span>pos : <span class=sc16>SV_POSITION</span>; 
+
+	<span class=sc2>// Cor do pixel</span>
+	<span class=prg>float4 </span>color : <span class=sc16>COLOR0</span>; 
+<span class=sc16>}</span>; 
+<span class=sc2>// endstruct: vsOutput_PositionColored</span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Vertexshader</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc5>vsOutput_PositionColored </span>gpVertexShader( <span class=sc5>vsInput_PositionColored </span>vs_entrada ) 
+<span class=sc16>{</span>
+  <span class=sc5>vsOutput_PositionColored </span>ps_saida = (<span class=sc5>vsOutput_PositionColored</span>)  <span class=sc4>0</span>; 
+  <span class=prg>ps_saida.pos </span>  = <span class=prg>vs_entrada.pos</span>; 
+  <span class=prg>ps_saida.color </span>= <span class=prg>vs_entrada.color</span>; 
+  <span class=sc6>return </span>ps_saida; 
+<span class=sc16>}</span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// PixelShader</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>float4 </span>gpPixelShader( <span class=sc5>vsOutput_PositionColored </span>ps_entrada ) : <span class=sc16>SV_Target</span>
+<span class=sc16>{</span>
+  <span class=sc6>return </span><span class=prg>ps_entrada.color</span>; 
+<span class=sc16>}</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-6.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-8.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a> 
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 vsInput_PositionColored  ( VS_INPUT )  - estrutura global do shader</a>
+<a href=#2.2>2.2 vsOutput_PositionColored ( VS_OUTPUT ) - estrutura global do shader</a>
+<a href=#2.3>2.3 gpVertexShader() - função de entrada do vertexshader: </a>
+<a href=#2.4>2.4 gpPixelShader()  - função de entrada do pixelshader</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Estados</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

@@ -1,0 +1,423 @@
+﻿<html>
+<head>
+<title>C_Sharp_09-3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C#</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 09-3</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track09-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name="track09"></a>
+<h3 style="background-color:#ead5ff">09-3 Trabalhando com eventos</h3><pre>
+<b><u>1. Visão geral</b></u>
+Eventos são acontecimentos ou ocorrências significantes geradas pelo usuário, 
+por outros aplicativos ou pelo sistema operacional. 
+
+Por exemplo, o clique de um botão pelo usuário é um evento; o encerramento da
+aplicação é um evento. Geralmente, como respostas a estes eventos de exemplo,
+após  um clique em seu botão a aplicação vai realizar uma ação pertinente; no 
+encerramento  da aplicação, antes de finalizar a aplicação, esta vai realizar 
+algum  trabalho de limpeza antes tal como fechar arquivos, gravar status etc.
+
+Tanto a geração como  o tratamento  de eventos são representados pelo disparo
+de certas funções dentro de uma aplicação. 
+
+A classe que oferece o levantamento de eventos é chamada de  <b>publisher  ou 
+publicante;</b> a classe que oferece funções para tratar os eventos levantados
+é chamada de <b>assinante ou subscriber.</b>
+ 
+<b><u>2.1 Declarando o delegate da assinatura dos eventos</u></b>
+<b class=prg>
+<span class=sc2>// Assinatura dos eventos e das funções tratadoras dos eventos</span>
+delegate void aoSair_Manipulador();
+delegate void noClick_Manipulador();</b>
+
+Tanto os eventos como as funções que vão tratar estes eventos  ganham  a  mesma
+assinatura. Nossa aplicação de exemplo vai gerar dois eventos: o evento noClick
+que vai ser gerado ao clicar um botão imaginário na tela e o outro evento aoSair
+que notifica aos assinantes o encerramento da  aplicação.  Os  delegates  acima
+estabelecem  a  assinatura  destes  eventos  e das funções que vão tratar estes
+eventos. Os métodos acima não vão ter retorno nem argumento de entrada.
+
+<b><u>2.2 Declarando os eventos dentro da classe publicante</u></b>
+<b class=prg>
+<span class=sc2>// Declaração de dois eventos</span>
+static event aoSair_Manipulador naSaida;
+static event noClick_Manipulador noClick;</b>
+
+Estas  duas  declarações  produzem dois delegates de eventos: <b>naSaida</b> que vai 
+receber as funções que vão ser executadas perto da ocasião de encerramento da
+aplicação,  e  o  delegate  de  evento  <b>noClick</b> que vai  notificar os objetos
+assinantes  quando  ocorrer  o  click  no  lugar  pertinente  desse evento.
+
+<b><u>2.3 Monitorando os eventos</u></b>
+A aplicação vai monitorar a entrada de dados e verificará se o usuário optou por
+clicar em um botão que mostra uma mensagem ou optou pelo botão  de  encerramento
+da aplicação. Logo  após  esses  eventos produzidos externamente pelo usuário, o 
+programa  chamará  uma  função  auxiliar  que  chamará  na  sequência o delegate 
+correspondente  que contém as funções oferecidas pelos assinantes para tratar os
+eventos propostos:
+<div class=prg-code>
+<span class="sc2">// Os eventos são produzidos externamente pelo usuário
+</span><span class="sc0">  </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">49</span><span class="sc10">;</span><span class="sc0">
+  </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">;</span><span class="sc0">            
+  </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ntecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">        
+  
+ </span><span class="sc2">// Vamos despachar os eventos para o lugar certo
+</span><span class="sc0">  </span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ntecla</span><span class="sc10">)</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc11">tecla_1</span><span class="sc10">:</span><span class="sc0">
+      </span><span class="prg">tratarEventos_noClick</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+     </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc11">tecla_2</span><span class="sc10">:</span><span class="sc0">
+      </span><span class="prg">tratarEventos_aoSair</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">      
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endswitch</span>
+  </div>  
+
+<b><u>2.4 Disparando o tratamento dos eventos</u></b>
+Veja abaixo que as funções auxiliares chamam as funções que tratam os eventos
+através dos delegates de evento.
+<div class=prg-code>
+<span class="sc2">// Executa os eventos aoSair()
+</span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratarEventos_aoSair</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="prg">if (naSaida != null) naSaida();</span><span class="sc0">
+  
+  </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">" \n Fim do programa. Pressione enter para continuar"</span><span class="sc10">);</span><span class="sc0">
+  </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+  
+  </span><span class="sc2">// Entregando o controle ao sistema operacional
+</span><span class="sc0">  </span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">Exit</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tratarEventos_aoSair().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// Executa os eventos noClick()
+</span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratarEventos_noClick</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="prg">if ( noClick != null ) noClick();</span><span class="sc0">
+  
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tratarEventos_noClick().fim
+</span></div>
+
+<b><u>2.5 Atrelando funções dos assinantes aos eventos</u></b>
+<div class=prg-code>
+<span class="sc0"></span><span class="sc2">// Vamos criar um assinante dos eventos
+</span><span class="sc0"></span><span class="sc11">Assinante</span><span class="sc0"> </span><span class="sc11">sistema</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Assinante</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Vamos conectar as funções do assinante aos eventos
+</span><span class="sc0"></span><span class="sc5">naSaida += new aoSair_Manipulador ( sistema.limpeza );</span><span class="sc0">      
+</span><span class="sc5">noClick += new noClick_Manipulador ( sistema.mostrarMensagem );</span><span class="sc0">
+
+</span><span class="sc2">// Configurando um tratamento rápido de evento
+</span><span class="sc0"></span><span class="sc5">noClick += delegate()</span>
+{<span class="sc0">
+</span><span class="sc11">show</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" Resposta rápida ao evento noClick()!"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0"></span></div>
+
+O 'Assinante()' é uma simples classe cliente que oferece os métodos para tratar 
+os eventos. Os métodos da classe devem ter a  mesma  assinatura  definida  pelo
+delegate: 
+<div class=prg-code>
+<span class="sc16">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Assinante</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc5">void mostrarMensagem()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+	
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente.mostrarMensagem(): Olá"</span><span class="sc10">);</span><span class="sc0">
+   
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrarMensagem();
+</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc5">void limpeza()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+	
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente.limpeza(): Ok arquivos fechados."</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// limpeza().fim
+	
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe</span></div>
+
+<b><u>2.6 Código-fonte do projeto de exemplo</u></b>
+<div class=prg-code>
+<img src=images\prj_simplesEvento.png>
+
+<span class="sc2">// Projeto prj_simplesEvento; Aruivo Assinante.cs
+// Este programa ilustra o uso de eventos
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_simplesEvento</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Assinante</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrarMensagem</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente.mostrarMensagem(): Olá"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrarMensagem();
+</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">limpeza</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" Cliente.limpeza(): Ok arquivos fechados."</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// limpeza().fim
+</span><span class="sc0">  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace
+</span><span class="sc0">
+
+</span><span class="sc2">// Projeto prj_simplesEvento; Aruivo Publicante.cs
+// Este programa ilustra o uso de eventos
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Assinatura das funções tratadoras dos eventos
+</span><span class="sc11">delegate</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">aoSair_Manipulador</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">delegate</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">noClick_Manipulador</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_simplesEvento</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Publicante</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc2">// Declaração de dois eventos
+</span><span class="sc0">    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">event</span><span class="sc0"> </span><span class="sc11">aoSair_Manipulador</span><span class="sc0"> </span><span class="sc11">naSaida</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc11">event</span><span class="sc0"> </span><span class="sc11">noClick_Manipulador</span><span class="sc0"> </span><span class="sc11">noClick</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc2">// Executa os eventos aoSair()
+</span><span class="sc0">    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratarEventos_aoSair</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">naSaida</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc11">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">naSaida</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">" \n Fim do programa. Pressione enter para continuar"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+      
+      </span><span class="sc2">// Entregando o controle ao sistema operacional
+</span><span class="sc0">      </span><span class="sc11">Environment</span><span class="sc10">.</span><span class="sc11">Exit</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tratarEventos_aoSair().fim
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Executa os eventos noClick()
+</span><span class="sc0">    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tratarEventos_noClick</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">noClick</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc11">null</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">noClick</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tratarEventos_noClick().fim
+</span><span class="sc0">
+    
+    </span><span class="sc2">// Função principal
+</span><span class="sc0">    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc11">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos criar um assinante dos eventos
+</span><span class="sc0">      </span><span class="sc11">Assinante</span><span class="sc0"> </span><span class="sc11">sistema</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Assinante</span><span class="sc10">();</span><span class="sc0">
+     
+      </span><span class="sc2">// Vamos conectar as funções do assinante aos eventos
+</span><span class="sc0">      </span><span class="sc11">naSaida</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">aoSair_Manipulador</span><span class="sc10">(</span><span class="sc11">sistema</span><span class="sc10">.</span><span class="sc11">limpeza</span><span class="sc10">);</span><span class="sc0">      
+      </span><span class="sc11">noClick</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">noClick_Manipulador</span><span class="sc10">(</span><span class="sc11">sistema</span><span class="sc10">.</span><span class="sc11">mostrarMensagem</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Configurando um tratamento rápido de evento
+</span><span class="sc0">      </span><span class="sc11">noClick</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc11">delegate</span><span class="sc10">(){</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" Resposta rápida ao evento noClick()!"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc10">};</span><span class="sc0">    
+
+     
+      </span><span class="sc11">mostrar_menu</span><span class="sc10">:</span><span class="sc0">
+      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_simplesEvento"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">"\n [MENSAGEM] [SAIR] \n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">" 1- Clicar no botão MENSAGEM"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">" 2- Clicar no botão SAIR \n\n"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc6">" Digite sua opção: "</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Os eventos são produzidos externamente pelo usuário
+</span><span class="sc0">      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_1</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">49</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tecla_2</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">;</span><span class="sc0">            
+      </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ntecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">        
+      
+     </span><span class="sc2">// Vamos despachar os eventos para o lugar certo
+</span><span class="sc0">      </span><span class="sc5">switch</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ntecla</span><span class="sc10">)</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc11">tecla_1</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">tratarEventos_noClick</span><span class="sc10">();</span><span class="sc0">
+          </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+         </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc11">tecla_2</span><span class="sc10">:</span><span class="sc0">
+          </span><span class="sc11">tratarEventos_aoSair</span><span class="sc10">();</span><span class="sc0">
+          </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">      
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endswitch
+</span><span class="sc0">
+      </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ntecla</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc11">tecla_2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">goto</span><span class="sc0"> </span><span class="sc11">mostrar_menu</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc11">pause</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// Main().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// Pausa para a leitura da tela
+</span><span class="sc0">    </span><span class="sc16">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">pause</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ReadLine</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc16">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim  
+</span><span class="sc0">  
+
+    </span><span class="sc2">// Mostra uma mensagem na tela
+</span><span class="sc0">    </span><span class="sc16">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">show</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"{0} "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">txt</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// show().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_simplesEvento
+</span><span class="sc0"></span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="csharp.html#start" style="color:blue"> index </a></td>
+<td><a href="track09-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track09-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

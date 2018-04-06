@@ -1,0 +1,335 @@
+﻿<html>
+<head>
+<title>Gameprog_CPP_fase_11</title>
+<head>
+<style type="text/css">
+
+
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('bg_azul.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track11.html</b></center>
+<hr>
+<table border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track10.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track12.html" style="color:blue">&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track06"></a><h3 style="background-color:#80ff80">11. Sobrecarregando operadores 1/2</h3>
+<b><u>11.1 Sobrecarregando operadores</b></u>
+Preste atenção no código abaixo que utilizamos no capítulo anterior sobre strings: <font color="darkblue">
+string snome = "gameprog";
+snome = "www." + snome + ".com.br"; 	// resulta em www.gameprog.com.br</font>
+
+Essa mesma operação de concatenação feito puramente na linguagem c seria um 
+processo bem mais trabalhoso, você teria que usar umas duas funções <b>strcat()</b>
+para obter o mesmo resultado. A linguagem c++ permite a redefinição de novos
+significados para os operadores lógicos e matemáticos, incluindo colchetes e 
+parênteses. No exemplo do código acima foi dado ao <b>operador+</b> a capacidade de
+juntar strings e isso deixou a operação de concatenar strings suave e intuitiva.
+
+Veja nosso exemplo com a classe Ponto que criamos:	
+<div class=prg-code>
+<img src="images/operator_overload.png">
+
+<span class="sc2">// operator_overload.cpp
+</span><span class="sc0"></span><span class="sc2">// ilustra sobrecarregamento de operadores (operator overload)
+</span><span class="sc0"></span><span class="sc9">#include &lt;iostream&gt;
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// protótipo de nossas funções básicas
+</span><span class="sc0"></span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">inicio</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">fim</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">mx</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">my</span><span class="sc10">;</span><span class="sc0"> 
+
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc4">0</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">):</span><span class="sc0"> </span><span class="sc11">mx</span><span class="sc10">(</span><span class="sc11">x</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">my</span><span class="sc10">(</span><span class="sc11">y</span><span class="sc10">){}</span><span class="sc0">     
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">();</span><span class="sc0">    
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc5">operator</span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc5">operator</span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">ldir</span><span class="sc10">);</span><span class="sc0">    
+</span><span class="sc11">Ponto</span><span class="sc10">&amp;</span><span class="sc0"> </span><span class="sc5">operator</span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">ldir</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da classe: Ponto
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc10">::</span><span class="sc11">info</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"("</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">","</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">")\t"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc10">::</span><span class="sc5">operator</span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">nval</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método operator+(int)
+</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc10">&amp;</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc10">::</span><span class="sc5">operator</span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">ldir</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ldir</span><span class="sc10">.</span><span class="sc11">mx</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ldir</span><span class="sc10">.</span><span class="sc11">my</span><span class="sc10">;</span><span class="sc0">   
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc5">this</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método operator=(Ponto&amp;)
+</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc10">::</span><span class="sc5">operator</span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">ldir</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">mx</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ldir</span><span class="sc10">.</span><span class="sc11">mx</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">my</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ldir</span><span class="sc10">.</span><span class="sc11">my</span><span class="sc10">;</span><span class="sc0">  
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do método operator+(Ponto&amp;)
+</span><span class="sc0">
+</span><span class="sc2">// ponto de entrada da execução de nosso programa
+</span><span class="sc0"></span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">inicio</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">pnt_a</span><span class="sc10">(</span><span class="sc4">310</span><span class="sc10">,</span><span class="sc4">230</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">pnt_b</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">Ponto</span><span class="sc0"> </span><span class="sc11">pntsoma</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pnt_a = "</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc11">pnt_a</span><span class="sc10">.</span><span class="sc11">info</span><span class="sc10">();</span><span class="sc0">       
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pnt_b = "</span><span class="sc10">;</span><span class="sc0">    </span><span class="sc11">pnt_b</span><span class="sc10">.</span><span class="sc11">info</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">pnt_a</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0">  </span><span class="sc11">pnt_a</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">    
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pnt_a + 10 = "</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">pnt_a</span><span class="sc10">.</span><span class="sc11">info</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">pnt_a</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">pnt_a</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">pnt_b</span><span class="sc10">;</span><span class="sc0">  
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" pnt_a + pnt_b = "</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">pnt_a</span><span class="sc10">.</span><span class="sc11">info</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">fim</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endmain
+</span><span class="sc0">
+</span><span class="sc2">//************* funções ******************************************************
+</span><span class="sc0">    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">inicio</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color f0"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"title operator_overload.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">   
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: initsys()
+</span><span class="sc0">        
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">fim</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n\n"</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"pause"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunction: endsys()</span></div>
+
+<u><b>11.1.1 this: O ponteiro invisível</u></b>	<font color="darkblue">
+Ponto operator+ (int nval);		// protótipo do método </font>
+De maneira geral, como pode ser visto na linha acima, o processo de sobrecarregar
+um operador consiste em escrever um método com o operador prefixado da palavra chave
+<b>operator</b> utilizando os aspectos comuns a qualquer função tal como argumentos de 
+entrada e saída entre outras coisas que já vimos.
+Esse protótipo nos diz que o método <b>operator+()</b> vai receber um número inteiro
+e vai retornar uma cópia de um objeto Ponto. Esse objeto Ponto retornado
+vai ser assinalado a uma variável Ponto através do método <b>operator=()</b> que deve
+ser sobrecarregado quando necessário.
+	<font color="darkblue">
+Ponto Ponto::operator+ (int nval)
+{
+Ponto res;
+res.mx = this->mx + nval;
+res.my = this->my + nval;
+return res;
+} // fim do metodo operator+(int)	</font>
+Quando você chama esse método desta forma, como exemplo, <b>pnt_a = pnt_a + 10</b>, isso
+é traduzido para a seguinte linha: <b>pnt_a = operator+(&pnt_a, 10);</b> Veja que o
+método recebe um argumento oculto.
+
+Cada objeto tem sua coleção particular de propriedades, entretanto o mesmo não
+acontece com os métodos. Os métodos são compartilhados. Então para que o método
+saiba exatamente em qual objeto operar, o método recebe uma referência do objeto
+que o invocou; e assim através dessa referência, o método manipula adequadamente
+as propriedades particulares do objeto em foco.
+No código acima, <b>this->mx</b> ou <b>mx</b> é entendido como <b>pnt_a.mx</b> porque <b>pnt_a</b> foi o
+objeto que invocou o método <b>operator+()</b>. Em resumo você pode usar <b>this</b> para se
+referir ao objeto em foco.
+	<font color="darkgreen">
+<b>pnt_a = pnt_a + 10</b>
+<b>pnt_a = operator+(&pnt_a, 10);</b>
+<b>pnt_a = operator+(&pnt_a, int nval);</b> </font>
+Repare nas linhas acima que 10 ou int nval é o argumento do lado direito no método
+e na chamada. Essa ordem é importante, pois se na chamada for invertido tal como em
+<b>pnt_a = 10 + pnt_a</b> o programa não vai compilar porque a ordem foi invertida.
+Posteriormente vamos aprender como contornar essa situação.	
+		<font color="darkblue">
+Ponto operator+ (const Ponto &ldir);	</font>
+Esta outra versão do método operator+() vai aceitar como argumento uma referência 
+constante a um ponto pré-existente e assim permitir somar Pontos com Pontos.
+Esse <b>Ponto ldir</b> do argumento foi definido como <b>const Ponto &ldir</b> porque 
+esse Ponto não deve ser modificado dentro desse método.
+A definição e implementação desse método em conjunto com o método operator=() permite
+o conforto de você trabalhar com Pontos dessa maneira: <b>pnt_a = (pnt_a + pnt_b);	</b>
+Essa sintaxe tem duas partes, a primeira parte avaliada primeiro é a parte dentro do
+parênteses que vai produzir um <b>Ponto res</b> que na sequência é copiado, pelo método
+<b>operator=()</b>, para o <b>Ponto pnt_a.</b>
+	<font color="darkblue">
+Ponto Ponto::operator+ (const Ponto &ldir)
+{
+Ponto res;
+res.mx = mx + ldir.mx;
+res.my = my + ldir.my;	
+return res;
+} // fim do metodo operator+(Ponto&)	</font>
+Dentro de um método que redefine um operador, você tem a liberdade de estabelecer
+o que esse método vai fazer. No exemplo acima, estabelecemos que no processo de
+uma soma de dois pontos, deve-se somar o membro mx de cada Ponto e depois somar o
+membro my de cada Ponto e retornar um Ponto com o resultado dessa soma.
+	<font color="darkblue">
+Ponto& operator= (const Ponto &ldir);
+Ponto& Ponto::operator= (const Ponto &ldir)
+{
+mx = ldir.mx;
+my = ldir.my;	
+return *this;
+} // fim do metodo operator=(Ponto&)</font>
+O método <b>operator=()</b> faz uma simples operação de assinalação, ou em outras palavras
+uma operação de cópia simples. O método copia os membros do ponto de referência
+para os respectivos membros <b>mx,my</b> do ponto que invocou o método.	
+Na omissão da implementação desse método, o compilador faz uma implementação dele
+nos moldes de uma cópia simples como foi feito acima. Poderíamos tê-lo omitido  
+uma vez que o compilador faria automaticamente a mesma coisa para nós no contexto
+acima. Entretanto, há situações que você mesmo precisa definir e implementar o 
+método de assinalação principalmente quando você define ponteiros e strings 
+dentro de sua classe.
+
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="cppvip.html#start" style="color:blue"> index </a></td>
+<td><a href="track10.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track12.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>

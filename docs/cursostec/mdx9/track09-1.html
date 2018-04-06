@@ -1,0 +1,396 @@
+﻿<html>
+<head>
+<title>mdx9_fase09-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 09-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track08-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track09-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>09.1 Música</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Musica01.png></div>
+Neste capítulo vamos ver  como adicionar  música  e  video  a  nossas
+aplicações  com  o  namespace   <b class=prg>Microsoft.DirectX.AudioVideoPlayback.</b>
+Esse  namespace  é  um dos mais limitados do DirectX gerenciado e foi
+desenhado  apenas  para  prover  serviços básicos para tocar música e 
+video.  Esse namespace é um conjunto bem reduzido das funcionalidades
+das  bibliotecas  <b>DirectShow</b>  e  <b>DirectMusic</b> do kit em C++ do DirectX.
+Apesar das suas limitações esta biblioteca cumpre bem o seu propósito
+básico de tocar música e video com bastante facilidade.  Neste tópico
+vamos ver o objeto da classe <b class=prg>Audio</b> que toca música.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Musica01.png></div>
+Nesta aplicação pressionando a letra <b>P</b> de play a música toca,  e <b>S</b> de
+stop pára a música. 
+
+A classe <b class=prg>Audio</b> é muito simples de usar e  na  sua  inicialização  não
+existe  configurações  de  'descrição'  ou nível de cooperação. Nosso
+objeto <span class=prg>Audio</span> é inicializado em <b>initGfx().</b> Em <b>Tela_KeyDown()</b> é testado
+o método <span class=prg>Play()</span> e <span class=prg>Stop()</span> e  na  função <b>Renderizar()</b> é exibido algumas
+propriedades dessa classe.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto (mensagens)</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+<b>
+ <span class=sc2>// Para criação do dispositivo de audio</span>
+ <span class=prg>private </span><span class=sc5>Audio </span>mp_radio = <span class=prg>null;</span>
+</b>
+<span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div><b>
+<span class=sc2>// Para criação do dispositivo de audio</span>
+<span class=prg>private </span><span class=sc5>Audio </span>mp_radio = <span class=prg>null;</span></b>
+Declaramos aqui a variável para controlar a instância do  tocador  de
+música.
+
+<b><u>2.2 Inicializando o dispositivo de audio</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+<span class=sc2>// Configuração dos parâmetros de apresentação</span>
+<span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+<span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+<span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+<span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+<span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+<span class=prg>int </span>adaptador = 0; 
+device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+<span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+<span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+<b>
+<span class=sc2>// Inicializa dispositivo de audio</span>
+<span class=prg>string </span>musica_arquivo = <span class=sc6>@"c:\gameprog\gdkmedia\musica\megaman3Intro.mp3";</span>
+<span class=sc2>// Cria um dispositivo de som</span>
+mp_radio = <span class=prg>new </span><span class=sc5>Audio</span>(musica_arquivo, <span class=prg>false</span>);  
+</b>
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div><b>
+<span class=sc2>// Inicializa dispositivo de audio</span>
+<span class=prg>string </span>musica_arquivo = <span class=sc6>@"c:\gameprog\gdkmedia\musica\megaman3Intro.mp3";</span></b>
+Aqui é a música de amostra que será utilizada.
+
+<b><span class=sc2>// Cria um dispositivo de som</span>
+mp_radio = <span class=prg>new </span><span class=sc5>Audio</span>(musica_arquivo, <span class=prg>false</span>); </b>  
+Esse  construtor carrega a música apontada e toca-a de imediato  se o
+flag ao lado estiver  configurado  como  <span class=prg>true</span>.  Deixamos <span class=prg>false</span> para o
+inicío da música ser controlado pelo teclado.
+
+<b><u>2.3 Algumas propriedades do objeto Audio</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ MostrarTexto(20, 40, <span class=sc6>"P - tocar"</span>);  
+ MostrarTexto(120, 40, <span class=sc6>"S - parar"</span>);  
+<b>
+ MostrarTexto(20, 20, <span class=prg>mp_radio.State.ToString</span>());  
+ MostrarTexto(120, 20, <span class=prg>mp_radio.CurrentPosition.ToString</span>());  
+</b>
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+ <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div>
+
+<b>MostrarTexto(20, 20, <span class=prg>mp_radio.State.ToString</span>());  
+MostrarTexto(120, 20, <span class=prg>mp_radio.CurrentPosition.ToString</span>());</b>
+Aqui  é  exibido duas propriedades do objeto da classe  <b class=prg>Audio</b>, <span class=prg>State</span>
+retorna o estado atual da música,<b>Running</b> se estiver tocando ou <b>Paused</b>
+se estiver parada e <span class=prg>CurrentPosition</span> retorna um  valor  que  indica a
+posição corrente que está tocando em termos de segundos e centésimos.
+
+<b><u>2.4 Tratando o teclado</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+<span class=sc16>{</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.P</span>)  <span class=prg>mp_radio.Play</span>();  
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.S</span>)  <span class=prg>mp_radio.Stop</span>();  
+<span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+</div><b>
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.P</span>)  <span class=prg>mp_radio.Play</span>();  
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.S</span>)  <span class=prg>mp_radio.Stop</span>(); </b>
+O método <span class=prg>Play()</span> toca a música enquanto <span class=prg>Stop()</span> a pára.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Musica01</u></b>
+<div class=prg-code>
+<img src=images\prj_Musica01.png>
+
+<span class=sc2>// prj_Musica01 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como tocar música</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.AudioVideoPlayback;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_Musica01 
+<span class=sc16>{</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto (mensagens)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=sc2>// Para criação do dispositivo de audio</span>
+    <span class=prg>private </span><span class=sc5>Audio </span>mp_radio = <span class=prg>null;</span>
+
+    <span class=sc2>// (...)</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+	
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Inicializa dispositivo de audio</span>
+      <span class=prg>string </span>musica_arquivo = <span class=sc6>@"c:\gameprog\gdkmedia\musica\megaman3Intro.mp3";</span>
+      <span class=sc2>// Cria um dispositivo de som</span>
+      mp_radio = <span class=prg>new </span><span class=sc5>Audio</span>(musica_arquivo, <span class=prg>false</span>);  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      MostrarTexto(20, 40, <span class=sc6>"P - tocar"</span>);  
+      MostrarTexto(120, 40, <span class=sc6>"S - parar"</span>);  
+
+      MostrarTexto(20, 20, <span class=prg>mp_radio.State.ToString</span>());  
+      MostrarTexto(120, 20, <span class=prg>mp_radio.CurrentPosition.ToString</span>());  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+    <span class=sc2>// Mostra texto</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarTexto(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+    <span class=sc16>} <span class=sc2>// MostrarTexto().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.P</span>)  <span class=prg>mp_radio.Play</span>();  
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.S</span>)  <span class=prg>mp_radio.Stop</span>();  
+    <span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track08-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track09-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

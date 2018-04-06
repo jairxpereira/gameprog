@@ -1,0 +1,54 @@
+Rem Project: videolist
+Rem Created: 04/08/2013 17:32:47
+
+inicio:
+global branco as integer = 0xffffff
+global azul   as integer = 0x0000ff
+
+' Propriedades de vídeo
+nLargura       as integer = 0
+nAltura        as integer = 0
+nProfundidade  as integer = 0
+
+txt            as string = ""
+ncx            as integer = 0
+nqtd           as integer = 0
+
+initsys("videolist.dba")
+
+Perform Checklist For Display Modes
+nqtd = Checklist Quantity()
+
+' Cabeçalho de apresentação da lista
+Print
+Print " #ncx: (largura x altura x profundidade)"
+Print "------------------------------------------"
+
+ for ncx = 1 to nqtd
+ ' Obtém largura, altura e profunidade do modo de vídeo #ncx
+ nLargura         = Checklist Value A(ncx)
+ nAltura          = Checklist Value B(ncx)
+ nProfundidade    = Checklist Value C(ncx)
+
+ if (ncx = 4 or ncx = 10 or ncx = 13) then print
+
+ ' Mostra capacidade de vídeo
+ print " #", ncx, space$(4);
+ print nLargura," x ", nAltura," x ", nProfundidade
+
+ next ncx
+
+final:
+print
+print " Pressione qualquer tecla para encerrar"
+suspend for key
+end
+
+' ----- initsys() - Configuração básica da aplicação -----
+function initsys(txt as string)
+' configurando a janela
+set window on
+set window title txt
+ink azul, branco
+cls branco
+endfunction

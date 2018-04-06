@@ -1,0 +1,162 @@
+<html><head>
+<title>cbiblioteca_track19_setjmp</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track19.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track18.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track20.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<HR>
+<A NAME="19.00">
+<CENTER><H2>19.00 setjmp.h</H2></CENTER>
+<A HREF="#19.01">19.01</a> longjmp...........Desvia o fluxo do programa para o local estabelecido com setjmp()
+
+<A HREF="#19.02">19.02</a> setjmp............Estabelece o local alvo de um salto não-local.
+
+<A NAME="19.01"><B>19.01 longjmp</B></a>
+        Esta função realiza um salto não-local para o local assinalado por
+        setjmp(). O fluxo do programa passa duas vezes por setjmp(), na primeira
+        vez esta função assinala o local do salto para longjmp() e retorna zero,
+        na segunda vez setjmp() é alvo do local do salto e retorna o valor
+        estabelecido por longjmp().
+        <b style="color:green">
+        void longjmp (jmp_buf, int retval);
+        longjmp(xJumper, nRetVal);</b>
+
+        xJumper..É um instância da struct typedef jmp_buf, não manipulada diretamente
+                 pelo usuário. Seus elementos são buffers para os registradores.
+
+        Veja o programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "bios.h"
+        #include "setjmp.h"
+        #include "stdlib.h"
+
+        void subrotina(jmp_buf);
+
+        int main(void) {
+
+        int nSts;
+        jmp_buf xJumper;
+
+        clrscr();
+
+        nSts = setjmp(xJumper);
+        if (nSts != 0) {
+        printf("Longjmp retorno %d\n", nSts);
+        exit(nSts); }
+
+        printf("Estamos para chamar subrotina()... \n");
+        subrotina(xJumper);
+
+        puts("End of Program.");
+        getch();
+        return 0; }
+
+        void subrotina(jmp_buf xJumper) {
+        printf ("subrotina() acionada...\n");
+        longjmp(xJumper,1); }</font>
+
+        Saída:
+        Estamos para chamar subrotina()...
+        subrotina() acionada...
+        Longjmp retorno 1
+
+.......................................................................................
+<A NAME="19.02"><B>19.02 setjmp</B></a>
+        Esta função estabelece o local alvo de um salto não-local realizado por
+        longjmp(). Setjmp() estoca a informação do contexto tal como os valores
+        dos registradores a fim de que longjmp() possa transferir o controle do
+        fluxo do programa imediatamente para a instrução abaixo da chamada de
+        setjmp().
+        <b style="color:green">
+        int setjmp (jmp_buf jmpb);
+        nSts = setjmp(xJumper);</b>
+
+        nSts.....Esta função inicialmente retorna zero na primeira chamada, sendo
+                 que o programa retorna uma segunda vez para ela, nesta segunda
+                 ocasião ela retorna o valor passado por longjmp().
+
+        xJumper..É um instância da struct typedef jmp_buf, não manipulada diretamente
+                 pelo usuário. Seus elementos são buffers para os registradores.
+
+        Veja este programa exemplo: <font color="darkblue">
+        #include "stdio.h"
+        #include "conio.h"
+        #include "bios.h"
+        #include "setjmp.h"
+        #include "stdlib.h"
+
+        void subrotina(jmp_buf);
+
+        int main(void) {
+
+        int nSts;
+        jmp_buf xJumper;
+
+        clrscr();
+
+        nSts = setjmp(xJumper);
+        if (nSts != 0) {
+        printf("Longjmp retorno %d\n", nSts);
+        exit(nSts); }
+
+        printf("Estamos para chamar subrotina()... \n");
+        subrotina(xJumper);
+
+        puts("End of Program.");
+        getch();
+        return 0; }
+
+        void subrotina(jmp_buf xJumper) {
+        printf ("subrotina() acionada...\n");
+        longjmp(xJumper,1); }</font>
+
+        Saída:
+        Estamos para chamar subrotina()...
+        subrotina() acionada...
+        Longjmp retorno 1
+
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track18.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track20.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

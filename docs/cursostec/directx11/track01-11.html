@@ -1,0 +1,1991 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-11</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+
+
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-11</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-10.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-12.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.11 Produzindo um cubo</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                 - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Renderizar()              - Renderização da cena</a>
+<a href=#2.5>2.5 atualizar_Temporizador()  - Atualiza o timer</a>
+<a href=#2.6>2.6 renderizar_Planeta()      - Renderização do cubo central</a>
+<a href=#2.7>2.7 renderizar_Lua()          - Renderização do cubo lateral</a>
+<a href=#2.8>2.8 montar_Geometria()        - Listagem da montagem do cubo</a>
+<a href=#2.9>2.9 inicializar_Indexbuffer() - indexbuffer para montagem do cubo.</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Cubo</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Cubo.png></div>
+
+A aplicação deste capítulo ilustra como  estabelecer  a  configuração
+geométrica do cubo. A partir da geometria montada do cubo fazemos uma
+simulação de uma lua, representada por um cubo lateral em  movimento,
+orbitando em torno de um planeta representado por  uma  caixa  3d  no
+centro da tela.  Em nossa simulação vamos usar neste  capítulo  e  no 
+seguinte  as palavras 'lua' no lugar de cubo lateral e 'planeta' no
+lugar  de  caixa 3d central.
+
+Esta aplicação deste capítulo apresenta deliberadamente  uma falha na
+renderização: durante o giro da lua ao redor do planeta, ainda que  a
+lua passe atrás do planeta ela é renderizada <b class=sc6>na frente</b> do planeta com
+sua  imagem  sobrepondo-se  indevidamente  sobre  ele.   Essa falha é
+ocasionada por uma carência  interna  na  conservação  dos  dados  de
+relação de  profundidade entre os objetos da cena.  Essa falha visual
+é  corrigida   com  a  configuração  do  <b>buffer  de  profundidade</b>  ou
+<b>depthbuffer</b> como é chamado em seu respectivo termo inglês.  O  buffer
+de profundidade será abordado no próximo capítulo.
+
+<u>Formato de vértice e programa hlsl</u>
+Ao longo deste e do próximo capítulo,  como estamos  ainda  usando  o
+formato de vértice com posição e cor vamos conservar o uso do arquivo
+de shader <b>prj_Camera.fx</b> do capítulo anterior.
+
+<u>Ordem das transformações</u>
+Este capítulo é um bom exemplo de  como  a  ordem  de  aplicação  das
+transformações (rotação, translação e  escala )  altera  o  resultado
+final da orientação e posicionamento do objeto na cena.  Então preste
+uma   especial   atenção   como   apenas  a  alteração  da  ordem  de
+multiplicação das matrizes ocasiona a movimentação distinta da lua  e
+do planeta.
+
+<u>Listagem das funções de produção do cubo</u>
+Consideramos que este capítulo é útil em função de definir os aspectos
+geométricos  de  um  cubo  como  a  configuração  do  indexbuffer, da
+configuração  dos  vértices  e  do  vertexbuffer.  Em  virtude  desta
+consideração  as  funções  de  produção  do  cubo  foram listadas sem
+comentários adicionais para prover um via rápida de 'pescagem'  desse
+tipo de código para uso em outra aplicação.
+
+
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>wWinMain()</b>
+	chama initWindow() para criar a janela da aplicação	
+	chama initGfx() para inicializar o motor gráfico
+	
+	estabelece o laço de mensagens
+		chama Renderizar() para renderizar a cena
+		
+	chama Limpar() para limpar o ambiente na finalização da aplicação.
+
+initWindow()
+	cria, configura e registra a classe da janela
+	cria a janela da aplicação
+	mostra a janela</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=sc16>
+<u>atualizar_Temporizador()</u>
+	Atualiza o timer ou temporizador para ocasionar a animação 
+	dos objetos 3d da cena.
+
+<u>renderizar_Planeta()</u>
+	Atualiza as matrizes e o constantbuffer do 'planeta'
+	Renderiza o planeta
+
+<u>renderizar_Lua()</u>
+	Atualiza as matrizes e o constantbuffer da 'lua'
+	Renderiza a lua </b>
+	
+inicializar_Camera()
+	inicialização da matriz mundo ( g_mtxMundo )
+
+	inicialização e configuração da matriz de visualização ( g_mtxVisao )
+	com <b class=prg>XMMatrixLookAtLH()</b>
+
+	inicialização e configuração da matriz de projeção ( g_mtxProj ) 
+	com <b class=prg>XMMatrixPerspectiveFovLH()</b>
+	
+	* Geralmente a configuração da matriz mundo é feita em funções 
+	que atualizam o posicionamento, rotação e escala dos objetos 3d
+	da cena antes do processo de renderização. Nesta aplicação essa
+	configuração ocorre em renderizar_Lua() e renderizar_Planeta().
+
+inicializar_Constantbuffer()
+	O constantbuffer a ser criado é descrito na estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+
+	O constantbuffer é criado efetivamente com <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>
+
+	* Os dados desse objeto constantbuffer ( g_pConstantBuffer )  são  providos
+	antes do processo de renderização em outras funções auxiliares ou similares
+	deste  processo. Nesta aplicação a  configuração  desses  dados  ocorre  em
+	renderizar_Lua() e renderizar_Planeta().
+
+<b class=sc6>atualizar_Camera()</b>
+	*** Em relação a aplicação  imediatamente  anterior,  prj_Camera,
+	essa função foi substituída por estas três funções que assumiram
+	as tarefas de atualizar o timer e os objetos:
+	atualizar_Temporizador()
+	renderizar_Lua()
+	renderizar_Planeta()
+
+inicializar_Indexbuffer()
+	Determina os dados do indexbuffer na array indices[]
+	
+	Descreve o indexbuffer com a estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+	
+	Descreve os dados do indexbuffer com a estrutura <b class=prg>D3D11_SUBRESOURCE_DATA</b>
+	
+	Cria efetivamente o indexbuffer com  <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>
+	
+	Instala o indexbuffer com <b class=prg>g_pImmediateContext->IASetIndexBuffer()</b>
+
+initGfx()
+	- estabelece antecipadamente os valores iniciais dos objetos do motor gráfico
+	através do preenchimento  de  variáveis  e estruturas descritivas;
+
+	Obtém  o tamanho da área cliente da janela com <b class=prg>GetClientRect()</b>	
+		 
+	preenche a estrutura de descrição da corrente de trocas: <b class=prg>DXGI_SWAP_CHAIN_DESC</b>
+
+	cria a corrente de trocas ou swap chain, cria o dispositivo renderizador, cria
+	o dispositivo de gestão de recursos todos com <b class=prg>D3D11CreateDeviceAndSwapChain()</b>
+	
+	Obtém backbuffer ( <b class=prg>ID3D11Texture2D</b> ) com <b class=prg>g_pSwapChain-&gt;GetBuffer()</b>.
+	
+	cria a superfície alvo de renderização ( <b class=prg>ID3D11RenderTargetView</b> ) ou a 'render
+	target view' baseada no backbuffer com <b class=prg>g_pd3dDevice-&gt;CreateRenderTargetView()</b>
+	
+	Preenche a estrutura ( <b class=prg>D3D11_VIEWPORT</b> ) de criação da janela de visualização
+	ou viewport. Instala a viewport com <b class=prg>g_pImmediateContext-&gt;RSSetViewports()</b>.
+		
+	Instala a 'render target view' com <b class=prg>g_pImmediateContext-&gt;OMSetRenderTargets()</b>
+	
+	inicializa efeito com <b class=prg>inicializar_Efeito()</b>
+	
+	declara formato de vértice com <b class=prg>declarar_Vertexlayout()</b>
+	
+	inicializa vertexbuffer com <b class=prg>montar_Geometria()</b> e <b class=prg>inicializar_Vertexbuffer()</b>
+	
+	inicializa o indexbuffer com <b class=prg>inicializar_Indexbuffer()</b>
+	
+	inicializa o objeto constantbuffer com <b class=prg>inicializar_Constantbuffer()</b>
+	
+	Faz inicialização da câmera com <b class=prg>inicializar_Camera()</b>	
+	
+compilarEfeito()
+	Pré-configura variáveis de trabalho
+	
+	Compila o programa do shader, <b class=sc16>prj_Camera.fx</b>,  com <b class=prg>D3DX11CompileFromFile()</b>
+
+inicializar_Efeito()
+	produz o vertexshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreateVertexShader()</b>
+	
+	produz o pixelshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreatePixelShader()</b>
+
+montar_Geometria()
+	monta o cubo através da configuração dos vértices na array <b style="color:black;">g_Cubo</b>
+
+declarar_Vertexlayout()
+	Pré-configura as variáveis do primeiro elemento do layout de vértice.
+	
+	Descreve o primeiro elemento com as variáveis pré-configuradas
+	
+	Produz a array de descrição do segundo elemento (atributo_cor) do layout de
+	vértice. 
+	
+	Produz a array de elementos descritivos do layout de vértice.
+	
+	Declara o layout de vértice com <b class=prg>g_pImmediateContext->IASetInputLayout()</b>
+
+inicializar_Vertexbuffer()
+	Descreve o vertexbuffer com a estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+	
+	Descreve os dados do vertexbuffer com a estrutura <b class=prg>D3D11_SUBRESOURCE_DATA</b>
+	
+	Cria efetivamente o vertexbuffer com  <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>	
+	
+	Instala o vertexbuffer com <b class=prg>g_pImmediateContext->IASetVertexBuffers()</b>
+	
+	Declara a topologia de renderização dos vértices com 
+				<b class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology()</b>
+	
+Renderizar()<b class=sc16>
+	Chama atualizar_Temporizador() para atualizar o timer de animação dos objetos. </b>
+	
+	Limpa a tela representada pela superfície alvo de renderização
+	com <b class=prg>g_pImmediateContext-&gt;ClearRenderTargetView()</b>
+	
+	Declara o vertexshader com <b class=prg>g_pImmediateContext-&gt;VSSetShader()</b>
+	
+	Declara o pixelshader com <b class=prg>g_pImmediateContext-&gt;PSSetShader()</b>
+    
+	Instala o constanbuffer com <b class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers()</b>
+	<b class=sc16>
+	Desenha a cena com renderizar_Planeta() e renderizar_Lua()</b>
+	
+	Apresenta a cena com <b class=prg>g_pSwapChain-&gt;Present()</b>
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+		Verifica teclado - finaliza aplicação na tecla Escape
+		chama Limpar() na finalização da aplicação		
+	
+Limpar()
+	Libera os objetos utilizados.
+</div></div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Aspectos globais: arquivo motor.h </u></b>
+<div class=niceview><b>
+  <span class=sc2>// Função principal de renderização da cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função auxiliar para renderizar o planeta (cubo central)</span>
+  <span class=prg>void </span>renderizar_Planeta(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função auxiliar para renderizar a lua (cubo lateral )</span>
+  <span class=prg>void </span>renderizar_Lua(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função para atualizar o timer de movimentação dos objetos</span>
+  <span class=prg>void </span>atualizar_Temporizador(<span class=prg>void</span>); </b>
+</div>
+
+<b class=prg-code><span class=prg>void </span>atualizar_Temporizador(<span class=prg>void</span>);   </b>
+Essa função atualiza o timer ou o temporizador da aplicação  que  faz
+a movimentação dos objetos em função do tempo decorrido.
+
+<u>Renderização da cena</u>
+<div class=prg-code><span class=prg>void </span>renderizar_Planeta(<span class=prg>void</span>);   
+<span class=prg>void </span>renderizar_Lua(<span class=prg>void</span>);   
+<span class=prg>void </span>Renderizar( <span class=prg>void</span>);  </div>
+O  trabalho  de  renderização  da  cena  é dividido pelas funções que
+renderizam  individualmente  os  cubos  que  representam  o planeta e
+a lua. As funções  de  renderização auxiliares,  <b>renderizar_Planeta()</b>
+e <b>renderizar_Lua()</b> são chamadas dentro  da  função <b>Renderizar()</b>  que
+realiza as tarefas genéricas do processo de renderização.
+As tarefas de renderização foram divididas  desta  forma  para  assim
+facilitar a assimilação das configurações particulares que devem  ser
+feitas na renderização individual de cada objeto como cada  um  tendo
+sua respectiva configuração isolada  de  matrizes  e  constantbuffer.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais: arquivo motor.cpp </u></b>
+<div class=niceview><b>
+<span class=sc2>// Matriz mundo para movimentação da lua ( cubo lateral )</span>
+<span class=sc5>XMMATRIX </span>               g_mtxMundo02; 
+
+<span class=sc2>// Estruturas para segurar temporariamente os dados de constantbuffer</span>
+<span class=sc2>// do planeta (cubo central) e da lua (cubo lateral)</span>
+<span class=sc5>ConstantBuffer </span>g_cbPlaneta; 
+<span class=sc5>ConstantBuffer </span>g_cbLua; 
+
+<span class=sc2>// Atualização do timer de movimentação dos objetos</span>
+<span class=prg>float </span>g_deltaTempo   = <span class=sc4>0.0f</span>; 
+<span class=prg>DWORD </span>g_tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>g_tempoAtual   = <span class=sc4>0</span>; </b>
+</div>
+
+<b class=prg-code><span class=sc5>XMMATRIX </span> g_mtxMundo02; </b>
+Essa  matriz  é  usada para a construção  da matriz de mundo final de
+movimentação da 'lua' da aplicação.
+
+
+<u>Estruturas intermediárias de dados do constantbuffer</u>
+<div class=prg-code><span class=sc5>ConstantBuffer </span>g_cbPlaneta; 
+<span class=sc5>ConstantBuffer </span>g_cbLua; </div>
+Estas   variáveis   definem   estruturas   temporárias  para  segurar
+individualmente  os  parâmetros  de  configuração do constanbuffer de
+cada objeto.
+
+
+<u>Variáveis de suporte do temporizador</u>
+<div class=prg-code><span class=prg>float </span>g_deltaTempo   = <span class=sc4>0.0f</span>; 
+<span class=prg>DWORD </span>g_tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>g_tempoAtual   = <span class=sc4>0</span>; </div>
+Estas variáveis dão suporte ao estabelecimento do  temporizador que é
+utilizado para movimentar os objetos em  função  do  tempo  decorrido
+( <b>g_deltaTempo</b> ) calculado a cada frame como diferença do tempo atual
+( <b>g_tempoAtual</b> ) e o tempo inicial ( <b>g_tempoInicial</b> ).
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 initGfx() - Inicialização do motor gráfico </u></b>
+Esta listagem da função <b>initGfx()</b> não apresenta mudanças  em  relação
+ao projeto anterior ( prj_ Camera ).
+
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem initGfx() vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Configuração da corrente de trocas</span>
+<span class=sc2>// Inicialização básica da estrutura</span>
+<span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+<span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+<span class=sc2>// Quantidade de backbuffers</span>
+<span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração da largura e tamanho</span>
+<span class=prg>sd.BufferDesc.Width </span> = largura; 
+<span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+<span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+<span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+<span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+<span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+<span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+<span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+<span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+<span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+<span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+<span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+<span class=sc2>// Modo de descarte do backbuffer</span>
+<span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+<span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Indicação do display default</span>
+<span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+<span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Configuração dos flags de criação</span>
+<span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+<span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+<span class=sc16>{</span>
+    <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+<span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+<span class=sc2>// motor gráfico do directx 11.</span>
+g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+  NoRasterSoftware, createDeviceFlags, featureLevels, 
+  numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+  &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+  ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+  &g_pRenderTargetView );  
+<span class=prg>pBackBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+<b>
+<span class=sc2>// Instala a textura alvo no dispositivo</span>
+<span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=sc4>0</span>);  
+</b>
+<span class=sc2>// Configuração da janela de visualização (viewport)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>D3D11_VIEWPORT </span>vp; 
+<span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+<span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+<span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+<span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+<span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+<span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+<span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+g_hr = inicializar_Efeito();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Montagem da forma geométrica</span>
+montar_Geometria();  
+
+<span class=sc2>// Declaração do layout de vértice</span>
+g_hr = declarar_Vertexlayout();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Inicialização do vertexbuffer e indexbuffer</span>
+g_hr = inicializar_Vertexbuffer();  
+g_hr = inicializar_Indexbuffer();  
+
+<span class=sc2>// Inicialização do constantbuffer</span>
+g_hr = inicializar_Constantbuffer();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+inicializar_Camera();  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 Renderizar() - Renderização da cena </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Configuração da cor de limpeza</span>
+<span class=prg>float </span>branco[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+<b>
+<span class=sc2>// Atualização do timer para animação dos cubos</span>
+atualizar_Temporizador();  
+</b>
+<span class=sc2>// Limpeza do backbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, branco );  
+
+<span class=sc2>// Instala o vertexshader e o pixelshader</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Instala o atual constantbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pConstantBuffer );  
+<b>
+<span class=sc2>// Renderiza o planeta</span>
+renderizar_Planeta();  
+
+<span class=sc2>// Renderiza a lua</span>
+renderizar_Lua();  
+</b>
+<span class=sc2>// Apresentação do backbuffer</span>
+<span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b class=prg-code>atualizar_Temporizador();  </b>
+Essa função atualiza o temporizador que  provoca  a  movimentação  da
+'lua' e do 'planeta' em função do tempo decorrido.
+
+<b class=prg-code>renderizar_Planeta();  </b>
+O 'planeta' é renderizado primeiro com uma rotação diferente a cada
+frame dada pela variação de <b>g_deltaTempo</b>
+
+<b class=prg-code>renderizar_Lua();  </b>
+A  'lua'  é  renderizada  por  último  e  essa  ordem de renderização
+geralmente sobrepõe o último objeto renderizado sobre todos os demais
+quando  os  objetos  disputam  os  mesmos  pixels.    Só não ocorrerá 
+sobreposição   se  houver  uma  correção  advinda  de um processo que
+zele pelas relações de profundidade entre os objetos.
+
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 atualizar_Temporizador() - Atualiza o timer </u></b>
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Atualizar o timer de movimentação dos objetos</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=prg>void </span>atualizar_Temporizador(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Verificação do tempo atual</span>
+<span class=prg>DWORD </span>tempoAtual = <span class=prg>GetTickCount</span>();  
+
+<span class=sc2>// Configuração inicial da variável g_tempoInicial</span>
+<span class=sc9>if</span>( g_tempoInicial == <span class=sc4>0</span>) g_tempoInicial = tempoAtual; 
+
+<span class=sc2>// Diferença de tempo entre os frames em termos de segundos</span>
+g_deltaTempo = ( tempoAtual - g_tempoInicial ) / <span class=sc4>1000.0f</span>; 
+
+<span class=sc16>} <span class=sc2>// atualizar_Temporizador</span></span>
+</div>
+
+<b class=prg-code><span class=prg>DWORD </span>tempoAtual = <span class=prg>GetTickCount</span>();  </b>
+Aqui pegamos o tempo atual.
+
+<b class=prg-code><span class=sc9>if</span>( g_tempoInicial == <span class=sc4>0</span>) g_tempoInicial = tempoAtual; </b>
+Aqui, se for o primeiro frame, não há ainda tempo decorrido  e  assim
+o tempo inicial é igualado com o tempo atual.
+
+<b class=prg-code>g_deltaTempo = ( tempoAtual - g_tempoInicial ) / <span class=sc4>1000.0f</span>; </b>
+Essa linha atualiza o tempo decorrido a cada frame. O tempo é dado em
+uma unidade conhecida como ticks e um segundo tem 1000  ticks.  Houve
+então uma divisão por 1000 para converter  de  ticks  para  segundos.
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 renderizar_Planeta() - Renderização do cubo central </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// renderizar_Planeta() - renderiza o planeta (cubo central)</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>renderizar_Planeta(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Atualização da matriz mundo que anima o cubo</span>
+<span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationY</span>( g_deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>3.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; 
+
+<span class=sc2>// Atualização das variáveis do shader</span>
+<span class=prg>g_cbPlaneta.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>g_cbPlaneta.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>g_cbPlaneta.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualização das variáveis na placa de vídeo</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                     <span class=prg>NULL</span>, &g_cbPlaneta, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// renderizar_Planeta()</span></span>
+</div>
+
+<u>Produção da matriz de mundo final que anima o cubo central</u></b>
+<div class=prg-code><span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationY</span>( g_deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>3.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; </div>
+Esse bloco vai produzindo gradualmente a matriz de  mundo  final  que
+anima o 'planeta'. É preciso assimilar pela experiência visual o tipo
+de resultado final ocasionado por essa  ordem  de  multiplicação  das
+matrizes.
+
+
+<u>Configuração intermediária de dados do constantbuffer do 'planeta'</u>
+<div class=prg-code><span class=prg>g_cbPlaneta.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>g_cbPlaneta.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>g_cbPlaneta.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  </div>
+Aqui é o passo intermediário de  alimentar os dados do constantbuffer
+do 'planeta'.
+
+
+<u>Atualização do objeto constantbuffer da GPU</u>
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                     <span class=prg>NULL</span>, &g_cbPlaneta, <span class=sc4>0</span>, <span class=sc4>0</span>);  </div>
+Esse  passo  aqui  faz  o  importante  trabalho  de  jogar  os  dados
+intermediários   de   uma   estrutura  de  constantbuffer  no  objeto
+constantbuffer ( <b>g_pConstantBuffer</b> ) na placa de aceleração gráfica.
+
+
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  </b>
+Com tudo adequadamente configurado  só resta o trabalho de desenhar a
+forma geométrica que ocorre nesta linha de código.
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 renderizar_Lua() - Renderização do cubo lateral </u></b>
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Renderiza o cubo lateral que representa uma lua orbitando</span>
+<span class=sc2>// em torno de um planeta ( o cubo central )</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=prg>void </span>renderizar_Lua(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Monta a rotação da lua ao redor do planeta</span>
+<span class=sc5>XMMATRIX </span>zrot  = <span class=prg>XMMatrixRotationZ</span>( -g_deltaTempo );  
+<span class=sc5>XMMATRIX </span>yrot  = <span class=prg>XMMatrixRotationY</span>( -g_deltaTempo * <span class=sc4>1.1f</span>);  
+<span class=sc5>XMMATRIX </span>pos   = <span class=prg>XMMatrixTranslation</span>( <span class=sc4>-4.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>2.0f</span>);  
+<span class=sc5>XMMATRIX </span>sc    = <span class=prg>XMMatrixScaling</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>);  
+
+<span class=sc2>// Ordem de transformações para orbitar ao redor da origem</span>
+<span class=sc2>// O movimento orbital é causado por yrot no final</span>
+g_mtxMundo02   = sc * zrot * pos * yrot; 
+
+<span class=sc2>// Prepara os dados para o shader</span>
+<span class=prg>g_cbLua.mWorld </span>     = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo02 );  
+<span class=prg>g_cbLua.mView </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao );  
+<span class=prg>g_cbLua.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualiza o constantbuffer no shader</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                 <span class=prg>NULL</span>, &g_cbLua, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc16>}  <span class=sc2>// renderizar_Lua().fim</span></span>
+</div>
+
+<u>Produção da matriz de mundo final que anima o cubo lateral</u></b>
+<div class=prg-code><span class=sc5>XMMATRIX </span>zrot  = <span class=prg>XMMatrixRotationZ</span>( -g_deltaTempo );  
+<span class=sc5>XMMATRIX </span>yrot  = <span class=prg>XMMatrixRotationY</span>( -g_deltaTempo * <span class=sc4>1.1f</span>);  
+<span class=sc5>XMMATRIX </span>pos   = <span class=prg>XMMatrixTranslation</span>( <span class=sc4>-4.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>2.0f</span>);  
+<span class=sc5>XMMATRIX </span>sc    = <span class=prg>XMMatrixScaling</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>);  
+
+<span class=sc2>// Ordem de transformações para orbitar ao redor da origem</span>
+<span class=sc2>// O movimento orbital é causado por yrot no final</span>
+g_mtxMundo02   = sc * zrot * pos * yrot; </div>
+Esse bloco vai produzindo gradualmente a matriz de  mundo  final  que
+anima a 'lua'. É preciso assimilar pela  experiência  visual  o  tipo
+de resultado final ocasionado por essa  ordem  de  multiplicação  das
+matrizes. A ordem dada aqui girou  a 'lua'  ao  redor  do  'planeta'.
+Salientamos que tanto o 'planeta' como  a  'lua',  de fato,  fazem  a 
+rotação em torno da origem do mundo 3d; a ordem de produção da matriz
+final apenas modificou 'como' eles fazem essa rotação.
+
+
+<u>Configuração intermediária de dados do constantbuffer da 'lua'</u>
+<div class=prg-code><span class=prg>g_cbLua.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo02 );  
+<span class=prg>g_cbLua.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao );  
+<span class=prg>g_cbLua.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  </div>
+Aqui é o passo intermediário de  alimentar os dados do constantbuffer
+da 'lua'.
+
+<u>Atualização do objeto constantbuffer da GPU</u>
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                 <span class=prg>NULL</span>, &g_cbLua, <span class=sc4>0</span>, <span class=sc4>0</span>);  </div>
+Aqui é o passo intermediário de  alimentar os dados do constantbuffer
+da 'lua'.
+				 
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  </b>
+Por fim desenhamos a 'lua' com esta linha de código.
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 montar_Geometria() - Listagem da montagem do cubo </u></b>
+Apresentamos abaixo a listagem de configuração dos vértices  do  cubo
+com posição e cor e na sequência vem  a  função  de  configuração  do
+indexbuffer que define o caminho de conexão destes vértices.
+
+<div class=niceview><span class=sc2>// Montagem do cubo com posição e cor</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Definição de cores</span>
+<span class=sc5>XMFLOAT4 </span>vermelho =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>verde    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>azul     =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>cinza    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f</span>);   
+
+<span class=sc2>// Posicionamento dos vértices</span>
+<span class=sc5>XMFLOAT3 </span>p0 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p1 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p2 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p3 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>);  
+
+<span class=sc5>XMFLOAT3 </span>p4 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p5 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p6 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p7 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>);  
+
+<span class=sc2>// Posicionamento dos vértices na array pré-vertexbuffer</span>
+g_Cubo[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p0, vermelho );  
+g_Cubo[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p1, verde    );  
+g_Cubo[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p2, azul     );  
+g_Cubo[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p3, cinza    );  
+
+g_Cubo[<span class=sc4>4</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p4, vermelho );  
+g_Cubo[<span class=sc4>5</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p5, verde    );  
+g_Cubo[<span class=sc4>6</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p6, azul     );  
+g_Cubo[<span class=sc4>7</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p7, cinza    );  
+<span class=sc16>} <span class=sc2>// montar_Geometria().fim</span></span>
+</div>
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 inicializar_Indexbuffer() - indexbuffer para montagem do cubo. </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Indexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Elementos do indexbuffer para montar o cubo</span>
+<span class=prg>WORD </span>indices[] = 
+<span class=sc16>{</span>
+    <span class=sc4>3</span>, <span class=sc4>1</span>, <span class=sc4>0</span>, 
+    <span class=sc4>2</span>, <span class=sc4>1</span>, <span class=sc4>3</span>, 
+
+    <span class=sc4>0</span>, <span class=sc4>5</span>, <span class=sc4>4</span>, 
+    <span class=sc4>1</span>, <span class=sc4>5</span>, <span class=sc4>0</span>, 
+
+    <span class=sc4>3</span>, <span class=sc4>4</span>, <span class=sc4>7</span>, 
+    <span class=sc4>0</span>, <span class=sc4>4</span>, <span class=sc4>3</span>, 
+
+    <span class=sc4>1</span>, <span class=sc4>6</span>, <span class=sc4>5</span>, 
+    <span class=sc4>2</span>, <span class=sc4>6</span>, <span class=sc4>1</span>, 
+
+    <span class=sc4>2</span>, <span class=sc4>7</span>, <span class=sc4>6</span>, 
+    <span class=sc4>3</span>, <span class=sc4>7</span>, <span class=sc4>2</span>, 
+
+    <span class=sc4>6</span>, <span class=sc4>4</span>, <span class=sc4>5</span>, 
+    <span class=sc4>7</span>, <span class=sc4>4</span>, <span class=sc4>6</span>, 
+<span class=sc16>}</span>; 
+
+<span class=sc2>// Declaração e preparação inicial do indexbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=prg>WORD</span>) * 36; 
+
+<span class=sc2>// Indicação de indexbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_INDEX_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Declaração dos dados do vertexbuffer</span>
+<span class=sc5>D3D11_SUBRESOURCE_DATA </span>ibDados; 
+<span class=prg>ZeroMemory</span>( &ibDados, <span class=sc16>sizeof</span>(ibDados) );  
+<span class=prg>ibDados.pSysMem </span>= indices; 
+
+<span class=sc2>// Criação efetiva do indexbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &ibDados, &g_pIndexBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do indexbuffer"</span>, 
+        <span class=sc6>L"inicializar_Indexbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Instalação do indexbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;IASetIndexBuffer</span>( g_pIndexBuffer, 
+                    <span class=sc4>DXGI_FORMAT_R16_UINT</span>, <span class=sc4>0</span>);  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Indexbuffer().fim</span></span>
+</div>
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Cubo</u></b>
+<div class=prg-code><img src=images\prj_Cubo.png>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Cubo - Arquivo: motor.h</span>
+<span class=sc2>// Exemplo de como renderizar um cubo colorido (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+
+<span class=sc16>#if </span><span class=sc16>!defined </span>motor_h 
+<span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Formato de vértice com posição e cor</span>
+//--------------------------------------------------------------------------------------</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice (Pos.x, Pos.y, Pos.z)</span>
+  <span class=sc5>XMFLOAT3 </span>Pos; 
+  <span class=sc5>XMFLOAT4 </span><span class=sc5>Color</span>; 
+
+  <span class=sc2>// Construtor padrão</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionColored</span>(<span class=sc5>XMFLOAT3 </span>_Pos, <span class=sc5>XMFLOAT4 </span>_Color) 
+  <span class=sc16>{</span>
+    Pos   = _Pos; 
+    <span class=sc5>Color </span>= _Color; 
+
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+<span class=sc2>// Estrutura para intercâmbio de dados entre a GPU e a CPU</span>
+<span class=prg>struct </span><span class=sc5>ConstantBuffer</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Matriz de mundo para tranformações dos objetos 3d</span>
+  <span class=sc5>XMMATRIX </span>mWorld; 
+
+  <span class=sc2>// Matriz de visualização</span>
+  <span class=sc5>XMMATRIX </span>mView; 
+
+  <span class=sc2>// Matriz de projeção</span>
+  <span class=sc5>XMMATRIX </span>mProjection; 
+<span class=sc16>}; <span class=sc2>// fim da estrutura ConstantBuffer</span></span>
+
+  <span class=sc2>// Controle de câmera</span>
+  <span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>);   
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Esta função compila um programa hlsl produzindo o vertexshader</span>
+  <span class=sc2>// ou o pixelshader</span>
+  <span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, 
+    <span class=prg>LPCSTR </span>sShaderMdl, <span class=sc5>ID3DBlob** </span>hlslCompilado );  
+
+  <span class=sc2>// Essa função chama compilarEfeito() para inicializar o pixelshader</span>
+  <span class=sc2>// e o vertexshader</span>
+  <span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função preenche uma array de vértices montando uma</span>
+  <span class=sc2>// forma geométrica</span>
+  <span class=prg>void </span>montar_Geometria(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função declara o layout de vértice utilizado</span>
+  <span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o vertexbuffer. O vertexshader e a geometria</span>
+  <span class=sc2>// devem ser inicializados antes dele.</span>
+  <span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o Indexbuffer.</span>
+  <span class=sc16>HRESULT </span>inicializar_Indexbuffer(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função de processamento de mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>   processaJanela( <span class=sc16>HWND</span>, <span class=prg>UINT</span>, <span class=sc16>WPARAM</span>, <span class=sc16>LPARAM</span>);  
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=sc16>HRESULT </span>initGfx();  
+
+  <span class=sc2>// Função principal de renderização da cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função auxiliar para renderizar o planeta (cubo central)</span>
+  <span class=prg>void </span>renderizar_Planeta(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função auxiliar para renderizar a lua (cubo lateral )</span>
+  <span class=prg>void </span>renderizar_Lua(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função para atualizar o timer de movimentação dos objetos</span>
+  <span class=prg>void </span>atualizar_Temporizador(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função de liberar os objetos utilizados pela aplicação</span>
+  <span class=prg>void </span>Limpar( <span class=prg>void</span>);  
+
+<span class=sc16>#endif</span>
+<span class=sc2>// endfile: motor.h</span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Cubo - Arquivo: motor.cpp</span>
+<span class=sc2>// Exemplo de como renderizar um cubo colorido (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx11.h&gt;</span>
+
+<span class=sc2>// Funções matemáticas e compilação de HLSL</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dcompiler.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+
+<span class=sc2>// Bibliotecas do directx 11</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dcompiler.lib"</span>)  
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis definidas em entrada.cpp</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; 
+<span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; 
+
+<span class=sc2>// Corrente de trocas</span>
+<span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; 
+<span class=sc2>// Tipo de driver</span>
+<span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; 
+<span class=sc2>// nível desejado de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; 
+<span class=sc2>// Dispositivo gerenciador de recursos</span>
+<span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; 
+<span class=sc2>// Disposisitivo renderizador</span>
+<span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; 
+<span class=sc2>// Interface de gestão da textura alvo de visualização</span>
+<span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matriz mundo para movimentação da lua ( cubo lateral )</span>
+<span class=sc5>XMMATRIX </span>               g_mtxMundo02; 
+
+<span class=sc2>// Estruturas para segurar temporariamente os dados de constantbuffer</span>
+<span class=sc2>// do planeta (cubo central) e da lua (cubo lateral)</span>
+<span class=sc5>ConstantBuffer </span>g_cbPlaneta; 
+<span class=sc5>ConstantBuffer </span>g_cbLua; 
+
+<span class=sc2>// Atualização do timer de movimentação dos objetos</span>
+<span class=prg>float </span>g_deltaTempo   = <span class=sc4>0.0f</span>; 
+<span class=prg>DWORD </span>g_tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>g_tempoAtual   = <span class=sc4>0</span>; 
+
+<span class=sc2>// Preparação para renderizar o cubo</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Configuração inicial dos vértices da forma geométrica</span>
+<span class=sc5>CustomVertex_PositionColored </span>g_Cubo[<span class=sc4>8 </span>];   
+
+<span class=sc2>// Descrição de formato dos vértices para a GPU</span>
+<span class=sc5>ID3D11InputLayout </span>      *g_pVertexLayout = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Dados compilados do vertexshader</span>
+<span class=sc5>ID3DBlob </span>   *g_vsBlocoCompilado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o vertexshader</span>
+<span class=sc5>ID3D11VertexShader </span>     *g_pVertexShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o buffer de vértices, buffer de índices e buffer de</span>
+<span class=sc2>// constantes</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pVertexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o pixelshader</span>
+<span class=sc5>ID3D11PixelShader </span>      *g_pPixelShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o indebuffer</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pIndexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o constantbuffer</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pConstantBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>XMMATRIX </span>g_mtxMundo; 
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>XMMATRIX </span>g_mtxVisao; 
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>XMMATRIX </span>g_mtxProj; 
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem initGfx() vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Configuração da corrente de trocas</span>
+<span class=sc2>// Inicialização básica da estrutura</span>
+<span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+<span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+<span class=sc2>// Quantidade de backbuffers</span>
+<span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração da largura e tamanho</span>
+<span class=prg>sd.BufferDesc.Width </span> = largura; 
+<span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+<span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+<span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+<span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+<span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+<span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+<span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+<span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+<span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+<span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+<span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+<span class=sc2>// Modo de descarte do backbuffer</span>
+<span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+<span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Indicação do display default</span>
+<span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+<span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Configuração dos flags de criação</span>
+<span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+<span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+<span class=sc16>{</span>
+    <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+<span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+<span class=sc2>// motor gráfico do directx 11.</span>
+g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+  NoRasterSoftware, createDeviceFlags, featureLevels, 
+  numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+  &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+  ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+  &g_pRenderTargetView );  
+<span class=prg>pBackBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Instala a textura alvo no dispositivo</span>
+<span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=sc4>0</span>);  
+
+<span class=sc2>// Configuração da janela de visualização (viewport)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>D3D11_VIEWPORT </span>vp; 
+<span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+<span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+<span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+<span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+<span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+<span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+<span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+g_hr = inicializar_Efeito();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Montagem da forma geométrica</span>
+montar_Geometria();  
+
+<span class=sc2>// Declaração do layout de vértice</span>
+g_hr = declarar_Vertexlayout();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Inicialização do vertexbuffer e indexbuffer</span>
+g_hr = inicializar_Vertexbuffer();  
+g_hr = inicializar_Indexbuffer();  
+
+<span class=sc2>// Inicialização do constantbuffer</span>
+g_hr = inicializar_Constantbuffer();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+inicializar_Camera();  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Configuração da cor de limpeza</span>
+<span class=prg>float </span>branco[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+<span class=sc2>// Atualização do timer para animação dos cubos</span>
+atualizar_Temporizador();  
+
+<span class=sc2>// Limpeza do backbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, branco );  
+
+<span class=sc2>// Instala o vertexshader e o pixelshader</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Instala o atual constantbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pConstantBuffer );  
+
+<span class=sc2>// Renderiza o planeta</span>
+renderizar_Planeta();  
+
+<span class=sc2>// Renderiza a lua</span>
+renderizar_Lua();  
+
+<span class=sc2>// Apresentação do backbuffer</span>
+<span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Atualizar o timer de movimentação dos objetos</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=prg>void </span>atualizar_Temporizador(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Verificação do tempo atual</span>
+<span class=prg>DWORD </span>tempoAtual = <span class=prg>GetTickCount</span>();  
+
+<span class=sc2>// Configuração inicial da variável g_tempoInicial</span>
+<span class=sc9>if</span>( g_tempoInicial == <span class=sc4>0</span>) g_tempoInicial = tempoAtual; 
+
+<span class=sc2>// Diferença de tempo entre os frames em termos de segundos</span>
+g_deltaTempo = ( tempoAtual - g_tempoInicial ) / <span class=sc4>1000.0f</span>; 
+
+<span class=sc16>} <span class=sc2>// atualizar_Temporizador</span></span>
+
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// renderizar_Planeta() - renderiza o planeta (cubo central)</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>renderizar_Planeta(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Atualização da matriz mundo que anima o cubo</span>
+<span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationY</span>( g_deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>3.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>0.5f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; 
+
+<span class=sc2>// Atualização das variáveis do shader</span>
+<span class=prg>g_cbPlaneta.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>g_cbPlaneta.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>g_cbPlaneta.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualização das variáveis na placa de vídeo</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                     <span class=prg>NULL</span>, &g_cbPlaneta, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+
+<span class=sc16>} <span class=sc2>// renderizar_Planeta()</span></span>
+
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Renderiza o cubo lateral que representa uma lua orbitando</span>
+<span class=sc2>// em torno de um planeta ( o cubo central )</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=prg>void </span>renderizar_Lua(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Monta a rotação da lua ao redor do planeta</span>
+<span class=sc5>XMMATRIX </span>zrot  = <span class=prg>XMMatrixRotationZ</span>( -g_deltaTempo );  
+<span class=sc5>XMMATRIX </span>yrot  = <span class=prg>XMMatrixRotationY</span>( -g_deltaTempo * <span class=sc4>1.1f</span>);  
+<span class=sc5>XMMATRIX </span>pos   = <span class=prg>XMMatrixTranslation</span>( <span class=sc4>-4.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>2.0f</span>);  
+<span class=sc5>XMMATRIX </span>sc    = <span class=prg>XMMatrixScaling</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>);  
+
+<span class=sc2>// Ordem de transformações para orbitar ao redor da origem</span>
+<span class=sc2>// O movimento orbital é causado por yrot no final</span>
+g_mtxMundo02   = sc * zrot * pos * yrot; 
+
+<span class=sc2>// Prepara os dados para o shader</span>
+<span class=prg>g_cbLua.mWorld </span>     = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo02 );  
+<span class=prg>g_cbLua.mView </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao );  
+<span class=prg>g_cbLua.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualiza o constantbuffer no shader</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                 <span class=prg>NULL</span>, &g_cbLua, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( 36, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc16>}  <span class=sc2>// renderizar_Lua().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Constantbuffer() - Essa função inicializa o constantbuffer.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Declaração e preparação inicial do constantbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do constantbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>(<span class=sc5>ConstantBuffer</span>);   
+
+<span class=sc2>// Indicação de constantbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_CONSTANT_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Criação efetiva do constantbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, <span class=prg>NULL</span>, &g_pConstantBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do constantbuffer"</span>, 
+        <span class=sc6>L"inicializar_Constantbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Constantbuffer().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Camera() - Essa função inicializa a câmera.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Inicializa a matriz de mundo - Essa matriz é utilizada para transformar</span>
+<span class=sc2>// posição, rotação e escala do objeto 3d; será usada em atualizar_Camera()</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+g_mtxMundo = <span class=prg>XMMatrixIdentity</span>();  
+
+
+<span class=sc2>// Inicializa a matriz de visualização</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Dados para a configuração da matriz de visualização</span>
+<span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_pos = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>-8.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_alvo = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_vetorcima = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Configura matriz de visualização</span>
+g_mtxVisao = <span class=prg>XMMatrixLookAtLH</span>( cam_pos, cam_alvo, cam_vetorcima );  
+
+<span class=sc2>// Inicializa a matriz de projeção</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Vamos identificar outros argumentos da matriz de projeção</span>
+<span class=prg>float </span>aspecto  = (<span class=prg>float</span>)  largura / altura; 
+<span class=prg>float </span>corte_perto = <span class=sc4>0.1f</span>; 
+<span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+<span class=prg>float </span>campo_visao = <span class=sc4>XM_PIDIV4</span>; 
+
+<span class=sc2>// Configura matriz de projeção</span>
+g_mtxProj = <span class=prg>XMMatrixPerspectiveFovLH</span>( campo_visao, aspecto, 
+                       corte_perto, corte_longe );  
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// compilarEfeito() - Esta função compila um programa hlsl produzindo o</span>
+<span class=sc2>// vertexshader ou o pixelshader</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, <span class=prg>LPCSTR </span>sShaderMdl, 
+             <span class=sc5>ID3DBlob** </span>hlslCompilado ) 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem esta função retorn S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Flags de compilação de hlsl</span>
+<span class=prg>DWORD </span>nConfig = <span class=sc4>D3DCOMPILE_ENABLE_STRICTNESS </span>|  <span class=sc4>D3DCOMPILE_DEBUG</span>;  
+
+<span class=sc2>// Buffer para a mensagem de erro</span>
+<span class=sc5>ID3DBlob </span>*bufferMensagem; 
+
+<span class=sc2>// Compilação do shader pixelshader ou vertexshader</span>
+g_hr = <span class=prg>D3DX11CompileFromFile</span>( sArquivo, <span class=prg>NULL</span>, <span class=prg>NULL</span>, sEntradaFn, sShaderMdl, 
+    nConfig, <span class=sc4>0</span>, <span class=prg>NULL</span>, hlslCompilado, &bufferMensagem, <span class=prg>NULL</span>);  
+
+<span class=sc2>// Tratamento de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr) ) 
+<span class=sc16>{</span>
+    <span class=sc9>if</span>( bufferMensagem != <span class=prg>NULL</span>) 
+    <span class=prg>MessageBoxA </span>(<span class=sc4>0</span>, (<span class=prg>char*</span>)  <span class=prg>bufferMensagem-&gt;GetBufferPointer</span>(), 
+    <span class=sc6>"compilarEfeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+  <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// compilarEfeito()</span></span>
+
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Efeito() - Essa função chama compilarEfeito() para inicializar o</span>
+<span class=sc2>// pixelshader e o vertexshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Compilação do vertexshader</span>
+g_hr = compilarEfeito( <span class=sc6>L"prj_Camera.fx"</span>, <span class=sc6>"gpVertexShader"</span>, <span class=sc6>"vs_4_0"</span>, 
+  &g_vsBlocoCompilado );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na compilação do arquivo prj_Camera.fx"</span>, 
+        <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Criação do vertexshader</span>
+//----------------------------------------------------------------------------</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateVertexShader</span>( <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, &g_pVertexShader );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+  <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+<span class=sc2>// Compilação do pixelshader</span>
+<span class=sc5>ID3DBlob </span>*psBlocoCompilado = <span class=prg>NULL</span>; 
+g_hr = compilarEfeito( <span class=sc6>L"prj_Camera.fx"</span>, <span class=sc6>"gpPixelShader"</span>, <span class=sc6>"ps_4_0"</span>, &psBlocoCompilado );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+     <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na compilação do arquivo prj_Camera.fx"</span>, 
+        <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Criação do pixelshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreatePixelShader</span>( <span class=prg>psBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>psBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, 
+  &g_pPixelShader );  
+
+<span class=sc2>// Liberação do bloco compilado</span>
+<span class=prg>psBlocoCompilado-&gt;Release</span>();  
+
+<span class=sc2>// Encerramento da função</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+
+<span class=sc16>} <span class=sc2>// inicializar_Efeito().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Definição de cores</span>
+<span class=sc5>XMFLOAT4 </span>vermelho =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>verde    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>azul     =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>cinza    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f</span>);   
+
+<span class=sc2>// Posicionamento dos vértices</span>
+<span class=sc5>XMFLOAT3 </span>p0 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p1 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p2 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p3 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>);  
+
+<span class=sc5>XMFLOAT3 </span>p4 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p5 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p6 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>);  
+<span class=sc5>XMFLOAT3 </span>p7 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>);  
+
+<span class=sc2>// Posicionamento dos vértices na array pré-vertexbuffer</span>
+g_Cubo[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p0, vermelho );  
+g_Cubo[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p1, verde    );  
+g_Cubo[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p2, azul     );  
+g_Cubo[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p3, cinza    );  
+
+g_Cubo[<span class=sc4>4</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p4, vermelho );  
+g_Cubo[<span class=sc4>5</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p5, verde    );  
+g_Cubo[<span class=sc4>6</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p6, azul     );  
+g_Cubo[<span class=sc4>7</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p7, cinza    );  
+
+<span class=sc16>} <span class=sc2>// montar_Geometria().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// declarar_Vertexlayout() - Essa função declara o formato de vértice</span>
+<span class=sc2>// presente no vertexbuffer a ser utilizado.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem esta função vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Descrição do layout do formato de vértice CustomVertex_PositionColored</span>
+<span class=prg>LPCSTR </span>sSemantica = <span class=sc6>"POSITION"</span>; 
+<span class=prg>UINT </span>ndxSemantica = <span class=sc4>0</span>; 
+<span class=sc5>DXGI_FORMAT </span>formato = <span class=sc4>DXGI_FORMAT_R32G32B32_FLOAT</span>; 
+<span class=prg>UINT </span>nCanal = <span class=sc4>0</span>; 
+<span class=prg>UINT </span>nAlinhamento = <span class=sc4>0</span>; 
+<span class=sc5>D3D11_INPUT_CLASSIFICATION </span> clsEntrada = <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>; 
+<span class=prg>UINT </span>taxaInstanciamento = <span class=sc4>0</span>; 
+
+<span class=sc2>// Produção do primeiro elemento da declaração de vértices</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_pos = 
+<span class=sc16>{</span>
+  sSemantica, 
+  ndxSemantica, 
+  formato, 
+  nCanal, 
+  nAlinhamento, 
+  clsEntrada, 
+  taxaInstanciamento</span>
+<span class=sc16>}</span>; 
+
+
+<span class=sc2>// Definição do segundo do formato\layout de vértice</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_cor = 
+<span class=sc16>{</span>
+  <span class=sc6>"COLOR"</span>, 
+  <span class=sc4>0</span>, 
+  <span class=sc4>DXGI_FORMAT_R32G32B32A32_FLOAT</span>, 
+  <span class=sc4>0</span>, 
+  12, 
+  <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>, <span class=sc4>0</span>
+<span class=sc16>}</span>; 
+
+
+<span class=sc2>// Definição do layout de entrada</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>layout[] = 
+<span class=sc16>{</span>
+  atributo_pos, atributo_cor 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numElements = <span class=prg>ARRAYSIZE</span>( layout );  
+
+<span class=sc2>// Criação do objeto layout de entrada</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateInputLayout</span>( layout, numElements, 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), &g_pVertexLayout );  
+
+<span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Instalação do layout de entrada</span>
+<span class=prg>g_pImmediateContext-&gt;IASetInputLayout</span>( g_pVertexLayout );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// declarar_Vertexlayout().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Vertexbuffer() - Essa função inicializa o vertexbuffer.</span>
+<span class=sc2>// O vertexshader e a geometria devem ser inicializados antes dele.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Descrição do vertexbuffer sendo montado</span>
+<span class=sc2>// Declaração e preparação inicial da estrutura</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PositionColored</span>) * <span class=sc4>8</span>; 
+
+<span class=sc2>// Indicação de vertexbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_VERTEX_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Declaração dos dados do vertexbuffer</span>
+<span class=sc5>D3D11_SUBRESOURCE_DATA </span>vbDados; 
+<span class=prg>ZeroMemory</span>( &vbDados, <span class=sc16>sizeof</span>(vbDados) );  
+<span class=prg>vbDados.pSysMem </span>= g_Cubo; 
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &vbDados, &g_pVertexBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do Vertexbuffer"</span>, 
+        <span class=sc6>L"inicializar_Vertexbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Instalação do vertexbuffer</span>
+<span class=prg>UINT </span>stride = <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PositionColored</span>);  
+<span class=prg>UINT </span>offset = <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;IASetVertexBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pVertexBuffer, &stride, &offset );  
+
+<span class=sc2>// Definição da topologia primitiva relativa ao vertexbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology</span>( <span class=sc4>D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST </span> );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Vertexbuffer().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Indexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Elementos do indexbuffer para montar o cubo</span>
+<span class=prg>WORD </span>indices[] = 
+<span class=sc16>{</span>
+    <span class=sc4>3</span>, <span class=sc4>1</span>, <span class=sc4>0</span>, 
+    <span class=sc4>2</span>, <span class=sc4>1</span>, <span class=sc4>3</span>, 
+
+    <span class=sc4>0</span>, <span class=sc4>5</span>, <span class=sc4>4</span>, 
+    <span class=sc4>1</span>, <span class=sc4>5</span>, <span class=sc4>0</span>, 
+
+    <span class=sc4>3</span>, <span class=sc4>4</span>, <span class=sc4>7</span>, 
+    <span class=sc4>0</span>, <span class=sc4>4</span>, <span class=sc4>3</span>, 
+
+    <span class=sc4>1</span>, <span class=sc4>6</span>, <span class=sc4>5</span>, 
+    <span class=sc4>2</span>, <span class=sc4>6</span>, <span class=sc4>1</span>, 
+
+    <span class=sc4>2</span>, <span class=sc4>7</span>, <span class=sc4>6</span>, 
+    <span class=sc4>3</span>, <span class=sc4>7</span>, <span class=sc4>2</span>, 
+
+    <span class=sc4>6</span>, <span class=sc4>4</span>, <span class=sc4>5</span>, 
+    <span class=sc4>7</span>, <span class=sc4>4</span>, <span class=sc4>6</span>, 
+<span class=sc16>}</span>; 
+
+
+<span class=sc2>// Declaração e preparação inicial do indexbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=prg>WORD</span>) * 36; 
+
+<span class=sc2>// Indicação de indexbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_INDEX_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Declaração dos dados do vertexbuffer</span>
+<span class=sc5>D3D11_SUBRESOURCE_DATA </span>ibDados; 
+<span class=prg>ZeroMemory</span>( &ibDados, <span class=sc16>sizeof</span>(ibDados) );  
+<span class=prg>ibDados.pSysMem </span>= indices; 
+
+<span class=sc2>// Criação efetiva do indexbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &ibDados, &g_pIndexBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do indexbuffer"</span>, 
+        <span class=sc6>L"inicializar_Indexbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Instalação do indexbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;IASetIndexBuffer</span>( g_pIndexBuffer, 
+                    <span class=sc4>DXGI_FORMAT_R16_UINT</span>, <span class=sc4>0</span>);  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Indexbuffer().fim</span></span>
+
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// processaJanela() - Tratamento de mensagens da janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) 
+<span class=sc16>{</span>
+PAINTSTRUCT ps; 
+<span class=sc16>HDC </span>hdc; 
+
+<span class=sc9>switch</span>( message ) 
+<span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+        hdc = <span class=prg>BeginPaint</span>( hWnd, &ps );  
+        <span class=prg>EndPaint</span>( hWnd, &ps );  
+        <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>WM_CLOSE:</span>
+          Limpar();  
+      <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+        <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+        Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);   
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+        <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+        <span class=sc6>break</span>; 
+
+    <span class=sc9>default:</span>
+        <span class=sc6>return </span><span class=prg>DefWindowProc</span>( hWnd, message, wParam, lParam );  
+<span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+<span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+<span class=sc2>//  -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+<span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+<span class=sc2>// Retorne se já estiver limpo</span>
+<span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+<span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+<span class=sc2>// Libera o vertexbuffer</span>
+<span class=sc9>if</span>( g_pVertexBuffer ) <span class=prg>g_pVertexBuffer-&gt;Release</span>();  
+
+<span class=sc9>if</span>( g_pConstantBuffer ) <span class=prg>g_pConstantBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pIndexBuffer ) <span class=prg>g_pIndexBuffer-&gt;Release</span>();  
+
+<span class=sc2>// Liberar o vertexlayout</span>
+<span class=sc9>if</span>( g_pVertexLayout ) <span class=prg>g_pVertexLayout-&gt;Release</span>();  
+
+<span class=sc2>// Libera o vertexshader</span>
+<span class=sc9>if</span>( g_pVertexShader ) <span class=prg>g_pVertexShader-&gt;Release</span>();  
+
+<span class=sc2>// Libera o pixelshader</span>
+<span class=sc9>if</span>( g_pPixelShader ) <span class=prg>g_pPixelShader-&gt;Release</span>();  
+
+<span class=sc2>// Liberação dos demais objetos</span>
+<span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+bLimpo = <span class=prg>true</span>; 
+
+<span class=sc2>// Limpeza responsável</span>
+g_pVertexBuffer  = <span class=prg>NULL</span>; 
+g_pIndexBuffer  = <span class=prg>NULL</span>; 
+g_pConstantBuffer = <span class=prg>NULL</span>; 
+g_pVertexLayout  = <span class=prg>NULL</span>; 
+g_pVertexShader  = <span class=prg>NULL</span>; 
+g_pPixelShader  = <span class=prg>NULL</span>; 
+g_pRenderTargetView = <span class=prg>NULL</span>; 
+g_pSwapChain  = <span class=prg>NULL</span>; 
+g_pImmediateContext = <span class=prg>NULL</span>; 
+g_pd3dDevice  = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+<span class=sc2>// endfile: motor.cpp
+</div>
+
+<div class=prg-code>
+﻿// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Cubo - Arquivo: entrada.cpp</span>
+<span class=sc2>// Exemplo de como renderizar um cubo colorido (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais de criação e manutenção da janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HINSTANCE </span>  g_hInst   = <span class=prg>NULL</span>; 
+<span class=sc16>HWND </span>       g_hJanela  = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variável global da classe da janela; necessária em initWindow()</span>
+<span class=sc2>// e no encerramento de wWinMain()</span>
+<span class=prg>WCHAR </span> sclasseJanela[] = <span class=sc6>L"cls_directx"</span>; 
+
+<span class=sc2>// Recebimento do retorno das funções do directx</span>
+<span class=sc16>HRESULT </span> g_hr   = <span class=sc4>0</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>  g_xtela  = 640; 
+<span class=prg>int </span>  g_ytela  = 480; 
+
+<span class=sc2>// Título da janela</span>
+<span class=prg>WCHAR </span> janelaTitulo[] = <span class=sc6>L"prj_Cubo"</span>; 
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Protótipo da função de criação da janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>   initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow );  
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// wWinMain() - esta função é o ponto de entrada da aplicação. Ela inicializa</span>
+<span class=sc2>// a janela,  entra no laço de mensagens e renderiza a cena no tempo ocioso.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>int </span><span class=sc16>WINAPI </span>wWinMain( <span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+          LPWSTR lpCmdLine, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+<span class=sc4>UNREFERENCED_PARAMETER</span>( hPrevInstance );  
+<span class=sc4>UNREFERENCED_PARAMETER</span>( lpCmdLine );  
+
+<span class=sc2>// Inicializa a janela</span>
+g_hr = initWindow( hInstance, nCmdShow );  
+<span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span><span class=sc4>0</span>; 
+
+<span class=sc2>// Inicializa o motor gráfico</span>
+g_hr = initGfx();  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+
+  Limpar();  
+  <span class=prg>MessageBoxW </span>(<span class=sc4>0</span>, <span class=sc6>L"Falha na inicialização do motor gráfico"</span>, 
+    <span class=sc6>L"prj_Cubo"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>}</span>
+
+<span class=sc2>// Coração da aplicação - laço de mensagens</span>
+<span class=sc5>MSG </span>msg = {0}; 
+<span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT</span>) 
+<span class=sc16>{</span>
+    <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &msg, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, PM_REMOVE ) ) 
+    <span class=sc16>{</span>
+        <span class=prg>TranslateMessage</span>( &msg );  
+        <span class=prg>DispatchMessage</span>( &msg );  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc9>else</span>
+    <span class=sc16>{</span>
+        Renderizar();  
+    <span class=sc16>} <span class=sc2>// end else</span></span>
+<span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+<span class=sc2>// Finaliza a aplicação</span>
+Limpar();  
+<span class=prg>UnregisterClass</span>( sclasseJanela, g_hInst);  
+<span class=sc6>return</span>(<span class=prg>int</span>)<span class=prg>msg.wParam</span>; 
+<span class=sc16>} <span class=sc2>// wWinMain().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// initWindow() - Essa função cria e registra a janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Estrutura de descrição da janela</span>
+<span class=sc5>WNDCLASSEX </span>wcls; 
+
+<span class=sc2>// Tornando global o handle da aplicação</span>
+g_hInst = hInstance; 
+
+<span class=sc2>// Estrutura que descreve a janela</span>
+<span class=prg>wcls.hInstance </span> = hInstance; 
+<span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+<span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+<span class=prg>wcls.style </span>  = <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW </span>| <span class=sc4>CS_OWNDC</span>; 
+<span class=prg>wcls.cbSize </span>  = <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+<span class=sc2>// O cursor e os ícones da aplicação são default</span>
+<span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hIconSm </span> = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hCursor </span> = <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+<span class=sc2>// Aplicação sem menu</span>
+<span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+<span class=prg>wcls.cbClsExtra </span> = <span class=sc4>0</span>; 
+
+<span class=sc2>// Nada de espaço extra atrelado a janela</span>
+<span class=prg>wcls.cbWndExtra </span> = <span class=sc4>0</span>; 
+
+ <span class=sc2>// Cor default da janela</span>
+<span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  GetStockObject ( WHITE_BRUSH );  
+
+<span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+<span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+<span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+<span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Registro falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+<span class=sc6>return </span> <span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+<span class=sc2>// Atributos de configuração da janela</span>
+<span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>dwEstilo = <span class=sc4>WS_OVERLAPPEDWINDOW </span>- <span class=sc4>WS_MAXIMIZEBOX</span>; 
+<span class=prg>int </span>xpos = 160; 
+<span class=prg>int </span>ypos = 120; 
+<span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+<span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+<span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Criação da janela</span>
+g_hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+  dwEstilo, xpos, ypos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+  hInstance, dadoExtra );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>(g_hJanela == <span class=prg>NULL</span>)  
+<span class=sc16>{</span>
+  <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Criação da janela falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Exibe a janela</span>
+<span class=prg>ShowWindow</span>( g_hJanela, nCmdShow );  
+<span class=prg>UpdateWindow</span>(g_hJanela );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initWindow().fim</span></span>
+<span class=sc2>// endfile: entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-10.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-12.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo motor.cpp</a>
+<a href=#2.3>2.3 initGfx()                 - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Renderizar()              - Renderização da cena</a>
+<a href=#2.5>2.5 atualizar_Temporizador()  - Atualiza o timer</a>
+<a href=#2.6>2.6 renderizar_Planeta()      - Renderização do cubo central</a>
+<a href=#2.7>2.7 renderizar_Lua()          - Renderização do cubo lateral</a>
+<a href=#2.8>2.8 montar_Geometria()        - Listagem da montagem do cubo</a>
+<a href=#2.9>2.9 inicializar_Indexbuffer() - indexbuffer para montagem do cubo.</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Cubo</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

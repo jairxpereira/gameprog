@@ -1,0 +1,709 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase05.4</title>
+<head>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+
+
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 5.4</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-5.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">05.4 Considerações sobre imagem 2D</h3><pre>
+<b><u>05.4 Visão geral</b></u>
+
+Nesta seção vamos fazer tecer algumas considerações técnicas sobre imagens 2D
+com o intuito de facilitar a compreensão de algumas funções avançadas de
+manipulação de imagens que a Darkgdk oferece e que serão apresentadas nos
+próximos capítulos.
+
+Vamos supor agora que seu desafio é gravar a imagem de um quadrado azul em
+um arquivo em disco. O tamanho desse quadrado é 5 pixels de largura e altura.
+
+A primeira pergunta que surge é quais são as formas pelas quais eu posso
+representar um quadrado.
+
+<b><u>Imagem vetorial</b></u>
+a) Um quadrado pode ser representado por uma função que aceita como argumentos
+o tamanho do quadrado, a posição (x,y) do quadrado na tela e a cor do
+quadrado. Então no disco eu posso gravar assim esse quadrado:
+<span class=prg>
+// xpos( 1 byte ), ypos( 1 byte ), tamanho (1 byte), cor(3 bytes)
+160, 240, 5, [0, 0, 255] </span>
+
+Gasto então 6 bytes para gravar esse quadrado dessa forma no disco. Depois
+carrego esse quadrado do disco e para mostrá-lo uso uma função que pode ter
+essa forma:
+<div class=prg>		
+// ----------------------------------------------------------------------------
+void imagem_vetorial(void) {
+
+// Propriedades da imagem vetorizada
+int dados[6] = {160, 120, 5, 0, 0, 255 };   
+
+// Variáveis de trabalho
+int xpos, ypos, ntamanho;
+int ncor, r, g, b;
+
+// Carregando a informação da imagem para as variáveis de trabalho
+xpos = dados[0];
+ypos = dados[1];
+ntamanho = dados[2];
+r = dados[3];
+g = dados[4];
+b = dados[5];   
+
+// Desenhando a imagem vetorizada
+ncor = dbRGB(r,g,b);
+dbInk (ncor, 0);
+dbBox (xpos, ypos, xpos + ntamanho, ypos + ntamanho);
+
+} // imagem_vetorial(void).fim</div>
+
+Nesse primeiro caso dizemos que a imagem do quadrado é <b>vetorial</b> pois
+é formada a partir de pontos que indicam apenas as  propriedades  do
+quadrado (cor, posição, tamanho). Essa imagem ocupa pouca memória no
+arquivo.  
+
+<b><u>Imagem rasterizada</b></u>
+b) A segunda maneira de representar esse quadrado é por uma matriz de linhas
+e colunas que vão conter a cor de cada ponto desse quadrado para toda a
+área do quadrado. Como o quadrado tem 5 pixels de tamanho, a área dele
+é de 25 pontos; a cor de cada ponto demanda 3 bytes para ser arquivada, 
+então o arquivo em disco vai ter 75 bytes para suportar a totalidade
+dos pontos desse quadrado. O arquivo em disco vai ter essa configuração:
+<div style="border-width:1px; border-style:solid; width:395px">
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255) </div>
+
+Depois de carregado do disco, o código para mostrar esse quadrado na posição
+(80,60) da tela poderia ficar dessa forma: 
+<div class=prg style="width:500pt; background:lightyellow; 
+border-style:solid; border-width:1px">	
+// ----------------------------------------------------------------------------
+void imagem_rasterizada(void) {
+
+// Dados de cor literais da imagem rasterizada
+int dados [25][3] = { 
+{0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
+{0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
+{0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
+{0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
+{0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255}
+}; // fim da array
+
+// Variáveis de trabalho
+int xpos, ypos;
+int ncor, r, g, b;
+int linha, coluna;
+
+// Ponteiro para acessar a memória aonde a imagem está localizada
+int *pImagem;
+
+xpos = 80;
+ypos = 60;  
+
+// Legenda
+dbInk( nPreto, nBranco);
+dbText(xpos + 20, ypos, "<-- imagem_rasterizada()");
+
+// Acessa a localização da imagem na memória
+pImagem = dados[0];
+
+// Acessa os dados da imagem e coloca-os na tela
+for (linha=0; linha < 5; linha++)
+{
+for (coluna = 0; coluna < 5; coluna++)
+{   
+// Obtém valores rgb dos 3 primeiros inteiros
+r = *pImagem; pImagem++;
+g = *pImagem; pImagem++;
+b = *pImagem; pImagem++;
+ncor = dbRGB(r,g,b);
+
+// Desenha ponto
+dbInk( ncor, 0);
+dbDot (xpos + linha, ypos + coluna);
+} // fim do for(coluna)
+} // fim do for(linha)
+
+} // imagem_rasterizada().fim </div>	
+
+Essa forma de imagem é conhecida como <b>rasterizada</b>, e é muito comum a 
+imagem ser sustentada dessa forma em um arquivo em disco, na memória
+e na sua tela. 
+
+A DarkGdk possui funções que permitem manipular diretamente uma imagem
+rasterizada na memória passando um ponteiro de localização dessa
+imagem. Isso é interessante para produzir efeitos gráficos nos
+bastidores do programa e depois exibí-los na tela.
+
+<b><u>Compactação e volume de dados da imagem rasterizada</b></u>	
+<div style="border-width:1px; border-style:solid; width:395px">
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255)
+
+(0,0,255),(0,0,255),(0,0,255),(0,0,255),(0,0,255) </div>
+<small><b>( (*) 75 bytes para gravar um quadrado 5x5 com cor de 3 bytes.)</small></b>
+
+Voltando ao nosso exemplo da imagem rasterizada, perceba que a profundidade
+de cor impacta muito no volume de dados da imagem. Em nosso simples exemplo
+nosso quadrado azul de 5 pixels consome 75 bytes porque a representação de
+cor demanda 3 bytes. 
+
+Naturalmente que uma imagem com cores de 16 bits ou 8 bits ocupa menor espaço
+ao custo de uma menor qualidade na imagem.
+<div style="border-width:1px; border-style:solid; width:185px">
+255,255, 255, 255, 255
+255,255, 255, 255, 255
+255,255, 255, 255, 255
+255,255, 255, 255, 255
+255,255, 255, 255, 255 </div>
+<small><b>( (*) 25 bytes para gravar um quadrado 5x5 com cor de 1 byte.)</small></b>
+
+Uma primeira forma de compactar uma imagem é criar uma tabela de cores, uma
+paleta. Por exemplo, na tabela acima você pode interpretar que o byte 255
+pode ser o nosso azul (0,0,255) ou outra cor conforme nossa conveniência
+(78,230, 107). O byte é lido e substituido pela cor final. Veja abaixo uma
+função de exemplo que lê e mostra uma imagem assim.
+<div class=prg style="width:500pt; background:lightyellow; border-style:solid; border-width:1px">	
+// ----------------------------------------------------------------------------
+void rasterizada_com_tabela_de_cores(void) {
+
+
+// O valor 255 simboliza uma posição numa tabela de cores que pode representar
+// qualquer cor conforme nossa necessidade e conveniência
+int dados [5][5] = { 
+255,255,255,255,255,
+255,255,255,255,255,
+255,255,255,255,255,
+255,255,255,255,255,
+255,255,255,255,255 
+}; // fim da array
+
+// Variáveis de trabalho
+int cor_tabela[256];    
+int xpos, ypos;
+int ncor, r, g, b;
+int linha, coluna;
+
+// Gera uma cor aleatória
+r = dbRnd(255); g = dbRnd(255); b = dbRnd(255);
+
+// Joga essa cor na posição 255 da tabela de cores
+cor_tabela[255] = dbRGB(r,g,b);
+
+// Localização da imagem
+xpos = 40;  ypos = 30;
+
+// Legenda
+dbInk( nPreto, nBranco);
+dbText(xpos + 20, ypos, "<-- rasterizada_com_tabela_de_cores()");
+
+// Ponteiro para acessar a memória aonde a imagem está localizada
+int *pImagem;
+
+// Acessa a memória aonde a imagem está localizada
+pImagem = dados[0];
+
+// Desenha a imagem
+for (linha=0; linha < 5; linha++)
+{
+
+for (coluna = 0; coluna < 5; coluna++)
+{   
+
+// *pImagem retorna o valor numérico que representa a posição de 
+// uma cor na tabela
+ncor = cor_tabela [ *pImagem ]; 
+pImagem++;
+
+// Desenha ponto
+dbInk( ncor, 0);
+dbDot (xpos + linha, ypos + coluna);
+} // fim do for(coluna)
+} // fim do for(linha)
+} // rasterizada_com_tabela_de_cores().fim
+</div>
+
+<b><u>Melhor compactação</b></u>
+Geralmente uma imagem apresenta repetições de cor em pontos consecutivos,
+tendo isso em mente, o processo de compactação pode  ser  melhorado  com
+aproveitamento disso. Por exemplo, você pode arquivar a quantidade de pontos
+consecutivos e a cor desses pontos na sequência nessa forma: 
+[10, 1] [20, 2] [10, 3]. 
+O primeiro byte descreve a quantidade de pontos consecutivos com a mesma cor,
+e  o  próximo número representa uma cor de uma  tabela  de  cores.  Como
+terceira opção de representação do nosso quadrado no arquivo ou  na memória
+ele poderia ficar dessa forma:
+<div style="border-width:1px; border-style:solid; width:40px">
+5,1
+5,1
+5,1
+5,1
+5,1 </div>
+
+O cinco é a quantidade consecutiva de pontos da mesma cor e o 1 representa
+o azul (0,0,255). Gastamos assim 10 bytes para representar e gravar nosso
+quadrado 5x5. Veja a função que desdobra e mostra uma imagem assim:
+<div class=prg style="width:500pt; background:lightyellow; border-style:solid; border-width:1px">	
+// ----------------------------------------------------------------------------
+void rasterizada_compactada(void) {
+
+// Dados de uma imagem rasterizada compactada
+// [5][2] representa uma matriz bidimensional de 10 inteiros
+// {5,1} o primeiro inteiro representa a quantidade de pontos consecutivos que
+// tem a cor apontada pelo segundo número em uma tabela
+int dados [5][2] = { 
+5,1,
+5,1,
+5,1,
+5,1,
+5,1     
+}; // fim da array
+
+// Tabela e variáveis de trabalho
+int cor_tabela[256];    
+int xpos, ypos;
+int ncor, r, g, b;
+int linha = 0;
+int coluna = 0;
+
+// Gera uma cor aleatória e coloca-a na posição 1 da tabela
+r = dbRnd(255);
+g = dbRnd(255);
+b = dbRnd(255);
+cor_tabela[1] = dbRGB(r,g,b);
+
+// Posição da imagem
+xpos = 20;
+ypos = 15;
+
+// Legenda
+dbInk( nPreto, nBranco);
+dbText(xpos + 20, ypos-5, "<-- rasterizada_compactada()");
+
+// Variáveis de trabalho
+int nqtd = 0;
+int repete_cor = 0; 
+int ncor_tabela_pos = 0;
+
+// Desenha a imagem descompactando...
+for (linha=0; linha < 5; linha++)
+{
+nqtd = dados[linha][0];
+ncor_tabela_pos = dados[linha][1];
+ncor = cor_tabela [ ncor_tabela_pos ]; 
+
+for (repete_cor=0; repete_cor < nqtd; repete_cor++)
+{
+// Desenha ponto
+dbInk( ncor, 0);
+dbDot (xpos + linha, ypos + coluna);
+coluna++;
+} // fim do for(coluna)
+coluna = 0;
+
+} // fim do for(linha)
+
+} // rasterizada_compactada().fim
+</div>	
+
+<b><u>Efeitos especiais com imagens</b></u>
+A intenção desse capítulo foi deixar a porta aberta para que você possa
+aplicar efeitos especiais nas suas imagens através do acesso e manipulação
+das cores ou dos pontos da sua imagem. 
+
+Em nosso código apenas exemplificamos como você lê e mostra uma imagem. Porém,
+no meio do processo você pode aplicar um efeito tipo invertendo ou alterando
+os valores r-g-b antes de mostrar sua imagem. Um efeito de degradê de cinza
+pode ser obtido tirando a média dos valores dos canais rgb e igualando-os com
+o mesmo valor.	Veja agora o programa exemplo completo dessa seção.
+<hr>	
+<img src="images\desenho2d02.png">
+<div class=prg-code><span class="sc2">// desenho2d02.cpp
+// Esse programa ilustra considerações técnicas sobre processamento de
+// imagens 2D.
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">                             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">imagem_vetorial</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">                 </span><span class="sc2">// Primeiro método de desenhar um quadrado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">imagem_rasterizada</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">              </span><span class="sc2">// Segundo método de desenhar um quadrado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">rasterizada_com_tabela_de_cores</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// Terceiro método de desenhar um quadrado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">rasterizada_compactada</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">          </span><span class="sc2">// Quarto método de desenhar um quadrado
+</span><span class="sc0">
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc0">
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc2">// Ativa geração de números aleatórios diferentes a cada rodada do programa
+// Utilizado para gerar cores diferentes
+</span><span class="sc11">dbRandomize</span><span class="sc10">(</span><span class="sc11">dbTimer</span><span class="sc10">());</span><span class="sc0">
+
+</span><span class="sc2">// Testando vários métodos de produzir imagens
+</span><span class="sc11">imagem_vetorial</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">imagem_rasterizada</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">rasterizada_com_tabela_de_cores</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">rasterizada_compactada</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">     
+
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">dbSyncRate</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"desenho2d02.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span>
+
+<span class="sc2">// ----------------------------------------------------------------------------</span>
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">imagem_vetorial</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Propriedades da imagem vetorizada
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">160</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">120</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">255</span><span class="sc0"> </span><span class="sc10">};</span><span class="sc0">   
+
+</span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ntamanho</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Carregando a informação da imagem para as variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">ntamanho</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">];</span><span class="sc0">   
+
+</span><span class="sc2">// Legenda
+</span><span class="sc0">    </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"&lt;-- imagem_vetorial()"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenhando a imagem vetorizada
+</span><span class="sc0">    </span><span class="sc11">ncor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbInk</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbBox</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ntamanho</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ntamanho</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// quadrado01().fim
+</span>
+
+<span class="sc2">// ----------------------------------------------------------------------------</span>
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">imagem_rasterizada</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Dados de cor literais da imagem rasterizada
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc4">25</span><span class="sc10">][</span><span class="sc4">3</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da array
+</span><span class="sc0">
+</span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Ponteiro para acessar a memória aonde a imagem está localizada
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">80</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">60</span><span class="sc10">;</span><span class="sc0">  
+
+</span><span class="sc2">// Legenda
+</span><span class="sc0">    </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"&lt;-- imagem_rasterizada()"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Acessa a localização da imagem na memória
+</span><span class="sc0">    </span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc2">// Acessa os dados da imagem e coloca-os na tela
+</span><span class="sc0">    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">linha</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">   
+</span><span class="sc2">// Obtém valores rgb dos 3 primeiros inteiros
+</span><span class="sc0">            </span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc11">ncor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Desenha ponto
+</span><span class="sc0">            </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDot</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(coluna)
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(linha)
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// imagem_rasterizada().fim
+</span>
+
+<span class="sc2">// ----------------------------------------------------------------------------</span>
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">rasterizada_com_tabela_de_cores</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+
+</span><span class="sc2">// O valor 255 simboliza uma posição numa tabela de cores que pode representar
+</span><span class="sc0">    </span><span class="sc2">// qualquer cor conforme nossa necessidade e conveniência
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">][</span><span class="sc4">5</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc0"> 
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da array
+</span><span class="sc0">
+</span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_tabela</span><span class="sc10">[</span><span class="sc4">256</span><span class="sc10">];</span><span class="sc0">    
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Gera uma cor aleatória
+</span><span class="sc0">    </span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Joga essa cor na posição 255 da tabela de cores
+</span><span class="sc0">    </span><span class="sc11">cor_tabela</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Localização da imagem
+</span><span class="sc0">    </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">40</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Legenda
+</span><span class="sc0">    </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"&lt;-- rasterizada_com_tabela_de_cores()"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Ponteiro para acessar a memória aonde a imagem está localizada
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Acessa a memória aonde a imagem está localizada
+</span><span class="sc0">    </span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc2">// Desenha a imagem
+</span><span class="sc0">    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">linha</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">   
+
+</span><span class="sc2">// *pImagem retorna o valor numérico que representa a posição de uma
+</span><span class="sc0">            </span><span class="sc2">// cor na tabela
+</span><span class="sc0">            </span><span class="sc11">ncor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">cor_tabela</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">pImagem</span><span class="sc0"> </span><span class="sc10">];</span><span class="sc0"> 
+</span><span class="sc11">pImagem</span><span class="sc10">++;</span><span class="sc0">
+
+</span><span class="sc2">// Desenha ponto
+</span><span class="sc0">            </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDot</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(coluna)
+</span><span class="sc0">    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(linha)
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// rasterizada_com_tabela_de_cores().fim
+</span>
+
+<span class="sc2">// ----------------------------------------------------------------------------</span>
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">rasterizada_compactada</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc2">// Dados de uma imagem rasterizada compactada
+</span><span class="sc0">    </span><span class="sc2">// [5][2] representa uma matriz bidimensional de 10 inteiros
+</span><span class="sc0">    </span><span class="sc2">// {5,1} o primeiro inteiro representa a quantidade de pontos consecutivos que
+</span><span class="sc0">    </span><span class="sc2">// tem a cor apontada pelo segundo número em uma tabela
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">][</span><span class="sc4">2</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc0">     
+</span><span class="sc10">};</span><span class="sc0"> </span><span class="sc2">// fim da array
+</span><span class="sc0">
+</span><span class="sc2">// Tabela e variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cor_tabela</span><span class="sc10">[</span><span class="sc4">256</span><span class="sc10">];</span><span class="sc0">    
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">r</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">g</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">b</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Gera uma cor aleatória e coloca-a na posição 1 da tabela
+</span><span class="sc0">    </span><span class="sc11">r</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">g</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">b</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">cor_tabela</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRGB</span><span class="sc10">(</span><span class="sc11">r</span><span class="sc10">,</span><span class="sc11">g</span><span class="sc10">,</span><span class="sc11">b</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Posição da imagem
+</span><span class="sc0">    </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">15</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Legenda
+</span><span class="sc0">    </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">-</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"&lt;-- rasterizada_compactada()"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">repete_cor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> 
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncor_tabela_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Desenha a imagem descompactando...
+</span><span class="sc0">    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">linha</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">nqtd</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">linha</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">ncor_tabela_pos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dados</span><span class="sc10">[</span><span class="sc11">linha</span><span class="sc10">][</span><span class="sc4">1</span><span class="sc10">];</span><span class="sc0">
+</span><span class="sc11">ncor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">cor_tabela</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc0"> </span><span class="sc11">ncor_tabela_pos</span><span class="sc0"> </span><span class="sc10">];</span><span class="sc0"> 
+
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">repete_cor</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">repete_cor</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">nqtd</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">repete_cor</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Desenha ponto
+</span><span class="sc0">            </span><span class="sc11">dbInk</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">ncor</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbDot</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">coluna</span><span class="sc10">++;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(coluna)
+</span><span class="sc0">            </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(linha)
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// rasterizada_compactada().fim
+</span></div>	
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track05-3.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track05-5.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

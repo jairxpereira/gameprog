@@ -1,0 +1,1287 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase03-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 03-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track03-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>03.5 Mistura de cor - Parte 2/2 (Objeto texturizado)</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Alpha02.png></div>
+Repare que na ilustração que abre esse tópico há  um  efeito conjunto
+de luz e sombras sobre a textura quadriculada.  Isso foi obtido com a
+renderização do quad duas vezes, primeiro com a textura quadriculada,
+e depois com uma textura simples com um hexágono laranja desenhado  e
+aplicando uma configuração simples de mistura de cor.
+
+<u>textura do segundo quad renderizado: gp-alpha.png</u>
+<img src=\gameprog\gdkmedia\bitmap\gp-alpha.png>
+Nesta textura a cor preta está definida como cor transparente.
+
+Para a obtenção dos resultados  adequados  com  mistura  de  cor  com
+aproveitamento do canal alpha é importante  na criação do dispositivo
+renderizador selecionar um formato com canal alpha para o backbuffer.
+A aplicação desse tópico utiliza esse formato: 
+	
+	<span class=prg>pps.BackBufferFormat</span> = <b class=prg>D3DFMT_A8R8G8B8; </b>
+	
+Outras   configurações   importantes   foram   feitas   na   função
+<b>inicializar_Textura()</b>.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+inicializar_Textura()
+	carrega a textura via <b class=prg>D3DXCreateTextureFromFile()</b>	
+	<b class=sc16>Configura alguns estados de texturização</b>	
+
+initGfx()
+	chama inicializar_Textura() para montar o contexto de texturização.
+	chama montar_Geometria() para montar o quadrado texturizado.
+	chama inicializar_Camera() para a configuração inicial da câmera.
+	Configura iluminação
+	
+montar_Geometria()	
+	Faz a montagem do quadrilátero texturizado.
+	
+<b class=sc16>desenhar_Cortina()</b>
+	Prepara matrizes de rotação e posicionamento.
+	Combina posicionamento e rotação na matriz de mundo local.
+	joga matriz mundo no dispositivo renderizador.
+	configura material, textura e formato de vértice.
+	renderiza o quad com DrawIndexedPrimitiveUP()
+	
+<b class=sc16>desenharQuad()</b>
+	prepara matrizes de rotação e posicionamento.
+	atualiza ângulo de rotação
+	combina posicionamento e rotação na matriz de mundo local.
+	joga matriz mundo no dispositivo renderizador.
+	configura material, textura e formato de vértice.
+	renderiza o quad com DrawIndexedPrimitiveUP()	
+	
+renderizar_Geometria()
+	Declara o formato de vértice utilizado: 
+			CustomVertex_PositionTextured_Format.
+			
+	<b class=sc16>O temporizador seleciona um modo de mistura de
+			cor diferente a cada quatro segundos.</b>
+	
+	desliga blending
+	<b class=sc16>chama desenhar_Cortina() para renderizar o quad (quadrilátero)</b>
+	
+	liga blending
+	<b class=sc16>chama desenhar_Quad() para renderizar o quad na configuração 
+			de blending selecionada</b>	
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+A  entrada  de  coordenadas  de  textura  na  estrutura  de  vértice
+customizado sofreu um pequeno ajuste ficando restrita ao tipo  <span class=prg>float</span>.
+
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Alpha02 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra os efeitos de alpha blending</span>
+<span class=sc2>// com um objeto texturizado</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+ <span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3d9.lib"</span>)  
+ <span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionTextured_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_TEX1</span>) 
+
+<span class=sc2>// Estrutura do vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionTextured</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Coordenada da textura</span>
+  <span class=prg>float </span>tu, tv; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionTextured</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionTextured</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, 
+							<span class=prg>float </span>_tu, <span class=prg>float </span>_tv) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configura posição</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+    <span class=sc2>// Configura textura</span>
+    tu = _tu; 
+    tv = _tv; 
+  <span class=sc16>}</span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionTextured</span></span>
+
+  <span class=sc2>// Estrutura para guardar cor, posição e rotação do objeto 3d</span>
+  <span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+  <span class=sc16>{</span>
+    <span class=sc5>D3DXVECTOR3 </span>pos; 
+    <span class=sc5>D3DXVECTOR3 </span>rot; 
+    <span class=sc5>D3DCOLORVALUE </span>cor; 
+  <span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a textura</span>
+  <span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura o texto da janela</span>
+  <span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto);  
+
+  <span class=sc2>// Cria um material com a cor especificada</span>
+  <span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor );  
+
+  <span class=sc2>// Desenha o quadriângulo de fundo</span>
+  <span class=prg>void </span>desenhar_Cortina(<span class=sc5>Propriedades3d </span>*props );  
+
+  <span class=sc2>// Desenha o quad de frente</span>
+  <span class=prg>void </span>desenhar_Quad(<span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+ <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+<b><span class=prg>void </span>desenhar_Cortina(<span class=sc5>Propriedades3d </span>*props );  
+<span class=prg>void </span>desenhar_Quad(<span class=sc5>Propriedades3d </span>*props);  </b>
+Estas funções têm o mesmo corpo de código e as duas desenham  o  quad
+cada  qual  com  sua  textura  diferente. A função <b>desenhar_Cortina()</b>
+produz o quad com a textura  quadriculada  enquando  a  outra  função
+produz o outro quad com os efeitos de blending aplicados.
+
+<b><u>2.1.2 Aspectos globais: Arquivo: motor.cpp</u></b>
+<div class=niceview><b class=sc5>IDirect3DTexture9</b> *texCortina = <span class=prg>NULL</span>; 
+<b class=sc5>IDirect3DTexture9</b> *texQuad    = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; 
+<span class=sc5>D3DXMATRIX </span>obj_esc; 
+
+<span class=sc2>// Matriz para combinar todas as transformações do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>mtxCombinada; 
+</div>
+<b><span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; 
+<span class=sc5>D3DXMATRIX </span>obj_esc;  
+<span class=sc5>D3DXMATRIX </span>mtxCombinada; </b>
+Estas matrizes são usadas para controlar posição,  rotação  e  escala
+dos objetos. Foram puxadas para o espaço global porque são usadas nas
+duas funções que desenham o quad.
+
+<b><u>2.2 Inicialização dos estados de texturização</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+   g_hr = <span class=prg>D3DXCreateTextureFromFile </span>(g_device, 
+     <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\textura2x2.bmp"</span>, 
+    &texCortina);  
+
+   g_hr = <span class=prg>D3DXCreateTextureFromFile</span>( g_device, 
+     <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\gp-alpha.png"</span>, 
+     &texQuad);  
+
+   <span class=sc9>if </span>(<span class=prg>FAILED </span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha: D3DXCreateTextureFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_Textura</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Habilita o uso do canal alpha da cor difusa do material\textura</span>
+  <span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG1</span>, <span class=sc4>D3DTA_DIFFUSE</span>);   
+  <span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAOP</span>, <span class=sc4>D3DTOP_SELECTARG1</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// menor do que a superfície</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// maior do que a superfície</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Configura modo de endereçamento</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_ADDRESSU</span>, <span class=sc4>D3DTADDRESS_WRAP</span>);   
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_ADDRESSV</span>, <span class=sc4>D3DTADDRESS_WRAP</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializar_Textura(void).fim</span></span>
+</div>
+
+<span class=sc2>// Habilita o uso do canal alpha da cor difusa do material\textura</span>
+<b><span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG1</span>, <span class=sc4>D3DTA_DIFFUSE</span>);   
+<span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAOP</span>, <span class=sc4>D3DTOP_SELECTARG1</span>);   </b>
+Estas duas linhas fazem o trabalho de habilitar o uso do canal  alpha
+da cor difusa da textura e/ou material para  os  efeitos  de  mistura
+de  cor  com conexão com  a  textura  do  estágio zero (0).
+
+A  parte  TSS  da  sigla  <b>D3DTSS_ALPHAARG1</b>  e  outras  semelhantes  é
+abreviação para  texture stage state  traduzido  pela  Gameprog  como
+'estado de estágio de textura.'   Nestas  configurações  de  estágio,
+o final OP parte das siglas <b>D3DTSS_ALPHAOP</b>  e  <b>D3DTOP_SELECTARG1</b> quer
+dizer 'operação'.   A parte TA  de  <b>D3DTA_DIFFUSE</b>  quer dizer texture
+argument ou argumento de textura.
+
+<b>D3DTSS_ALPHAARG1</b>   e   <b>D3DTSS_ALPHAOP</b>   fazem   parte  da  enumeração
+<b>D3DTEXTURESTAGESTATETYPE</b>  que  define  vários  tipos  de estados para 
+estágios de textura.
+
+<b>D3DTA_DIFFUSE</b> faz parte de uma lista solta de opções para argumentos
+em outros processos presente no arquivo <span class=prg>d3d9types.h.</span>
+
+<b>D3DTOP_SELECTARG1</b> faz parte da enumeração  <b>D3DTEXTUREOP</b>  que  define
+várias operações que definem como é processado  a  mistura  de  cor.
+
+<b><u>2.3 Inicialização do motor gráfico</u></b>
+Reforçando o que já foi citado na visão geral,   é  importante  notar
+aqui nesta função que foi selecionado um formato  de  backbuffer  com
+suporte ao canal alpha.
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Habilita o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>;
+<b>
+  <span class=sc2>// Formato com alpha para o backbuffer</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_A8R8G8B8; </span>
+</b>
+  <span class=prg>pps.BackBufferCount </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta o quad</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Inicializa a textura</span>
+  inicializar_Textura();  
+
+  <span class=sc2>// Inicializa a câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configuração de iluminação</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>( 200,200,200 ) );  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.4 Renderização da geometria</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Mensagens para a barra de títulos da janela</span>
+  <span class=prg>char </span>*mensagem[] = 
+  <span class=sc16>{</span>
+    <span class=sc6>"prj_Alpha02: By Gameprog"</span>, 
+    <span class=sc6>"prj_Alpha02: 1. D3DBLEND_ZERO"</span>, 
+    <span class=sc6>"prj_Alpha02: 2. D3DBLEND_ONE"</span>, 
+    <span class=sc6>"prj_Alpha02: 3. D3DBLEND_SRCCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 4. D3DBLEND_INVSRCCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 5. D3DBLEND_SRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 6. D3DBLEND_INVSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 7. D3DBLEND_DESTALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 8. D3DBLEND_INVDESTALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 9. D3DBLEND_DESTCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 10. D3DBLEND_INVDESTCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 11. D3DBLEND_SRCALPHASAT"</span>, 
+    <span class=sc6>"prj_Alpha02: 12. D3DBLEND_BOTHSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 13. D3DBLEND_BOTHINVSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 14. D3DBLEND_BLENDFACTOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 15. D3DBLEND_INVBLENDFACTOR"</span>, 
+  <span class=sc16>}</span>; 
+
+  <span class=sc2>// Produz a cada quadro segundos um valor de 2 a 15.</span>
+  temporizador = ( <span class=prg>clock</span>() / 4000 ) % 14; 
+  temporizador = temporizador + <span class=sc4>2</span>; 
+
+    <span class=sc2>// Configura o texto da janela</span>
+  config_janelaTexto (mensagem[temporizador]);  
+
+  <span class=sc2>// Fator de mistura para os modos 14 e 15</span>
+  <span class=sc9>if </span>(temporizador &gt; 13) 
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_BLENDFACTOR</span>, <span class=sc4>0xFFFF0000</span>);   
+
+  <span class=sc2>// Desenha a cortina de fundo</span>
+  <span class=prg>cvBranco.a </span> = <span class=sc4>0.9f</span>; 
+  <span class=prg>g_props.cor </span>= cvBranco; 
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>false</span>);   
+  desenhar_Cortina(&g_props);  
+
+  <span class=sc2>// ********* Próximo passo: desenhar o quad na frente da cortina *********</span>
+  <span class=sc2>// Posição e rotação do quad</span>
+  <span class=prg>cvBranco.a </span>= <span class=sc4>0.2f</span>; 
+  <span class=prg>g_props.cor </span>= cvBranco; 
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura as opções de blending</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, temporizador);  
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>,  <span class=sc4>D3DBLEND_ONE</span>);   
+
+  <span class=sc2>// Desenha o quad</span>
+  desenhar_Quad(&g_props);  
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+<b><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>); 
+<span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, temporizador); </b>
+A primeira linha habilita  o  uso  de  alpha  blending  e  a  segunda
+configura  o  fator  de  mistura  para  o  pixel  fonte ou entrante.
+ 
+<b><span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>,  <span class=sc4>D3DBLEND_ONE</span>);  </b>
+Esta linha configura o fator de mistura para o pixel corrente que já
+está no backbuffer  assinalando que este pixel deve  prevalescer  na
+mistura ( <b>D3DBLEND_ONE</b> ).
+
+Na sequência o quad é renderizado com a textura do  hexágono  laranja
+com as configurações acima.
+
+<b><u>2.5 Renderização do quad</u></b>
+<div class=niceview><span class=prg>void </span>desenhar_Quad(<span class=sc5>Propriedades3d </span>*props ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Atualiza o ângulo</span>
+  g_angulo += <span class=sc4>0.01f</span>; 
+
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_esc );  
+  <span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x</span>, 
+    <span class=prg>props-&gt;rot.z </span>+ g_angulo);  
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);  
+
+  <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+  <span class=prg>D3DXMatrixScaling </span>(&obj_esc, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+
+  <span class=sc2>// Produz a matriz combina com as matrizes parciais</span>
+  mtxCombinada = obj_rot * obj_pos; 
+
+  <span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+  <span class=sc2>// Prepara e aplica uma material na caixa</span>
+  criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+  <span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  
+  <span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, texQuad);  
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitiveUP()</span>
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionTextured</span>);   
+
+  <span class=sc2>// Renderiza o quad</span>
+  <span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+    <span class=sc4>0</span>, <span class=sc4>4</span>, <span class=sc4>2</span>, &g_Indices, <span class=sc4>D3DFMT_INDEX16</span>, &g_Verts, nPasso);  
+<span class=sc16>} <span class=sc2>// desenhar_Quad().fim</span></span>
+</div>
+<b><u>3. Código fonte do projeto de exemplo: prj_Alpha02</u></b>
+<div class=prg-code><img src=images\prj_Alpha02.png>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Alpha02 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra os efeitos de alpha blending</span>
+<span class=sc2>// com um objeto texturizado</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+ <span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3d9.lib"</span>)  
+ <span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionTextured_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_TEX1</span>) 
+
+<span class=sc2>// Estrutura do vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionTextured</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Coordenada da textura</span>
+  <span class=prg>float </span>tu, tv; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionTextured</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionTextured</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=prg>float </span>_tu, <span class=prg>float </span>_tv) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configura posição</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+    <span class=sc2>// Configura textura</span>
+    tu = _tu; 
+    tv = _tv; 
+  <span class=sc16>}</span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionTextured</span></span>
+
+  <span class=sc2>// Estrutura para guardar cor, posição e rotação do objeto 3d</span>
+  <span class=prg>struct </span><span class=sc5>Propriedades3d</span>
+  <span class=sc16>{</span>
+    <span class=sc5>D3DXVECTOR3 </span>pos; 
+    <span class=sc5>D3DXVECTOR3 </span>rot; 
+    <span class=sc5>D3DCOLORVALUE </span>cor; 
+  <span class=sc16>}</span>; 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a textura</span>
+  <span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>);   
+
+  <span class=sc2>// Inicializa a câmera</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura o texto da janela</span>
+  <span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto);  
+
+  <span class=sc2>// Cria um material com a cor especificada</span>
+  <span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor );  
+
+  <span class=sc2>// Desenha o quadriângulo de fundo</span>
+  <span class=prg>void </span>desenhar_Cortina(<span class=sc5>Propriedades3d </span>*props );  
+
+  <span class=sc2>// Desenha o quad de frente</span>
+  <span class=prg>void </span>desenhar_Quad(<span class=sc5>Propriedades3d </span>*props);  
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+ <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Alpha02 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra os efeitos de alpha blending</span>
+<span class=sc2>// com um objeto texturizado</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;time.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<b class=sc5>IDirect3DTexture9</b>    *texCortina = <span class=prg>NULL</span>; 
+<b class=sc5>IDirect3DTexture9</b>       *texQuad  = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes para controlar posição e rotação do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>obj_rot; 
+<span class=sc5>D3DXMATRIX </span>obj_pos; 
+<span class=sc5>D3DXMATRIX </span>obj_esc; 
+
+<span class=sc2>// Matriz para combinar todas as transformações do objeto 3d</span>
+<span class=sc5>D3DXMATRIX </span>mtxCombinada; 
+
+<span class=sc2>// Material para o objeto 3d</span>
+<span class=sc5>D3DMATERIAL9 </span>g_material; 
+
+<span class=sc2>// Recipiente de cor, rotação e posição do objeto</span>
+<span class=sc5>Propriedades3d </span>g_props; 
+
+<span class=sc2>// Controla a rotação do quad de frente</span>
+<span class=prg>float </span>g_angulo = <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>velocidade = <span class=sc4>0.02f</span>; 
+
+<span class=sc2>// Constante para cores com rgba expressado como float's</span>
+<span class=sc5>D3DCOLORVALUE </span>cvBranco   = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>dwBranco = <span class=sc4>0xFFFFFFFF</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Controla a mudança periódica da primitiva</span>
+<span class=prg>UINT </span>temporizador = <span class=sc4>0</span>; 
+
+<span class=sc2>// Memória pas os vértices</span>
+<span class=sc5>CustomVertex_PositionTextured </span>g_Verts[<span class=sc4>4 </span>];   
+
+<span class=sc2>// Buffer de índices - indica a ordem de conexão dos vértices</span>
+<span class=prg>WORD </span>g_Indices[<span class=sc4>6</span>] = <span class=sc16>{ </span> <span class=sc4>0</span>, <span class=sc4>1</span>, <span class=sc4>2</span>,   <span class=sc4>2</span>, <span class=sc4>3</span>, <span class=sc4>0 </span><span class=sc16>}</span>; 
+
+
+<span class=prg>void </span>inicializar_Textura(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+   g_hr = <span class=prg>D3DXCreateTextureFromFile </span>(g_device, 
+     <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\textura2x2.bmp"</span>, 
+    &texCortina);  
+
+   g_hr = <span class=prg>D3DXCreateTextureFromFile</span>( g_device, 
+     <span class=sc6>"\\gameprog\\gdkmedia\\bitmap\\gp-alpha.png"</span>, 
+     &texQuad);  
+
+   <span class=sc9>if </span>(<span class=prg>FAILED </span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha: D3DXCreateTextureFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializar_Textura</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Habilita o uso do canal alpha da cor difusa do material\textura</span>
+  <span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAARG1</span>, <span class=sc4>D3DTA_DIFFUSE</span>);   
+  <span class=prg>g_device-&gt;SetTextureStageState</span>(<span class=sc4>0</span>, <span class=sc4>D3DTSS_ALPHAOP</span>, <span class=sc4>D3DTOP_SELECTARG1</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// menor do que a superfície</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MAGFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Corrige visualização blocada da textura - quando textura for</span>
+  <span class=sc2>// maior do que a superfície</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_MINFILTER</span>, <span class=sc4>D3DTEXF_LINEAR</span>);   
+
+  <span class=sc2>// Configura modo de endereçamento</span>
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_ADDRESSU</span>, <span class=sc4>D3DTADDRESS_WRAP</span>);   
+  <span class=prg>g_device-&gt;SetSamplerState</span>(<span class=sc4>0</span>, <span class=sc4>D3DSAMP_ADDRESSV</span>, <span class=sc4>D3DTADDRESS_WRAP</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializar_Textura(void).fim</span></span>
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Habilita o buffer de profundidade</span>
+  <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true</span>; 
+  <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=sc4>D3DFMT_D16</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Formato com alpha para o backbuffer</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_A8R8G8B8; </span>
+
+  <span class=prg>pps.BackBufferCount </span>= <span class=sc4>1</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta o quad</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Inicializa a textura</span>
+  inicializar_Textura();  
+
+  <span class=sc2>// Inicializa a câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc2>// Configuração de iluminação</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>true</span>);  
+  <span class=prg>g_device-&gt;SetRenderState</span>( <span class=sc4>D3DRS_AMBIENT</span>, <span class=prg>D3DCOLOR_XRGB</span>( 200,200,200 ) );  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>0.9f</span>; 
+  <span class=sc2>// Configuração normal dos vértices</span>
+  g_Verts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>2.20f</span>,  <span class=sc4>1.50f</span>,  zpos, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  g_Verts[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>-2.20f</span>, <span class=sc4>1.50f</span>,  zpos, <span class=sc4>3.0f</span>, <span class=sc4>0.0f</span>);   
+  g_Verts[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>-2.20f</span>, <span class=sc4>-1.50f</span>, zpos, <span class=sc4>3.0f</span>, <span class=sc4>3.0f</span>);   
+  g_Verts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionTextured</span>( <span class=sc4>2.20f</span>, <span class=sc4>-1.50f</span>,  zpos, <span class=sc4>0.0f</span>, <span class=sc4>3.0f</span>);   
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Mensagens para a barra de títulos da janela</span>
+  <span class=prg>char </span>*mensagem[] = 
+  <span class=sc16>{</span>
+    <span class=sc6>"prj_Alpha02: By Gameprog"</span>, 
+    <span class=sc6>"prj_Alpha02: 1. D3DBLEND_ZERO"</span>, 
+    <span class=sc6>"prj_Alpha02: 2. D3DBLEND_ONE"</span>, 
+    <span class=sc6>"prj_Alpha02: 3. D3DBLEND_SRCCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 4. D3DBLEND_INVSRCCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 5. D3DBLEND_SRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 6. D3DBLEND_INVSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 7. D3DBLEND_DESTALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 8. D3DBLEND_INVDESTALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 9. D3DBLEND_DESTCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 10. D3DBLEND_INVDESTCOLOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 11. D3DBLEND_SRCALPHASAT"</span>, 
+    <span class=sc6>"prj_Alpha02: 12. D3DBLEND_BOTHSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 13. D3DBLEND_BOTHINVSRCALPHA"</span>, 
+    <span class=sc6>"prj_Alpha02: 14. D3DBLEND_BLENDFACTOR"</span>, 
+    <span class=sc6>"prj_Alpha02: 15. D3DBLEND_INVBLENDFACTOR"</span>, 
+  <span class=sc16>}</span>; 
+
+  <span class=sc2>// Produz a cada quadro segundos um valor de 2 a 15.</span>
+  temporizador = ( <span class=prg>clock</span>() / 4000 ) % 14; 
+  temporizador = temporizador + <span class=sc4>2</span>; 
+
+    <span class=sc2>// Configura o texto da janela</span>
+  config_janelaTexto (mensagem[temporizador]);  
+
+  <span class=sc2>// Fator de mistura para os modos 14 e 15</span>
+  <span class=sc9>if </span>(temporizador &gt; 13) 
+    <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_BLENDFACTOR</span>, <span class=sc4>0xFFFF0000</span>);   
+
+  <span class=sc2>// Desenha a cortina de fundo</span>
+  <span class=prg>cvBranco.a </span> = <span class=sc4>0.9f</span>; 
+  <span class=prg>g_props.cor </span>= cvBranco; 
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>false</span>);   
+  desenhar_Cortina(&g_props);  
+
+  <span class=sc2>// ********* Próximo passo: desenhar o quad na frente da cortina *********</span>
+  <span class=sc2>// Posição e rotação do quad</span>
+  <span class=prg>cvBranco.a </span>= <span class=sc4>0.2f</span>; 
+  <span class=prg>g_props.cor </span>= cvBranco; 
+  <span class=prg>g_props.pos </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+  <span class=prg>g_props.rot </span>= <span class=sc5>D3DXVECTOR3 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura as opções de blending</span>
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_ALPHABLENDENABLE</span>, <span class=prg>true</span>);   
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_SRCBLEND</span>, temporizador);  
+  <span class=prg>g_device-&gt;SetRenderState</span>(<span class=sc4>D3DRS_DESTBLEND</span>,  <span class=sc4>D3DBLEND_ONE</span>);   
+
+  <span class=sc2>// Desenha o quad</span>
+  desenhar_Quad(&g_props);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera a textura</span>
+  <span class=sc9>if </span>(texCortina != <span class=prg>NULL</span>)  <span class=prg>texCortina-&gt;Release</span>();  
+
+  <span class=sc9>if </span>(texQuad != <span class=prg>NULL</span>)  <span class=prg>texQuad-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Limpa os ponteiros</span>
+  g_Direct3d = <span class=prg>NULL</span>; 
+  g_device  = <span class=prg>NULL</span>; 
+  texCortina = <span class=prg>NULL</span>; 
+  texQuad    = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Declara o formato de vértice utilizado pela  aplicação</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionTextured_Format</span>);  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET </span>| D3DCLEAR_ZBUFFER, dwBranco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=prg>void </span>config_janelaTexto( <span class=prg>char </span>*texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Pega o texto atual da janela</span>
+  <span class=prg>char </span>temp_txt[80];  
+  <span class=prg>GetWindowText </span>(hJanela, temp_txt, 80);  
+
+  <span class=sc2>// Configura apenas se o texto de entrada for diferente</span>
+  <span class=sc2>// do texto que está na janela</span>
+  <span class=sc2>// Isto é para evitar um efeito visual desagradável na barra</span>
+  <span class=sc2>// de título da janela.</span>
+  <span class=sc9>if </span>(strcmp (temp_txt, texto)) 
+    <span class=prg>SetWindowText </span>(hJanela, texto);  
+
+<span class=sc16>} <span class=sc2>// config_janelaTexto().fim</span></span>
+
+<span class=prg>void </span>criarMaterial(<span class=sc5>D3DMATERIAL9 </span>*mtl, <span class=sc5>D3DCOLORVALUE </span>cvCor ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( mtl, <span class=sc16>sizeof</span>(<span class=sc5>D3DMATERIAL9</span>)   );  
+
+  <span class=sc2>// Configura cor ambiente e difusa</span>
+  <span class=prg>mtl-&gt;Ambient </span>=  cvCor; 
+  <span class=prg>mtl-&gt;Diffuse </span>=  cvCor; 
+
+<span class=sc16>} <span class=sc2>// criarMaterial().fim</span></span>
+
+<span class=prg>void </span>desenhar_Cortina( <span class=sc5>Propriedades3d </span>*props ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x</span>, 
+    <span class=prg>props-&gt;rot.z</span>);   
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);  
+
+  <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+  <span class=prg>D3DXMatrixMultiply </span>(&mtxCombinada, &obj_rot, &obj_pos);  
+
+  <span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+  <span class=sc2>// Prepara e aplica uma material no objeto 3d</span>
+  criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+  <span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  
+  <span class=prg>g_device-&gt;SetTexture </span>(<span class=sc4>0</span>, texCortina);  
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitiveUP()</span>
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionTextured</span>);   
+
+  <span class=sc2>// Renderiza o quad</span>
+  <span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+    <span class=sc4>0</span>, <span class=sc4>4</span>, <span class=sc4>2</span>, &g_Indices, <span class=sc4>D3DFMT_INDEX16</span>, &g_Verts, nPasso);  
+
+<span class=sc16>} <span class=sc2>// desenhar_Cortina()</span></span>
+
+<span class=prg>void </span>desenhar_Quad(<span class=sc5>Propriedades3d </span>*props ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Atualiza o ângulo</span>
+  g_angulo += <span class=sc4>0.01f</span>; 
+
+  <span class=sc2>// Vamos inicializar as matrizes para um valor neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_rot );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_pos );  
+  <span class=prg>D3DXMatrixIdentity</span>( &obj_esc );  
+  <span class=prg>D3DXMatrixIdentity</span>( &mtxCombinada );  
+
+  <span class=sc2>// Configura rotação do objeto 3d</span>
+  <span class=prg>D3DXMatrixRotationYawPitchRoll</span>(&obj_rot, 
+    <span class=prg>props-&gt;rot.y</span>, 
+    <span class=prg>props-&gt;rot.x</span>, 
+    <span class=prg>props-&gt;rot.z </span>+ g_angulo);  
+
+  <span class=sc2>// Ajusta posição do objeto 3d; </span>
+  <span class=prg>D3DXMatrixTranslation</span>(&obj_pos, 
+    <span class=prg>props-&gt;pos.x</span>, <span class=prg>props-&gt;pos.y</span>, <span class=prg>props-&gt;pos.z</span>);  
+
+  <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+  <span class=prg>D3DXMatrixScaling </span>(&obj_esc, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+
+  <span class=sc2>// Produz a matriz combina com as matrizes parciais</span>
+  mtxCombinada = obj_rot * obj_pos; 
+
+  <span class=sc2>// Configura matriz mundo para o dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &mtxCombinada );  
+
+  <span class=sc2>// Prepara e aplica uma material na caixa</span>
+  criarMaterial( &g_material, <span class=prg>props-&gt;cor</span>);   
+  <span class=prg>g_device-&gt;SetMaterial </span>(&g_material);  
+  <span class=prg>g_device-&gt;SetTexture</span>(<span class=sc4>0</span>, texQuad);  
+
+  <span class=sc2>// Argumentos da função DrawIndexedPrimitiveUP()</span>
+  <span class=prg>UINT </span>  nPasso     =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionTextured</span>);   
+
+  <span class=sc2>// Renderiza o quad</span>
+  <span class=prg>g_device-&gt;DrawIndexedPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, 
+    <span class=sc4>0</span>, <span class=sc4>4</span>, <span class=sc4>2</span>, &g_Indices, <span class=sc4>D3DFMT_INDEX16</span>, &g_Verts, nPasso);  
+
+<span class=sc16>} <span class=sc2>// desenhar_Quad().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Alpha02 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra os efeitos de alpha blending</span>
+<span class=sc2>// com um objeto texturizado</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Alpha02"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = WS_EX_TOPMOST | <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track03-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track03-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

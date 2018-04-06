@@ -1,0 +1,896 @@
+﻿<html>
+<head>
+<title>mdx9_fase07-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 07-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track08-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>07.2 Renderização na textura</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Superficie.png></div>
+É possível renderizar a cena na textura e isso permite a  criação  de
+vários efeitos visuais  interessantes;  entre  muitas  possibilidades
+podemos  citar a  simulação  de  um  espelho retrovisor em um jogo de
+corrida,  um mapa ou um radar na tela,  uma simulação de um raio-x, a
+visualização de  uma  segunda câmera focando uma outra parte do mundo
+virtual  ou  simplesmente a  colocação de informações do jogo na tela.
+
+Neste processo de renderizar na textura, a textura se transforma numa
+segunda tela e isso envolve o mesmo trabalho que se tem de  fazer  na
+renderização comum configurando cameras, luzes e outros detalhes para
+produzir a imagem final que vai para a textura.  Por  fim a textura é
+colocada numa sprite para ser exibida na tela primária.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Superficie.png></div>
+Esta aplicação replica a  renderização do modelo 3d dentro da textura
+criada dinamicamente.  A mesma configuração de câmera é utilizada mas
+poderia  ter  sido outra configuração para obter visões diferentes do
+mesmo objeto.  Antes da renderização na textura,  a  configuração  do
+modo de  preenchimento do modelo 3d é alterado para pontos resultando 
+em um  ponto em cada vértice do modelo 3d ao invés da exibição sólida.
+
+A base desse exemplo é o <b>prj_Modelo3d</b> do tópico 4.4, então foi omitido
+aqui na estrutura a infraestrutura necessária (funções e variáveis de
+de trabalho) do carregamento de um modelo 3d mas  que necessariamente 
+está  presente  no programa fonte  do projeto atualizado  aqui  neste  
+tópico. Vamos nos concentrar na estrutura de renderização na textura:
+
+É necessário um objeto <b class=prg>Texture</b> <b>texturaAlvo</b> que vai receber a  imagem;
+o objeto <b class=prg>Surface</b> <b>superficieAlvo</b> que vai permitir acesso aos dados  do
+nível zero da textura e o objeto <b class=prg>Sprite</b> <b>radar</b> que é o recipiente final
+que vai ser desenhado na tela.  O objeto <b class=prg>RenderToSurface</b> <b>Renderizador</b>
+faz o trabalho de renderizar na textura usando uma réplica particular
+do caminho  normal  de  renderizar  uma  cena  comum que temos  visto
+nas aplicações anteriores.
+
+Esta aplicação também mostra como salvar uma imagem da tela no disco,
+e isto representa uma via para produzir aplicações que geram  imagens
+para diversas finalidades entre elas ilustração  ou  animação.   Além
+disso  esta  aplicação  também  mostra como implementar uma função de
+reconfiguração  do  dispositivo que deve ser usada no evento de reset
+do dispositivo.
+
+Para salvar a imagem pressione 'S' no teclado;   será  produzido  uma
+imagem no formato jpeg  no  diretório  de  execução  desta  aplicação.
+
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+ <span class=sc2>// Variável para guardar uma malha 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para propriedade dos objetos</span>
+ Propriedades3D g_props; 
+<b>
+ <span class=sc2>// Preparando a infraestrutura para renderizar na textura</span>
+ <span class=prg>private </span><span class=sc5>Texture </span>texturaAlvo = <span class=prg>null;</span>
+
+ <span class=sc2>// Camada de dados da textura</span>
+ <span class=prg>private </span><span class=sc5>Surface </span>superficieAlvo = <span class=prg>null;</span>
+ const <span class=prg>int </span>superficie_ntam = 192; 
+
+ <span class=sc2>// Renderizador</span>
+ <span class=prg>private </span><b class=prg>RenderToSurface</b> Renderizador = <span class=prg>null;</span>
+
+ <span class=sc2>// Este objeto vai exibir a textura na tela</span>
+ <span class=prg>private </span><span class=sc5>Sprite </span>radar = <span class=prg>null;</span>
+ 
+</b></div>
+<b><span class=sc2>// Preparando a infraestrutura para renderizar na textura</span>
+<span class=prg>private </span><span class=sc5>Texture </span>texturaAlvo = <span class=prg>null;</span></b>
+Esta é a variável de trabalho para acesso da textura alvo.
+
+<b><span class=sc2>// Camada de dados da textura</span>
+<span class=prg>private </span><span class=sc5>Surface </span>superficieAlvo = <span class=prg>null;</span></b>
+const <span class=prg>int </span>superficie_ntam = 192; 
+A superfície representa a área de  dados  da  textura que é  de  fato
+manipulada para receber os resultados do processo de renderização.  O
+tamanho da  textura e da superfície será configurado em 192 pixels de 
+largura e altura.
+
+<b><span class=sc2>// Renderizador</span>
+<span class=prg>private </span><b class=prg>RenderToSurface</b> Renderizador = <span class=prg>null;</span></b>
+O  objeto  dessa  classe  <span class=prg>RenderToSurface</span>  é  o motor que  realiza  o
+trabalho de renderizar na textura.
+
+<b><span class=sc2>// Este objeto vai exibir a textura na tela</span>
+<span class=prg>private </span><span class=sc5>Sprite </span>radar = <span class=prg>null;</span></b>
+Esta   sprite  é   o  recipiente  final  que  vai receber  a  textura
+renderizada.   A  idéia  original era produzir um <b>radar</b> que mostrasse 
+uma representação visual da posição do jogador no mundo virtual.
+
+<b><u>2.2 Inicializando o ambiente de renderização na textura</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Ativando o buffer de profundidade</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Carrega modelo</span>
+ diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+ CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+<b>
+ <span class=sc2>// Configura função de reconfiguração do dispositivo</span>
+ <span class=prg>device.DeviceReset </span>+= <span class=prg>new </span>EventHandler(reconfigurarDispositivo);  
+
+ <span class=sc2>// Inicializa os objetos para o processo de renderizar na textura</span>
+ reconfigurarDispositivo(device, <span class=prg>null</b>);
+</b>
+<span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</div>
+<b>
+<span class=sc2>// Configura função de reconfiguração do dispositivo</span>
+<span class=prg>device.DeviceReset </span>+= <span class=prg>new </span>EventHandler(reconfigurarDispositivo);</b>
+Aqui é configurado a função responsável por reconfigurar o dispositivo
+em resposta ao evento onDeviceReset do dispositivo que ocorre quando,
+por exemplo,  a nossa  aplicação  perde  e  ganha foco de uso. Nesses
+momentos  é  necessário  reconfigurar  luzes,  câmeras  ou recarregar 
+recursos como vertexbuffers ou indexbuffers.
+
+<b><span class=sc2>// Inicializa os objetos para o processo de renderizar na textura</span>
+reconfigurarDispositivo(device, <span class=prg>null</b>);  </b>
+Essa função chama <b>AtualizarCamera(), AtualizarLuz()</b>  e  na  sequência
+chama  <b class=prg>inicializarRenderizacaoNaTextura()</b>  que  inicializa os objetos 
+responsáveis  pelo processo de gerar e renderizar a imagem na textura:
+
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarRenderizacaoNaTextura() 
+<span class=sc16>{</span>
+ <span class=sc2>// Inicializa o Renderizador</span>
+Renderizador = <span class=prg>new </span><b class=prg>RenderToSurface</b>(device, superficie_ntam, superficie_ntam, 
+   <span class=prg>Format.X8R8G8B8</span>, <span class=prg>true</span>, <span class=prg>DepthFormat.D16</span>);  
+
+ <span class=sc2>// Cria uma textura alvo da renderização</span>
+ texturaAlvo = <span class=prg>new </span><span class=sc5>Texture</span>(device, superficie_ntam, superficie_ntam, <span class=sc4>1</span>, 
+ <span class=prg>Usage.RenderTarget</span>, <span class=prg>Format.X8R8G8B8</span>, <span class=prg>Pool.Default</span>);  
+
+ <span class=sc2>// Acessa a superficie de dados da textura</span>
+ superficieAlvo = <span class=prg>texturaAlvo.GetSurfaceLevel</span>(<span class=sc4>0</span>);  
+
+ <span class=sc2>// Cria uma sprite para a textura</span>
+ radar = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  
+<span class=sc16>}</span>
+</div>
+<b>
+<span class=sc2>// Inicializa o Renderizador</span>
+Renderizador = <span class=prg>new </span><b class=prg>RenderToSurface</b>(device, superficie_ntam, superficie_ntam, 
+	   <span class=prg>Format.X8R8G8B8</span>, <span class=prg>true</span>, <span class=prg>DepthFormat.D16</span>);  </b>
+Aqui é inicializado o objeto que vai aplicar a renderização na textura.
+Nesse processo é informado o dispositivo (<b>device</b>), o tamanho e formato
+da  área  da  textura  e  a configuração do buffer de profundidade nos
+últimos argumentos desse construtor (<span class=prg>true, DepthFormat.D16</span>).
+
+<b><span class=sc2>// Cria uma textura alvo da renderização</span>
+texturaAlvo = <span class=prg>new </span><span class=sc5>Texture</span>(device, superficie_ntam, superficie_ntam, <span class=sc4>1</span>, 
+  <span class=prg>Usage.RenderTarget</span>, <span class=prg>Format.X8R8G8B8</span>, <span class=prg>Pool.Default</span>);  </b>
+Aqui é criado a textura que será alvo da renderização. Nesse processo
+é informado o dispositivo, o tamanho da textura, o nível de mipmap(1),
+o tipo de uso,  o formato da textura e  o  local de armazenamento  da
+textura no sistema (<span class=prg>Pool.Default</span>).
+
+<b><span class=sc2>// Acessa a superficie de dados da textura</span>
+superficieAlvo = <span class=prg>texturaAlvo.GetSurfaceLevel</span>(<span class=sc4>0</span>);  </b>
+Aqui é inicializado o objeto <span class=prg>Surface</span> que obtém  acesso  a  superfície
+principal da textura que é o primeiro nível (0).
+
+<b><span class=sc2>// Cria uma sprite para a textura</span>
+radar = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  </b>
+Aqui é criado a sprite que recebe a textura com a imagem final pronta
+para ser colocada na tela.
+
+<b><u>2.3 Renderizando na textura</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>renderizarNaTextura() 
+<span class=sc16>{</span>
+ <span class=sc2>// Prepara a configuração da janela de visualização</span>
+ <b class=prg>Viewport </b>visao = <span class=prg>new </span><b class=prg>Viewport</b>();  
+ <span class=prg>visao.Width </span>= superficie_ntam; 
+ <span class=prg>visao.Height </span>= superficie_ntam; 
+ <span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f;</span>
+
+ <span class=sc2>// Inicia a renderização da cena</span>
+ <span class=prg>Renderizador.BeginScene</span>(superficieAlvo, visao);  
+
+ <span class=sc2>// Limpa o dispositivo</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+  
+ <span class=sc2>// Modo de preenchimento da renderização: pontos</span>
+ <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Point;</span>
+
+ <span class=sc2>// Desenha o objeto na textura</span>
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);  
+ rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=sc2>// Recupera modo de preenchimento da renderização: sólido</span>
+ <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+
+ <span class=sc2>// Finaliza a cena no Renderizador</span>
+ <span class=prg>Renderizador.EndScene</span>(<span class=prg>Filter.None</span>);  
+
+<span class=sc16>} <span class=sc2>// renderizarNaTextura()</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Prepara a configuração da janela de visualização</span>
+<b class=prg>Viewport </b>visao = <span class=prg>new </span>Viewport();  
+<span class=prg>visao.Width </span>= superficie_ntam; 
+<span class=prg>visao.Height </span>= superficie_ntam; 
+<span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f;</span></b></div>
+Aqui é configurada uma janela de visualização  com  largura, altura e
+limite de profundidade.
+
+<b><span class=sc2>// Inicia a renderização da cena</span>
+<span class=prg>Renderizador.BeginScene</span>(superficieAlvo, visao);  </b>
+Depois de BeginScene  todas  os  demais  resultados  das  funções  de
+renderização ocorrerão dentro da textura.
+
+<b><span class=sc2>// Limpa o dispositivo</span>
+<span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  </b>
+Limpa a superfície da textura aplicando o branco como cor  de  fundo.
+
+<b><span class=sc2>// Modo de preenchimento da renderização: pontos</span>
+<span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Point;</span></b>
+Configuração do modo de preenchimento da renderização. Pode ser ponto,
+sólido ou wireframe.
+
+<div class=niceview style="border-style:dashed;">Poderia vir aqui reconfigurações de luz, camera e outros itens para a
+produção de uma imagem mais sofisticada. </div>
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Desenha o objeto na textura</span>
+posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);  
+rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+desenharObjeto(objeto3D, g_props);</b></div>
+Renderiza o objeto na textura.
+
+
+<b><span class=sc2>// Recupera modo de preenchimento da renderização: sólido</span>
+<span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span></b>
+Recupera o modo sólido para a correta renderização da cena  principal
+que queremos que seja sólida.
+
+<b><span class=sc2>// Finaliza a cena no Renderizador</span>
+<span class=prg>Renderizador.EndScene</span>(<span class=prg>Filter.None</span>);  </b>
+Finaliza o processo de renderização sem aplicação nenhuma  de  filtro
+sobre a imagem final.
+
+<b><u>2.4 Reconfigurando o dispositivo</u></b>
+
+Essa função é chamada sempre que houver necessidade de reconfigurar o
+dispositivo gráfico. Essa necessidade pode surgir por muitas  razões,
+sendo a mais popular a troca  de  aplicações  ativas  que  o  usuário
+pode fazer no ambiente multi-tarefa do Windows.
+
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>reconfigurarDispositivo(<span class=sc5>object </span>sender, EventArgs e) 
+<span class=sc16>{</span>
+ device = (<span class=sc5>Device</span>) sender; 
+ AtualizarCamera();  
+ AtualizarLuz();  
+ inicializarRenderizacaoNaTextura();  
+<span class=sc16>} <span class=sc2>// reconfigurarDispositivo().fim</span></span>
+</div>
+
+<b><u>2.5 Renderizando a cena</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+ <span class=prg>Color.CornflowerBlue</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+ <span class=sc2>// Atualiza a câmera</span>
+ AtualizarCamera();  
+ AtualizarLuz();  
+
+ <span class=prg>radar.Begin</span>(<span class=prg>SpriteFlags.None</span>);  
+ <span class=prg>radar.Draw</span>(texturaAlvo, <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, superficie_ntam, superficie_ntam), 
+ <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), <span class=prg>new </span><span class=sc5>Vector3</span>(10, 10, <span class=sc4>1.0f</span>), <span class=prg>Color.White</span>);  
+ <span class=prg>radar.End</span>();  
+
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-50.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-200.0f</span>);  
+ rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+ <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b><span class=prg>radar.Begin</span>(<span class=prg>SpriteFlags.None</span>);  
+<span class=prg>radar.Draw</span>(texturaAlvo, <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, superficie_ntam, superficie_ntam), 
+<span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), <span class=prg>new </span><span class=sc5>Vector3</span>(10, 10, <span class=sc4>1.0f</span>), <span class=prg>Color.White</span>);  
+<span class=prg>radar.End</span>();  </b></div>
+A função  <b>Renderizar()</b>  não traz  nenhuma novidade desconhecida. Aqui
+renderizamos  normalmente  a  textura na forma de  uma  sprite  comum
+colocada na tela.
+
+<b><u>2.6 O método onPaint()</u></b>
+A função onPaint() logicamente chama  primeiro  <b>renderizarNaTextura()</b>
+para depois renderizar a cena final.
+
+<div class=niceview><span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+<span class=sc16>{</span>
+ <span class=sc2>// Trate outros processos padrões</span>
+ <span class=prg>base.OnPaint</span>(e);  
+
+ <span class=sc2>// Renderize a cena</span>
+ renderizarNaTextura();  
+
+ <span class=prg>this.Renderizar</span>();  
+
+ <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+ <span class=prg>this.Invalidate</span>();  
+<span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+</div>
+
+<b><u>2.7 Salvando a imagem no disco</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>salvarImagem() 
+<span class=sc16>{</span>
+
+ <span class=sc5>Surface </span>backbuffer = <span class=prg>device.GetBackBuffer</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>BackBufferType.Mono</span>);  
+ <span class=prg>SurfaceLoader.Save</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=prg>ImageFileFormat.Jpg</span>, backbuffer);  
+ <span class=prg>backbuffer.Dispose</span>();  
+ <span class=prg>this.Text </span>= <span class=sc6>"Ok. Imagem salva no disco";</span>
+<span class=sc16>}</span>
+</div>
+<div class=niceview style="border-style:dashed;"><b><span class=sc5>Surface </span>backbuffer = <span class=prg>device.GetBackBuffer</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>BackBufferType.Mono</span>);  
+<span class=prg>SurfaceLoader.Save</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=prg>ImageFileFormat.Jpg</span>, backbuffer);  
+<span class=prg>backbuffer.Dispose</span>();  </b></div>
+O código que salva a imagem no disco é relativamente simples. É obtido
+o backubuffer do dispositivo e na sequência esse backbuffer é salvo na
+tela com a classe auxiliar  <b class=prg>SurfaceLoader</b>  com  o  método  <span class=prg>Save</span>.  Pode 
+haver no dispositivo várias correntes de trocas com vários backbuffers
+atrelados,   são  estes  argumentos  que  aparecem  zerados na  função
+<span class=prg>GetBackBuffer()</span>  porque  nossa aplicação possui apenas um backbuffer e
+apenas uma corrente de trocas.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Superficie</u></b>
+<div class=prg-code>
+<img src=images\prj_Superficie.png>
+
+<span class=sc2>// prj_Superficie - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como renderizar na textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_Superficie 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação e cor</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+    <span class=prg>public </span><span class=sc5>Color </span>color; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+      color = <span class=prg>Color.White;</span>
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variável para guardar uma malha 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para propriedade dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=sc2>// Preparando a infraestrutura para renderizar na textura</span>
+    <span class=prg>private </span><span class=sc5>Texture </span>texturaAlvo = <span class=prg>null;</span>
+
+    <span class=sc2>// Camada de dados da textura</span>
+    <span class=prg>private </span><span class=sc5>Surface </span>superficieAlvo = <span class=prg>null;</span>
+    const <span class=prg>int </span>superficie_ntam = 192; 
+
+    <span class=sc2>// Renderizador</span>
+    <span class=prg>private </span><b class=prg>RenderToSurface</b> Renderizador = <span class=prg>null;</span>
+
+    <span class=sc2>// Este objeto vai exibir a textura na tela</span>
+    <span class=prg>private </span><span class=sc5>Sprite </span>radar = <span class=prg>null;</span>
+    
+
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Carrega modelo</span>
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+
+      <span class=sc2>// Configura função de reconfiguração do dispositivo</span>
+      <span class=prg>device.DeviceReset </span>+= <span class=prg>new </span>EventHandler(reconfigurarDispositivo);  
+
+      <span class=sc2>// Inicializa os objetos para o processo de renderizar na textura</span>
+      reconfigurarDispositivo(device, <b class=prg>null</b>);
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarRenderizacaoNaTextura() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Inicializa o Renderizador</span>
+      Renderizador = <span class=prg>new </span><b class=prg>RenderToSurface</b>(device, superficie_ntam, superficie_ntam, 
+               <span class=prg>Format.X8R8G8B8</span>, <span class=prg>true</span>, <span class=prg>DepthFormat.D16</span>);  
+
+      <span class=sc2>// Cria uma textura alvo da renderização</span>
+      texturaAlvo = <span class=prg>new </span><span class=sc5>Texture</span>(device, superficie_ntam, superficie_ntam, <span class=sc4>1</span>, 
+          <span class=prg>Usage.RenderTarget</span>, <span class=prg>Format.X8R8G8B8</span>, <span class=prg>Pool.Default</span>);  
+
+      <span class=sc2>// Acessa a superficie de dados da textura</span>
+      superficieAlvo = <span class=prg>texturaAlvo.GetSurfaceLevel</span>(<span class=sc4>0</span>);  
+
+      <span class=sc2>// Cria uma sprite para a textura</span>
+      radar = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  
+    <span class=sc16>}</span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>renderizarNaTextura() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Prepara a configuração da janela de visualização</span>
+      <b class=prg>Viewport </b>visao = <span class=prg>new </span><b class=prg>Viewport</b>();  
+      <span class=prg>visao.Width </span>= superficie_ntam; 
+      <span class=prg>visao.Height </span>= superficie_ntam; 
+      <span class=prg>visao.MaxZ </span>= <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Inicia a renderização da cena</span>
+      <span class=prg>Renderizador.BeginScene</span>(superficieAlvo, visao);  
+
+      <span class=sc2>// Limpa o dispositivo</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+      
+      <span class=sc2>// Modo de preenchimento da renderização: pontos</span>
+      <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Point;</span>
+
+      <span class=sc2>// Desenha o objeto na textura</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-50.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);        
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Recupera modo de preenchimento da renderização: sólido</span>
+      <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+      
+      <span class=sc2>// Finaliza a cena no Renderizador</span>
+      <span class=prg>Renderizador.EndScene</span>(<span class=prg>Filter.None</span>);  
+
+    <span class=sc16>} <span class=sc2>// renderizarNaTextura()</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>reconfigurarDispositivo(<span class=sc5>object </span>sender, EventArgs e) 
+    <span class=sc16>{</span>
+      device = (<span class=sc5>Device</span>) sender; 
+      AtualizarCamera();  
+      AtualizarLuz();  
+      inicializarRenderizacaoNaTextura();  
+
+    <span class=sc16>} <span class=sc2>// reconfigurarDispositivo().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Essa variável foi modificar para acomodar o tamanho</span>
+      <span class=sc2>// do modelo</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>10000.0f;</span>
+
+      <span class=sc2>// Atualiza angulo para dar movimento ao objeto 3d</span>
+      angulo += <span class=sc4>0.05f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc2>// O eixo z foi modificar para comportar o tamanho do modelo</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>600.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera()</span></span>
+	
+	
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+        <span class=prg>Color.CornflowerBlue</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Atualiza a câmera</span>
+      AtualizarCamera();  
+      AtualizarLuz();  
+
+      <span class=prg>radar.Begin</span>(<span class=prg>SpriteFlags.None</span>);  
+      <span class=prg>radar.Draw</span>(texturaAlvo, <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, superficie_ntam, superficie_ntam), 
+      <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), <span class=prg>new </span><span class=sc5>Vector3</span>(10, 10, <span class=sc4>1.0f</span>), <span class=prg>Color.White</span>);  
+      <span class=prg>radar.End</span>();  
+
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-50.0f</span>, <span class=sc4>0.2f</span>, <span class=sc4>-200.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Ajusta rotação do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+      <span class=sc2>// Prepara e aplica uma material\textura no objeto</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+        <span class=sc2>// na renderização</span>
+        <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+        <span class=sc2>// Renderiza o mesh</span>
+        <span class=prg>obj.DrawSubset</span>(ncx);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto()</span></span>
+	
+	
+    <span class=sc2>// Configuração de luz</span>
+    <span class=prg>private </span><span class=prg>void </span>AtualizarLuz() 
+    <span class=sc16>{</span>
+
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>true;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Type </span>= <span class=prg>LightType.Directional;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse </span>= <span class=prg>Color.White;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Direction </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>-1</span>, <span class=sc4>-1</span>);  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Commit</span>();  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Enabled </span>= <span class=prg>true;</span>
+    <span class=sc16>} <span class=sc2>// AtualizarLuz().fim</span></span>
+	
+	
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+
+      renderizarNaTextura();  
+
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Recebe nome do arquivo de textura sendo carregado</span>
+      <span class=prg>string </span>arquivo_textura = <span class=prg>null;</span>
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+        device, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Carrega texturas</span>
+          arquivo_textura = xMtl[ncx]<span class=prg>.TextureFilename;</span>
+          <span class=sc9>if </span>((arquivo_textura != <span class=prg>null</span>)  && arquivo_textura != <span class=prg>String.Empty</span>)  
+          <span class=sc16>{</span>
+            g_meshTex[ncx] = <span class=prg>TextureLoader.FromFile</span>(device, 
+              diretorioBase + arquivo_textura);  
+          <span class=sc16>} <span class=sc2>// endif (texturas)</span></span>
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <b class=prg>KeyEventArgs </b>e) 
+    <span class=sc16>{</span>
+ 
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.S</span>)  
+      <span class=sc16>{</span>
+        salvarImagem();  
+      <span class=sc16>}</span>
+    <span class=sc16>} <span class=sc2>// _KeyDown().fim</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>salvarImagem() 
+    <span class=sc16>{</span>
+
+      <span class=sc5>Surface </span>backbuffer = <span class=prg>device.GetBackBuffer</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>BackBufferType.Mono</span>);  
+      <span class=prg>SurfaceLoader.Save</span>(<span class=sc6>"foto_tela.jpg"</span>, <span class=prg>ImageFileFormat.Jpg</span>, backbuffer);  
+      <span class=prg>backbuffer.Dispose</span>();  
+      <span class=prg>this.Text </span>= <span class=sc6>"Ok. Imagem salva no disco";</span>
+    <span class=sc16>}</span>
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track08-1.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

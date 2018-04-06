@@ -1,0 +1,1850 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase10-2</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 10-2</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>10.2 Renderização simples</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HLSL01.png></div>
+Neste tópico  vamos  mostrar  como  estruturar  a  aplicação  para  a
+utilização de HLSL e vamos explicar a estrutura básica de um programa
+simples escrito com esta linguagem.
+
+Esta aplicação foi baseada no projeto  <b>prj_Buffers</b>  do  tópico  <b>01.09</b>
+e vai mostrar um quadrado girando no eixo z, com uma pequena animação
+de cor e escala, renderizado com HLSL.
+
+<u>Inicialização do motor gráfico</u>
+O uso de HLSL implica que vai ser realizado diretamente  no  hardware
+o processamento dos vértices. Então para utilizar HLSL na aplicação é
+necessário criar o dispositivo renderizador com essa opção:
+
+<b><span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; </b>
+
+<u>Uso obrigatório do vertexbuffer</u>
+A  aplicação faz uso  do buffer de vértices <b>g_vbVertices</b> inicializado
+pelas  funções <b>inicializar_Buffers()</b> e <b>montar_Geometria()</b>. A presença
+do  buffer  de  vértices (vertexbuffer)  é obrigatória  na utilização
+da linguagem HLSL para renderizar a cena.
+
+<u>Declaração de vértice</u>
+Com o uso de HLSL é necessário criar um objeto <b class=prg>VertexDeclaration</b>  que
+vai levar para a placa  de vídeo a informação  de  cada  elemento  da
+configuração dos vértices que vão seguir para a  linha programável da
+placa de vídeo.  A criação dessa <b>declaração  de  vértice</b>,  que  é  um 
+objeto   da   interface   <b class = 'prg'>IDirect3DVertexDeclaration9</b>,  é  criada  de
+maneira rápida e fácil na função alternativa  <b>DeclararVertices_Auto()</b>
+e  também  mostramos  como  criar  do  zero  e  passo a passo a mesma
+declaração de vértice na função  <b>DeclararVertices_Manual()</b>.
+A  declaração  de  vértice  para  a  placa  de  vídeo é  um  processo
+equivalente  ao  processo  de  estabelecer  e  declarar  o formato de 
+vértice  para  o dispositivo renderizador do directx.
+
+<u>Câmera</u>
+A instalação da câmera no dispositivo renderizador não é  mais  feita
+com  o  método  <span class = 'prg'>SetTransform()</span>.    As matrizes parciais de câmera são
+configuradas normalmente em <b>inicializar_Camera()</b> e antes do  processo
+de renderização a matriz final é produzida  e  introjetada  na  linha
+programável pela função <b>AtualizarCamera()</b>.  
+
+<u>Os efeitos produzidos com HLSL</u>
+A  aplicação  e  gerenciamento  dos  <b>efeitos</b> do HLSL na aplicação são 
+feitos pelo objeto da interface  <b class = 'prg'>ID3DXEffect</b> que  carrega,  compila e
+transfere o programa HLSL para  a  placa  de  vídeo.   Esse  objeto é
+inicializado na função  <b>inicializarEfeito()</b>  que  carrega  o  arquivo
+<span class = 'prg'>simples.fx</span> que contém o código  hlsl.  Os  efeitos  possuem   módulos
+selecionáveis chamados <b>técnicas</b>  (<b class = 'prg'>Technique</b>)  que  aplicam  processos
+particulares nos vértices e nos pixels. 
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+Aspectos globais
+	Declaração de ponteiros globais para:
+	o objeto vertexbuffer <b class=sc16>
+	o objeto efeito produzido pela interface ID3DXEffect ( g_efeito )
+	o objeto declaração de vértice ( IDirect3DVertexDeclaration9 ) </b>
+	
+	
+<b class=sc16>inicializarEfeito()</b>
+
+	inicializa os argumentos da função que produz o objeto efeito
+
+	produz o objeto efeito com a função <span class=prg>D3DXCreateEffectFromFile()</span>
+	que carrega o arquivo com o código hlsl, compila-o e produz o
+	objeto efeito da interface <b class=prg>ID3DXEffect</b>.
+
+	seleciona a técnica a ser utilizada na renderização
+	
+initGfx()
+	<b class=sc16>Configura  a ocorrência do processamento de vértices no hardware.
+	
+	chama inicializar_Buffers() \ montar_Geometria() para configurar
+	o buffer de vértices.		
+	
+	chama inicializar_Camera() \ atualizarCamera()  para configuração
+	inicial da câmera. 
+	
+	chama DeclararVertices_Manual() ou  DeclararVertices_Auto()  para
+	produzir a declaração de vértice.
+	
+	chama inicializarEfeito() para carregar o programa hlsl do disco
+	e inicializar o objeto efeito ( g_efeito ). </b>
+	
+atualizarCamera()
+	Atualiza as variáveis para produzir variação de movimento e cor
+	
+	Produz a matriz final de câmera
+	
+	<b class=sc16>Introjeta  as  variáveis  atualizadas  na  linha  programável  do
+	dispositivo gráfico.</b>	
+		
+renderizar_Geometria()
+	Declara ao dispositivo o vertexbuffer que será utilizado
+	
+	<b class=sc6 style="text-decoration:line-through;">Declara ao dispositivo o formato de vértice  que será utilizado.</b>
+	
+	<b class=sc16>Configura  no dispositivo  a  declaração  de  vértice  produzida.
+	
+	chama atualizarCamera() para  introjetar  informações  no  shader
+	
+	Renderiza a  cena  utilizando  o  objeto  efeito ( g_efeito ) com
+	o apoio de g_device->DrawIndexedPrimitive(). </b>
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar um</span>
+<span class=sc2>// quadrado  colorido  com  HLSL.</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionOnly_Format</span>(<span class=sc4>D3DFVF_XYZ</span>) 
+
+<span class=sc2>// Estrutura de vértice customizado com posição apenas.</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionOnly</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionOnly</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionOnly</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionOnly</span></span>
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função coordena a renderização a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Essa função inicializa o buffer de vértices</span>
+<span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+<span class=sc2>// Essa função monta as formas geométricas</span>
+<span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza as formas geométricas</span>
+<span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+<span class=sc2>// Faz a configuração inicial da câmera</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>// Elabora a declaração de vértices</span>
+<span class=prg>void </span>DeclararVertices_Auto(<span class=prg>void</span>);   
+<span class=prg>void </span>DeclararVertices_Manual(<span class=prg>void</span>);   
+
+<span class=sc2>// Inicializa o objeto efeito</span>
+<span class=prg>void </span>inicializarEfeito(<span class=prg>void</span>);   
+
+<span class=sc2>// Atualiza a câmera</span>
+<span class=prg>void </span>atualizarCamera(<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+  <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<b><span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionOnly_Format</span>(<span class=sc4>D3DFVF_XYZ</span>) </b>
+O directx apresenta a função <span class=prg>D3DXDeclaratorFromFVF()</span>  que  transforma
+a  definição  de  formato  de  vértice  em  uma  array  de  elementos
+informativos  que  vai  dar  origem  à  declaração  de vértice. Neste
+processo surge o conceito de <b>semântica</b> que consiste em  esclarecer  a
+finalidade de uso do elemento, por exemplo, a semântica de <b class=sc4>D3DFVF_XYZ</b>
+é posicionamento.
+
+<b><span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);</b>
+Nas  aplicações  que  fazem  uso  de  renderização com HLSL o flag de
+criação   do   dispositivo   renderizador   deve   trazer   a   opção
+<b class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</b> que indica  que  o  processamento
+dos vértices vai ocorrer no hardware.
+
+<b><span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);</b>
+O  destaque  dessa  função  é  a ausência do método <span class=prg>SetTransform()</span> na
+instalação final das matrizes da câmera no  dispositivo renderizador.
+Essa  configuração  final  da  câmera  vai  ser  realizada  na função 
+<b>atualizarCamera()</b> com funções que  transferem  dados  para a placa de
+vídeo.
+
+<b><span class=prg>void </span>DeclararVertices_Auto(<span class=prg>void</span>); </b>
+Essa função vai mostrar uma forma simples de elaborar a declaração de
+vértice.
+
+<b><span class=prg>void </span>DeclararVertices_Manual(<span class=prg>void</span>);  </b>
+Essa  função  vai  detalhar o processo de elaboração da declaração de
+vértice. 
+As funções <b>DeclararVertices_Auto()</b>  e  <b>DeclararVertices_Manual()</b>  são
+iguais no resultado final e apenas uma deve ser usada para produzir a
+declaração de vértice. Teste uma e depois teste a outra.
+
+<b><span class=prg>void </span>inicializarEfeito(<span class=prg>void</span>);   </b>
+Essa  função  inicializa  a  interface  de  uso  do objeto efeito que
+permite  utilizar  HLSL  para  processar  os  vértices  e  pixels  de
+composição  da  imagem  final.  Isso  envolve carregar um arquivo com
+código escrito em HLSL e produzir o objeto da  interface  <b class=prg>ID3DXEffect</b>.
+
+<b><span class=prg>void </span>atualizarCamera(<span class=prg>void</span>);</b> 
+Essa  função  vai  atualizar  as  variáveis  que produzem uma pequena
+animação  de  movimento  e  cor  no quadrado renderizado. Isso inclui
+produzir as matrizes finais de câmera  e introjetar estas informações
+na linha programável da placa de vídeo.
+
+<b><span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);  </b>
+Esta função vai renderizar o quadrado utilizando  o código escrito em 
+HLSL.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// Representa o buffer de vértices</span>
+<span class=sc5>IDirect3DVertexBuffer9 </span>*g_vbVertices = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o objeto efeito</span>
+<span class=sc5>ID3DXEffect </span>     *g_efeito = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para a declaração de vértices</span>
+<span class=sc5>IDirect3DVertexDeclaration9 </span>*g_VertexDeclaration; 
+
+<span class=sc2>// Variáveis para provocar mudanças de cor e movimento</span>
+<span class=prg>float </span>angulo = <span class=sc4>0.01f</span>; 
+<span class=prg>float </span>nMovimento = <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>nVelocidade = <span class=sc4>0.01f</span>; 
+</div>
+<b><span class=sc5>IDirect3DVertexBuffer9 </span>*g_vbVertices = <span class=prg>NULL</span>; </b>
+O uso de buffer de vértices é obrigatório na utilização de HLSL  para
+renderização da cena.
+
+<b><span class=sc5>ID3DXEffect</span> *g_efeito = <span class=prg>NULL</span>; </b>
+Este  é  o  objeto  efeito  que faz a interface entre a aplicação e a
+placa de vídeo permitindo a utilização de código escrito em  HLSL  na 
+renderização da cena final. 
+
+<b><span class=sc5>IDirect3DVertexDeclaration9 </span>*g_VertexDeclaration; </b>
+Esta é a interface recipiente da <b>declaração de vértice.</b>
+
+<b><span class=prg>float </span>angulo 		= <span class=sc4>0.01f</span>; 
+<span class=prg>float </span>nMovimento 	= <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>nVelocidade 	= <span class=sc4>0.01f</span>; </b>
+A modificação destas variáveis produzem  a  pequena animação de cor e
+rotação do quadrado.
+
+<b><u>2.2.1 Declaração de vértices - Automatizada</u></b>
+<div class=niceview><span class=prg>void </span>DeclararVertices_Auto(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Declaração coletiva dos elementos</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[ <span class=sc16>sizeof</span>(<span class=sc5>D3DVERTEXELEMENT9</span>)  * <span class=sc4>2 </span>];  
+
+  <span class=sc2>// Preenche a array dos elementos</span>
+  <span class=prg>D3DXDeclaratorFromFVF</span>(<span class=sc4>CustomVertex_PositionOnly_Format</span>, Elementos );  
+
+  <span class=sc2>// Criação da declaração de vértices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, 
+    &g_VertexDeclaration);  
+
+<span class=sc16>} <span class=sc2>// DeclararVertices(void); </span></span>
+</div>
+
+<b><span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[ <span class=sc16>sizeof</span>(<span class=sc5>D3DVERTEXELEMENT9</span>)  * <span class=sc4>2 </span>];  </b>
+A   declaração  de  vértice  é  uma  coleção  de  elementos  do  tipo
+<span class=prg>D3DVERTEXELEMENT9</span>.    Cada    elemento    dessa   coleção   tem   uma
+correspondência   com   cada   componente   do  formato  de  vértice.
+Por exemplo, o conjunto de 3 floats ( x, y, z ) do formato de vértice 
+constitui-se em um  elemento   da   declaração   e  sua  semântica  é
+posicionamento.  Aqui neste caso essa array terá  dois  elementos: um
+para posição e outro para o elemento finalizador que indica o fim  da
+array.
+
+<b><span class=prg>D3DXDeclaratorFromFVF</span>(<span class=sc4>CustomVertex_PositionOnly_Format</span>, Elementos );  </b>
+Essa função produz uma array de elementos a partir  da  definição  de
+um formato de vértice.
+
+<b>g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, &g_VertexDeclaration);  </b>
+O método <span class=prg>CreateVertexDeclaration()</span> do dispositivo renderizador produz
+a declaração de vértice a partir de uma array de elementos do tipo da
+estrutura <span class=prg>D3DVERTEXELEMENT9</span>.
+
+<b><u>2.2.2 Declaração de vértices - Manual</u></b>
+<div class=niceview><span class=prg>void </span>DeclararVertices_Manual(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Argumentos para preenchimento da array D3DVERTEXELEMENT9</span>
+  <span class=prg>WORD </span>nStream    = <span class=sc4>0</span>; 
+  <span class=prg>WORD </span>nDeslocamento = <span class=sc4>0</span>; 
+  <span class=prg>BYTE </span>nTipo     = <span class=sc4>D3DDECLTYPE_FLOAT3</span>; 
+  <span class=prg>BYTE </span>nMetodo    = <span class=sc4>D3DDECLMETHOD_DEFAULT</span>; 
+  <span class=prg>BYTE </span>nUso      = <span class=sc4>D3DDECLUSAGE_POSITION</span>; 
+  <span class=prg>BYTE </span>nIndiceUso   = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Declaração do primeiro elemento</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>position = {nStream, nDeslocamento, 
+  nTipo, nMetodo, nUso, nIndiceUso <span class=sc16>}</span>; 
+
+  <span class=sc2>// Declaração do elemento final</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>finalizador = <span class=prg>D3DDECL_END</span>();  
+
+  <span class=sc2>// Declaração coletiva dos elementos</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[] = <span class=sc16>{ </span>position, finalizador <span class=sc16>}</span>; 
+
+  <span class=sc2>// Criação da declaração de vértices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, 
+    &g_VertexDeclaration);  
+
+<span class=sc16>} <span class=sc2>// DeclararVertices(void); </span></span>
+</div>
+
+Descrevemos abaixo os elementos da  estrutura  <b class=prg>D3DVERTEXELEMENT9</b>  que
+são  utilizados  para  descrever  cada  componente  de  um formato de
+vértice  e  formar  assim  um  elemento  descritivo  da <b>declaração de
+vértice</b>.
+
+<b><span class=prg>WORD </span>nStream = <span class=sc4>0</span>; </b>
+Aqui é a indicação do stream que contém o elemento.  Em uma aplicação
+com vários streams é normal cada stream conter apenas  um  componente
+do  formato  de  vértice  (  só  coordenada de textura, só posição de
+vértice,  etc...).    Uma  aplicação com apenas um stream vai colocar
+todos os elementos no stream  zero  (0).
+ 
+<b><span class=prg>WORD </span>nDeslocamento = <span class=sc4>0</span>; </b>
+Esse elemento representa a distância em bytes do elemento  dentro  da
+constituição dos elementos. Por exemplo, o elemento  posição (x, y, z)
+ocupa 12 bytes porque cada float que representa um eixo ocupa 4 bytes.
+Sendo,  assim  o deslocamento do próximo elemento seria indicado pelo
+valor 12 em consideração ao espaço já ocupado pelo  elemento  posição.
+
+<b><span class=prg>BYTE </span>nTipo = <span class=sc4>D3DDECLTYPE_FLOAT3</span>; </b>
+Esse   elemento   indica   o   tipo   de  constituição  do  elemento.
+<b>D3DDECLTYPE_FLOAT3</b> quer dizer um conjunto de 3 floats. As coordenadas
+de  textura  seriam  representadas  pelo  tipo  <b>D3DDECLTYPE_FLOAT2</b> da
+enumeração <b class=sc4>D3DDECLTYPE</b> contida no arquivo <span class=prg>d3d9types.h</span>.
+
+<b><span class=prg>BYTE </span>nMetodo = <span class=sc4>D3DDECLMETHOD_DEFAULT</span>; </b>
+Este item indica o tipo de processamento  que a placa deve dar a este
+elemento   da   declaração.   Este  é  o  valor  padrão  mais  usado.
+
+<b><span class=prg>BYTE </span>nUso = <span class=sc4>D3DDECLUSAGE_POSITION</span>; </b>
+Este item é a semântica que indica a finalidade de uso  do  elemento,
+no   caso  aqui  é  uma  indicação  de  posição.  Em  outro  exemplo,
+<b>D3DDECLUSAGE_TEXCOORD</b> é a semântica para coordenadas de textura.
+
+<b><span class=prg>BYTE </span>nIndiceUso = <span class=sc4>0</span>; </b>
+Esse item geralmente é configurado como zero (0)  e  sua  modificação
+para   outro   valor   altera   ou   agrega  detalhes  na  semântica.
+
+<b><span class=sc2>// Declaração do primeiro elemento</span>
+<span class=sc5>D3DVERTEXELEMENT9 </span>position = { nStream, nDeslocamento, nTipo, nMetodo, 
+	nUso, nIndiceUso <span class=sc16>}</span>; </b>
+Esse linha mostra a produção de um único elemento da  declaração  com
+os argumentos que já foram discutidos.
+
+<b><span class=sc5>D3DVERTEXELEMENT9 </span>finalizador = <span class=prg>D3DDECL_END</span>();  </b>
+Este  elemento  é  obrigatório  e  indica  o  final de uma coleção de
+elementos na array de elementos ( <b>Elementos</b> ).
+
+<b><span class=sc2>// Declaração coletiva dos elementos</span>
+<span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[] = <span class=sc16>{ </span>position, finalizador <span class=sc16>}</span>; </b>
+Aqui  a  array  de  elementos  é  criada  com todos os seus elementos
+individuais.
+
+<b>g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, &g_VertexDeclaration);  </b>
+O método <span class=prg>CreateVertexDeclaration()</span> do dispositivo renderizador produz
+a declaração de vértice a partir de uma array de elementos do tipo da
+estrutura <span class=prg>D3DVERTEXELEMENT9</span>.
+
+<b><u>2.3 Inicialização do objeto efeito</u></b>
+<div class=niceview><span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+  <span class=sc2>// Nome do arquivo de efeito</span>
+  <span class=prg>char </span>fx_arquivo[] = <span class=sc6>"\\gameprog\\gdkmedia\\shader\\simples.fx"</span>; 
+
+  <span class=sc2>// Flag de configuração</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DXSHADER_DEBUG</span>; 
+
+  <span class=sc2>// Buffer para receber informação em caso de erro</span>
+  <span class=sc5>ID3DXBuffer </span>*txtErro = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Gera o efeito a partir do arquivo carregado</span>
+  g_hr = <span class=prg>D3DXCreateEffectFromFile</span>( g_device, fx_arquivo, 
+    <span class=sc4>0</span>, <span class=sc4>0</span>, create_flags, <span class=sc4>0</span>, &g_efeito, &txtErro);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateEffectFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, (<span class=prg>char*</span>)  <span class=prg>txtErro-&gt;GetBufferPointer</span>(), 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>txtErro-&gt;Release </span>();  
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Seleciona a técnica de renderização</span>
+  <span class=prg>D3DXHANDLE </span>htech_MovimentoCor; 
+  htech_MovimentoCor = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"MovimentoCor"</span>);   
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_MovimentoCor);  
+
+  <span class=sc2>// Libera o buffer de erros</span>
+  <span class=sc9>if </span>(txtErro != <span class=prg>NULL</span>)  <span class=prg>txtErro-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarEfeito().fim</span></span>
+</div>
+
+<b><span class=prg>char </span>fx_arquivo[] = <span class=sc6>"\\gameprog\\gdkmedia\\shader\\simples.fx"</span>; </b>
+Esta variável representa o nome do arquivo de efeito com código  hlsl
+que  será  carregado.  Lembramos  que no arquivo de efeito a parte do
+código que processa os vértices é chamado de vertexshader e  a  parte
+do   código   que  processa  os  pixels  é  chamado  de  pixelshader. 
+
+<b><span class=prg>DWORD </span>create_flags = <span class=sc4>D3DXSHADER_DEBUG</span>; </b>
+Este flag indica que o efeito será compilado com informações de debug.
+Essa configuração é interessante pois produz informações  que  ajudam
+nas correções em possíveis erros no código hlsl.
+
+<b><span class=sc5>ID3DXBuffer </span>*txtErro = <span class=prg>NULL</span>; </b>
+Esse  buffer  recebe  uma  string  com informação no caso de erros no
+código do efeito. No caso de erro, para acessar a string é necessário
+um  cast  para  o  tipo  <span class=prg>char*</span> no  ponteiro  retornado  pelo  método
+<span class=prg>GetBufferPointer()</span> dessa interface.  No código de verificação de erro
+isso é feito dessa forma em destaque:
+<span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <b>(<span class=prg>char*</span>)  <span class=prg>txtErro-&gt;GetBufferPointer</span>()</b>, <b class=sc2>// (...)</b>
+
+
+<b>g_hr = <span class=prg>D3DXCreateEffectFromFile</span>( g_device, fx_arquivo, <span class=sc4>0</span>, <span class=sc4>0</span>, 
+				create_flags, <span class=sc4>0</span>, &g_efeito, &txtErro);  </b>
+A  função  <span class=prg>D3DXCreateEffectFromFile()</span>  carrega o arquivo de efeito do
+disco, compila-o e gera o objeto efeito da interface <b class=prg>ID3DXEffect</b>  que
+fará a renderização da cena.
+
+
+<b><span class=prg>D3DXHANDLE </span>htech_MovimentoCor; </b>
+Esta variável representa um handle para uma <b class=prg>technique</b> ( técnica ).  A
+<span class=prg>technique</span>  é  uma  entidade  dentro  do  código  hlsl  que  aplica um
+efeito  particular  na  cena  envolvendo  uma  função de vertexshader
+e pixelshader.
+
+<b>htech_MovimentoCor = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"MovimentoCor"</span>);   </b>
+Aqui  a  técnica  <b>MovimentoCor</b>  é carregada para o respectivo handle.
+
+<b><span class=prg>g_efeito-&gt;SetTechnique</span>(htech_MovimentoCor);  </b>
+Aqui a técnica <b>MovimentoCor</b> é configurada no dispositivo renderizador.
+Depois dessa configuração toda renderização será  feita  pelo  código
+hlsl apontado por essa técnica. É comum haver no código  hlsl  várias
+técnicas   para   produzir   efeitos   visuais   diversos   na  cena.
+
+
+<b><u>2.4 Atualização da câmera</u></b>
+<div class=niceview><span class=prg>void </span>atualizarCamera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Atualiza movimento\cor através da variação de nMovimento</span>
+  nMovimento += nVelocidade; 
+  <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+
+  <span class=sc2>// Atualiza a câmera</span>
+  angulo += <span class=sc4>0.05f</span>; 
+  <span class=prg>D3DXMatrixRotationZ </span>(&g_mtxMundo, angulo);  
+  <span class=sc5>D3DXMATRIX </span>camera = g_mtxMundo * g_mtxVisao * g_mtxProj; 
+
+  <span class=sc2>// Handle para a variável do shader 'nMovimento'</span>
+  <span class=prg>D3DXHANDLE </span>hMov = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Handle para a variável do shader 'camera'</span>
+  <span class=prg>D3DXHANDLE </span>hCam = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Obtém acesso às variáveis do shader</span>
+  hMov = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"nMovimento"</span>);   
+  hCam = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"Camera"</span>);   
+
+  <span class=sc2>// Atualiza variáveis no shader</span>
+  <span class=prg>g_efeito-&gt;SetValue </span>(hMov, &nMovimento, <span class=sc16>sizeof</span>(nMovimento) );  
+  <span class=prg>g_efeito-&gt;SetValue </span>(hCam, &camera, <span class=sc16>sizeof</span>(camera) );  
+
+<span class=sc16>} <span class=sc2>// 	atualizarCamera(void); </span></span>
+</div>
+
+<b>nMovimento += nVelocidade; </b>
+A  alteração  da  variável  <b>nMovimento</b> na taxa dada por <b>nVelocidade</b> é
+responsável    pela   pequena  animação  de cor e escala do  quadrado
+renderizado.  Essa variável ( <b>nMovimento</b> ) é utilizada dessa forma no
+código hlsl: <span class=prg>    
+	Pos.z += nMovimento * 2;
+	cor.r =  nMovimento;
+	cor.b =  1 - nMovimento; </span>
+Em resumo, a alteração periódica de <b>nMovimento</b> provoca um vai  e  vem
+no eixo z e na variação de cor do quadrado.
+
+
+<b><span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+<span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; </b>
+Esse  código  mantém  a  variável  <b>nMovimento</b>  na  faixa  de valor do
+intervalo  [0.0f,  1.0f]  com  inversão  da  direção do incremento no
+encontro com esses limites extremos.
+
+<b>angulo += <span class=sc4>0.05f</span>; 
+<span class=prg>D3DXMatrixRotationZ </span>(&g_mtxMundo, angulo);  </b>
+Aqui ocorre a preparação da rotação do quadrado.
+
+<b><span class=sc5>D3DXMATRIX </span>camera = g_mtxMundo * g_mtxVisao * g_mtxProj; </b>
+Aqui é a preparação da matriz final da câmera.
+
+<b><span class=prg>D3DXHANDLE </span>hMov = <span class=prg>NULL</span>; </b>
+Este é um handle para a troca de uma informação entre a aplicação e a
+placa de vídeo. Neste caso aqui é o handle para transferir o valor da
+variável <b>nMovimento</b> da aplicação para a variável <b>nMovimento</b> do shader.
+
+<b><span class=prg>D3DXHANDLE </span>hCam = <span class=prg>NULL</span>; </b>
+Este aqui é o handle  para transferir o valor da variável  <b>camera</b>  da
+aplicação para a variável <b>Camera</b> do shader.
+
+<b>hMov = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"nMovimento"</span>);   </b>
+O  método  <span class=prg>GetParameterByName()</span>  obtém  o  endereço  de acesso de uma
+variável global do shader,   neste caso aqui a variável <b>nMovimento</b> do
+shader.
+
+<b>hCam = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"Camera"</span>); </b>
+Aqui  é  obtido  o  endereço  de acesso da variável <b>Camera</b> do shader.  
+
+<b><span class=prg>g_efeito-&gt;SetValue </span>(hMov, &nMovimento, <span class=sc16>sizeof</span>(nMovimento) );  </b>
+O  método  <span class=prg>SetValue()</span>  assinala  o  valor  de  uma variável global do
+shader.  Neste  caso  aqui  estamos  configurando o valor da variável
+<b>nMovimento</b> do shader com o valor da variável <b>nMovimento</b> da aplicação.
+
+<b><span class=prg>g_efeito-&gt;SetValue </span>(hCam, &camera, <span class=sc16>sizeof</span>(camera) );  </b>
+Aqui estamos configurando o valor da variável <b>Camera</b> do shader  com o
+valor   da   variável   <b>camera</b>   da  aplicação.  É  um  movimento  de
+transferência de informação da aplicação para a placa de vídeo  e  de
+maneira  complementar  existem  funções  que  fazem o caminho inverso
+recebendo informação processada pela placa de vídeo.
+
+<b><u>2.5 Inicialização do motor gráfico</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+<b>
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; 
+</b>
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=sc2>// Inicializa o vertexbuffer e configura os vértices</span>
+  inicializar_Buffers();  
+  montar_Geometria();  
+
+  <span class=sc2>// Elabora a declaração dos vértices</span>
+  DeclararVertices_Manual();  
+
+  <span class=sc2>// Inicializa um objeto efeito</span>
+  inicializarEfeito();  
+
+  <span class=sc2>// Inicializa e atualiza a configuração de câmera</span>
+  inicializar_Camera();  
+  atualizarCamera();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+Destacamos  abaixo  as  mudanças  e adaptações de <b>initGfx()</b> para esta
+primeira aplicação com renderização feita pelo shader escrito em hlsl:
+
+<b><span class=sc2>// O processamento dos vértices será feito pelo hardware gráfico!</span>
+<span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; </b>
+ 
+<b><span class=sc2>// Elabora a declaração dos vértices</span>
+DeclararVertices_Manual();  </b>
+(*) Esta  função  pode ser   substituida   pela   função  alternativa
+<b class=prg>DeclararVertices_Auto()</b>.
+
+<b><span class=sc2>// Inicializa um objeto efeito</span>
+inicializarEfeito();  
+
+<span class=sc2>// Inicializa e atualiza a configuração de câmera</span>
+inicializar_Camera();  
+atualizarCamera();  </b>
+
+<b><u>2.6 Inicialização do vertexbuffer</u></b>
+
+Segue abaixo a listagem da função <b>inicializar_Buffers()</b> que não sofreu
+alterações  especiais  para  esta  aplicação,  entretanto,  o  uso do
+vertexbuffer   é   obrigatório   para   habilitar   o  uso  de  hlsl.
+Esta  mesma  consideração  se  aplica  à  função  <b>montar_Geometria()</b>.
+
+<div class=niceview><span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Quantidade de vértices do vertexbuffer</span>
+  <span class=prg>UINT </span> nVertices = <span class=sc4>6</span>; 
+
+  <span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+  <span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionOnly</span>)  * nVertices; 
+
+  <span class=sc2>// Criação efetiva do buffer de vértices (vertexbuffer)</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+    <span class=sc4>CustomVertex_PositionOnly_Format</span>, <span class=sc4>D3DPOOL_MANAGED</span>, &g_vbVertices, 
+    <span class=prg>NULL</span>);   
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+</div>
+
+<b><u>Montagem do quadrado</u></b>
+<div class=niceview><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de vértices</span>
+  <span class=sc5>CustomVertex_PositionOnly </span>*pVerts; 
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de vértices</span>
+  <span class=prg>g_vbVertices-&gt;Lock</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, (<span class=prg>void**</span>)  &pVerts, <span class=sc4>0</span>);  
+
+  <span class=sc2>// Primeiro triângulo</span>
+  pVerts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos );  
+  pVerts[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos );  
+  pVerts[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>,  <span class=sc4>-1.0f</span>, zpos );  
+
+  <span class=sc2>// Segundo triângulo</span>
+  pVerts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, zpos );  
+  pVerts[<span class=sc4>4</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos );  
+  pVerts[<span class=sc4>5</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos );  
+
+  <span class=sc2>// Liberação do vertexbuffer</span>
+  <span class=prg>g_vbVertices-&gt;Unlock</span>();  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+</div>
+
+<b><u>2.7 Renderização da geometria com HLSL</u></b>
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// O VertexShader é informado da estruturação dos vértices</span>
+  <span class=prg>g_device-&gt;SetVertexDeclaration</span>( g_VertexDeclaration);  
+
+  <span class=sc2>// Informação do buffer de vértices utilizado</span>
+  <span class=prg>g_device-&gt;SetStreamSource</span>( <span class=sc4>0</span>, g_vbVertices, <span class=sc4>0</span>, 
+    <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionOnly</span>) );  
+
+  <span class=sc2>// Atualiza a câmera</span>
+  atualizarCamera();  
+
+  <span class=sc2>// Número de passos do efeito</span>
+  <span class=prg>UINT </span>nPassosQtd = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;Begin</span>(&nPassosQtd, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>nPasso = <span class=sc4>0</span>; nPasso &lt; nPassosQtd; nPasso++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Uma cena pode ser renderizada com muitos passos</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(nPasso);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_device-&gt;DrawPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);   
+
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+<b><span class=prg>g_device-&gt;SetVertexDeclaration</span>( g_VertexDeclaration);  </b>
+Nesta linha é informado ao shader a configuração dos vértices através
+da declaração produzida.
+
+<b><span class=prg>g_device-&gt;SetStreamSource</span>( <span class=sc4>0</span>, g_vbVertices, <span class=sc4>0</span>, 
+<span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionOnly</span>) );  </b>
+Temos  aqui  a  configuração  normal  do  vertexbuffer no dispositivo
+renderizador.
+
+<b>atualizarCamera();  </b>
+Essa  função  aqui  faz  o  trabalho  chave  de  atualizar  valores e
+introjetá-los   na   linha   programável   do   dispositivo  gráfico.
+
+<b><span class=prg>UINT </span>nPassosQtd = <span class=sc4>0</span>; </b>
+Esta variável é utilizada para coletar  a  quantidade de passos que o
+shader precisa para renderizar completamente a cena.  O passo  em  si
+é um ciclo de aplicação de funções do shader.
+
+<b><span class=prg>g_efeito-&gt;Begin</span>(&nPassosQtd, <span class=sc4>0</span>);   </b>
+Aqui começa o processo de renderização com o código hlsl.  A variável
+<b>nPassosQtd</b>  é  preenchida  nessa  chamada.  O  zero (0) indica que os
+estados modificados durante a aplicação do efeito  serão  restaurados
+no  final  desse  processo  sinalizado  por  <span class=prg>g_efeito-&gt;EndPass()</span>.  Ao
+invés do zero (0) no segundo argumento pode ser utilizado a definição
+<b class=sc4>D3DXFX_DONOTSAVESAMPLERSTATE</b>   para  não  ocorrer  esse  processo  de
+gravação  e  restauração  dos  estados  entre  os  efeitos aplicados.
+
+
+<div class=niceview style='border-style:dashed;'><b><span class=prg>for</span> (<span class=prg>UINT </span>nPasso = <span class=sc4>0</span>; nPasso &lt; nPassosQtd; nPasso++) <span class=sc16>{</span>
+<span class=prg>g_efeito-&gt;BeginPass </span>(nPasso);  
+<span class=prg>g_device-&gt;DrawPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);   
+<span class=prg>g_efeito-&gt;EndPass </span>(); <span class=sc16>} <span class=sc2>// endfor</span></span></b></div>
+Esse bloco mostra a renderização da mesma geometria em cada ciclo dos
+diferentes passos aplicados.
+
+<b><span class=prg>g_efeito-&gt;End </span>();  <span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span> </b>
+A renderização pelo código hlsl do shader acaba aqui.
+
+<b><u>2.8 Renderização da cena</u></b>
+
+Segue abaixo a listagem das funções <b>Renderizar()</b> e <b>inicializar_Camera()</b>
+lembrando  que  o  destaque  desta  última  é  a  ausência  do método
+<span class=prg>SetTransform()</span>  cujo  trabalho  equivalente foi feito pela sintaxe do
+hlsl.
+
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor verde</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, verde, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b><u>Inicialização da câmera</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+
+  <span class=sc2>// Pega o tamanho da área cliente</span>
+  <span class=sc5>RECT </span>area_cliente; 
+  <span class=prg>GetWindowRect </span>(hJanela, &area_cliente);  
+  g_xtela = <span class=prg>area_cliente.right</span>; 
+  g_ytela = <span class=prg>area_cliente.bottom</span>; 
+
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+</div>
+
+
+<b><u>3.0 O primeiro programa em HLSL</u></b>
+<div class=prg-code>
+<span class=sc2>// Gameprog: Introdução a programação em HLSL</span>
+<span class=sc2>// Arquivo: simples.fx - prj_HSL01</span>
+
+<span class=sc2>// Matriz de projeção e visualização</span>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=prg>float </span>nMovimento; 
+
+<span class=sc2>// Transforma coordenadas 3d em espaço de tela</span>
+<span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara variável de saída</span>
+ <span class=prg>float4 </span>saida_pos; 
+
+ <span class=sc2>// Transforma posição</span>
+ <span class=prg>Pos.z </span>+= nMovimento * 2; 
+ saida_pos = <b class=prg>mul</b>(Pos, Camera);  
+
+ <span class=sc2>// Retorna posição transformada</span>
+ <span class=sc6>return </span>saida_pos; 
+<span class=sc16>} <span class=sc2>// vs_Main().fim</span></span>
+
+
+<span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+ <span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+ <span class=sc2>// Configura individualmente os canais de cor</span>
+ <span class=prg>cor.r  </span>= nMovimento; 
+ <span class=prg>cor.b  </span>= <span class=sc4>1 </span>- nMovimento; 
+ <span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span>
+
+ <span class=sc6>return </span>cor; 
+<span class=sc16>} <span class=sc2>// ps_Main().fim</span></span>
+
+
+
+<span class=sc5>technique </span>MovimentoCor 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+  <span class=sc16>{</span>
+  <span class=sc2>// Configura alguns estados do dispositivo</span>
+  <span class=sc6>CullMode </span>= None; 
+  <span class=sc6>FillMode </span>= Solid; 
+
+  <span class=sc2>// Compila o VertexShader e o PixelShader</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_Main();  
+
+  <span class=sc16>} <span class=sc2>// fim do passo P0</span></span>
+<span class=sc16>} <span class=sc2>// fim da técnica</span></span>
+</div>
+
+<b><u>3.1 Variáveis globais</u></b>
+<div class=niceview>
+<span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span>
+<span class=prg>float </span>nMovimento; </div>
+
+<b><span class=prg>float4x4 </span>Camera : <span class=sc16>WORLDVIEWPROJECTION;</span></b>
+Esta é uma variável global que representa a camera. Esse tipo de float
+<span class=prg>float4x4</span> é um conjunto de 16 floats na forma de uma array 4x4. Depois
+dos dois pontos (:)  vem a <b>semântica</b> da variável global.   A semântica
+indica  o  significado  e o uso particular de uma variável global para
+o Shader.  Neste caso,  o  Shader fica sabendo que <b>Camera</b> é uma matriz
+de mundo-visualização-projeção indicado por <span class=prg>WORLDVIEWPROJECTION</span>.
+O uso da semântica é obrigatório nas variáveis globais de  entrada  e
+saída.
+
+<b><span class=prg>float </span>nMovimento; </b>
+Esta é outra variável global modificável a partir de nossa aplicação.
+
+
+<b><u>3.2 A função de entrada do VertexShader: vs_Main()</u></b>
+<div class=niceview><span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara variável de saída</span>
+ <span class=prg>float4 </span>saida_pos; 
+
+ <span class=sc2>// Transforma a posição do vértice</span>
+ <span class=prg>Pos.z </span>+= nMovimento * 2; 
+  saida_pos = mul(Pos, Camera);  
+
+ <span class=sc2>// Retorna a posição transformada</span>
+ <span class=sc6>return </span>saida_pos; 
+<span class=sc16>} <span class=sc2>// vs_Main().fim</span></span>
+</div>
+
+
+<u>Assinatura da função vs_Main()</u>
+<b><span class=prg>float4 </span>vs_Main( <span class=prg>float4 </span>Pos  : <span class=sc16>POSITION</span>)  : <span class=sc16>POSITION</span></b>
+Essa é a assinatura da função de entrada do  nosso  VertexShader. Ela
+recebe um argumento <span class=prg>float4</span> que representa cada vértice do modelo sendo
+renderizado,  trabalha sobre esse argumento, e o retorna modificado e
+transformado para a aplicação. Da mesma forma que <span class=prg>float4x4</span> quer dizer
+<b>float[4][4]</b>, <span class=prg>float4</span> quer dizer <b>float[4]</b> para guardar  as  coordenadas
+<b>[x, y, z, w]</b>.  O  <b>w</b>  é  um  truque  matemático  chamado   'coordenada 
+homogenada' para permitir o movimento de translação do modelo com uma
+operação de multiplicação no final do ciclo das transformações.  Esse
+argumento de entrada tem ligação direta com  o processo de declaração
+de vértice feito pela aplicação.
+
+<b><span class=sc2>// Declara variável de saída</span>
+<span class=prg>float4 </span>saida_pos; </b>
+Essa é a variável de saida que  vai  receber  o  resultado  final  do
+trabalho realizado individualmente em cada vértice.
+
+<b><span class=prg>Pos.z </span>+= nMovimento * 2; </b>
+Essa  expressão  matemática  foi  adicionada apenas  para  mostrar  a
+a liberdade  de  realizar  qualquer manipulação sobre os vértices que
+entram no VertexShader.  Aqui os vértices vão pra frente ou para trás
+em seu eixo Z conforme o valor de nMovimento. Outro destaque do <span class=prg>Pos.z</span>
+aqui é que os elementos [x, y, z, w] podem ser acessados naturalmente
+como se fossem elementos de uma estrutura.
+
+<b>saida_pos = <span class=prg>mul</span>(Pos, Camera); </b>
+Esta linha realiza a multiplicação  da  <b>Pos</b>ição  de  entrada  que  já
+sofreu uma modificação no meio do caminho pela <b>Camera</b> para produzir a
+posição final transformada para a aplicação. É apenas  uma  linha  de
+de  código  mas  realiza nos bastidores uma extensa multiplicação com
+20  elementos do tipo float ao multiplicar um <span class=prg>float4</span> por um <span class=prg>float4x4</span>.
+
+<b><span class=sc6>return </span>saida_pos; </b>
+Aqui ocorre o retorno da posição transformada via <b>saida_pos</b>.  Tirando
+algumas coisas como a semântica e os  tipos  específicos  é  como  um
+programa escrito em linguagem C++.
+
+<b><u>3.3 A função de entrada do VertexShader: ps_Main()</u></b>
+<div class=niceview><span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+ <span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+
+ <span class=sc2>// Configura individualmente os canais de cor</span>
+ <span class=prg>cor.r  </span>= nMovimento; 
+ <span class=prg>cor.b  </span>= <span class=sc4>1 </span>- nMovimento; 
+ <span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span>
+
+ <span class=sc6>return </span>cor; 
+ <span class=sc16>} <span class=sc2>// ps_Main().fim</span></span>
+</div><b>
+<span class=prg>float4 </span>ps_Main (  ) : <span class=sc16>COLOR0</span></b>
+Esta  é  a  assinatura  da  função  <span class=prg>ps_Main()</span>  do  nosso  pixelshader
+particular. O valor de retorno é um <span class=prg>float4</span> que representa uma cor no
+formato <b>rgba</b> com estes canais da cor sendo acessados individualmente
+por estas letras. <b class=sc16>COLOR0</b> é a semântica de cor.
+
+<b><span class=sc2>// Declara uma variável para cor no padrão RGBA</span>
+<span class=prg>float4 </span>cor = <span class=prg>float4 </span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  </b>
+Esta é uma forma alternativa de inicializar os componentes individuais
+das variáveis.
+
+<b><span class=sc2>// Configura individualmente os canais de cor</span>
+<span class=prg>cor.r </span>= nMovimento; 
+<span class=prg>cor.b </span>= <span class=sc4>1 </span>- nMovimento; </b>
+Aqui  nestas  linhas  os  canais  vermelho (r) e azul (b) ganham  uma
+pequena animação.
+
+<b><span class=prg>cor.ga </span>= <span class=sc4>1.0f;</span></b>
+Preste atenção atenção nesta linha. Aqui está outro recurso exclusivo
+da linguagem do shader. Configuramos simultaneamente o canal verde (g)
+e alfa (a) da cor na mesma instrução. Esse formato de assinalação  de
+valores é chamado de <b>swizzle</b>.  Através  da oportunidade do swizzle os
+canais verde e alfa foram configurados cada um com o valor  1.0f  com
+uma única instrução.
+
+<span class=sc6>return </span>cor; 
+A função retorna a cor para o dispositivo.
+
+<b><u>3.4 Estabelecendo uma técnica</u></b>
+<div class=niceview><span class=sc5>technique </span>MovimentoCor 
+<span class=sc16>{</span>
+ <span class=sc5>pass </span>P0 
+ <span class=sc16>{</span>
+  <span class=sc2>// Configura alguns estados do dispositivo</span>
+  <span class=sc6>CullMode </span>= None; 
+  <span class=sc6>FillMode </span>= Solid; 
+
+  <span class=sc2>// Compila o VertexShader e o PixelShader</span>
+  <span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+  <span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_Main();  
+
+ <span class=sc16>} <span class=sc2>// fim do passo P0</span></span>
+<span class=sc16>} <span class=sc2>// fim da técnica</span></span>
+</div>
+<b><span class=sc5>technique </span>MovimentoCor { <span class=sc2>// (...)</span> }</b>
+O bloco da técnica declarado pela instrução do shader <span class=prg>technique</span>  pode
+enquadrar  vários  blocos  de  passos  identificados  pela  instrução
+<span class=prg>pass</span>.
+
+<b><span class=sc5>pass </span>P0 { <span class=sc2>// (...)</span> }</b>
+Em cada passo pode ser aplicado  um  pixelshader  e  um  vertexshader
+particular no modelo sendo renderizado.   Em cada passo os estados do 
+dispositivo  também  podem  ser  alterados  conforme  mostrado  neste 
+exemplo.
+
+<b><span class=sc2>// Configura alguns estados do dispositivo</span>
+<span class=sc6>CullMode </span>= None; <span class=sc6>FillMode </span>= Solid; </b>
+Aqui foi alterado os estados do dispositivo renderizador apenas para 
+mostrar essa possibilidade dentro do shader.
+
+<b><span class=sc2>// Compila o VertexShader e o PixelShader</span>
+<span class=sc5>VertexShader </span>= <span class=prg>compile </span><span class=sc16>vs_1_1 </span>vs_Main();  
+<span class=sc5>PixelShader </span> = <span class=prg>compile </span><span class=sc16>ps_2_0 </span>ps_Main();  </b>
+Este é o código padrão que finaliza um passo.  Tanto  o  VertexShader
+como   o   PixelShader   são   compilados     nas  versões  indicadas
+respectivamente pelas instruções compile, <b class=prg>vs_1_1</b> e <b class=prg>ps_2_0</b>.  Uma coisa
+para  esclarecer  agora  é  que  o  nome de qualquer função dentro do
+shader  não  possui   padrão  de  nomeação  obrigatório.   Escolhemos 
+livremente  <b>vs_Main()</b>  para  indicar  a  função  principal  de  nosso
+VertexShader  e  o  mesmo  ocorrendo  com  <b>ps_Main()</b>  em  relação  ao 
+PixelShader.
+
+
+<b><u>4. Código fonte do projeto de exemplo: prj_HLSL01</u></b>
+<div class=prg-code><img src=images\prj_HLSL01.png>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar um</span>
+<span class=sc2>// quadrado  colorido  com  HLSL.</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Definição do formato de vértice utilizado por esta aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionOnly_Format</span>(<span class=sc4>D3DFVF_XYZ</span>) 
+
+<span class=sc2>// Estrutura de vértice customizado com posição apenas.</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionOnly</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionOnly</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionOnly</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+
+  <span class=sc16>}</span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionOnly</span></span>
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função coordena a renderização a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Essa função inicializa o buffer de vértices</span>
+<span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>);   
+
+<span class=sc2>// Essa função monta as formas geométricas</span>
+<span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+<span class=sc2>// Renderiza as formas geométricas</span>
+<span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+<span class=sc2>// Faz a configuração inicial da câmera</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+<span class=sc2>// Elabora a declaração de vértices</span>
+<span class=prg>void </span>DeclararVertices_Auto(<span class=prg>void</span>);   
+<span class=prg>void </span>DeclararVertices_Manual(<span class=prg>void</span>);   
+
+<span class=sc2>// Inicializa o objeto efeito</span>
+<span class=prg>void </span>inicializarEfeito(<span class=prg>void</span>);   
+
+<span class=sc2>// Atualiza a câmera</span>
+<span class=prg>void </span>atualizarCamera(<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela ( <span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+  <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar um</span>
+<span class=sc2>// quadrado  colorido  com  HLSL.</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9 </span>      *g_device = <span class=prg>NULL</span>; 
+
+
+<span class=sc2>// Representa o buffer de vértices</span>
+<span class=sc5>IDirect3DVertexBuffer9 </span>*g_vbVertices = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o objeto efeito</span>
+<span class=sc5>ID3DXEffect </span>     *g_efeito = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para a declaração de vértices</span>
+<span class=sc5>IDirect3DVertexDeclaration9 </span>*g_VertexDeclaration; 
+
+<span class=sc2>// Variáveis para provocar mudanças de cor e movimento</span>
+<span class=prg>float </span>angulo = <span class=sc4>0.01f</span>; 
+<span class=prg>float </span>nMovimento = <span class=sc4>0.0f</span>; 
+<span class=prg>float </span>nVelocidade = <span class=sc4>0.01f</span>; 
+
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = <span class=sc4>0xFFFFFFFF</span>; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = <span class=sc4>0xFF008000</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+
+<span class=prg>void </span>DeclararVertices_Auto(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Declaração coletiva dos elementos</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[ <span class=sc16>sizeof</span>(<span class=sc5>D3DVERTEXELEMENT9</span>)  * <span class=sc4>2 </span>];  
+
+  <span class=sc2>// Preenche a array dos elementos</span>
+  <span class=prg>D3DXDeclaratorFromFVF</span>(<span class=sc4>CustomVertex_PositionOnly_Format</span>, Elementos );  
+
+  <span class=sc2>// Criação da declaração de vértices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, 
+    &g_VertexDeclaration);  
+
+<span class=sc16>} <span class=sc2>// DeclararVertices(void); </span></span>
+
+
+<span class=prg>void </span>DeclararVertices_Manual(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Argumentos para preenchimento da array D3DVERTEXELEMENT9</span>
+  <span class=prg>WORD </span>nStream    = <span class=sc4>0</span>; 
+  <span class=prg>WORD </span>nDeslocamento = <span class=sc4>0</span>; 
+  <span class=prg>BYTE </span>nTipo     = <span class=sc4>D3DDECLTYPE_FLOAT3</span>; 
+  <span class=prg>BYTE </span>nMetodo    = <span class=sc4>D3DDECLMETHOD_DEFAULT</span>; 
+  <span class=prg>BYTE </span>nUso      = <span class=sc4>D3DDECLUSAGE_POSITION</span>; 
+  <span class=prg>BYTE </span>nIndiceUso   = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Declaração do primeiro elemento</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>position = {nStream, nDeslocamento, 
+  nTipo, nMetodo, nUso, nIndiceUso <span class=sc16>}</span>; 
+
+  <span class=sc2>// Declaração do elemento final</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>finalizador = <span class=prg>D3DDECL_END</span>();  
+
+  <span class=sc2>// Declaração coletiva dos elementos</span>
+  <span class=sc5>D3DVERTEXELEMENT9 </span>Elementos[] = <span class=sc16>{ </span>position, finalizador <span class=sc16>}</span>; 
+
+  <span class=sc2>// Criação da declaração de vértices</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexDeclaration</span>(Elementos, 
+    &g_VertexDeclaration);  
+
+<span class=sc16>} <span class=sc2>// DeclararVertices(void); </span></span>
+
+
+<span class=prg>void </span>inicializarEfeito() 
+<span class=sc16>{</span>
+  <span class=sc2>// Nome do arquivo de efeito</span>
+  <span class=prg>char </span>fx_arquivo[] = <span class=sc6>"\\gameprog\\gdkmedia\\shader\\simples.fx"</span>; 
+
+  <span class=sc2>// Flag de configuração</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DXSHADER_DEBUG</span>; 
+
+  <span class=sc2>// Buffer para receber informação em caso de erro</span>
+  <span class=sc5>ID3DXBuffer </span>*txtErro = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Gera o efeito a partir do arquivo carregado</span>
+  g_hr = <span class=prg>D3DXCreateEffectFromFile</span>( g_device, fx_arquivo, 
+    <span class=sc4>0</span>, <span class=sc4>0</span>, create_flags, <span class=sc4>0</span>, &g_efeito, &txtErro);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr)) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"falha: D3DXCreateEffectFromFile</span>()<span class=sc6>"</span>, 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, (<span class=prg>char*</span>)  <span class=prg>txtErro-&gt;GetBufferPointer</span>(), 
+      <span class=sc6>"inicializarEfeito"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>txtErro-&gt;Release </span>();  
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Seleciona a técnica de renderização</span>
+  <span class=prg>D3DXHANDLE </span>htech_MovimentoCor; 
+  htech_MovimentoCor = <span class=prg>g_efeito-&gt;GetTechniqueByName </span>(<span class=sc6>"MovimentoCor"</span>);   
+  <span class=prg>g_efeito-&gt;SetTechnique</span>(htech_MovimentoCor);  
+
+  <span class=sc2>// Libera o buffer de erros</span>
+  <span class=sc9>if </span>(txtErro != <span class=prg>NULL</span>)  <span class=prg>txtErro-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarEfeito().fim</span></span>
+
+
+<span class=prg>void </span>atualizarCamera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Atualiza movimento\cor através da variação de nMovimento</span>
+  nMovimento += nVelocidade; 
+  <span class=sc9>if </span>(nMovimento &gt;= <span class=sc4>1.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+  <span class=sc9>if </span>(nMovimento &lt;= <span class=sc4>0.0f</span>)   nVelocidade *= <span class=sc4>-1</span>; 
+
+  <span class=sc2>// Atualiza a câmera</span>
+  angulo += <span class=sc4>0.05f</span>; 
+  <span class=prg>D3DXMatrixRotationZ </span>(&g_mtxMundo, angulo);  
+  <span class=sc5>D3DXMATRIX </span>camera = g_mtxMundo * g_mtxVisao * g_mtxProj; 
+
+  <span class=sc2>// Handle para a variável do shader 'nMovimento'</span>
+  <span class=prg>D3DXHANDLE </span>hMov = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Handle para a variável do shader 'camera'</span>
+  <span class=prg>D3DXHANDLE </span>hCam = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Obtém acesso às variáveis do shader</span>
+  hMov = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"nMovimento"</span>);   
+  hCam = <span class=prg>g_efeito-&gt;GetParameterByName </span>(<span class=sc4>0</span>, <span class=sc6>"Camera"</span>);   
+
+  <span class=sc2>// Atualiza variáveis no shader</span>
+  <span class=prg>g_efeito-&gt;SetValue </span>(hMov, &nMovimento, <span class=sc16>sizeof</span>(nMovimento) );  
+  <span class=prg>g_efeito-&gt;SetValue </span>(hCam, &camera, <span class=sc16>sizeof</span>(camera) );  
+
+<span class=sc16>} <span class=sc2>// 	atualizarCamera(void); </span></span>
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se o objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método transfere rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_HARDWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Inicializa o vertexbuffer e configura os vértices</span>
+  inicializar_Buffers();  
+  montar_Geometria();  
+
+  <span class=sc2>// Elabora a declaração dos vértices</span>
+  DeclararVertices_Manual();  
+
+  <span class=sc2>// Inicializa um objeto efeito</span>
+  inicializarEfeito();  
+
+  <span class=sc2>// Inicializa e atualiza a configuração de câmera</span>
+  inicializar_Camera();  
+  atualizarCamera();  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Buffers(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Quantidade de vértices do vertexbuffer</span>
+  <span class=prg>UINT </span> nVertices = <span class=sc4>6</span>; 
+
+  <span class=sc2>// Tamanho do vertexbuffer em bytes</span>
+  <span class=prg>UINT </span> vbTamanho = <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionOnly</span>)  * nVertices; 
+
+  <span class=sc2>// Criação efetiva do buffer de vértices (vertexbuffer)</span>
+  g_hr = <span class=prg>g_device-&gt;CreateVertexBuffer</span>(vbTamanho, <span class=sc4>D3DUSAGE_WRITEONLY</span>, 
+    <span class=sc4>CustomVertex_PositionOnly_Format</span>, <span class=sc4>D3DPOOL_MANAGED</span>, &g_vbVertices, 
+    <span class=prg>NULL</span>);   
+
+  <span class=sc2>// Verifica falha na criação</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na criação do buffer de vértices"</span>, 
+      <span class=sc6>"inicializar_Buffers</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc16>} <span class=sc2>// inicializar_Buffers().fim</span></span>
+
+
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>1.0f</span>; 
+
+  <span class=sc2>// Ponteiro de acesso aos dados do buffer de vértices</span>
+  <span class=sc5>CustomVertex_PositionOnly </span>*pVerts; 
+
+  <span class=sc2>// Aqui a aplicação ganha acesso à memória do buffer de vértices</span>
+  <span class=prg>g_vbVertices-&gt;Lock</span>( <span class=sc4>0</span>, <span class=sc4>0</span>, (<span class=prg>void**</span>)  &pVerts, <span class=sc4>0</span>);  
+
+  <span class=sc2>// Primeiro triângulo</span>
+  pVerts[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>,  <span class=sc4>1.0f</span>, zpos );  
+  pVerts[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos );  
+  pVerts[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>,  <span class=sc4>-1.0f</span>, zpos );  
+
+  <span class=sc2>// Segundo triângulo</span>
+  pVerts[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>-1.0f</span>, <span class=sc4>1.0f</span>, zpos );  
+  pVerts[<span class=sc4>4</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos );  
+  pVerts[<span class=sc4>5</span>] = <span class=sc5>CustomVertex_PositionOnly</span>( <span class=sc4>1.0f</span>,  <span class=sc4>1.0f</span>, zpos );  
+
+  <span class=sc2>// Liberação do vertexbuffer</span>
+  <span class=prg>g_vbVertices-&gt;Unlock</span>();  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// O VertexShader é informado da estruturação dos vértices</span>
+  <span class=prg>g_device-&gt;SetVertexDeclaration</span>( g_VertexDeclaration);  
+
+  <span class=sc2>// Informação do buffer de vértices utilizado</span>
+  <span class=prg>g_device-&gt;SetStreamSource</span>( <span class=sc4>0</span>, g_vbVertices, <span class=sc4>0</span>, 
+    <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionOnly</span>) );  
+
+  <span class=sc2>// Atualiza a câmera</span>
+  atualizarCamera();  
+
+  <span class=sc2>// Número de passos do efeito</span>
+  <span class=prg>UINT </span>nPassosQtd = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Renderiza o quadrado usando o efeito</span>
+  <span class=prg>g_efeito-&gt;Begin</span>(&nPassosQtd, <span class=sc4>0</span>);   
+
+  <span class=prg>for</span>(<span class=prg>UINT </span>nPasso = <span class=sc4>0</span>; nPasso &lt; nPassosQtd; nPasso++) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Uma cena pode ser renderizada com muitos passos</span>
+    <span class=prg>g_efeito-&gt;BeginPass </span>(nPasso);  
+
+    <span class=sc2>// Renderização efetiva dos vértices</span>
+    <span class=prg>g_device-&gt;DrawPrimitive</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, <span class=sc4>0</span>, <span class=sc4>2</span>);   
+
+    <span class=sc2>// Fim do passo</span>
+    <span class=prg>g_efeito-&gt;EndPass </span>();  
+
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Fim do efeito</span>
+  <span class=prg>g_efeito-&gt;End </span>();  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o buffer de vértices</span>
+  <span class=sc9>if</span>( g_vbVertices    != <span class=prg>NULL</span>)  <span class=prg>g_vbVertices-&gt;Release</span>();  
+
+  <span class=sc9>if </span>(g_efeito      != <span class=prg>NULL</span>)  <span class=prg>g_efeito-&gt;Release</span>();  
+
+  <span class=sc9>if </span>(g_VertexDeclaration != <span class=prg>NULL</span>)  <span class=prg>g_VertexDeclaration-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device      != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d     != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Anulação dos ponteiros</span>
+  g_device      = <span class=prg>NULL</span>; 
+  g_Direct3d     = <span class=prg>NULL</span>; 
+  g_vbVertices    = <span class=prg>NULL</span>; 
+  g_efeito      = <span class=prg>NULL</span>; 
+  g_VertexDeclaration = <span class=prg>NULL</span>; 
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor verde</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, verde, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Vamos renderizar a geometria</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+
+  <span class=sc2>// Pega o tamanho da área cliente</span>
+  <span class=sc5>RECT </span>area_cliente; 
+  <span class=prg>GetWindowRect </span>(hJanela, &area_cliente);  
+  g_xtela = <span class=prg>area_cliente.right</span>; 
+  g_ytela = <span class=prg>area_cliente.bottom</span>; 
+
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)   g_xtela / g_ytela; 
+
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HLSL01 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar um</span>
+<span class=sc2>// quadrado  colorido  com  HLSL.</span>
+<span class=sc2>// By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, 
+  <span class=sc16>HINSTANCE </span>app_anterior, <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) 
+<span class=sc16>{</span>
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_HLSL01"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track10-1.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track10-3.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

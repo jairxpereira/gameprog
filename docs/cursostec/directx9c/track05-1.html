@@ -1,0 +1,1480 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase05-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track04-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.1 Teclado via DirectInput</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Teclado01.png></div>
+Neste tópico  vamos  aprender  a  utilizar  o  teclado  utilizando  o
+DirectInput  que   permite   uma  leitura  mais  rápida  do  teclado. 
+O DirectInput permite também o acesso ao  mouse  e  joystick  com  um
+código razoavelmente semelhante na montagem do cenário de  utilização
+destes diferentes dispositivos.
+
+Na utilização do Direct3D entra em cena trêz processos: a criação do
+dispositivo Direct3D que depois participa ativamente da  criação  do
+dispositivo renderizador  e depois tem o processo da renderização. O
+caminho de uso do DirectInput tem um roteiro similar:   é  criado  o
+o dispositivo DirectInput que depois participa ativamente na criação
+do dispositivo ativo (mouse, teclado, joystick) e depois é necessário
+uma  terceira  função  para  ler  e  tratar  os  dados  de status do
+dispositivo montado.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador	
+	<b class=sc16><u>Inicializa objeto DirectInput via inicializar_DirectInput()</u></b>	
+	<b class=sc16><u>Inicializa objeto teclado via inicializar_Teclado()</u></b>	
+	Inicializa objeto para mostrar texto via inicializarTexto()
+	Inicializa objetos para mostrar sprite via inicializarSprite()
+
+<b class=sc16><u>inicializar_DirectInput()</u>
+	inicializa objeto DirectInput ( g_DirectInput ) </b>
+	
+<b class=sc16><u>inicializar_Teclado()</u>
+	Inicializa dispositivo de entrada ( g_teclado )	</b>
+
+inicializarSprite()
+	Carrega textura
+	Inicializa objeto de mostrar sprite
+	Configuração da posição 3d e rotação inicial da sprite
+	
+<b class=sc16><u>tratarTeclado()</u>
+	Coleta status do teclado
+	Verifica pressionamento das setas
+	Atualiza coordenada (x,y) da sprite no pressionamento das setas.</b>	
+
+renderizarSprite()
+	Configura coordenada (x,y) atual da sprite
+	Define parte da textura que vai ser exibida como sprite
+	Desenha a sprite na tela
+
+Renderizar()
+	<b class=sc16><u>Verifica teclado via tratarTeclado()</u></b>
+	Limpa a tela
+	Desenha a cena
+	mostra texto
+	Desenha a sprite com renderizarSprite()
+	Apresenta a cena
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+	  Verifica teclado - finaliza aplicação na tecla Escape	  
+	  chama Limpar() na finalização da aplicação
+	  chama Renderizar() para desenhar os gráficos
+
+Limpar()
+	Libera o objeto de textura
+	Libera o objeto de mostrar sprite
+	Libera objeto de mostrar texto
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+	<b class=sc16><u>Libera objetos do DirectInput via limpar_DirectInput()</u></b>
+
+<b class=sc16><u>limpar_DirectInput()</u>
+	Libera o objeto DirectInput ( g_DirectInput )
+	Libera o objeto teclado ( g_teclado ) </b>
+</div></div>
+
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Teclado01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+ <span class=sc2>// Esta função inicializa o motor gráfico</span>
+ <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+ <span class=sc2>// Essa função libera os objetos utilizados</span>
+ <span class=prg>void </span>Limpar();  
+
+ <span class=sc2>// Essa função desenha a cena</span>
+ <span class=prg>void </span>Renderizar();  
+
+ <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+ <span class=prg>void </span>inicializarTexto();  
+ <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+ <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+ <span class=sc2>// Inicializa a sprite</span>
+ <span class=prg>void </span>inicializarSprite();  
+
+ <span class=sc2>// Desenha a sprite</span>
+ <span class=prg>void </span>renderizarSprite();  
+<b>
+ <span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+ <span class=prg>bool </span>inicializar_DirectInput();  
+
+ <span class=sc2>// Essa função inicializa o dispositivo de acesso ao teclado</span>
+ <span class=prg>bool </span>inicializar_Teclado();  
+
+ <span class=sc2>// Essa função trata o pressionamento do teclado</span>
+ <span class=prg>void </span>tratarTeclado();  
+
+ <span class=sc2>// Essa função libera os objetos do DirectInput</span>
+ <span class=prg>void </span>limpar_DirectInput();  
+</b>
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div><b>
+<span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput();  </b>
+Essa função cria o objeto  DirectInput  representado  pela  interface
+<b class=prg>IDirectInput8</b>  que  depois é responsável por criar os dispositivos de
+acesso a teclado, mouse e joystick. O ponteiro para este objeto  é  a
+variável <b>g_DirectInput</b>.
+
+<b><span class=sc2>// Essa função inicializa o dispositivo de acesso ao teclado</span>
+<span class=prg>bool </span>inicializar_Teclado();  </b>
+Essa função inicializa o dispositivo de acesso ao teclado (<b>g_teclado</b>)
+representado  pela  interface  <b class=prg>IDirectInputDevice8</b>  que  pode assumir
+a forma de mouse, teclado ou joystick. 
+
+<b><span class=sc2>// Essa função trata o pressionamento do teclado</span>
+<span class=prg>void </span>tratarTeclado();  </b>
+Essa função trata o pressionamento das setas  dentro  dos  moldes  do
+DirectInput.
+
+<b><span class=sc2>// Essa função libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput();  </b>
+Essa função libera os objetos do DirectInput que foram inicializados.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Teclado01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+<b>
+<span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)  
+</b>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+<span class=sc5>ID3DXFont* </span>      gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Interfaces necessárias para a criação da sprite</span>
+<span class=sc2>// A textura vai compor a imagem da sprite</span>
+<span class=sc5>IDirect3DTexture9* </span>g_textura = <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite* </span>   g_sprite = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Argumentos necessários na criação da sprite</span>
+<span class=sc2>// Posicionamento e recorte da sprite</span>
+<span class=sc5>RECT </span>         g_recorte; 
+<span class=sc2>// Posicionamento 3d da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_posicao = <span class=prg>NULL</span>; 
+<span class=sc2>// Centro de apoio para rotações da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_centro = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controle de movimentação da sprite</span>
+<span class=prg>int </span>                movimento_direcao = <span class=sc4>1</span>; 
+<span class=prg>int </span>               xpos = <span class=sc4>-240</span>; 
+<span class=prg>int </span>                ypos = <span class=sc4>-160</span>; 
+
+<span class=sc2>// Constante para a cor branca</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<b>
+<span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8* </span>g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de teclado</span>
+<span class=sc5>IDirectInputDevice8* </span> g_teclado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// O DirectInput necessita de acesso à janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+</b></div><b>
+<span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)</b>
+Estas são as bibliotecas que  permitem  usar  as  funcionalidades  do
+DirectInput.
+
+<b><span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8* </span>g_DirectInput = <span class=prg>NULL</span>;</b>
+Este é o ponteiro para o objeto DirectInput que é utilizado na criação
+dos dispositivos de acesso ao mouse, teclado ou joystick.
+
+<b><span class=sc2>// Ponteiro para o dispositivo de teclado</span>
+<span class=sc5>IDirectInputDevice8* </span> g_teclado = <span class=prg>NULL</span>; </b>
+Este é o ponteiro que será usado  para  o  acesso  ao  teclado.  Essa
+interface  pode  assumir  a  forma  de  mouse  ou  joystick  conforme
+configuração particular.
+
+<b><span class=sc2>// O DirectInput necessita de acesso à janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela;</b>
+Uma das pequenas mudanças em relação ao projeto base ( <b>prj_Sprite</b> ) é
+que o handle da janela teve o acesso globalizado pois ele é necessário
+na configuração de um aspecto do dispositivo.
+
+<b><u>2.2 Inicializando os motores do directx</u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  inicializar_DirectInput();  
+  inicializar_Teclado();  
+</b>
+  <span class=sc2>// Inicializa texto</span>
+  inicializarTexto();  
+  <span class=sc2>// Inicializa sprite</span>
+  inicializarSprite();  
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b>inicializar_DirectInput();  
+inicializar_Teclado(); </b>
+A  função  <b>initGfx()</b>  assume  a  tarefa  de  chamar  as  funções  que
+inicializam o DirectInput  e  o  teclado.   Aliás,  até  o  final  do
+curso <b>initGfx()</b>  fará  esse  trabalho  de  convocar  as  funções  que
+inicializam os outros objetos.
+
+<b><u>2.3 Inicializando o DirectInput</u></b>
+<div class=niceview><span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc4>IID_IDirectInput8</span>, (<span class=prg>void**</span>)&g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+</div><b>
+<span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=sc2>// Criação do objeto DirectInput</span>
+g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+<span class=sc4>IID_IDirectInput8</span>, (<span class=prg>void**</span>)&g_DirectInput, <span class=prg>NULL</span>);</b>
+Então este é o código que  inicializa  o  objeto  DirectInput. Depois
+de linhas como essa é sempre importante conferir <b>g_hr</b> para ver  se  o
+o objeto foi realmente criado.
+
+<b><u>2.4 Inicializando o dispositivo de acesso ao teclado</u></b>
+<div class=niceview><span class=sc2>// inicializar_Teclado() - Essa função inicializa o teclado</span>
+<span class=prg>bool </span>inicializar_Teclado() 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do ponteiro para uma interface IDirectInputDevice8</span>
+  g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysKeyboard</span>, &g_teclado, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_DirectInput-&gt;CreateDevice</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do formato de dados do dispositivo com uma constante</span>
+  <span class=sc2>// pré-definida de teclado do DirectInput ( c_dfDIKeyboard )</span>
+  g_hr = <span class=prg>g_teclado-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIKeyboard</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_teclado-&gt;SetDataFormat</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do nível de cooperação</span>
+  <span class=prg>DWORD </span>cooperacao_flags = <b class=sc4>DISCL_BACKGROUND</b> | <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+  g_hr = <span class=prg>g_teclado-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_teclado-&gt;SetCooperativeLevel</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pega acesso ao dispositivo de entrada.</span>
+  g_hr = <span class=prg>g_teclado-&gt;Acquire</span>();  
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>TRUE</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Teclado().fim</span></span>
+</div><b>
+<span class=sc2>// Criação do ponteiro para uma interface IDirectInputDevice8</span>
+g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysKeyboard</span>, &g_teclado, <span class=prg>NULL</span>);   </b>
+Aqui é criado o dispositivo que dará acesso ao teclado. O <b>guid</b>  é  um
+mecanismo  de  identificação  única  e  exclusiva  de um  recurso  ou 
+dispositivo dentro de um computador local. Geralmente  cada  peça  de
+hardware  tem  um guid mas ele também é usado para identificar 'peças'
+de software.
+
+<b><span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+<span class=sc16>{</span>
+ <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_DirectInput-&gt;CreateDevice</span>()<span class=sc6> falhou."</span>, 
+  <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+ limpar_DirectInput();  
+ <span class=sc6>return </span><span class=prg>false</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+Esse código é rotineiro dentro de um programa robusto. Verificamos se
+não houve sucesso no processo.
+
+<b><span class=sc2>// Configuração do formato de dados do dispositivo com uma constante</span>
+<span class=sc2>// pré-definida de teclado do DirectInput ( c_dfDIKeyboard )</span>
+g_hr = <span class=prg>g_teclado-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIKeyboard</span>); </b>
+Aqui é formatado o buffer de dados que recebe o status do dispositivo
+que neste caso é modelado para o teclado.
+
+<b><span class=sc2>// Configuração do nível de cooperação</span>
+<span class=prg>DWORD </span>cooperacao_flags = <b class=sc4>DISCL_BACKGROUND</b> | <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+g_hr = <span class=prg>g_teclado-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  </b>
+Aqui é configurado o nível de cooperação que estabelece  como  a  sua
+aplicação vai compartilhar o  dispositivo  com  o  sistema  e  outras
+aplicações.   Neste  caso  o  domínio  do dispositivo não é exclusivo
+( <b>DISCL_NONEXCLUSIVE</b> ) e ainda que sua janela  esteja  minimizada  ou
+desfocada ( <b>DISCL_BACKGROUND</b> ) a aplicação  ainda  recebe  eventos do
+dispositivo.  Esta é a configuração mais fácil de usar pois as outras
+possibilidades não funcionam ou são complicadas de gerenciar o vai  e
+vem do domínio do dispositivo. Nesta configuração o único  cuidado  a
+ser  tomado  é  sair  da  função  se sua janela estiver minimizada ou
+desfocada  com  um código que pode ter essa forma no início da função
+de tratar o teclado:
+<div class=prg-code><b class=sc2>// Estrutura para coletar informações da janela</b>
+<b class=prg>WINDOWINFO</b> info_janela;
+
+<b class=sc2>// GetWindowInfo() precisa disso aqui configurado</b>
+<b class=prg>info_janela.cbSize</b> = <b class=sc16>sizeof</b>(<b class=prg>WINDOWINFO</b>);
+
+<b class=sc2>// Obtém informações da janela</b>
+<b class=prg>GetWindowInfo</b>(hJanela, &info_janela); 
+
+<b class=sc2>// Saia da função caso a janela esteja sem foco!</b>
+<b class=sc9>if</b> ( <b class=prg>info_janela.dwWindowStatus</b> == 0) <b class=sc6>return</b>; </div>
+
+<b><span class=sc2>// Pega acesso ao dispositivo de entrada.</span>
+g_hr = <span class=prg>g_teclado-&gt;Acquire</span>();  </b>
+Depois é necessário utilizar <span class=prg>Acquire()</span> para se conectar aos eventos do
+dispositivo.
+
+<b><u>2.5 Tratando o teclado do DirectInput</u></b>
+<div class=niceview><span class=sc2>// tratarTeclado() - Essa função trata o pressionamento do teclado</span>
+<span class=prg>void </span>tratarTeclado() 
+<span class=sc16>{</span>
+  <span class=sc2>// Memória para coletar informação de estados do teclado</span>
+  <span class=prg>char </span>buffer[256];  
+
+  <span class=sc2>// Obtém o status das teclas do teclado</span>
+  g_hr = <span class=prg>g_teclado-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(buffer), (<span class=prg>LPVOID</span>)  &buffer);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Se falhou é porque o dispositivo foi provavelmente perdido.</span>
+    <span class=sc2>// Verifique se g_hr == DIERR_INPUTLOST</span>
+    <span class=sc2>// Se for, tente readquirí-lo aqui com g_teclado-&gt;Acquire(); </span>
+    <span class=sc6>return</span>; 
+  <span class=sc16>}  <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Macro para facilitar leitura do teclado</span>
+  <span class=sc16>#define </span><span class=prg>KEYDOWN</span>(name, key) (name[key] & 0x80) 
+
+  <span class=sc2>// Atualiza (xpos, ypos) conforme tecla pressionada</span>
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_RIGHT</span>) ) xpos = xpos - <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <b class=sc4>DIK_LEFT</b>))  xpos = xpos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_UP</span>) )    ypos = ypos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_DOWN</span>) )  ypos = ypos - <span class=sc4>5</span>; 
+
+<span class=sc16>} <span class=sc2>// tratarTeclado().fim</span></span>
+</div>
+
+<b><span class=prg>char </span>buffer[256];  </b>
+Este bloco de memória vai ser usado para coletar informação de estados
+do teclado.
+
+<b><span class=sc2>// Obtém o status das teclas do teclado</span>
+g_hr = <span class=prg>g_teclado-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(buffer), (<span class=prg>LPVOID</span>)  &buffer);  </b>
+Com esta função o buffer  de  memória  é  preenchido  com  status  de
+pressionamento das teclas.   Se  esta  função falhar a função retorna
+com o código abaixo.
+
+<b><span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+<span class=sc16>{</span>
+<span class=sc2>// Se falhou é porque o dispositivo foi provavelmente perdido.</span>
+<span class=sc2>// Verifique se g_hr == DIERR_INPUTLOST</span>
+<span class=sc2>// Se for, tente readquirí-lo aqui com g_teclado-&gt;Acquire(); </span>
+<span class=sc6>return</span>; 
+<span class=sc16>}  <span class=sc2>// endif</span></span></b>
+
+<b><span class=sc2>// Macro para facilitar leitura do teclado</span>
+<span class=sc16>#define </span><span class=prg>KEYDOWN</span>(name, key) (name[key] & 0x80) </b>
+Esta  macro  retorna  verdadeiro  se  a  tecla  especificada  estiver
+pressionada. Segue abaixo como usá-la.
+
+<b><span class=sc2>// Atualiza (xpos, ypos) conforme tecla pressionada</span>
+<span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_RIGHT</span>) ) xpos = xpos - <span class=sc4>5</span>; 
+<span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <b class=sc4>DIK_LEFT</b>))  xpos = xpos + <span class=sc4>5</span>; 
+<span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_UP</span>) )    ypos = ypos + <span class=sc4>5</span>; 
+<span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_DOWN</span>) )  ypos = ypos - <span class=sc4>5</span>; </b>
+Esta é a forma de tratar o pressionamento das setas  do  teclado  nos
+moldes do DirectInput.
+
+<b><u>2.6 Renderização da cena</u></b>
+Antes da renderização da cena a função <b>tratarTeclado()</b> é chamada para
+atualizar o posicionamento da sprite <b>(xpos, ypos)</b>. É geralmente neste
+ponto, antes da renderização, que costuma ser atualizada a lógica  do
+jogo.
+
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// String para mostrar posição da sprite</span>
+  <span class=prg>char </span>info[40];  
+<b>
+  tratarTeclado();  
+</b>
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (220, 160, <span class=sc6>"www.gameprog.com.br"</span>);   
+    mostrarTexto (170,400, <span class=sc6>"Movimente a sprite com as setas."</span>);   
+
+    <span class=sc2>// Mostra posicionamento da sprite</span>
+    <span class=prg>sprintf </span>(info, <span class=sc6>"</span>( %i, %i )<span class=sc6>"</span>, xpos, ypos);  
+    mostrarTexto (10, 10, info);  
+
+    <span class=sc2>// Desenha sprite</span>
+    renderizarSprite();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<b><u>2.7 Liberando os objetos do DirectInput</u></b>
+Repare na função <b>limpar_DirectInput()</b> os cuidados tomados na liberação
+dos objetos do DirectInput. Este estilo de reconfigurar o ponteiro com
+<span class=prg>NULL</span> é um bom exemplo a ser tomado.
+
+<div class=niceview><span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_teclado) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do teclado</span>
+      <span class=sc2>// Chame primeiro unacquire() antes de chamar Release().</span>
+      <b><span class=prg>g_teclado-&gt;Unacquire</span>();  
+      <span class=prg>g_teclado-&gt;Release</span>();  
+      g_teclado = <span class=prg>NULL</span>; </b>
+    <span class=sc16>} <span class=sc2>// endif (g_teclado)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+</div>
+
+<b><u>2.8 Limpeza geral</u></b>
+A função <b>Limpar()</b> faz uma limpeza geral chamando <b>limpar_DirectInput()</b>
+para limpar os objetos do DirectInput.
+
+<div class=niceview><span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o objeto textura</span>
+  <span class=sc9>if</span>( g_textura != <span class=prg>NULL</span>)  <span class=prg>g_textura-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o objeto sprite</span>
+  <span class=sc9>if</span>( g_sprite != <span class=prg>NULL</span>)   <span class=prg>g_sprite-&gt;Release</span>();  
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+<b>
+  limpar_DirectInput();  
+</b>
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+<b><u>2.9 Aspectos globais - Arquivo: entrada.cpp</u></b>
+O destaque aqui é o handle da janela ( <b>hJanela</b> ) que saiu  do  escopo
+local da  função  <b class=prg>WinMain()</b>  e  foi  para  o  escopo  global  pois  é
+necessária na definição  do  nível  de  cooperação  dos  dispositivos
+criados.
+
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Teclado01 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+<b>
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+</b>
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Teclado01"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Teclado01</u></b>
+<div class=prg-code><img src=images\prj_Teclado01.png>
+
+<span class=sc2>// Projeto: prj_Teclado01 - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+ <span class=sc2>// Esta função inicializa o motor gráfico</span>
+ <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+ <span class=sc2>// Essa função libera os objetos utilizados</span>
+ <span class=prg>void </span>Limpar();  
+
+ <span class=sc2>// Essa função desenha a cena</span>
+ <span class=prg>void </span>Renderizar();  
+
+ <span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+ <span class=prg>void </span>inicializarTexto();  
+ <span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+ <span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+ <span class=sc2>// Inicializa a sprite</span>
+ <span class=prg>void </span>inicializarSprite();  
+
+ <span class=sc2>// Desenha a sprite</span>
+ <span class=prg>void </span>renderizarSprite();  
+
+ <span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+ <span class=prg>bool </span>inicializar_DirectInput();  
+
+ <span class=sc2>// Essa função inicializa o dispositivo de acesso ao teclado</span>
+ <span class=prg>bool </span>inicializar_Teclado();  
+
+ <span class=sc2>// Essa função trata o pressionamento do teclado</span>
+ <span class=prg>void </span>tratarTeclado();  
+
+ <span class=sc2>// Essa função libera os objetos do DirectInput</span>
+ <span class=prg>void </span>limpar_DirectInput();  
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Teclado01 - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+<span class=sc5>ID3DXFont* </span>      gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Interfaces necessárias para a criação da sprite</span>
+<span class=sc2>// A textura vai compor a imagem da sprite</span>
+<span class=sc5>IDirect3DTexture9* </span>g_textura = <span class=prg>NULL</span>; 
+<span class=sc5>ID3DXSprite* </span>   g_sprite = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Argumentos necessários na criação da sprite</span>
+<span class=sc2>// Posicionamento e recorte da sprite</span>
+<span class=sc5>RECT </span>         g_recorte; 
+<span class=sc2>// Posicionamento 3d da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_posicao = <span class=prg>NULL</span>; 
+<span class=sc2>// Centro de apoio para rotações da sprite</span>
+<span class=sc5>D3DXVECTOR3* </span>   g_centro = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Controle de movimentação da sprite</span>
+<span class=prg>int </span>                movimento_direcao = <span class=sc4>1</span>; 
+<span class=prg>int </span>               xpos = <span class=sc4>-240</span>; 
+<span class=prg>int </span>                ypos = <span class=sc4>-160</span>; 
+
+<span class=sc2>// Constante para a cor branca</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+
+
+<span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8* </span>g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de teclado</span>
+<span class=sc5>IDirectInputDevice8* </span> g_teclado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// O DirectInput necessita de acesso à janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  inicializar_DirectInput();  
+  inicializar_Teclado();  
+
+
+  <span class=sc2>// Inicializa texto</span>
+  inicializarTexto();  
+  <span class=sc2>// Inicializa sprite</span>
+  inicializarSprite();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc4>IID_IDirectInput8</span>, (<span class=prg>void**</span>)&g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+
+
+<span class=sc2>// inicializar_Teclado() - Essa função inicializa o teclado</span>
+<span class=prg>bool </span>inicializar_Teclado() 
+<span class=sc16>{</span>
+  <span class=sc2>// Criação do ponteiro para uma interface IDirectInputDevice8</span>
+  g_hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>(<span class=sc4>GUID_SysKeyboard</span>, &g_teclado, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_DirectInput-&gt;CreateDevice</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do formato de dados do dispositivo com uma constante</span>
+  <span class=sc2>// pré-definida de teclado do DirectInput ( c_dfDIKeyboard )</span>
+  g_hr = <span class=prg>g_teclado-&gt;SetDataFormat</span>(<span class=sc4>&c_dfDIKeyboard</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_teclado-&gt;SetDataFormat</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Configuração do nível de cooperação</span>
+  <span class=prg>DWORD </span>cooperacao_flags = <b class=sc4>DISCL_BACKGROUND</b> | <span class=sc4>DISCL_NONEXCLUSIVE</span>; 
+  g_hr = <span class=prg>g_teclado-&gt;SetCooperativeLevel</span>( hJanela, cooperacao_flags);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"g_teclado-&gt;SetCooperativeLevel</span>()<span class=sc6> falhou."</span>, 
+      <span class=sc6>"inicializar_Teclado</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Pega acesso ao dispositivo de entrada.</span>
+  g_hr = <span class=prg>g_teclado-&gt;Acquire</span>();  
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    limpar_DirectInput();  
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>TRUE</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Teclado().fim</span></span>
+
+
+<span class=sc2>// tratarTeclado() - Essa função trata o pressionamento do teclado</span>
+<span class=prg>void </span>tratarTeclado() 
+<span class=sc16>{</span>
+  <span class=sc2>// Memória para coletar informação de estados do teclado</span>
+  <span class=prg>char </span>buffer[256];  
+
+  <span class=sc2>// Obtém o status das teclas do teclado</span>
+  g_hr = <span class=prg>g_teclado-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(buffer), (<span class=prg>LPVOID</span>)  &buffer);  
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Se falhou é porque o dispositivo foi provavelmente perdido.</span>
+    <span class=sc2>// Verifique se g_hr == DIERR_INPUTLOST</span>
+    <span class=sc2>// Se for, tente readquirí-lo aqui com g_teclado-&gt;Acquire(); </span>
+    <span class=sc6>return</span>; 
+  <span class=sc16>}  <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Macro para facilitar leitura do teclado</span>
+  <span class=sc16>#define </span><span class=prg>KEYDOWN</span>(name, key) (name[key] & 0x80) 
+
+  <span class=sc2>// Atualiza (xpos, ypos) conforme tecla pressionada</span>
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_RIGHT</span>) ) xpos = xpos - <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <b class=sc4>DIK_LEFT</b>))  xpos = xpos + <span class=sc4>5</span>;
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_UP</span>) )    ypos = ypos + <span class=sc4>5</span>; 
+  <span class=sc9>if </span>(<span class=prg>KEYDOWN</span>(buffer, <span class=sc4>DIK_DOWN</span>) )  ypos = ypos - <span class=sc4>5</span>; 
+
+<span class=sc16>} <span class=sc2>// tratarTeclado().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// String para mostrar posição da sprite</span>
+  <span class=prg>char </span>info[40];  
+
+  tratarTeclado();  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Todo código de desenhar ocorre aqui dentro</span>
+    mostrarTexto (220, 160, <span class=sc6>"www.gameprog.com.br"</span>);   
+    mostrarTexto (170,400, <span class=sc6>"Movimente a sprite com as setas."</span>);   
+
+    <span class=sc2>// Mostra posicionamento da sprite</span>
+    <span class=prg>sprintf </span>(info, <span class=sc6>"</span>( %i, %i )<span class=sc6>"</span>, xpos, ypos);  
+    mostrarTexto (10, 10, info);  
+
+    <span class=sc2>// Desenha sprite</span>
+    renderizarSprite();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_teclado) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do teclado</span>
+      <span class=sc2>// Chame primeiro unacquire() antes de chamar Release().</span>
+      <span class=prg>g_teclado-&gt;Unacquire</span>();  
+      <span class=prg>g_teclado-&gt;Release</span>();  
+      g_teclado = <span class=prg>NULL</span>; 
+    <span class=sc16>} <span class=sc2>// endif (g_teclado)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+
+
+<span class=prg>void </span>inicializarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Carrega e prepara textura 256 x 256</span>
+  <span class=sc16>const </span><span class=prg>char* </span>stextura = <span class=sc6>"C:\\gameprog\\gdkmedia\\bitmap\\teste-transp.png"</span>; 
+  g_hr = <span class=prg>D3DXCreateTextureFromFile</span>(g_device, stextura, &g_textura);  
+
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Textura: falha no carregamento"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  g_hr = <span class=prg>D3DXCreateSprite </span>(g_device, &g_sprite);  
+  <span class=sc9>if </span>(<span class=prg>FAILED</span>(g_hr )) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Sprite: falha na criação"</span>, <span class=sc6>"inicializarSprite</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Posicionamento 3d não utilizado extensamente</span>
+  g_posicao = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+  g_centro = <span class=sc5>&D3DXVECTOR3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+
+<span class=prg>void </span>renderizarSprite() 
+<span class=sc16>{</span>
+  <span class=sc2>// Cor difusa da sprite</span>
+  <span class=prg>DWORD </span>cor_difusa = branco; 
+
+  <span class=sc2>// Indica o ponto de corte da sprite</span>
+  <span class=prg>int </span>direita = 128; 
+  <span class=prg>int </span>fundo = 120; 
+
+  <span class=sc2>// Configuração posição de colocação da sprite na tela</span>
+  <span class=sc2>// o ponto de corte da textura</span>
+  <span class=prg>SetRect</span>(&g_recorte, xpos, ypos, direita, fundo);  
+
+  <span class=sc2>// Inicia a renderização considerando efeito de transparência</span>
+  <span class=prg>g_sprite-&gt;Begin </span>(<span class=sc4>D3DXSPRITE_ALPHABLEND</span>);  
+
+  <span class=sc2>// Renderiza sprite conforme configuração previamente definida</span>
+  <span class=prg>g_sprite-&gt;Draw</span>(g_textura, &g_recorte, g_centro, g_posicao, cor_difusa);  
+
+  <span class=sc2>// Finaliza processo de renderização de sprites</span>
+  <span class=prg>g_sprite-&gt;End</span>();  
+
+<span class=sc16>} <span class=sc2>// renderizarSprite().fim</span></span>
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc2>// tratarTeclado ( wParam ); </span>
+
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto().fim</span></span>
+
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc5>RECT </span>area_limite; 
+
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o objeto textura</span>
+  <span class=sc9>if</span>( g_textura != <span class=prg>NULL</span>)  <span class=prg>g_textura-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o objeto sprite</span>
+  <span class=sc9>if</span>( g_sprite != <span class=prg>NULL</span>)   <span class=prg>g_sprite-&gt;Release</span>();  
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  limpar_DirectInput();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Teclado01 - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como utilizar o teclado via DirectInput</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+<span class=sc16>HWND </span>hJanela; 
+
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Teclado01"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-7.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-9.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

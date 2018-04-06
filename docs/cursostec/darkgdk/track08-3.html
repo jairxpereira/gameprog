@@ -1,0 +1,486 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase08.3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 8.3</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track08-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track08-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track01"></a><h3 style="background-color:#80ff80">08.3 Testando as funções de sprites</h3><pre>
+
+Veja nosso programa exemplo:
+<div class=prg-saida>
+ <img src=images\tst_sprite01.png>
+</div>
+<div class=prg-code>
+// tst_sprites01.cpp
+// Esse programa mostra como usar as funções de sprite
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">         </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">            </span><span class="sc2">// Mostra um menu de opções na tela
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_sprite</span><span class="sc10">();</span><span class="sc0">      </span><span class="sc2">// Teste principal de sprites
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_cor_difusa</span><span class="sc10">();</span><span class="sc0">  </span><span class="sc2">// Testa dbSetSpriteDiffuse(r,g,b);
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_mirror_flip</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc2">// Testa espelhar e virar a sprite
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_info</span><span class="sc10">();</span><span class="sc0">    </span><span class="sc2">// Mostrar status na tela
+</span><span class="sc0">
+</span><span class="sc2">// Cores
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nPreto</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nBranco</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0xFFFFFF</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nAzul</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0x0000FF</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Taxa de valores rgb
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tg</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tb</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Usado para pegar distância entre dois pontos
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos_inicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos_inicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// String para mostrar texto
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">[</span><span class="sc4">255</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc2">// Estrutura para posicionar as sprites inicialmente
+</span><span class="sc16">struct</span><span class="sc0"> </span><span class="sc11">Posicao</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc11">Posicao</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">11</span><span class="sc10">];</span><span class="sc0"> </span><span class="sc2">// Criando 11 estruturas de Posição
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc2">// Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">tst_sprite</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">(){</span><span class="sc0">
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetDisplayMode</span><span class="sc10">(</span><span class="sc4">800</span><span class="sc10">,</span><span class="sc4">600</span><span class="sc10">,</span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowSize</span><span class="sc10">(</span><span class="sc4">800</span><span class="sc10">,</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowPosition</span><span class="sc10">(</span><span class="sc4">160</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"tst_sprites01.cpp"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: initsys()
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">menu</span><span class="sc10">(){</span><span class="sc0">
+
+</span><span class="sc2">// Variáveis de trabalho para mostrar texto
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">260</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xpos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">espaco_entrelinhas</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Nossa lista de opções
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">slista</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc6">"1- dbHideAllSprites()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"2- dbShowAllSprites()"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc6">"3- dbHideSprite(3)"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"4- dbShowSprite(3)"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"q\\Botao Direito - SAIR "</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc6">"6-dbSetSpriteDiffuse()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"7- dbSpriteAngle();dbRotateSprite()"</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc6">"8- dbScaleSprite(2)"</span><span class="sc10">,</span><span class="sc6">"9-dbFlipSprite(7) - dbMirrorSprite(8)"</span><span class="sc10">,</span><span class="sc0"> 
+</span><span class="sc6">"0 - MoveSprite"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"t - change sprite image"</span><span class="sc10">,</span><span class="sc0"> 
+</span><span class="sc6">"p- dbSetSpritePriority()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"a- dbSetSpriteAlpha()"</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc2">// Mostre a lista
+// dbInk (nAzul, nBranco);
+</span><span class="sc0"> </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">13</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">espaco_entrelinhas</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">slista</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">]);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do for(ncx)
+</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// menu().end
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_sprite</span><span class="sc10">(){</span><span class="sc0">
+
+</span><span class="sc11">dbSetCurrentBitmap</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">dbSetImageColorKey</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">,</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gdkmedia\\bitmap\\badboy_br.png"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gdkmedia\\bitmap\\badboy.png"</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos criar posições aleatórias para nossas futuras sprites
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">350</span><span class="sc10">)+</span><span class="sc4">400</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">500</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc2">// Vamos configurar precisamente o posicionamento de certas sprites
+// Sprite original para referência com as propriedades originais
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">524</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">1</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">290</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// A sprite 2 é nosso jogador principal
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">525</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">500</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Sprites do teste de dbSetSpriteDiffuse()
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">310</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">360</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">420</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">480</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Imagens do teste de mirror e flip
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">7</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">400</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">7</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">20</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">8</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">400</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">8</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">35</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">9</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">400</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">9</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">80</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Vamos replicar a mesma imagem em várias sprites para 
+// ilustrar os diversos efeitos sempre mostrando a imagem
+// original
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">dbSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">].</span><span class="sc11">xpos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc11">ncx</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc2">// Posição do jogador
+</span><span class="sc11">xcol</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">525</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">ylin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">500</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">dbPositionMouse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">xcol</span><span class="sc10">,</span><span class="sc11">ylin</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Testa dbSetSpriteDiffuse()
+</span><span class="sc11">tst_cor_difusa</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Controla leitura do teclado
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+ </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">tecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+
+ </span><span class="sc2">// Testa esconder e mostrar sprites
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"1"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbHideAllSprites</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"2"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbShowAllSprites</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"3"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbHideSprite</span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"4"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbShowSprite</span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"q"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">terminar_app</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Testa dbSetSpriteDiffuse()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"6"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">tst_cor_difusa</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ 
+ </span><span class="sc2">// Testa dbSpriteAngle() e dbRotateSprite()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"7"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbSpriteAngle</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">15</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc4">360</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">dbRotateSprite</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">angulo</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Testa dbScaleSprite()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"8"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">fator</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbScaleSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">fator</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Testa dbFlipSprite() e dbMirrorSprite()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"9"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">tst_mirror_flip</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Move a sprite conforme configuração de dbSpriteAngle()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"0"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbMoveSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">5</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Troca imagem da sprite
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"t"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteImage</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc4">1</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">dbSetSpriteImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc11">dbSetSpriteImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Testa dbSetSpritePriority() - Prioridade de exibição
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"p"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbSetSpritePriority</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Testa efeito de transparência com dbSetSpriteAlpha()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">tecla</span><span class="sc10">,</span><span class="sc6">"a"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbSetSpriteAlpha</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">60</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// Obtém posicionamento do mouse
+</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbMouseX</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">ylin</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbMouseY</span><span class="sc10">();</span><span class="sc0">
+
+ 
+ </span><span class="sc2">// Controla movimentação da sprite(2) - nosso 'player'
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbDownKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">),</span><span class="sc0"> </span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)-</span><span class="sc4">2</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbUpKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">),</span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)+</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbRightKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)-</span><span class="sc4">2</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">));</span><span class="sc0">
+
+ </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbLeftKey</span><span class="sc10">()==</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> 
+     </span><span class="sc11">dbOffsetSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)+</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">));</span><span class="sc0">
+
+ </span><span class="sc11">dbPasteSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc11">xcol</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc10">);</span><span class="sc0">
+
+ </span><span class="sc2">// Memoriza a posição do mouse para testarmos com stretch
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">xpos_inicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">ypos_inicial</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc2">// O botão esquerdo testa esticamento com dbStretchSprite()
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbMouseClick</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc11">dbStretchSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">xcol</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">xpos_inicial</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">ylin</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">ypos_inicial</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+ </span><span class="sc11">menu</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">mostrar_info</span><span class="sc10">();</span><span class="sc0">
+ </span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endwhile (leitura do teclado)
+</span><span class="sc0">
+</span><span class="sc2">// Vamos liberar a memória
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">item</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbImageExist</span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbDeleteImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteExist</span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbDeleteSprite</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">item</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do if
+</span><span class="sc0">
+</span><span class="sc11">dbCLS</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbCenterText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">400</span><span class="sc10">,</span><span class="sc4">300</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Pressione a tecla &lt;ESC&gt; para finalizar"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSync</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">dbWaitKey</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfunc: tst_sprite
+</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar_info</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteOffsetX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteOffsetX(2)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteOffsetY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteOffsetY(2)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteScaleX</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteScaleX(2)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">70</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteScaleY</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">70</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteScaleY(2)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">90</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteWidth</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">90</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteWidth(6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">110</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteHeight</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">110</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteHeight(6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">130</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteImage</span><span class="sc10">(</span><span class="sc4">9</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">130</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteImage"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">150</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteMirrored</span><span class="sc10">(</span><span class="sc4">9</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">150</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteMirrored"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">170</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteX</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">170</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteX (1)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">190</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteY</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">190</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteY (1)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">210</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteRed</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">210</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteRed (6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">230</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteGreen</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">230</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteGreen (6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">250</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteBlue</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">250</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteBlue (6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">270</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteExist</span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">270</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteExist (6)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">290</span><span class="sc10">,</span><span class="sc11">dbStr</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbSpriteAngle</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">));</span><span class="sc0"> 
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">290</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSpriteAngle (2)"</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostra configuração da função dbSetSpriteDiffuse();
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSetSpriteDiffuse(3, %d, %d, %d)"</span><span class="sc10">,</span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">120</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">3</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">+</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSetSpriteDiffuse(4, %d, %d, %d)"</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">120</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">4</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">+</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSetSpriteDiffuse(5, %d, %d, %d)"</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">tb</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">120</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">5</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">+</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"dbSetSpriteDiffuse(6, %d, %d, %d)"</span><span class="sc10">,</span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc11">tb</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">120</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">sprt</span><span class="sc10">[</span><span class="sc4">6</span><span class="sc10">].</span><span class="sc11">ypos</span><span class="sc10">+</span><span class="sc4">20</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Identifica a imagem original
+</span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">575</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">395</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Imagem original"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Mostra a posição do mouse na janela
+</span><span class="sc11">sprintf</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"tst_sprite01.cpp - mouse: %d , %d"</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">dbMouseX</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">dbMouseY</span><span class="sc10">());</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_cor_difusa</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">){</span><span class="sc0">
+</span><span class="sc2">// Vamos desacelerar a teclagem
+</span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// Gera cor aleatória
+</span><span class="sc11">tr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">tg</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc11">tb</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">255</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc2">// Configura individualmente cada canal de cor
+</span><span class="sc11">dbSetSpriteDiffuse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">,</span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetSpriteDiffuse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">4</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetSpriteDiffuse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc11">tb</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetSpriteDiffuse</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">,</span><span class="sc11">tr</span><span class="sc10">,</span><span class="sc11">tg</span><span class="sc10">,</span><span class="sc11">tb</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tst_cor_difusa().fim
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">tst_mirror_flip</span><span class="sc10">(){</span><span class="sc0">
+</span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbFlipSprite</span><span class="sc10">(</span><span class="sc4">7</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMirrorSprite</span><span class="sc10">(</span><span class="sc4">8</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbFlipSprite</span><span class="sc10">(</span><span class="sc4">9</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMirrorSprite</span><span class="sc10">(</span><span class="sc4">9</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// tst_mirror_flip().fim
+</span><span class="sc0"></span></div>
+<hr>	
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track08-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track08-4.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+<hr>
+
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

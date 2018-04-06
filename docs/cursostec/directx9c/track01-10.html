@@ -1,0 +1,1258 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase01-10</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-10</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-9.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-11.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.10 Triângulo 3d</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Triangulo3d.png></div>
+A  aplicação  desse  tópico  é  uma   versão  modificada  do  projeto
+<b>prj_Triangulo01</b> ( <b>tópico 01.9</b> ) para mostrar  um  triângulo  3d  cuja
+construção envolve uma alteração no formato de vértice, a  adição  de
+uma câmera  na  aplicação,   a  consideração  de  luz  na  cena  e  a
+configuração de <b>culling</b>. A câmera em si é representada por 3 matrizes
+nas  quais  qualquer  mudança  impacta  na  imagem  final da cena.  
+
+É importante  observar a relação hierárquica ou a interdependência da
+movimentação de objetos correlacionados do mundo real para compreender
+melhor a replicação digital que o  directx  faz  desses  aspectos  do
+mundo real utilizando conceituação de matemática, física e geometria.
+Colocamos a opinião de que a assimilação  dos  aspectos  matemáticos,
+físicos e geométricos dos aspectos visuais precisam  ser  assimilados
+primeiro intuitivamente através de  observações  do  mundo  real.   O
+contato direto com a linguagem matemática ou física  desses  aspectos
+visuais pode ser intimidante e desestimulador.   É  por  conta  desse
+ponto  de  vista  que  este  curso  fala  muito  pouco  dos  aspectos 
+matemáticos e incentiva a assimilação dos mesmos através da observação
+e da experimentação prática.
+
+Quando você coloca um prato sobre a mesa e na sequência você  move  a
+mesa  naturalmente  o  prato acompanha a mesa. Se o piso sob  a  mesa 
+se  movesse a mesa e o prato acompanhariam normalmente esse movimento.
+Dizemos que o prato acompanha a <b>orientação</b> da mesa, e a mesa acompanha
+a <b>orientação</b> do piso.   Então   neste   exemplo  do  mundo  real  uma 
+transformação em um objeto de base ou na sua  orientação  se  propaga 
+pelas camadas de objetos empilhados uns sobre os outros.   De maneira
+semelhante nosso triângulo está colocado sobre um mundo 3d  e  quando
+este mundo tem sua orientação,   localização  ou  rotação modificados
+todos os objetos sobre  ele  acompanham  essas  transformações.  Esse
+mundo 3d  é visto por uma câmera e quando essa câmera gira ou se move
+naturalmente os objetos 3d desse mundo giram e se movem de acordo.
+
+<u>Tranformações</u>
+A aplicação deste capítulo apresenta a matriz de espaço mundial  cuja
+transformação é utilizada para escalar,  rotacionar  e  movimentar os
+os objetos 3d dentro de uma cena.  Vamos  conhecer também a matriz de
+projeção  e  visualização  que  em  conjunto  com  a matriz de espaço
+mundial são usadas para compor a câmera da aplicação 3d.
+
+<u>Formato de vértice</u>
+Visto que o triângulo deve sofrer as consequências  da  transformação
+que ocorrer na matriz de espaço mundial e de mudanças no movimento da
+câmera o formato de vértice adequado a  selecionar  é  o  posicionado
+(positioned).   Nossa   aplicação   vai   utilizar   o   formato   de 
+vértice posicionado  e    colorido    representado   pela   estrutura 
+<b class=prg>CustomVertex_PositionColored</b>.
+
+<u>Culling</u>
+<img src=images\culling.png>
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>); </b>
+Essa linha desativa o <b>culling</b>.  O culling é uma técnica para otimizar
+a renderização que consiste em evitar a renderização de polígonos que
+não  aparecem,  por exemplo, polígonos do lado de dentro de uma caixa 
+ou que não estão virados diretamente para a câmera.  O culling ligado
+pode gerar problemas na visualização ocasionando o desaparecimento de
+partes de objetos.  Na  ilustração  acima  a caixa vermelha que é uma 
+cópia  da  caixa azul está sem o teto e no entanto o seu interior não
+aparece.
+
+<u>Iluminação default</u>
+<img src=images\nolights.png>
+<span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);
+Essa opção de iluminação, quando configurada como <span class=prg>falsa,</span> o directx
+providencia uma iluminação  default.   Se configurada como <span class=prg>true</span>, a
+imagem final fica preta se não houver uma luz colocada na cena.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+initGfx()
+	Inicializa objeto Direct3d
+	Inicializa dispositivo renderizador
+	chama montar_Geometria() para configurar os vértices
+	<b class=sc16><u>chama inicializar_Camera para configurar a câmera</u></b>
+
+<b class=sc16><u>inicializar_Camera()</u>
+	Configura matriz de visualização ( g_mtxVisao )
+	joga matriz de visualização no dispositivo renderizador
+	
+	inicializa matriz mundial ( g_mtxMundo )
+	joga matriz mundial no dispositivo renderizador
+	
+	Configura matriz de projeção ( g_mtxProj )	
+	joga matriz de projeção no dispositivo renderizador</b>
+	
+montar_Geometria()
+	Configura posição dos vértices
+	
+renderizar_Geometria()
+	Declara o formato de vértice utilizado ao directx
+	Renderiza os vértices com g_device->DrawPrimitiveUP()
+
+<b class=sc16><u>atualizar_Camera()</u>
+	atualiza ângulo de rotação
+	atualiza matriz mundial com ângulo de rotação
+	joga matriz mundial no dispositivo renderizador</b>
+
+Renderizar()
+	Limpa a tela
+	<b class=sc16><u>Desliga o culling</u>
+	<u>Aciona luz default</u>
+	<u>chama atualizar_Camera() para girar o triângulo 3d</u></b>
+	chama renderizar_Geometria() para desenhar o triângulo	
+	Apresenta a cena
+
+Limpar()	
+	Libera dispositivo renderizador
+	Libera objeto Direct3d	
+</div></div>
+
+<b><u>2.1.1 Aspectos globais - Arquivo: motor.h</u></b>
+<div class=niceview><span class=sc2>// Projeto: prj_Triangulo3d - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como configurar uma câmera e</span>
+<span class=sc2>// renderizar um triângulo 3d. By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+<b>
+  <span class=sc2>// Configura a câmera 3d da cena</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Atualiza a câmera</span>
+  <span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   
+</b>
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div><b>
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  </b>
+Esta função inicialmente  configura  alguns  estados  do  dispositivo
+renderizador, o culling e iluminação default.   Antes de renderizar a
+cena  chama  <b>atualizar_Camera()</b> para atualizar uma pequena lógica que
+define o aspecto visual da cena: a rotação do triângulo.
+
+<b><span class=sc2>// Essa função monta formas geométricas</span>
+<span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   </b>
+Essa função monta o triângulo  com  o  tipo  de  vértice  que  possui
+informação de posição e cor.
+
+<b><span class=sc2>// Configura a câmera 3d da cena</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);</b>
+Essa função faz a configuração inicial da câmera que existe na  forma
+de 3 matrizes:  matriz  de  visão,  de  mundo  (espaço mundial)  e de
+projeção.
+
+<b><span class=sc2>// Atualiza a câmera</span>
+<span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   </b>
+Essa função gira o triângulo no eixo y com a função <span class=prg>D3DXMatrixRotationY()</span>
+aplicada na matriz de mundo que na sequência é 'jogada' ou estabelecida
+dentro da matriz de espaço mundial do dispositivo renderizador.
+
+<b><u>2.1.2 Aspectos globais - Arquivo: motor.cpp</u></b>
+<div class=niceview><span class=sc2>// Variáveis para controlar a rotação do triângulo</span>
+<span class=prg>float </span>g_Angulo = <span class=sc4>0.0f</span>; 
+<span class=sc16>const </span><span class=prg>float </span>nVelocidade = <span class=sc4>0.2f</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionColored_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_PositionColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+<span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_PositionColored </span>g_Vertices[<span class=sc4>3 </span>];   
+</div><b>
+<span class=sc2>// Variáveis para controlar a rotação do triângulo</span>
+<span class=prg>float </span>g_Angulo = <span class=sc4>0.0f</span>; 
+<span class=sc16>const </span><span class=prg>float </span>nVelocidade = <span class=sc4>0.2f</span>; </b>
+Estas variáveis são auto-descritivas. A variável <b>g_Angulo</b>  sofrerá  a
+cada frame um incremento no valor de  <b>nVelocidade</b>  que  ocasionará  a
+rotação   do  triângulo  lenta  ou  rápida  conforme  o  valor  desta
+última variável.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxProj;</b></div>
+Não existe um objeto câmera no directx.  Na verdade,  os  efeitos  de
+uma câmera são simulados e criados a  partir  da  manipulação  dessas
+trêz (3) matrizes. A matriz de projeção  ( <b>g_mtxProj</b> )  representa  a 
+configuração da lente da câmera e define o aspecto da imagem bem como
+a  potência da  câmera,  o  quanto longe a lente percebe do mundo 3d,
+o  quanto da  cena a câmera consegue enquadrar com a abertura angular
+da lente.  Geralmente, a matriz  de projeção é configurada apenas uma
+vez na aplicação na inicialização da câmera e depois esquecida.
+
+A matriz de visualização ( <b>g_mtxProj</b> ) representa o que a câmera está
+vendo do ponto de vista dela, da posição aonde ela está, para aonde
+está apontando, se está virada ou não de cabeça pra baixo. Geralmente,
+essa  matriz  é  modificada quando se quer movimentar ou rotacionar a
+câmera.
+
+A matriz de mundo ou de espaço mundial ( <b>g_mtxMundo</b> ),world matrix em
+inglês, é a mais usada porque indica para a câmera aonde um objeto 3d
+está e como está dentro da cena. Essa matriz é utilizada  para  tirar
+os objetos 3d de seu espaço local e trazê-los para o 'espaço mundial'
+do mundo 3d; é utilizada para girar, movimentar ou escalar os objetos.
+
+<b><span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionColored_Format</span>( <span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) </b>
+Essa é a configuração do formato de vértice com posição e cor. E logo
+abaixo temos como esse formato de vértice foi implementado.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_PositionColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span></b></div>
+
+<b><span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_PositionColored </span>g_Vertices[<span class=sc4>3</span>];   </b>
+Aqui os 3 vértices necessários para montar o triângulo.
+
+
+<b><u>2.2 Inicialização do motor gráfico</u></b>
+Veja que a função <b>initGfx()</b> faz o grande trabalho de inicializar todos
+os aspectos de trabalho do  motor  gráfico  da  aplicação  chamando  a
+função que monta as formas geométricas ( <b>montar_Geometria()</b> ) da  cena
+e   a   função   de   criação   e   configuração  inicial  da  câmera
+<b>inicializar_Camera()</b>
+
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<b>
+  <span class=sc2>// Monta as formas geométricas</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  inicializar_Camera();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.3 Criação da câmera</u></b>
+<div class=niceview><span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+    <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)  g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+</div><b>
+<span class=sc2>// ***************************************************************************</span>
+<span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+<span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+<span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+<span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  </b>
+Aqui as matrizes tomam o valor inicial de uma matriz identidade que é
+um valor neutro equivalente ao 1 da multiplicação. 
+
+<b><span class=sc2>// ***************************************************************************</span>
+<span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  </b>
+Aqui a matriz de espaço mundial é jogada ou estabelecida no dispositivo
+renderizador.  O método <span class=prg>SetTransform()</span> é utilizado para configurar as 3
+matrizes no dispositivo:<b>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo ); 
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao ); 
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );</b>
+Geralmente ocorre primeiro a configuração das matrizes e depois essas
+matrizes  são  instaladas  dentro  do  dispositivo  renderizador  com
+<span class=prg>SetTransform()</span>.
+
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// ***************************************************************************</span>
+<span class=sc2>// Dados para a configuração da matriz de visualização</span>
+<span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>5.0f</span>);   
+<span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+<span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+<span class=sc2>// Configura a matriz de visão</span>
+<span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+<span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  </b></div>
+A função <span class=prg>D3DXMatrixLookAtLH()</span> configura a matriz de  visualização  da
+câmera. Veja que a função recebe 3 vetores 3d com (x, y, z)  dando  a
+posição da câmera ( <b>cam_pos</b> ), o ponto de foco da câmera ( <b>cam_alvo</b> )
+e a indicação se  a  câmera  está  ou  não virada de cabeça pra baixo
+( <b>cam_vetorcima</b> ).   Lembrando que todas as matrizes são povoadas por
+4  vetores  com 4  elementos,  portanto tem ainda um quarto vetor que 
+segura  informação  de  rotação e o <b>w</b> que é o quarto elemento de cada
+vetor  que é usado para uniformizar os cálculos matemáticos em termos
+de   manter   a  multiplicação  como  operação  base  para  todas  as 
+transformações que ocorrem com estas matrizes.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// ***************************************************************************</span>
+<span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+<span class=sc2>// aspecto dos gráficos</span>
+<span class=prg>float </span>aspecto = (<span class=prg>float</span>)  g_xtela / g_ytela; 
+<span class=sc2>// campo de visão</span>
+<span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+<span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+<span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+<span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+<span class=sc2>// Configura a matriz de projeção</span>
+<span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+corte_perto, corte_longe);  
+
+<span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  </b></div>
+Esse bloco configura a matriz de projeção da imagem que geralmente  é
+utilizada  nas  últimas  etapas  de transformação da cena 3d para uma 
+imagem 2d final.
+
+<b><span class=prg>float </span>aspecto = (<span class=prg>float</span>)  g_xtela / g_ytela; </b>
+<img src=images\ratio_aspecto.png>
+O aspecto ou <b>ratio</b> é uma razão da resolução da janela ou monitor,  é uma
+divisão básica da largura\altura da tela que o sistema gráfico quer saber
+para desenhar as formas compensando a desprorpoção entre a largura  e  a
+altura que se for ignorada transforma circulos em esferas ovais e produz
+outras deformações na imagem.
+
+<b><span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; </b>
+<img src=images\fov_cmpvisao.png>
+O campo de visão ou <b>fov (field of fiew)</b> define o ângulo que reduz ou amplia o
+campo de visão da câmera.
+
+<b><span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; </b>
+<img src=images\frustrum.png>
+O enquadramento do espaço, que o directx chama de <b>frustrum</b> define duas
+áreas de corte na renderização da cena: o que está fora dessa área que
+tem  o  formato  de  um  trapézio  deitado  não  é  renderizado,  e  a 
+proximidade com estes limites vai provocando  mudanças na  escala  dos  
+objetos.
+
+Então,  a função <span class=prg>D3DXMatrixPerspectiveFovLH()</span>  recebe  informação  de
+aspecto, campo de visão e informação do frustrum e configura com esses
+dados a matriz de projeção que na sequência é estabelecida dentro  do
+dispositivo renderizador com a função  <span class=prg>SetTransform()</span>  que  já vimos.
+
+<b><u>2.4 Atualização da câmera</u></b>
+<div class=niceview><span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>float </span>angulo_final = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Atualiza ângulo para dar movivento</span>
+  g_Angulo = g_Angulo + nVelocidade; 
+  angulo_final = g_Angulo / <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc2>// Rotaciona o triângulo indiretamente através da rotação</span>
+  <span class=sc2>// dos eixos da matriz de espaço mundial.</span>
+  <span class=prg>D3DXMatrixRotationY</span>( &g_mtxMundo, angulo_final );  
+
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+<span class=sc16>} <span class=sc2>// atualizar_Camera().fim</span></span>
+</div>
+<b><span class=prg>float </span>angulo_final = <span class=sc4>0.0f</span>; </b>
+Essa variável vai receber o ângulo final de rotação do triângulo.
+
+<b><span class=sc2>// Atualiza ângulo para dar movivento</span>
+g_Angulo = g_Angulo + nVelocidade; 
+angulo_final = g_Angulo / <span class=sc4>D3DX_PI</span>; </b>
+Aqui é o cálculo do ângulo final. Inicialmente  a  variável  <b>g_Angulo</b>
+é incrementada  com  <b>nVelocidade</b>  para rotacionar o  triângulo  e  na
+sequência  é  dividida  por  <b>pi</b> ( <b>D3DX_PI</b> ) para não rotacionar muito 
+rápido.
+
+<b><span class=prg>D3DXMatrixRotationY</span>( &g_mtxMundo, angulo_final );  </b>
+A função <span class=prg>D3DXMatrixRotationY()</span> recebe um ângulo e  devolve uma matriz
+de rotação no eixo y. Para rodar no eixo x e z  basta usar as funções
+primas <span class=prg>D3DXMatrixRotationX()</span> e <span class=prg>D3DXMatrixRotationZ()</span>.  Para rodar nos
+3 eixos simultâneamente use a função <span class=prg>D3DXMatrixRotationYawPitchRoll()</span>
+que faz esse trabalho na ordem (y, x, z).   A  rotação  no  eixo y  é
+chamada <b>Yaw</b>; no eixo x é chamada <b>Pitch</b> e no eixo z é <b>Roll</b>.
+<img src=images\yawPitchRoll.png>
+Nestas funções de rotação o ângulo de entrada deve ser expresso em
+radianos.  No arquivo  <b>d3dx9math.h</b>  está definido duas macros para
+coverter radianos para graus e vice-versa: <span class=prg>
+#define D3DXToDegree( radian ) ((radian) * (180.0f / D3DX_PI))
+#define D3DXToRadian( degree ) ((degree) * (D3DX_PI / 180.0f)) </span>
+
+<span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+<span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+Aqui  finalmente  a  matriz  de  mundo  é  configurada no dispositivo
+renderizador.   Esses  passos  vistos aqui  nesta  função rotaciona o
+triângulo  e  geralmente esses passos são aplicados em cada objeto da 
+cena  3d  para  produzir  a movimentação, rotação e escala dos mesmos.
+Ao longo das próximas aplicações vamos conhecer as outras funções que
+produzem matrizes de escala e movimentação.
+
+<b><u>2.5 Renderização da cena - Parte 1/2</u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Mostra a parte interna do polígono</span>
+  <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   
+
+  <span class=sc2>// Utiliza iluminação default</span>
+  <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);  
+
+  <span class=sc2>// Atualize a câmera</span>
+  atualizar_Camera();  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Vamos renderizar as formas geométricas</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div><b>
+<span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+<span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>); </b>
+Essa função você já conhece mas não conhece a ausência dela. Esta arte
+foi produzida com a exclusão  dessa  função  com  comentários ( <b class=sc2>//</b> ) e 
+rodando o triângulo no eixo z:
+<img src=images\sem_device_clear.png>
+
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   </b>
+Essa função desativa o culling. Experimente excluir essa função com a
+instrução  de  comentários  e  veja que o triângulo desaparece por um
+momento ao mostrar as costas invisíveis para a câmera.
+
+<b><span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);  </b>
+Desta forma como está apresentada, esta linha habilita  a  iluminação
+default. Experimente a exclusão dessa linha.
+
+<b>atualizar_Camera();</b>
+Aqui a câmera é atualizada para rotacionar o triângulo um pouco antes
+do processo de renderização dos vértices.
+
+<b><u>2.6 Montagem da geometria</u></b>
+<div class=niceview><span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// p0 - primeiro vértice</span>
+  g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>0.0f</span>,  <span class=sc4>1.0f</span>, zpos, vermelho);  
+
+  <span class=sc2>// p1 - segundo vértice</span>
+  g_Vertices[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, verde);  
+
+  <span class=sc2>// p2 - terceiro vértice</span>
+  g_Vertices[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, azul);  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+</div>
+<b><span class=sc2>// p0 - primeiro vértice</span>
+g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>0.0f</span>,  <span class=sc4>1.0f</span>, zpos, vermelho);  </b>
+A novidade da função <b>montar_Geometria()</b> é esse formato de vértice com
+posições  não-transformadas  que indicam a posição de cada vértice em
+relação a cada outro vértice do triângulo. Dizemos que o triângulo foi
+construído em um espaço local de referência.
+
+O triângulo para chegar como imagem 2d primeiro é transformado para o
+espaço mundial,   depois é transformado para o espaço de câmera ou de
+visualização  e  depois  é  transformado pela matriz de projeção para
+aparecer finalmente como imagem 2d na tela do usuário.
+
+<b><u>2.7 Renderização da cena - Parte 2/2</u></b>
+A novidade da função <b>renderizar_Geometria()</b> é o ajuste no formato de
+vértice para posicionado e colorido.
+
+<div class=niceview><span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Configura formato de vértice no dispositivo</span>
+  <b><span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionColored_Format</span>);  </b>
+
+  <span class=sc2>// Quantidade de primitivas possíveis de acordo com o uso de vértices</span>
+  <span class=prg>UINT </span>nContagem = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tamanho do passo para achar o próximo vértice</span>
+  <b><span class=prg>UINT </span>nPasso =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionColored</span>);   </b>
+
+  <span class=sc2>// Desenha forma geométrica</span>
+  <span class=prg>g_device-&gt;DrawPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nContagem, &g_Vertices, nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+</div>
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Triangulo3d</u></b>
+<div class=prg-code><img src=images\prj_Triangulo3d.png>
+<span class=sc2>// Projeto: prj_Triangulo3d - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação ilustra como configurar uma câmera e</span>
+<span class=sc2>// renderizar um triângulo 3d. By www.gameprog.com.br</span>
+<span class=sc16>#ifndef </span>motor_h 
+  <span class=sc16>#define </span>motor_h 
+
+  <span class=sc2>// Esta função inicializa o Direct3D</span>
+  <span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+  <span class=sc2>// Essa função libera os objetos utilizados</span>
+  <span class=prg>void </span>Limpar();  
+
+  <span class=sc2>// Essa função desenha a cena</span>
+  <span class=prg>void </span>Renderizar();  
+
+  <span class=sc2>// Essa função monta formas geométricas</span>
+  <span class=prg>void </span>montar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>// Configura a câmera 3d da cena</span>
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Atualiza a câmera</span>
+  <span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   
+
+  <span class=sc2>// Renderiza os vértices em formas geométricas</span>
+  <span class=prg>void </span>renderizar_Geometria (<span class=prg>void</span>);   
+
+  <span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo3d - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como configurar uma câmera e</span>
+<span class=sc2>// renderizar um triângulo 3d. By www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo Direct3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9* </span>      g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+<span class=sc2>// Variáveis para controlar a rotação do triângulo</span>
+<span class=prg>float </span>g_Angulo = <span class=sc4>0.0f</span>; 
+<span class=sc16>const </span><span class=prg>float </span>nVelocidade = <span class=sc4>0.2f</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxMundo; 
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxVisao; 
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>D3DXMATRIX </span>g_mtxProj; 
+
+<span class=sc2>// Tamanho da janela</span>
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Constante para cores</span>
+<span class=sc16>const </span><span class=prg>DWORD </span>vermelho = 0xFFFF0000; 
+<span class=sc16>const </span><span class=prg>DWORD </span>branco  = 0xFFFFFFFF; 
+<span class=sc16>const </span><span class=prg>DWORD </span>verde   = 0xFF00FF00; 
+<span class=sc16>const </span><span class=prg>DWORD </span>azul   = 0xFF0000FF; 
+
+<span class=sc2>// Definição do formato de vértice utilizado pela aplicação</span>
+<span class=sc16>#define </span><span class=sc4>CustomVertex_PositionColored_Format</span>(<span class=sc4>D3DFVF_XYZ </span>| <span class=sc4>D3DFVF_DIFFUSE</span>) 
+
+<span class=sc2>// Definição da estrutura de vértice customizado</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=prg>float </span>x, y, z; 
+  <span class=prg>DWORD </span>cor; 
+
+  <span class=sc2>// Construtor default</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc2>// Construtor com inicialização</span>
+  <span class=sc5>CustomVertex_PositionColored</span>( <span class=prg>float </span>_x, <span class=prg>float </span>_y, <span class=prg>float </span>_z, <span class=prg>DWORD </span>_cor) 
+  <span class=sc16>{</span>
+    x = _x; 
+    y = _y; 
+    z = _z; 
+    cor = _cor; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+<span class=sc2>// Declaração dos vértices para o triângulo</span>
+<span class=sc5>CustomVertex_PositionColored </span>g_Vertices[<span class=sc4>3 </span>];   
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto Direct3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Monta as formas geométricas</span>
+  montar_Geometria();  
+
+  <span class=sc2>// Faz a configuração inicial da câmera</span>
+  inicializar_Camera();  
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Inicializa todas as matrizes para elemento neutro</span>
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxMundo );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxVisao );  
+  <span class=prg>D3DXMatrixIdentity</span>( &g_mtxProj );  
+
+  <span class=sc2>// ***************************************************************************</span>
+    <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+  <span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_pos (<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>5.0f</span>);   
+  <span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_alvo (<span class=sc4>0</span>, <span class=sc4>0.0f</span>, <span class=sc4>0</span>);   
+  <span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>cam_vetorcima (<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Configura a matriz de visão</span>
+  <span class=prg>D3DXMatrixLookAtLH</span>( &g_mtxVisao, &cam_pos, &cam_alvo, &cam_vetorcima );  
+
+  <span class=sc2>// Configura a matriz de visão no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_VIEW</span>, &g_mtxVisao );  
+
+  <span class=sc2>// ***************************************************************************</span>
+  <span class=sc2>// Argumentos de configuração da matriz de projeção</span>
+  <span class=sc2>// aspecto dos gráficos</span>
+  <span class=prg>float </span>aspecto = (<span class=prg>float</span>)  g_xtela / g_ytela; 
+  <span class=sc2>// campo de visão</span>
+  <span class=prg>float </span>campo_visao = <span class=sc4>D3DX_PI </span>/ <span class=sc4>4</span>; 
+  <span class=sc2>// Trapézio de visualização da câmera ( Frustrum )</span>
+  <span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+  <span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+
+  <span class=sc2>// Configura a matriz de projeção</span>
+  <span class=prg>D3DXMatrixPerspectiveFovLH</span>( &g_mtxProj, campo_visao, aspecto, 
+    corte_perto, corte_longe);  
+
+  <span class=sc2>// Configura a matriz de projeção no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_PROJECTION</span>, &g_mtxProj );  
+
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=prg>float </span>angulo_final = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// Atualiza ângulo para dar movivento</span>
+  g_Angulo = g_Angulo + nVelocidade; 
+  angulo_final = g_Angulo / <span class=sc4>D3DX_PI</span>; 
+
+  <span class=sc2>// Rotaciona o triângulo indiretamente através da rotação</span>
+  <span class=sc2>// dos eixos da matriz de espaço mundial.</span>
+  <span class=prg>D3DXMatrixRotationY</span>( &g_mtxMundo, angulo_final );  
+
+  <span class=sc2>// Configura a matriz de mundo no dispositivo renderizador</span>
+  <span class=prg>g_device-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, &g_mtxMundo );  
+
+<span class=sc16>} <span class=sc2>// atualizar_Camera().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=sc4>0</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Mostra a parte interna do polígono</span>
+  <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_CULLMODE</span>, <span class=sc4>D3DCULL_NONE</span>);   
+
+  <span class=sc2>// Utiliza iluminação default</span>
+  <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+  <span class=prg>g_device-&gt;SetRenderState </span>(<span class=sc4>D3DRS_LIGHTING</span>, <span class=prg>false</span>);  
+
+  <span class=sc2>// Atualize a câmera</span>
+  atualizar_Camera();  
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Vamos renderizar as formas geométricas</span>
+    renderizar_Geometria();  
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Apresenta o conteúdo do backbuffer na tela</span>
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Posicionamento de profundidade</span>
+  <span class=prg>float </span>zpos = <span class=sc4>0.0f</span>; 
+
+  <span class=sc2>// p0 - primeiro vértice</span>
+  g_Vertices[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>0.0f</span>,  <span class=sc4>1.0f</span>, zpos, vermelho);  
+
+  <span class=sc2>// p1 - segundo vértice</span>
+  g_Vertices[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>-1.0f</span>, <span class=sc4>-1.0f</span>, zpos, verde);  
+
+  <span class=sc2>// p2 - terceiro vértice</span>
+  g_Vertices[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionColored</span>( <span class=sc4>1.0f</span>, <span class=sc4>-1.0f</span>, zpos, azul);  
+
+<span class=sc16>} <span class=sc2>//  montar_Geometria().fim</span></span>
+
+
+<span class=prg>void </span>renderizar_Geometria() 
+<span class=sc16>{</span>
+  <span class=sc2>// Configura formato de vértice no dispositivo</span>
+  <span class=prg>g_device-&gt;SetFVF</span>( <span class=sc4>CustomVertex_PositionColored_Format</span>);  
+
+  <span class=sc2>// Quantidade de primitivas possíveis de acordo com o uso de vértices</span>
+  <span class=prg>UINT </span>nContagem = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tamanho do passo para achar o próximo vértice</span>
+  <span class=prg>UINT </span>nPasso =  <span class=sc16>sizeof</span>(<span class=sc5>CustomVertex_PositionColored</span>);   
+
+  <span class=sc2>// Desenha forma geométrica</span>
+  <span class=prg>g_device-&gt;DrawPrimitiveUP</span>( <span class=sc4>D3DPT_TRIANGLELIST</span>, nContagem, &g_Vertices, nPasso);  
+
+<span class=sc16>} <span class=sc2>// renderizar_Geometria().fim</span></span>
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Triangulo3d - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação ilustra como configurar uma câmera e</span>
+<span class=sc2>// renderizar um triângulo 3d. By www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Triangulo3d"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-9.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-11.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

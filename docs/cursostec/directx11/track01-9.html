@@ -1,0 +1,1896 @@
+﻿<html>
+<head>
+<title>dx11cpp_fase01-9</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 11 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 01-9</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-8.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-10.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>01.9 Câmera básica - Aplicação</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais  - arquivo: motor.h</a>
+<a href=#2.2>2.2 Variáveis globais - arquivo: motor.cpp</a>
+<a href=#2.3>2.3 initGfx() - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 inicializar_Constantbuffer() - Inicialização do constantbuffer</a>
+<a href=#2.5>2.5 inicializar_Camera()         - Inicialização da câmera</a>
+<a href=#2.6>2.6 atualizar_Camera()           - Atualização da câmera</a>
+<a href=#2.7>2.7 Renderizar()                 - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Camera</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Camera.png></div>
+A  aplicação  deste  exemplo  ilustra  como  implementar  uma  câmera
+utilizando as funções nativas do ambiente do directx.
+
+Em  termos  de  código  a  câmera  é uma simulação criada a partir da
+configuração  e  manipulação  de três matrizes: a matriz de projeção,
+visualização e a matriz de mundo.     
+´
+A matriz de visualização vai definir o ponto de foco e  de posição da
+câmera e também se ela está virada para cima ou para baixo.
+
+A  matriz  de mundo define a localização e direção do objeto no mundo
+3d.  A matriz de mundo é construída a partir da indicação da posição,
+rotação  e  escala  do  objeto 3d. Geralmente a indicação de rotação,
+posição  e  escala  são  multiplicados  para compor a matriz de mundo
+final  do  objeto  3d.  Rotação,  posição  ou translação e escala são
+chamados de <b>transformações</b> básicas do objeto.
+
+A  matriz  de  projeção  vai definir a imagem em termos de 'aspecto',
+campo  de  visão  e  campo  de  corte  também  chamado de frustrum no
+vocabulário oficial do directx.
+
+Internamente  para  se  chegar até a imagem final existe uma linha de
+montagem aonde ocorre multiplicações de matrizes em diversos estágios
+para  tranformar espaço de objeto ou espaço local em espaço de mundo,
+depois  de  espaço  de  mundo  para  espaço de visualização, passando
+depois  para  espaço  de projeção até chegar ao espaço de tela final.
+Estas  multiplicações  de  matrizes que converte um espaço no tipo do
+espaço seguinte também são chamadas <b>transformações</b>.
+
+É importante  observar a relação hierárquica ou a interdependência da
+movimentação de objetos correlacionados do mundo real para compreender
+melhor a replicação digital que o  directx  faz  desses  aspectos  do
+mundo real utilizando conceituação de matemática, física e geometria.
+Colocamos a opinião de que a assimilação  dos  aspectos  matemáticos,
+físicos e geométricos dos aspectos visuais precisam  ser  assimilados
+primeiro intuitivamente através de  observações  do  mundo  real.   O
+contato direto com a linguagem matemática ou física  desses  aspectos
+visuais pode ser intimidante e desestimulador.   É  por  conta  desse
+ponto  de  vista  que  este  curso  fala  muito  pouco  dos  aspectos 
+matemáticos e incentiva a assimilação dos mesmos através da observação
+e da experimentação prática.
+
+Quando você coloca um prato sobre a mesa e na sequência você  move  a
+mesa  naturalmente  o  prato acompanha a mesa. Se o piso sob  a  mesa 
+se  movesse a mesa e o prato acompanhariam normalmente esse movimento.
+Dizemos que o prato acompanha a <b>orientação</b> da mesa, e a mesa acompanha
+a <b>orientação</b> do piso.   Então   neste   exemplo  do  mundo  real  uma 
+transformação em um objeto de base ou na sua  orientação  se  propaga 
+pelas camadas de objetos empilhados uns sobre os outros.   De maneira
+semelhante nosso quadrado está colocado sobre um mundo  3d  e  quando
+este mundo tem sua orientação,   localização  ou  rotação modificados
+todos os objetos sobre  ele  acompanham  essas  transformações.  Esse
+mundo 3d  é visto por uma câmera e quando essa câmera gira ou se move
+naturalmente os objetos 3d desse mundo giram e se movem de acordo.
+
+Neste capítulo também vamos aprender a utilizar o <b>constantbuffer</b>  que
+é  utilizado  para  intercambiar  os dados entre a cpu e a gpu, ou em
+outras  palavras,  trocar  dados  entre  a  aplicação e o programa do
+shader.
+
+<b><u>Conceitos de visualização de imagem</u></b>
+Vamos adiantar agora alguns conceitos que impactam na geração de imagens 
+renderizadas que são utilizados na configuração da visualização da cena
+Isso vai evitar explicações no meio da apresentação do código que faz a
+configuração da câmera.
+
+
+<div class=niceview>
+<img src=images\ratio_aspecto.png>
+O aspecto  ou  <b>ratio</b> é uma razão da resolução da janela ou monitor, é uma
+divisão básica da largura\altura da tela que o sistema gráfico quer saber
+para desenhar as formas compensando a desprorpoção entre a largura  e  a 
+altura que se for ignorada transforma circulos em esferas ovais e produz
+outras deformações na imagem.
+</div>
+
+<div class=niceview>
+<img src=images\fov_cmpvisao.png>
+O campo de visão ou <b>fov (field of fiew)</b> define o ângulo que reduz ou amplia o
+campo de visão da câmera.
+</div>
+
+<div class=niceview>
+<img src=images\frustrum.png>
+O enquadramento do espaço, que no vocabulário do DirectX é chamado de
+<b>frustrum</b>  define  duas  áreas de corte na renderização da cena: o que
+está fora dessa área que tem o formato de um trapézio deitado  não  é
+renderizado,  e  a  proximidade  com  estes  limites  vai  provocando
+mudanças na escala dos objetos. </div>
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<b class=sc2>Arquivo: entrada.cpp</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>wWinMain()</b>
+	chama initWindow() para criar a janela da aplicação	
+	chama initGfx() para inicializar o motor gráfico
+	
+	estabelece o laço de mensagens
+		chama Renderizar() para renderizar a cena
+		
+	chama Limpar() para limpar o ambiente na finalização da aplicação.
+
+initWindow()
+	cria, configura e registra a classe da janela
+	cria a janela da aplicação
+	mostra a janela</div>
+		
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+<b class=sc16><u>inicializar_Camera()</u>
+	inicialização da matriz mundo ( g_mtxMundo )
+
+	inicialização e configuração da matriz de visualização ( g_mtxVisao )
+	com <b class=prg>XMMatrixLookAtLH()</b>
+
+	inicialização e configuração da matriz de projeção ( g_mtxProj ) 
+	com <b class=prg>XMMatrixPerspectiveFovLH()</b>
+	
+	* Geralmente a configuração da matriz mundo é feita em funções 
+	que atualizam o posicionamento, rotação e escala dos objetos 3d
+	da cena antes do processo de renderização. Nesta aplicação essa
+	configuração ocorre em atualizar_Camera().</b>
+
+<b class=sc16><u>inicializar_Constantbuffer()</u>
+	O constantbuffer a ser criado é descrito na estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+
+	O constantbuffer é criado efetivamente com <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>
+
+	* Os dados desse objeto constantbuffer ( g_pConstantBuffer )  são  providos
+	antes do processo de renderização em outras funções auxiliares ou similares
+	deste  processo. Nesta aplicação a configuração desses dados ocorre em
+	atualizar_Camera().	</b>
+
+<b class=sc16><u>atualizar_Camera()</u>
+	Atualização do timer de giro do quadrado
+
+	Atualização da matriz mundo do quadrado
+
+	Atualização do constantbuffer
+
+	* A instalação do constantbuffer é feita em Renderizar() </b>
+
+inicializar_Indexbuffer()
+	Determina os dados do indexbuffer na array indices[]
+	
+	Descreve o indexbuffer com a estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+	
+	Descreve os dados do indexbuffer com a estrutura <b class=prg>D3D11_SUBRESOURCE_DATA</b>
+	
+	Cria efetivamente o indexbuffer com  <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>
+	
+	Instala o indexbuffer com <b class=prg>g_pImmediateContext->IASetIndexBuffer()</b>
+
+initGfx()
+	- estabelece antecipadamente os valores iniciais dos objetos do motor gráfico
+	através do preenchimento  de  variáveis  e estruturas descritivas;	
+
+	Obtém  o tamanho da área cliente da janela com <b class=prg>GetClientRect()</b>
+		 
+	preenche a estrutura de descrição da corrente de trocas: <b class=prg>DXGI_SWAP_CHAIN_DESC</b>
+
+	cria a corrente de trocas ou swap chain, cria o dispositivo renderizador, cria 
+	o dispositivo de gestão de recursos todos com <b class=prg>D3D11CreateDeviceAndSwapChain()</b>
+	
+	Obtém o backbuffer ( <b class=prg>ID3D11Texture2D</b> ) com <b class=prg>g_pSwapChain-&gt;GetBuffer()</b>.
+	
+	cria a superfície alvo de renderização ( <b class=prg>ID3D11RenderTargetView</b> ) ou a 'render
+	target view' baseada no backbuffer com <b class=prg>g_pd3dDevice-&gt;CreateRenderTargetView()</b>
+
+	Instala a 'render target view' com <b class=prg>g_pImmediateContext-&gt;OMSetRenderTargets()</b>		
+	
+	Preenche a estrutura ( <b class=prg>D3D11_VIEWPORT</b> ) de criação da janela de visualização
+	ou viewport. Instala a viewport com <b class=prg>g_pImmediateContext-&gt;RSSetViewports()</b>.
+	
+	inicializa efeito com <b class=prg>inicializar_Efeito()</b>
+	
+	declara formato de vértice com <b class=prg>declarar_Vertexlayout()</b>
+	
+	inicializa vertexbuffer com <b class=prg>montar_Geometria()</b> e <b class=prg>inicializar_Vertexbuffer()</b>
+	<b class=sc16>
+	inicializa o indexbuffer com <b class=prg>inicializar_Indexbuffer()</b>
+	</b>
+	
+compilarEfeito()
+	Pré-configura variáveis de trabalho
+	
+	Compila o programa do shader, <b class=sc16>prj_Camera.fx</b>,  com <b class=prg>D3DX11CompileFromFile()</b>
+
+inicializar_Efeito()
+	produz o vertexshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreateVertexShader()</b>
+	
+	produz o pixelshader com <b class=prg>compilarEfeito()</b> e <b class=prg>g_pd3dDevice-&gt;CreatePixelShader()</b>
+
+montar_Geometria()
+	monta o quadrado através da configuração dos vértices na array <b style="color:black;">g_Quadrado</b>
+
+declarar_Vertexlayout()
+	Pré-configura as variáveis do primeiro elemento do layout de vértice.
+	
+	Descreve o primeiro elemento com as variáveis pré-configuradas
+	
+	Produz a array de descrição do segundo elemento (atributo_cor) do layout de
+	vértice. 
+	
+	Produz a array de elementos descritivos do layout de vértice.
+	
+	Declara o layout de vértice com <b class=prg>g_pImmediateContext->IASetInputLayout()</b>
+
+inicializar_Vertexbuffer()
+	Descreve o vertexbuffer com a estrutura <b class=prg>D3D11_BUFFER_DESC</b>
+	
+	Descreve os dados do vertexbuffer com a estrutura <b class=prg>D3D11_SUBRESOURCE_DATA</b>
+	
+	Cria efetivamente o vertexbuffer com  <b class=prg>g_pd3dDevice-&gt;CreateBuffer()</b>	
+	
+	Instala o vertexbuffer com <b class=prg>g_pImmediateContext->IASetVertexBuffers()</b>
+	
+	Declara a topologia de renderização dos vértices com 
+				<b class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology()</b>
+	
+Renderizar()<b class=sc16>
+	Chama atualizar_Camera() para atualizar a câmera e o constantbuffer. </b>
+	
+	Limpa a tela representada pela superfície alvo de renderização
+	com <b class=prg>g_pImmediateContext-&gt;ClearRenderTargetView()</b>
+	
+	Declara o vertexshader com <b class=prg>g_pImmediateContext-&gt;VSSetShader()</b>
+	
+	Declara o pixelshader com <b class=prg>g_pImmediateContext-&gt;PSSetShader()</b>
+    
+	<b class=sc16>Instala o constanbuffer com g_pImmediateContext-&gt;VSSetConstantBuffers()</b>
+	
+	Desenha a cena com <b class=prg>g_pImmediateContext-&gt;DrawIndexed() </b>
+	
+	Apresenta a cena com <b class=prg>g_pSwapChain-&gt;Present()</b>
+
+<b>processaJanela()</b>
+	tratamento das mensagens
+		Verifica teclado - finaliza aplicação na tecla Escape
+		chama Limpar() na finalização da aplicação		
+	
+Limpar()
+	Libera os objetos utilizados.
+</div></div>
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Aspectos globais: arquivo motor.h </u></b>
+<div class=niceview><span class=sc2>// Estrutura para intercâmbio de dados entre a GPU e a CPU</span>
+<span class=prg>struct </span><span class=sc5>ConstantBuffer</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Matriz de mundo para tranformações dos objetos 3d</span>
+  <span class=sc5>XMMATRIX </span>mWorld; 
+
+  <span class=sc2>// Matriz de visualização</span>
+  <span class=sc5>XMMATRIX </span>mView; 
+
+  <span class=sc2>// Matriz de projeção</span>
+  <span class=sc5>XMMATRIX </span>mProjection; 
+<span class=sc16>}; <span class=sc2>// fim da estrutura ConstantBuffer</span></span>
+
+<span class=sc2>// Controle de câmera</span>
+<span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>);   
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+<span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   
+</div>
+
+<u>A estrutura do constantbuffer</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;">
+<span class=prg>struct </span><span class=sc5>ConstantBuffer</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Matriz de mundo para tranformações dos objetos 3d</span>
+  <span class=sc5>XMMATRIX </span>mWorld; 
+  
+  <span class=sc2>// Matriz de visualização</span>
+  <span class=sc5>XMMATRIX </span>mView; 
+  
+  <span class=sc2>// Matriz de projeção</span>
+  <span class=sc5>XMMATRIX </span>mProjection; 
+<span class=sc16>}; <span class=sc2>// fim da estrutura ConstantBuffer</span></span></div>
+Esta é a estrutura de suporte ao <b>constantbuffer</b>  que será introjetado
+na GPU. Ele consiste de 3 matrizes membros que formam  o  esquema  da
+câmera   da  aplicação.  Adiantamos  aqui  que  esta  estrutura  será
+replicada  no  código  hlsl  do vertexshader para receber estes dados
+originados   na   aplicação.   As   matrizes   que  vão  alimentar  o
+constantbuffer    da    aplicação   são   inicializadas   na   função
+<b>inicializar_Camera()</b>.  O  constantbuffer  é  inicializado  na  função
+<b>inicializar_Constantbuffer()</b>,     sofre     uma     atualização    em
+<b>atualizar_Camera()</b>  e  é  instalado  no  dispositivo  renderizador na
+função  <b>Renderizar()</b>.  Dentro  do  código hlsl as matrizes membros do
+constantbuffer são utilizadas na função <b>gpVertexShader()</b>.
+
+<b class=prg-code><span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>); </b>
+Essa  função  faz  a criação  básica  do  constantbuffer  a partir da
+da mesma interface <b class=prg>ID3D11Buffer</b>  que  foi utilizada para a construção
+do vertexbuffer e o indexbuffer.
+
+<b class=prg-code><span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   </b>
+Essa função inicializa a câmera. Esse processo consiste em configurar
+as matrizes de visualização ( <b>g_mtxVisao</b> )  e  a matriz de projeção ( 
+<b>g_mtxProj</b> ). A matriz de mundo ( <b>g_mtxMundo</b> )  é  inicializada  nessa
+função  mas  é  configurada  de  fato  na  função <b>atualizar_Camera()</b>.
+A matriz de visualização é configurada pela função  <b class=prg>XMMatrixLookAtLH()</b>
+e  a  matriz  de  projeção  é  configurada  através  do uso da função
+<b class=prg>XMMatrixPerspectiveFovLH()</b> 
+
+<b class=prg-code><span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   </b>
+Essa  função  atualiza  a  câmera. Esse processo consiste em jogar as
+matrizes  de  mundo,  visualização  e  projeção  no constantbuffer. A
+configuração  final  da  matriz  de  mundo  é  produzida  a partir da
+combinação do resultado parcial  de 3 funções que nessa aplicação são
+<b class=prg>XMMatrixRotationZ()</b>, <b class=prg>XMMatrixTranslation()</b> e  <b class=prg>XMMatrixScaling()</b>   que
+apontam  respectivamente  a  rotação,  posição  e escala do objeto no
+mundo 3d.
+
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Variáveis globais - Arquivo: motor.cpp </u></b><b>
+<div class=niceview><span class=sc2>// Interface para o constantbuffer</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pConstantBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>XMMATRIX </span>g_mtxMundo; 
+
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>XMMATRIX </span>g_mtxVisao; 
+
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>XMMATRIX </span>g_mtxProj; </b></div>
+Acima está as nossas variáveis  globais  que  serão  utilizadas  para
+montar  e  configurar  a  câmera  e  o  constantbuffer  da aplicação.
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 initGfx() - Inicialização do motor gráfico </u></b>
+<div class=niceview><span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem initGfx() vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Configuração da corrente de trocas</span>
+<span class=sc2>// Inicialização básica da estrutura</span>
+<span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+<span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+<span class=sc2>// Quantidade de backbuffers</span>
+<span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração da largura e tamanho</span>
+<span class=prg>sd.BufferDesc.Width </span> = largura; 
+<span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+<span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+<span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+<span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+<span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+<span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+<span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+<span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+<span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+<span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+<span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+<span class=sc2>// Modo de descarte do backbuffer</span>
+<span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+<span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Indicação do display default</span>
+<span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+<span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Configuração dos flags de criação</span>
+<span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+<span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+<span class=sc16>{</span>
+    <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+<span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+<span class=sc2>// motor gráfico do directx 11.</span>
+g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+  NoRasterSoftware, createDeviceFlags, featureLevels, 
+  numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+  &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+  ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+  &g_pRenderTargetView );  
+<span class=prg>pBackBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Configuração da textura alvo no dispositivo</span>
+<span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+<span class=sc2>// Configuração da janela de visualização (viewport)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>D3D11_VIEWPORT </span>vp; 
+<span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+<span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+<span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+<span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+<span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+<span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+<span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+g_hr = inicializar_Efeito();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Montagem do triângulo</span>
+montar_Geometria();  
+
+<span class=sc2>// Declaração do layout de vértice</span>
+declarar_Vertexlayout();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Inicialização do vertexbuffer e indexbuffer</span>
+g_hr = inicializar_Vertexbuffer();  
+g_hr = inicializar_Indexbuffer();  
+<b>
+<span class=sc2>// Inicialização do constantbuffer</span>
+g_hr = inicializar_Constantbuffer();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+inicializar_Camera();  
+</b>
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b class=prg-code>g_hr = inicializar_Constantbuffer();  </b>
+Chamamos aqui a função que faz a criação básica do constantbuffer.
+
+<b class=prg-code>inicializar_Camera();  </b>
+E chamamos na sequência a função que inicializa a câmera.
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 inicializar_Constantbuffer() - Inicialização do constantbuffer </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Constantbuffer() - Essa função inicializa o constantbuffer.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Declaração e preparação inicial do constantbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do constantbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>(<span class=sc5>ConstantBuffer</span>);   
+
+<span class=sc2>// Indicação de constantbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_CONSTANT_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Criação efetiva do constantbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, <span class=prg>NULL</span>, &g_pConstantBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do constantbuffer"</span>, 
+        <span class=sc6>L"inicializar_Constantbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Constantbuffer().fim</span></span>
+</div>
+
+<div class=prg-code>
+<span class=sc2>// Tamanho em bytes do constantbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>(<span class=sc5>ConstantBuffer</span>);   
+
+<span class=sc2>// Indicação de constantbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_CONSTANT_BUFFER</span>; 
+
+<span class=sc2>// Criação efetiva do constantbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, <span class=prg>NULL</span>, &g_pConstantBuffer );  </div>
+O  código  de  criação  e  inicialização  do <b>constanbuffer</b> é bastante
+simples  para  quem  já  se  acostumou  a produzir o vertexbuffer e o
+indexbuffer. Destacamos aqui apenas os pontos mais  determinantes  da
+criação do contantbuffer.
+A  atualização  dos  dados  desse constantbuffer vai se dar na função
+<b>atualizar_Camera()</b>   e  a  instalação  efetiva  dele  no  dispositivo
+renderizador vai ocorrer na função <b>Renderizar()</b>.
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 inicializar_Camera() - Inicialização da câmera </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Camera() - Essa função inicializa a câmera.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Inicializa a matriz de mundo - Essa matriz é utilizada para transformar</span>
+<span class=sc2>// posição, rotação e escala do objeto 3d; será usada em atualizar_Camera()</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+g_mtxMundo = <span class=prg>XMMatrixIdentity</span>();  
+
+<span class=sc2>// Inicializa a matriz de visualização</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Dados para a configuração da matriz de visualização</span>
+
+<span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_pos = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_alvo = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_vetorcima = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Configura matriz de visualização</span>
+g_mtxVisao = <span class=prg>XMMatrixLookAtLH</span>( cam_pos, cam_alvo, cam_vetorcima );  
+
+<span class=sc2>// Inicializa a matriz de projeção</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Vamos identificar outros argumentos da matriz de projeção</span>
+<span class=prg>float </span>aspecto  = (<span class=prg>float</span>)  largura / altura; 
+<span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+<span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+<span class=prg>float </span>campo_visao = <span class=sc4>XM_PIDIV4</span>; 
+
+<span class=sc2>// Configura matriz de projeção</span>
+g_mtxProj = <span class=prg>XMMatrixPerspectiveFovLH</span>( campo_visao, aspecto, 
+                       corte_perto, corte_longe );  
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+</div>
+<b class=prg-code>g_mtxMundo = <span class=prg>XMMatrixIdentity</span>();  </b>
+Aqui inicializamos a matriz de mundo para um valor neutro. Essa matriz
+é   mais   dinâmica  e  será  configurada  a  cada  frame  na  função
+<b>atualizar_Camera()</b> para definir a rotação, posição  e escala do nosso
+quadrado no mundo 3d.
+
+
+<u>Inicialização e configuração da matriz de visualização</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;">
+<span class=sc2>// Inicializa a matriz de visualização</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Dados para a configuração da matriz de visualização</span>
+
+<span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_pos = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_alvo = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_vetorcima = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Configura matriz de visualização</span>
+g_mtxVisao = <span class=prg>XMMatrixLookAtLH</span>( cam_pos, cam_alvo, cam_vetorcima );  </div>
+Este bloco de código define um exemplo de como configurar a matriz de
+visualização  para  produzir  uma  visão  da  cena  em perspectiva. A
+modificação dessa matriz, especialmente do vetor <b>cam_pos</b>, é utilizada
+para gerar a movimentação da câmera pelo cenário.
+
+
+<u>Inicialização e configuração da matriz de projeção</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;">
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Vamos identificar outros argumentos da matriz de projeção</span>
+<span class=prg>float </span>aspecto  = (<span class=prg>float</span>)  largura / altura; 
+<span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+<span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+<span class=prg>float </span>campo_visao = <span class=sc4>XM_PIDIV4</span>; 
+
+<span class=sc2>// Configura matriz de projeção</span>
+g_mtxProj = <span class=prg>XMMatrixPerspectiveFovLH</span>( campo_visao, aspecto, 
+                       corte_perto, corte_longe );  </div>
+Esse bloco de código ilustra como configurar  uma matriz de projeção.
+Esta é a matriz menos usada depois de configurada.
+
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 atualizar_Camera() - Atualização da câmera </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// atualizar_Camera() - Essa função faz a atualização da câmera.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<b class=sc2>// Atualização do timer</b>
+<span class=sc16>static </span><span class=prg>float </span>deltaTempo = <span class=sc4>0.0f</span>; 
+<span class=sc16>static </span><span class=prg>DWORD </span>tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>tempoAtual = <b class=prg>GetTickCount()</b>;  
+<span class=sc9>if</span>( tempoInicial == <span class=sc4>0</span>) tempoInicial = tempoAtual; 
+deltaTempo = ( tempoAtual - tempoInicial ) / <span class=sc4>1000.0f</span>; 
+
+<span class=sc2>// Atualização da matriz mundo que anima o quadrado</span>
+<span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationZ</span>( deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-2.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>1.5f</span>, <span class=sc4>1.5f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; 
+
+<span class=sc2>// Atualização das variáveis do shader</span>
+<span class=sc5>ConstantBuffer </span>cb; 
+<span class=prg>cb.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>cb.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>cb.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualização das variáveis na placa de vídeo</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                     <span class=prg>NULL</span>, &cb, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc16>} <span class=sc2>// atualizar_Camera()</span></span>
+</div>
+
+<u>Atualização do timer</u>
+<div class=prg-code style="border-width:1px; border-style:dashed;">
+<span class=sc16>static </span><span class=prg>float </span>deltaTempo = <span class=sc4>0.0f</span>; 
+<span class=sc16>static </span><span class=prg>DWORD </span>tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>tempoAtual = <b class=prg>GetTickCount()</b>;  
+<span class=sc9>if</span>( tempoInicial == <span class=sc4>0</span>) tempoInicial = tempoAtual; 
+deltaTempo = ( tempoAtual - tempoInicial ) / <span class=sc4>1000.0f</span>; </div>
+Esse bloco de código, retirado da documentação  oficial  do  directx,
+define  um  exemplo  de  implementação    de um temporizador para ser
+utilizado na animação dos objetos 3d. Vamos usar  o  tempo  decorrido
+para girar o nosso quadrado.
+
+
+<u>Atualização da matriz mundo que anima o quadrado</u>
+<div class=prg-code>
+<span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationZ</span>( deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-2.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>1.5f</span>, <span class=sc4>1.5f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; </div>
+Nesse bloco ocorre a produção da matriz de mundo final que  define  a
+rotação,  posição  e  escala  do objeto 3d no mundo tridimensional. É
+importante  ressaltar  que  a  ordem  normal  das multiplicações para
+obter  resultados  consistentes  deve  ser sempre esta: RTS traduzido
+para (R)otação,(T)translação e e(S)cala. A ordem de multiplicação das
+matrizes altera o resultado final; fique ciente disso.
+Para mudar o sentido de rotação do quadrado  você  pode  experimentar
+a substituição da função <b class=prg>XMMatrixRotationZ()</b> por  <b class=prg>XMMatrixRotationX()</b>
+ou <b class=prg>XMMatrixRotationY()</b>. 
+
+<u>Atualização das variáveis do shader</u>
+<div class=prg-code><span class=sc5>ConstantBuffer </span>cb; 
+<span class=prg>cb.mWorld </span>      = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>cb.mView </span>       = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>cb.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  </div>
+Aqui produzimos uma estrutura <b class=prg>ConstantBuffer</b> e jogamos nela as nossas
+matrizes de produção da câmera. É importante destacar que no directx11
+as matrizes devem sofrer um processo  de  transposição  com a  função
+<b class=prg>XMMatrixTranspose()</b> para serem utilizadas no vertexshader.
+
+
+<u>Definição dos dados no constantbuffer</u>
+<div class=prg-code><span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, <span class=prg>NULL</span>, &cb, <span class=sc4>0</span>, <span class=sc4>0</span>);  </div>
+E esta linha define os dados do constantbuffer  ( <b>g_pConstantBuffer</b> )
+que foi inicializado na função <b>inicializar_Constantbuffer()</b>.
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 Renderizar() - Renderização da cena </u></b>
+<div class=niceview><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+<b>
+<span class=sc2>// Atualização da câmera e animação do quadrado</span>
+atualizar_Camera();  
+</b>
+<span class=sc2>// Configuração da cor de limpeza</span>
+<span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+<span class=sc2>// Limpeza do backbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+<span class=sc2>// Instala o vertexshader e o pixelshader</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<b>
+<span class=sc2>// Instala o atual constantbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pConstantBuffer );  
+</b>
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( <span class=sc4>6</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Apresentação do backbuffer</span>
+<span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+<b class=prg-code>atualizar_Camera();  </b>
+Essa função é chamada aqui para atualizar as matrizes de câmera  e  o
+constantbuffer   que   vão  culminar  na  animação  do  quadrado.
+
+<b class=prg-code><span class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pConstantBuffer );  </b>
+Com esta linha finalmente despachamos o constantbuffer atualizado para
+a  gpu.  Agora  nos  resta  verificar  como  é  feito o recebimento e
+tratamento desses dados no vertexshader.
+
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Camera</u></b>
+<div class=prg-code><img src=images\prj_Camera.png>
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Camera - Arquivo: motor.h</span>
+<span class=sc2>// Exemplo de uso de câmera (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+
+<span class=sc16>#if </span>!defined motor_h 
+<span class=sc16>#define </span>motor_h 
+
+<span class=sc2>// Formato de vértice com posição e cor</span>
+//--------------------------------------------------------------------------------------</span>
+<span class=prg>struct </span><span class=sc5>CustomVertex_PositionColored</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Posição do vértice (Pos.x, Pos.y, Pos.z)</span>
+  <span class=sc5>XMFLOAT3 </span>Pos; 
+  <span class=sc5>XMFLOAT4 </span><span class=sc5>Color</span>; 
+
+  <span class=sc2>// Construtor padrão</span>
+  <span class=sc5>CustomVertex_PositionColored</span>() {} 
+
+  <span class=sc5>CustomVertex_PositionColored</span>(<span class=sc5>XMFLOAT3 </span>_Pos, <span class=sc5>XMFLOAT4 </span>_Color) 
+  <span class=sc16>{</span>
+    Pos   = _Pos; 
+    <span class=sc5>Color </span>= _Color; 
+
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+<span class=sc16>}; <span class=sc2>// fim da estrutura CustomVertex_PositionColored</span></span>
+
+
+<span class=sc2>// Estrutura para intercâmbio de dados entre a GPU e a CPU</span>
+<span class=prg>struct </span><span class=sc5>ConstantBuffer</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Matriz de mundo para tranformações dos objetos 3d</span>
+  <span class=sc5>XMMATRIX </span>mWorld; 
+
+  <span class=sc2>// Matriz de visualização</span>
+  <span class=sc5>XMMATRIX </span>mView; 
+
+  <span class=sc2>// Matriz de projeção</span>
+  <span class=sc5>XMMATRIX </span>mProjection; 
+<span class=sc16>}; <span class=sc2>// fim da estrutura ConstantBuffer</span></span>
+
+  <span class=sc2>// Controle de câmera</span>
+  <span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>);   
+  <span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>);   
+  <span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>);   
+
+
+  <span class=sc2>// Esta função compila um programa hlsl produzindo o vertexshader</span>
+  <span class=sc2>// ou o pixelshader</span>
+  <span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, 
+    <span class=prg>LPCSTR </span>sShaderMdl, <span class=sc5>ID3DBlob** </span>hlslCompilado );  
+
+  <span class=sc2>// Essa função chama compilarEfeito() para inicializar o pixelshader</span>
+  <span class=sc2>// e o vertexshader</span>
+  <span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função preenche uma array de vértices montando um triângulo</span>
+  <span class=prg>void </span>montar_Geometria(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função declara o layout de vértice utilizado</span>
+  <span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o vertexbuffer. O vertexshader e a geometria</span>
+  <span class=sc2>// devem ser inicializados antes dele.</span>
+  <span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>);   
+
+  <span class=sc2>// Essa função inicializa o Indexbuffer.</span>
+  <span class=sc16>HRESULT </span>inicializar_Indexbuffer(<span class=prg>void</span>);   
+
+  <span class=sc2>// Função de processamento de mensagens da janela</span>
+  <span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>   processaJanela( <span class=sc16>HWND</span>, <span class=prg>UINT</span>, <span class=sc16>WPARAM</span>, <span class=sc16>LPARAM</span>);  
+
+  <span class=sc2>// Inicializa o motor gráfico</span>
+  <span class=sc16>HRESULT </span>initGfx();  
+
+  <span class=sc2>// Função de renderizar a cena</span>
+  <span class=prg>void </span>Renderizar( <span class=prg>void</span>);  
+
+  <span class=sc2>// Função de liberar os objetos utilizados pela aplicação</span>
+  <span class=prg>void </span>Limpar( <span class=prg>void</span>);  
+
+<span class=sc16>#endif</span>
+<span class=sc2>// endfile: motor.h﻿
+</div>
+
+<div class=prg-code>
+// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Camera - Arquivo: motor.cpp</span>
+<span class=sc2>// Exemplo de uso de câmera (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d11.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx11.h&gt;</span>
+
+<span class=sc2>// Funções matemáticas e compilação de HLSL</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dcompiler.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;xnamath.h&gt;</span>
+
+<span class=sc2>// Bibliotecas do directx 11</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dx11.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment </span>(lib, <span class=sc6>"d3dcompiler.lib"</span>)  
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis definidas em entrada.cpp</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span> g_hJanela; 
+<span class=sc16>extern </span><span class=sc16>HRESULT </span> g_hr; 
+
+<span class=sc2>// Corrente de trocas</span>
+<span class=sc5>IDXGISwapChain </span>        *g_pSwapChain = <span class=prg>NULL</span>; 
+<span class=sc2>// Tipo de driver</span>
+<span class=sc5>D3D_DRIVER_TYPE </span>        g_driverType = <span class=sc4>D3D_DRIVER_TYPE_HARDWARE</span>; 
+<span class=sc2>// nível desejado de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>      g_featureLevel = <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>; 
+<span class=sc2>// Dispositivo gerenciador de recursos</span>
+<span class=sc5>ID3D11Device </span>          *g_pd3dDevice = <span class=prg>NULL</span>; 
+<span class=sc2>// Disposisitivo renderizador</span>
+<span class=sc5>ID3D11DeviceContext </span>   *g_pImmediateContext = <span class=prg>NULL</span>; 
+<span class=sc2>// Interface de gestão da textura alvo de visualização</span>
+<span class=sc5>ID3D11RenderTargetView </span>*g_pRenderTargetView = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Preparação para renderizar o triângulo</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Configuração inicial dos vértices da forma geométrica</span>
+<span class=sc5>CustomVertex_PositionColored </span>g_Quadrado[<span class=sc4>4 </span>];   
+
+<span class=sc2>// Descrição de formato dos vértices para a GPU</span>
+<span class=sc5>ID3D11InputLayout </span>      *g_pVertexLayout = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Dados compilados do vertexshader</span>
+<span class=sc5>ID3DBlob </span>   *g_vsBlocoCompilado = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o vertexshader</span>
+<span class=sc5>ID3D11VertexShader </span>     *g_pVertexShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o buffer de vértices, buffer de índices e buffer de</span>
+<span class=sc2>// constantes</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pVertexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o pixelshader</span>
+<span class=sc5>ID3D11PixelShader </span>      *g_pPixelShader = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o indebuffer</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pIndexBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Interface para o constantbuffer</span>
+<span class=sc5>ID3D11Buffer </span>           *g_pConstantBuffer = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Matrizes de configuração da câmera</span>
+<span class=sc2>// Matriz de mundo</span>
+<span class=sc5>XMMATRIX </span>g_mtxMundo; 
+<span class=sc2>// Matriz de visão</span>
+<span class=sc5>XMMATRIX </span>g_mtxVisao; 
+<span class=sc2>// Matriz de projeção</span>
+<span class=sc5>XMMATRIX </span>g_mtxProj; 
+
+
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Cria a corrente de trocas e os dispositivos do motor gráfico</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initGfx() 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem initGfx() vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Configuração da corrente de trocas</span>
+<span class=sc2>// Inicialização básica da estrutura</span>
+<span class=sc5>DXGI_SWAP_CHAIN_DESC </span>sd; 
+<span class=prg>ZeroMemory</span>( &sd, <span class=sc16>sizeof</span>( sd ) );  
+
+<span class=sc2>// Quantidade de backbuffers</span>
+<span class=prg>sd.BufferCount </span>  = <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração da largura e tamanho</span>
+<span class=prg>sd.BufferDesc.Width </span> = largura; 
+<span class=prg>sd.BufferDesc.Height </span>= altura; 
+
+<span class=sc2>// Configuração da taxa de refrescamento de vídeo 60Hz</span>
+<span class=prg>sd.BufferDesc.RefreshRate.Numerator </span> = 60; 
+<span class=prg>sd.BufferDesc.RefreshRate.Denominator </span>= <span class=sc4>1</span>; 
+
+<span class=sc2>// Configuração do formato e declaração de uso do backbuffer</span>
+<span class=prg>sd.BufferDesc.Format </span>= <span class=sc4>DXGI_FORMAT_R8G8B8A8_UNORM</span>; 
+<span class=prg>sd.BufferUsage </span>  = <span class=sc4>DXGI_USAGE_RENDER_TARGET_OUTPUT</span>; 
+
+<span class=sc2>// Configuração do nível de qualidade da imagem final</span>
+<span class=prg>sd.SampleDesc.Count </span> = <span class=sc4>1</span>; 
+<span class=prg>sd.SampleDesc.Quality </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Configuração do modo janela e indicação da janela de saída</span>
+<span class=prg>sd.OutputWindow </span>  = g_hJanela; 
+<span class=prg>sd.Windowed </span>   = <span class=prg>TRUE</span>; 
+
+<span class=sc2>// Modo de descarte do backbuffer</span>
+<span class=prg>sd.SwapEffect </span>  = <span class=sc4>DXGI_SWAP_EFFECT_DISCARD</span>; 
+
+
+<span class=sc2>// Criação do dispositivo gráfico e da corrente de trocas</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc2>// Indicação do display default</span>
+<span class=sc5>IDXGIAdapter </span>*pAdapterDefault = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nenhum software de renderização de terceiros será usado.</span>
+<span class=sc16>HMODULE </span>NoRasterSoftware = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Configuração dos flags de criação</span>
+<span class=prg>UINT </span>createDeviceFlags = <span class=sc4>0</span>; 
+
+<span class=sc2>// Níveis desejados de capacidades do dispositivo</span>
+<span class=sc5>D3D_FEATURE_LEVEL </span>featureLevels[] = 
+<span class=sc16>{</span>
+    <span class=sc4>D3D_FEATURE_LEVEL_11_0</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_1</span>, 
+    <span class=sc4>D3D_FEATURE_LEVEL_10_0</span>, 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numFeatureLevels = <span class=prg>ARRAYSIZE</span>( featureLevels );  
+
+
+<span class=sc2>// Criação efetiva da corrente de trocas e dos dispositivos do</span>
+<span class=sc2>// motor gráfico do directx 11.</span>
+g_hr = <span class=prg>D3D11CreateDeviceAndSwapChain</span>( pAdapterDefault, g_driverType, 
+  NoRasterSoftware, createDeviceFlags, featureLevels, 
+  numFeatureLevels, <span class=sc4>D3D11_SDK_VERSION</span>, &sd, &g_pSwapChain, 
+  &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext );  
+
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Criação da textura alvo de renderização (render target view)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>ID3D11Texture2D </span>*pBackBuffer = <span class=prg>NULL</span>; 
+
+g_hr = <span class=prg>g_pSwapChain-&gt;GetBuffer</span>( <span class=sc4>0</span>, __uuidof( <span class=sc5>ID3D11Texture2D</span>), 
+  ( <span class=prg>LPVOID*</span>)&pBackBuffer );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateRenderTargetView</span>( pBackBuffer, <span class=prg>NULL</span>, 
+  &g_pRenderTargetView );  
+<span class=prg>pBackBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) )  <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Configuração da textura alvo no dispositivo</span>
+<span class=prg>g_pImmediateContext-&gt;OMSetRenderTargets</span>( <span class=sc4>1</span>, &g_pRenderTargetView, <span class=prg>NULL</span>);  
+
+<span class=sc2>// Configuração da janela de visualização (viewport)</span>
+<span class=sc2>// ------------------------------------------------------------------------</span>
+<span class=sc5>D3D11_VIEWPORT </span>vp; 
+<span class=prg>vp.Width </span>=  (<span class=prg>float</span>)  largura; 
+<span class=prg>vp.Height </span>= (<span class=prg>float</span>)  altura; 
+<span class=prg>vp.MinDepth </span>= <span class=sc4>0.0f</span>; 
+<span class=prg>vp.MaxDepth </span>= <span class=sc4>1.0f</span>; 
+<span class=prg>vp.TopLeftX </span>= <span class=sc4>0</span>; 
+<span class=prg>vp.TopLeftY </span>= <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;RSSetViewports</span>( <span class=sc4>1</span>, &vp );  
+
+<span class=sc2>// Inicialização do vertexshader e o pixelshader</span>
+g_hr = inicializar_Efeito();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Montagem do triângulo</span>
+montar_Geometria();  
+
+<span class=sc2>// Declaração do layout de vértice</span>
+declarar_Vertexlayout();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Inicialização do vertexbuffer e indexbuffer</span>
+g_hr = inicializar_Vertexbuffer();  
+g_hr = inicializar_Indexbuffer();  
+
+
+<span class=sc2>// Inicialização do constantbuffer</span>
+g_hr = inicializar_Constantbuffer();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+inicializar_Camera();  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Constantbuffer() - Essa função inicializa o constantbuffer.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Constantbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Declaração e preparação inicial do constantbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do constantbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>(<span class=sc5>ConstantBuffer</span>);   
+
+<span class=sc2>// Indicação de constantbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_CONSTANT_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Criação efetiva do constantbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, <span class=prg>NULL</span>, &g_pConstantBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do constantbuffer"</span>, 
+        <span class=sc6>L"inicializar_Constantbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Constantbuffer().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Camera() - Essa função inicializa a câmera.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>inicializar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Inicializa a matriz de mundo - Essa matriz é utilizada para transformar</span>
+<span class=sc2>// posição, rotação e escala do objeto 3d; será usada em atualizar_Camera()</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+g_mtxMundo = <span class=prg>XMMatrixIdentity</span>();  
+
+
+<span class=sc2>// Inicializa a matriz de visualização</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Dados para a configuração da matriz de visualização</span>
+<span class=sc2>// Aonde está a câmera? - posição da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_pos = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-5.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Para aonde a câmera está apontada ou olhando? Alvo da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_alvo = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// A câmera está de cabeça pra baixo? - orientação da câmera</span>
+<span class=sc5>XMVECTOR </span>cam_vetorcima = <span class=prg>XMVectorSet</span>(<span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);   
+
+<span class=sc2>// Configura matriz de visualização</span>
+g_mtxVisao = <span class=prg>XMMatrixLookAtLH</span>( cam_pos, cam_alvo, cam_vetorcima );  
+
+<span class=sc2>// Inicializa a matriz de projeção</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// Vamos obter o tamanho da área cliente da janela</span>
+<span class=sc5>RECT </span>areaCliente; 
+<span class=prg>GetClientRect</span>( g_hJanela, &areaCliente );  
+<span class=prg>UINT </span>largura = <span class=prg>areaCliente.right </span>- <span class=prg>areaCliente.left</span>; 
+<span class=prg>UINT </span>altura  = <span class=prg>areaCliente.bottom </span>- <span class=prg>areaCliente.top</span>; 
+
+<span class=sc2>// Vamos identificar outros argumentos da matriz de projeção</span>
+<span class=prg>float </span>aspecto  = (<span class=prg>float</span>)  largura / altura; 
+<span class=prg>float </span>corte_perto = <span class=sc4>1.0f</span>; 
+<span class=prg>float </span>corte_longe = <span class=sc4>1000.0f</span>; 
+<span class=prg>float </span>campo_visao = <span class=sc4>XM_PIDIV4</span>; 
+
+<span class=sc2>// Configura matriz de projeção</span>
+g_mtxProj = <span class=prg>XMMatrixPerspectiveFovLH</span>( campo_visao, aspecto, 
+                       corte_perto, corte_longe );  
+<span class=sc16>} <span class=sc2>// inicializar_Camera().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// atualizar_Camera() - Essa função faz a atualização da câmera.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>atualizar_Camera(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Atualização do timer</span>
+<span class=sc16>static </span><span class=prg>float </span>deltaTempo = <span class=sc4>0.0f</span>; 
+<span class=sc16>static </span><span class=prg>DWORD </span>tempoInicial = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>tempoAtual = GetTickCount();  
+<span class=sc9>if</span>( tempoInicial == <span class=sc4>0</span>) tempoInicial = tempoAtual; 
+deltaTempo = ( tempoAtual - tempoInicial ) / <span class=sc4>1000.0f</span>; 
+
+
+<span class=sc2>// Atualização da matriz mundo que anima o quadrado</span>
+<span class=sc5>XMMATRIX </span> rot = <span class=prg>XMMatrixRotationZ</span>( deltaTempo );  
+<span class=sc5>XMMATRIX </span> pos = <span class=prg>XMMatrixTranslation</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>-2.0f</span>);   
+<span class=sc5>XMMATRIX </span> sc  = <span class=prg>XMMatrixScaling</span>(<span class=sc4>1.5f</span>, <span class=sc4>1.5f</span>, <span class=sc4>1.0f</span>);   
+g_mtxMundo = rot * pos * sc; 
+
+<span class=sc2>// Atualização das variáveis do shader</span>
+<span class=sc5>ConstantBuffer </span>cb; 
+<span class=prg>cb.mWorld </span> = <span class=prg>XMMatrixTranspose</span>( g_mtxMundo );  
+<span class=prg>cb.mView </span> = <span class=prg>XMMatrixTranspose</span>( g_mtxVisao  );  
+<span class=prg>cb.mProjection </span>= <span class=prg>XMMatrixTranspose</span>( g_mtxProj );  
+
+<span class=sc2>// Atualização das variáveis na placa de vídeo</span>
+<span class=prg>g_pImmediateContext-&gt;UpdateSubresource</span>( g_pConstantBuffer, <span class=sc4>0</span>, 
+                     <span class=prg>NULL</span>, &cb, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc16>} <span class=sc2>// atualizar_Camera()</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// compilarEfeito() - Esta função compila um programa hlsl produzindo o</span>
+<span class=sc2>// vertexshader ou o pixelshader</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>compilarEfeito( <span class=prg>WCHAR* </span>sArquivo, <span class=prg>LPCSTR </span>sEntradaFn, <span class=prg>LPCSTR </span>sShaderMdl, 
+             <span class=sc5>ID3DBlob** </span>hlslCompilado ) 
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem esta função retorn S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Flags de compilação de hlsl</span>
+<span class=prg>DWORD </span>nConfig = <span class=sc4>D3DCOMPILE_ENABLE_STRICTNESS </span>|  <span class=sc4>D3DCOMPILE_DEBUG</span>;  
+
+<span class=sc2>// Buffer para a mensagem de erro</span>
+<span class=sc5>ID3DBlob </span>*bufferMensagem; 
+
+<span class=sc2>// Compilação do shader pixelshader ou vertexshader</span>
+g_hr = <span class=prg>D3DX11CompileFromFile</span>( sArquivo, <span class=prg>NULL</span>, <span class=prg>NULL</span>, sEntradaFn, sShaderMdl, 
+    nConfig, <span class=sc4>0</span>, <span class=prg>NULL</span>, hlslCompilado, &bufferMensagem, <span class=prg>NULL</span>);  
+
+<span class=sc2>// Tratamento de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>(g_hr) ) 
+<span class=sc16>{</span>
+    <span class=sc9>if</span>( bufferMensagem != <span class=prg>NULL</span>) 
+    <span class=prg>MessageBoxA </span>(<span class=sc4>0</span>, (<span class=prg>char*</span>)  <span class=prg>bufferMensagem-&gt;GetBufferPointer</span>(), 
+    <span class=sc6>"compilarEfeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+  <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc9>if</span>( bufferMensagem ) <span class=prg>bufferMensagem-&gt;Release</span>();  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// compilarEfeito()</span></span>
+
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Efeito() - Essa função chama compilarEfeito() para inicializar o</span>
+<span class=sc2>// pixelshader e o vertexshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Efeito(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Compilação do vertexshader</span>
+g_hr = compilarEfeito( <span class=sc6>L"prj_Camera.fx"</span>, <span class=sc6>"gpVertexShader"</span>, <span class=sc6>"vs_4_0"</span>, 
+  &g_vsBlocoCompilado );  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na compilação do arquivo prj_Camera.fx"</span>, 
+        <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Criação do vertexshader</span>
+//----------------------------------------------------------------------------</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateVertexShader</span>( <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, &g_pVertexShader );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+  <span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+<span class=sc2>// Compilação do pixelshader</span>
+<span class=sc5>ID3DBlob </span>*psBlocoCompilado = <span class=prg>NULL</span>; 
+g_hr = compilarEfeito( <span class=sc6>L"prj_Camera.fx"</span>, <span class=sc6>"gpPixelShader"</span>, <span class=sc6>"ps_4_0"</span>, &psBlocoCompilado );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+     <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na compilação do arquivo prj_Camera.fx"</span>, 
+        <span class=sc6>L"inicializar_Efeito</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Criação do pixelshader</span>
+<span class=sc2>// ----------------------------------------------------------------------------</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreatePixelShader</span>( <span class=prg>psBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>psBlocoCompilado-&gt;GetBufferSize</span>(), <span class=prg>NULL</span>, 
+  &g_pPixelShader );  
+
+<span class=sc2>// Liberação do bloco compilado</span>
+<span class=prg>psBlocoCompilado-&gt;Release</span>();  
+
+<span class=sc2>// Encerramento da função</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+
+<span class=sc16>} <span class=sc2>// inicializar_Efeito().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// montar_Geometria() - Essa função preenche uma array de vértices</span>
+<span class=sc2>// montando um quadrado.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>montar_Geometria(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Definição de cores</span>
+<span class=sc5>XMFLOAT4 </span>vermelho =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>verde    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>azul     =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>);   
+<span class=sc5>XMFLOAT4 </span>cinza    =  <span class=sc5>XMFLOAT4</span>( <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>0.3f</span>, <span class=sc4>1.0f</span>);   
+
+<span class=sc2>// Posicionamento dos vértices</span>
+<span class=sc5>XMFLOAT3 </span>p0 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-0.5f</span>,  <span class=sc4>0.5f</span>,  <span class=sc4>0.5f </span> );  
+<span class=sc5>XMFLOAT3 </span>p1 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>0.5f</span>, <span class=sc4>-0.5f</span>,  <span class=sc4>0.5f </span> );  
+<span class=sc5>XMFLOAT3 </span>p2 = <span class=sc5>XMFLOAT3</span>(  <span class=sc4>-0.5f</span>, <span class=sc4>-0.5f</span>,  <span class=sc4>0.5f </span> );  
+<span class=sc5>XMFLOAT3 </span>p3 = <span class=sc5>XMFLOAT3</span>(   <span class=sc4>0.5f</span>,  <span class=sc4>0.5f</span>,  <span class=sc4>0.5f </span> );  
+
+<span class=sc2>// Posicionamento dos vértices na array pré-vertexbuffer</span>
+g_Quadrado[<span class=sc4>0</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p0, vermelho );  
+g_Quadrado[<span class=sc4>1</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p1, verde    );  
+g_Quadrado[<span class=sc4>2</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p2, azul     );  
+g_Quadrado[<span class=sc4>3</span>] = <span class=sc5>CustomVertex_PositionColored </span>(p3, cinza    );  
+<span class=sc16>} <span class=sc2>// montar_Geometria().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// declarar_Vertexlayout() - Essa função declara o formato de vértice</span>
+<span class=sc2>// presente no vertexbuffer a ser utilizado.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>declarar_Vertexlayout(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+<span class=sc2>// Se tudo ocorrer bem esta função vai retornar S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Descrição do layout do formato de vértice CustomVertex_PositionColored</span>
+<span class=prg>LPCSTR </span>sSemantica = <span class=sc6>"POSITION"</span>; 
+<span class=prg>UINT </span>ndxSemantica = <span class=sc4>0</span>; 
+<span class=sc5>DXGI_FORMAT </span>formato = <span class=sc4>DXGI_FORMAT_R32G32B32_FLOAT</span>; 
+<span class=prg>UINT </span>nCanal = <span class=sc4>0</span>; 
+<span class=prg>UINT </span>nAlinhamento = <span class=sc4>0</span>; 
+<span class=sc5>D3D11_INPUT_CLASSIFICATION </span> clsEntrada = <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>; 
+<span class=prg>UINT </span>taxaInstanciamento = <span class=sc4>0</span>; 
+
+<span class=sc2>// Produção do primeiro elemento da declaração de vértices</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_pos = 
+<span class=sc16>{</span>
+  sSemantica, 
+  ndxSemantica, 
+  formato, 
+  nCanal, 
+  nAlinhamento, 
+  clsEntrada, 
+  taxaInstanciamento</span>
+<span class=sc16>}</span>; 
+
+
+<span class=sc2>// Definição do segundo do formato\layout de vértice</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>atributo_cor = 
+<span class=sc16>{</span>
+  <span class=sc6>"COLOR"</span>, 
+  <span class=sc4>0</span>, 
+  <span class=sc4>DXGI_FORMAT_R32G32B32A32_FLOAT</span>, 
+  <span class=sc4>0</span>, 
+  12, 
+  <span class=sc4>D3D11_INPUT_PER_VERTEX_DATA</span>, <span class=sc4>0</span>
+<span class=sc16>}</span>; 
+
+
+<span class=sc2>// Definição do layout de entrada</span>
+<span class=sc5>D3D11_INPUT_ELEMENT_DESC </span>layout[] = 
+<span class=sc16>{</span>
+  atributo_pos, atributo_cor 
+<span class=sc16>}</span>; 
+<span class=prg>UINT </span>numElements = <span class=prg>ARRAYSIZE</span>( layout );  
+
+<span class=sc2>// Criação do objeto layout de entrada</span>
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateInputLayout</span>( layout, numElements, 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferPointer</span>(), 
+  <span class=prg>g_vsBlocoCompilado-&gt;GetBufferSize</span>(), &g_pVertexLayout );  
+
+<span class=prg>g_vsBlocoCompilado-&gt;Release</span>();  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span>g_hr; 
+
+<span class=sc2>// Instalação do layout de entrada</span>
+<span class=prg>g_pImmediateContext-&gt;IASetInputLayout</span>( g_pVertexLayout );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// declarar_Vertexlayout().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Vertexbuffer() - Essa função inicializa o vertexbuffer.</span>
+<span class=sc2>// O vertexshader e a geometria devem ser inicializados antes dele.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Vertexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Descrição do vertexbuffer sendo montado</span>
+<span class=sc2>// Declaração e preparação inicial da estrutura</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PositionColored</span>) * <span class=sc4>4</span>; 
+
+<span class=sc2>// Indicação de vertexbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_VERTEX_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Declaração dos dados do vertexbuffer</span>
+<span class=sc5>D3D11_SUBRESOURCE_DATA </span>vbDados; 
+<span class=prg>ZeroMemory</span>( &vbDados, <span class=sc16>sizeof</span>(vbDados) );  
+<span class=prg>vbDados.pSysMem </span>= g_Quadrado; 
+g_hr = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &vbDados, &g_pVertexBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do Vertexbuffer"</span>, 
+        <span class=sc6>L"inicializar_Vertexbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Instalação do vertexbuffer</span>
+<span class=prg>UINT </span>stride = <span class=sc16>sizeof</span>( <span class=sc5>CustomVertex_PositionColored</span>);  
+<span class=prg>UINT </span>offset = <span class=sc4>0</span>; 
+<span class=prg>g_pImmediateContext-&gt;IASetVertexBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pVertexBuffer, &stride, &offset );  
+
+<span class=sc2>// Definição da topologia primitiva relativa ao vertexbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;IASetPrimitiveTopology</span>( <span class=sc4>D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST </span> );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Vertexbuffer().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - renderiza a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Renderizar ( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Atualização da câmera e animação do quadrado</span>
+atualizar_Camera();  
+
+<span class=sc2>// Configuração da cor de limpeza</span>
+<span class=prg>float </span>fundoRGBA[<span class=sc4>4</span>] = <span class=sc16>{ </span><span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f</span>, <span class=sc4>1.0f </span><span class=sc16>}</span>; 
+
+<span class=sc2>// Limpeza do backbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;ClearRenderTargetView</span>( g_pRenderTargetView, fundoRGBA );  
+
+<span class=sc2>// Instala o vertexshader e o pixelshader</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetShader</span>( g_pVertexShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+<span class=prg>g_pImmediateContext-&gt;PSSetShader</span>( g_pPixelShader, <span class=prg>NULL</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Instala o atual constantbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;VSSetConstantBuffers</span>( <span class=sc4>0</span>, <span class=sc4>1</span>, &g_pConstantBuffer );  
+
+<span class=sc2>// Desenha a forma geométrica</span>
+<span class=prg>g_pImmediateContext-&gt;DrawIndexed</span>( <span class=sc4>6</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+<span class=sc2>// Apresentação do backbuffer</span>
+<span class=prg>g_pSwapChain-&gt;Present</span>( <span class=sc4>0</span>, <span class=sc4>0</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Limpar() - libera os objetos utilizados pela cena</span>
+<span class=sc2>//  -----------------------------------------------------------------------------</span>
+<span class=prg>void </span>Limpar( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+<span class=sc16>static </span><span class=prg>bool </span>bLimpo = <span class=prg>false</span>; 
+
+<span class=sc2>// Retorne se já estiver limpo</span>
+<span class=sc9>if </span>(bLimpo == <span class=prg>true</span>)  <span class=sc6>return</span>; 
+
+<span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;ClearState</span>();  
+
+<span class=sc2>// Libera o vertexbuffer</span>
+<span class=sc9>if</span>( g_pVertexBuffer ) <span class=prg>g_pVertexBuffer-&gt;Release</span>();  
+
+<span class=sc9>if</span>( g_pConstantBuffer ) <span class=prg>g_pConstantBuffer-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pIndexBuffer ) <span class=prg>g_pIndexBuffer-&gt;Release</span>();  
+
+<span class=sc2>// Liberar o vertexlayout</span>
+<span class=sc9>if</span>( g_pVertexLayout ) <span class=prg>g_pVertexLayout-&gt;Release</span>();  
+
+<span class=sc2>// Libera o vertexshader</span>
+<span class=sc9>if</span>( g_pVertexShader ) <span class=prg>g_pVertexShader-&gt;Release</span>();  
+
+<span class=sc2>// Libera o pixelshader</span>
+<span class=sc9>if</span>( g_pPixelShader ) <span class=prg>g_pPixelShader-&gt;Release</span>();  
+
+
+<span class=sc2>// Liberação dos demais objetos</span>
+<span class=sc9>if</span>( g_pRenderTargetView ) <span class=prg>g_pRenderTargetView-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pSwapChain )   <span class=prg>g_pSwapChain-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pImmediateContext ) <span class=prg>g_pImmediateContext-&gt;Release</span>();  
+<span class=sc9>if</span>( g_pd3dDevice )   <span class=prg>g_pd3dDevice-&gt;Release</span>();  
+
+bLimpo = <span class=prg>true</span>; 
+
+<span class=sc2>// Limpeza responsável</span>
+g_pVertexBuffer  = <span class=prg>NULL</span>; 
+g_pIndexBuffer  = <span class=prg>NULL</span>; 
+g_pConstantBuffer = <span class=prg>NULL</span>; 
+g_pVertexLayout  = <span class=prg>NULL</span>; 
+g_pVertexShader  = <span class=prg>NULL</span>; 
+g_pPixelShader  = <span class=prg>NULL</span>; 
+g_pRenderTargetView = <span class=prg>NULL</span>; 
+g_pSwapChain  = <span class=prg>NULL</span>; 
+g_pImmediateContext = <span class=prg>NULL</span>; 
+g_pd3dDevice  = <span class=prg>NULL</span>; 
+
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// processaJanela() - Tratamento de mensagens da janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela( <span class=sc16>HWND </span>hWnd, <span class=prg>UINT </span>message, 
+                <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam ) 
+<span class=sc16>{</span>
+PAINTSTRUCT ps; 
+<span class=sc16>HDC </span>hdc; 
+
+<span class=sc9>switch</span>( message ) 
+<span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+        hdc = <span class=prg>BeginPaint</span>( hWnd, &ps );  
+        <span class=prg>EndPaint</span>( hWnd, &ps );  
+        <span class=sc6>break</span>; 
+
+      <span class=sc9>case </span><span class=sc4>WM_CLOSE:</span>
+          Limpar();  
+      <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+        <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+        Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);   
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+        <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+        <span class=sc6>break</span>; 
+
+    <span class=sc9>default:</span>
+        <span class=sc6>return </span><span class=prg>DefWindowProc</span>( hWnd, message, wParam, lParam );  
+<span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+<span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// inicializar_Indexbuffer() - Essa função inicializa o indexbuffer.</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>inicializar_Indexbuffer(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+<span class=sc2>// Se tudo ocorrer bem, essa função retorna S_OK</span>
+g_hr = <span class=sc4>S_OK</span>; 
+
+<span class=sc2>// Elementos do indexbuffer</span>
+<span class=prg>WORD </span>indices[] =  <span class=sc16>{ </span><span class=sc4>0</span>, <span class=sc4>1</span>, <span class=sc4>2</span>, <span class=sc4>0</span>, <span class=sc4>3</span>, <span class=sc4>1 </span> <span class=sc16>}</span>; 
+
+<span class=sc2>// Declaração e preparação inicial do indexbuffer</span>
+<span class=sc5>D3D11_BUFFER_DESC </span>bd; 
+<span class=prg>ZeroMemory</span>( &bd, <span class=sc16>sizeof</span>(bd) );  
+
+<span class=sc2>// Declaração de uso</span>
+<span class=prg>bd.Usage </span>= <span class=sc4>D3D11_USAGE_DEFAULT</span>; 
+
+<span class=sc2>// Tamanho em bytes do vertexbuffer</span>
+<span class=prg>bd.ByteWidth </span>= <span class=sc16>sizeof</span>( <span class=prg>WORD</span>) * <span class=sc4>6</span>; 
+
+<span class=sc2>// Indicação de indexbuffer</span>
+<span class=prg>bd.BindFlags </span>= <span class=sc4>D3D11_BIND_INDEX_BUFFER</span>; 
+
+<span class=sc2>// Flags de configuração de acesso</span>
+<span class=prg>bd.CPUAccessFlags </span>= <span class=sc4>0</span>; 
+
+<span class=sc2>// Declaração dos dados do vertexbuffer</span>
+<span class=sc5>D3D11_SUBRESOURCE_DATA </span>ibDados; 
+<span class=prg>ZeroMemory</span>( &ibDados, <span class=sc16>sizeof</span>(ibDados) );  
+<span class=prg>ibDados.pSysMem </span>= indices; 
+
+<span class=sc2>// Criação efetiva do indexbuffer</span>
+g_hr  = <span class=prg>g_pd3dDevice-&gt;CreateBuffer</span>( &bd, &ibDados, &g_pIndexBuffer );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+    <span class=prg>MessageBoxW</span>( <span class=prg>NULL</span>, 
+                <span class=sc6>L"Falha na inicialização do indexbuffer"</span>, 
+        <span class=sc6>L"inicializar_Indexbuffer</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span>g_hr; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Instalação do indexbuffer</span>
+<span class=prg>g_pImmediateContext-&gt;IASetIndexBuffer</span>( g_pIndexBuffer, <span class=sc4>DXGI_FORMAT_R16_UINT</span>, <span class=sc4>0</span>);  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Indexbuffer().fim</span></span>
+<span class=sc2>// endfile: motor.cpp</span>
+</div>
+
+<div class=prg-code>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Camera - Arquivo: entrada.cpp</span>
+<span class=sc2>// Exemplo de uso de câmera (directx 11)</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Variáveis globais de criação e manutenção da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HINSTANCE </span>  g_hInst   = <span class=prg>NULL</span>; 
+<span class=sc16>HWND </span>       g_hJanela  = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Variável global da classe da janela; necessária em initWindow()</span>
+<span class=sc2>// e no encerramento de wWinMain()</span>
+<span class=prg>WCHAR </span> sclasseJanela[] = <span class=sc6>L"cls_directx"</span>; 
+
+<span class=sc2>// Recebimento do retorno das funções do directx</span>
+<span class=sc16>HRESULT </span> g_hr   = <span class=sc4>0</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>  g_xtela  = 640; 
+<span class=prg>int </span>  g_ytela  = 480; 
+
+<span class=sc2>// Título da janela</span>
+<span class=prg>WCHAR </span> janelaTitulo[] = <span class=sc6>L"prj_Camera"</span>; 
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// Protótipo da função de criação da janela</span>
+//-----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>   initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow );  
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// wWinMain() - esta função é o ponto de entrada da aplicação. Ela inicializa</span>
+<span class=sc2>// a janela,  entra no laço de mensagens e renderiza a cena no tempo ocioso.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>int </span><span class=sc16>WINAPI </span>wWinMain( <span class=sc16>HINSTANCE </span>hInstance, <span class=sc16>HINSTANCE </span>hPrevInstance, 
+          LPWSTR lpCmdLine, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+<span class=sc4>UNREFERENCED_PARAMETER</span>( hPrevInstance );  
+<span class=sc4>UNREFERENCED_PARAMETER</span>( lpCmdLine );  
+
+<span class=sc2>// Inicializa a janela</span>
+g_hr = initWindow( hInstance, nCmdShow );  
+<span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) <span class=sc6>return </span><span class=sc4>0</span>; 
+
+<span class=sc2>// Inicializa o motor gráfico</span>
+g_hr = initGfx();  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if </span>(<span class=prg>FAILED</span>( g_hr ) ) 
+<span class=sc16>{</span>
+
+  Limpar();  
+  <span class=prg>MessageBoxW </span>(<span class=sc4>0</span>, <span class=sc6>L"Falha na inicialização do motor gráfico"</span>, 
+    <span class=sc6>L"prj_Camera"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>}</span>
+
+<span class=sc2>// Coração da aplicação - laço de mensagens</span>
+<span class=sc5>MSG </span>msg = {0}; 
+<span class=sc9>while</span>( <span class=prg>msg.message </span>!= <span class=sc4>WM_QUIT</span>) 
+<span class=sc16>{</span>
+    <span class=sc9>if</span>( <span class=prg>PeekMessage</span>( &msg, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>, PM_REMOVE ) ) 
+    <span class=sc16>{</span>
+        <span class=prg>TranslateMessage</span>( &msg );  
+        <span class=prg>DispatchMessage</span>( &msg );  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc9>else</span>
+    <span class=sc16>{</span>
+        Renderizar();  
+    <span class=sc16>} <span class=sc2>// end else</span></span>
+<span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+<span class=sc2>// Finaliza a aplicação</span>
+Limpar();  
+<span class=prg>UnregisterClass</span>( sclasseJanela, g_hInst);  
+<span class=sc6>return</span>(<span class=prg>int</span>)<span class=prg>msg.wParam</span>; 
+<span class=sc16>} <span class=sc2>// wWinMain().fim</span></span>
+
+
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// initWindow() - Essa função cria e registra a janela</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>HRESULT </span>initWindow( <span class=sc16>HINSTANCE </span>hInstance, <span class=prg>int </span>nCmdShow ) 
+<span class=sc16>{</span>
+
+<span class=sc2>// Estrutura de descrição da janela</span>
+<span class=sc5>WNDCLASSEX </span>wcls; 
+
+<span class=sc2>// Tornando global o handle da aplicação</span>
+g_hInst = hInstance; 
+
+<span class=sc2>// Estrutura que descreve a janela</span>
+<span class=prg>wcls.hInstance </span> = hInstance; 
+<span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+<span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+<span class=prg>wcls.style </span>  = <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW </span>| <span class=sc4>CS_OWNDC</span>; 
+<span class=prg>wcls.cbSize </span>  = <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+<span class=sc2>// O cursor e os ícones da aplicação são default</span>
+<span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hIconSm </span> = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+<span class=prg>wcls.hCursor </span> = <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+<span class=sc2>// Aplicação sem menu</span>
+<span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+<span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+<span class=prg>wcls.cbClsExtra </span> = <span class=sc4>0</span>; 
+
+<span class=sc2>// Nada de espaço extra atrelado a janela</span>
+<span class=prg>wcls.cbWndExtra </span> = <span class=sc4>0</span>; 
+
+ <span class=sc2>// Cor default da janela</span>
+<span class=prg>wcls.hbrBackground </span>= (<span class=sc16>HBRUSH</span>)  GetStockObject ( WHITE_BRUSH );  
+
+<span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+<span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+<span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+<span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Registro falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+<span class=sc6>return </span> <span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+
+<span class=sc2>// Atributos de configuração da janela</span>
+<span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+<span class=prg>DWORD </span>dwEstilo = <span class=sc4>WS_OVERLAPPEDWINDOW </span>- <span class=sc4>WS_MAXIMIZEBOX</span>; 
+<span class=prg>int </span>xpos = 160; 
+<span class=prg>int </span>ypos = 120; 
+<span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+<span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+<span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Criação da janela</span>
+g_hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+  dwEstilo, xpos, ypos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+  hInstance, dadoExtra );  
+
+<span class=sc2>// Verificação de erro</span>
+<span class=sc9>if</span>(g_hJanela == <span class=prg>NULL</span>)  
+<span class=sc16>{</span>
+  <span class=prg>MessageBoxW </span>(<span class=prg>NULL</span>, <span class=sc6>L"Criação da janela falhou!"</span>, janelaTitulo, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+<span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Exibe a janela</span>
+<span class=prg>ShowWindow</span>( g_hJanela, nCmdShow );  
+<span class=prg>UpdateWindow</span>(g_hJanela );  
+
+<span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initWindow().fim</span></span>
+<span class=sc2>// endfile: entrada.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track01-8.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track01-10.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais  - arquivo: motor.h</a>
+<a href=#2.2>2.2 Variáveis globais - arquivo: motor.cpp</a>
+<a href=#2.3>2.3 initGfx() - Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 inicializar_Constantbuffer() - Inicialização do constantbuffer</a>
+<a href=#2.5>2.5 inicializar_Camera()         - Inicialização da câmera</a>
+<a href=#2.6>2.6 atualizar_Camera()           - Atualização da câmera</a>
+<a href=#2.7>2.7 Renderizar()                 - Renderização da cena</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Camera</a>
+
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Junho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

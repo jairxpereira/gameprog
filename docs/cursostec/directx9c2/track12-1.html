@@ -1,0 +1,374 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:left;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 02-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='dx9cpp2.html#start' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.1 Conceitos de apoio para animação 3d</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+A tarefa de carregar e renderizar um  modelo  3d  animado é difícil e
+complexa. Com a finalidade de suavizar o máximo possível o caminho de
+entendimento do código fonte  que renderiza um modelo 3d animado esse
+capítulo  apresenta uma série de conceitos  envolvidos  nessa  tarefa
+para evitar um excesso de temas novos concentrados em um só capítulo.
+E apesar da abordagem cautelosa da questão sabemos de antemão que ela
+ainda é  insuficiente  para  dotar  o  estudante  de  autonomia  para
+produzir suas próprias funções de carregamento e renderização  de  um
+modelo 3d animado. Então colocamos que o objetivo  dos  capítulos que
+versam sobre  a  renderização  de  modelos  3d  animados  é  dotar  o 
+estudante da compreensão geral do  processo  para  dar  autonomia  de
+re-utilizar as classes que apresentamos e que perfazem esse trabalho.
+
+Agora vamos dar uma visão geral de  vários  conceitos  envolvidos  na
+renderização de modelos 3d animados. Não vamos conseguir aqui esgotar
+e detalhar cada tema que será aberto, então  vai  ser  necessário  da 
+parte do estudante pesquisar  externamente  sobre  os  conceitos  que
+serão apresentados para adquirir um domínio  mais  profundo  de  cada
+tema.
+
+<u><b>Keyframe e interpolação</b></u>
+<img src=images\keyframe-interpolation.png>
+Geralmente, com as modernas aplicações 3d  entre elas  o  Blender, as 
+animações dos objetos são produzidas através da definição  de  quadro
+chaves de animação que definem  a pose inicial  e  a  pose  final  do
+objeto ao longo de uma trajetória e\ou linha do tempo. E para produzir
+a  animação  completa  do  objeto  a   aplicação   calcula  as  poses
+intermediárias entre as duas poses ou quadro chaves definidos.  Agora
+em resumo, <b>keyframe</b>  ou  <b>quadro-chave</b>  é  um  conjunto  importante de
+valores que definem a pose, posição e\ou orientação de um objeto em um 
+determinado momento. <b>Interpolação</b> é o processo de cálculo  que define
+os valores dos frames intermediários entre dois  keyframes  definidos.
+Por exemplo, na ilustração  de  exemplo, tem um  cubo  verde  que  se
+desloca de um ponto inicial a um ponto final. Os  cubos transparentes
+representam alguns  frames  que  são  adicionados  pelo  processo  de 
+interpolação. Os quadros chaves  estão  representados  na  ilustração
+pelos círculos verdes e os quadros interpolados  estão  representados
+pela linha e pelos círculos laranjas.
+
+<u><b>Hierarquia</b></u>
+<img src=images\hierarquia.png>
+* Figura hierarquia.pnj
+
+A hierarquia nasce da percepção de que o movimento de alguns  objetos
+ou de que partes de  um  mesmo  objeto  sofre  influência  de  outros
+objetos ou de outras  partes  de  um  mesmo objeto. Podemos citar que
+o esqueleto humano é um exemplo perfeito de hierarquia.  Seguindo  ao
+longo desse exemplo, a mão segue o movimento do braço, o braço  segue
+o movimento do antebraço e o antebraço e todo o conjunto  do  braço é
+influenciado pela rotação ou movimentação da clavícula.
+
+Na montagem de uma hierarquia  de  objetos  co-ligados  é  necessário 
+sustentar uma estrutura de dados  com  duas  ou  mais  matrizes  para
+guardar a posição e orientação própria de cada objeto e a  posição  e
+orientação final desse mesmo objeto que são dadas pela combinação  da
+influência advinda dos objetos anteriores da linha hierárquica.  Esse
+ponto que chamamos de 'influência' nada mais é do que  a concatenação
+das matrizes de orientação e posição dos objetos que sofre o peso dos
+objetos anteriores e coloca peso nos  objetos  posteriores  da  linha
+hierárquica.
+
+É comum a expressão da  hierarquia  de  objetos  nos  termos  de  uma
+família humana ou partes de uma árvore. Então é comum  os  termos  nó
+raiz para o primeiro objeto 3d com suas matrizes; o termo pai e irmão
+para um objeto 3d que tem um objeto acima de si (pai)  e um objeto ao
+seu lado (irmão) na árvore hierárquica.
+
+<u><b>Skinning, ossos e vertex-blending</b></u>
+A marionete 3d presente na figura hierarquia.png é um recurso chamado
+biped na aplicação gráfica 3D Stúdio Max. O biped  é  usado  como  um 
+esqueleto de influências para deformar a 'pele' de um outro objeto 3d.
+Essa '<b>pele</b>' na verdade é a malha de vértices de composição  do objeto
+3d que vai sofrer as influências dos ossos do biped.  O <b>osso</b> do biped
+é na realidade uma matriz com posição e orientação  que  influencia a
+posição e orientação final dos vértices do objeto 3d. É comum um osso
+influenciar uma ou mais partes de um objeto 3d e é comum uma parte de
+um   objeto   3d  sofrer  influência  de  um  ou  até  quatro   ossos
+simultaneamente. Torna-se claro que o formato de vértice do modelo 3d
+animado deve trazer a informação de qual é o osso que lhe  influencia
+e a informação de peso que determina o quanto tal osso lhe influencia
+na composição de sua posição e orientação final.
+
+<b>Skinning</b> que poderia ser traduzido como 'pelificação' é o processo de
+produzir   animações   3d   utilizando   um   sistema   de   ossos  e
+vertex-blending. Reforçamos  que  o  <b>vertex-blending</b>  traduzido  como
+mistura de vértices é  o  fato  da  posição  e  orientação  final  do 
+vértice ser produzido através da soma ou da mistura da influência  de
+vários 'ossos' que sabemos que são matrizes.  Curiosamente o biped da
+foto não utiliza vertex-blending pois  seu  corpo  está  picotado  em
+vários objetos 3d apenas ligados  hierarquicamente;  uma  das  falhas
+visuais causadas pela ausência do vertex-blending  é  a  percepção de
+partes sobrepondo-se sem  suavidade  sobre  as  outras.  Por exemplo,
+é visível no cotovelo do biped a distinção das duas partes do braço.
+Esta falha visual era comum nos jogos da época  do  Playstation 1. No
+uso do skinning o modelo 3d é um  todo  contínuo  formando  uma  pele 
+única e  as deformações  produzidas  são  suaves  principalmente  nos
+pontos articulados de um modelo 3d orgânico.
+
+O código de renderização de um modelo 3d  animado  é  muito  complexo
+porque envolve muita informação e muitas transformações  unitárias  e
+combinadas. Um modelo 3d é definido em  termos  de  espaço  local  ou 
+espaço de objeto  ou  ainda  também  espaço  de  figura.  Existe  uma 
+transformação para traduzir os vértices do espaço local para o espaço
+de osso que leva em consideração o número e o peso de cada osso  e  a
+influência da hierarquia de ossos na composição da posição  final  do
+vértice.   Somado-se a isso vem ainda o cálculo de luz e aplicação de
+textura que torna o código uma 'sopa' com dificuldade de discernir os
+elementos e de entender os propósitos da linha de montagem da cena.
+
+<u><b>Animation-set</b></u>
+É comum  um modelo animado trazer um conjunto de animações distintas,
+por exemplo, para andar, correr, atirar, morrer ou sofrer um impacto.
+Cada conjunto distinto  de  animação  é  chamado  de  <b>animation-set</b>.
+O animation-set é representado pela interface  <b class=prg>ID3DXAnimationSet</b>  que
+geralmente  vai  estar  subordinado  a  um  controlador  de  animação
+representado pela interface <b class=prg>ID3DXAnimationController</b>.
+
+<u><b>A primeira face do código</b></u>
+Apresentamos no tópico acima as interfaces que regem  o  controle  de
+animação pré-gravada. Vamos  apresentar  ao  longo  desse  tópico  as
+interfaces e estruturas que representam ossos e hierarquias.
+
+A estrutura <b class=prg>D3DXMESHCONTAINER</b> representa um mesh container, em outras
+palavras um recipiente com  um  conjunto  de  meshes  coligados  numa
+hierarquia. Como ela vai conter pelo menos um mesh  3d  é  certo  que 
+vamos encontrar membros para  apoio  do  tratamento  do  material  do
+modelo 3d, informação de apoio ao skinning que o mesh pode  trazer  e
+obviamente um membro para suporte  da  malha  de  vértices  do  mesh.
+Esta estrutura está definida desta forma no arquivo <b class=prg>d3dx9anim.h</b>:
+
+<div class=prg-code>
+<b class=prg>typedef struct</b> _D3DXMESHCONTAINER
+{
+    <b class=prg>LPSTR</b>                   Name;
+    <b class=prg>D3DXMESHDATA</b>            MeshData;
+    <b class=prg>LPD3DXMATERIAL</b>          pMaterials;
+	
+    <b class=prg>LPD3DXEFFECTINSTANCE</b>    pEffects;
+	
+    <b class=prg>DWORD</b>                   NumMaterials;
+    <b class=prg>DWORD</b>                  *pAdjacency;
+    <b class=prg>LPD3DXSKININFO</b>          pSkinInfo;
+    <b class=prg>struct _D3DXMESHCONTAINER</b> *pNextMeshContainer;
+	
+} <b class=prg>D3DXMESHCONTAINER</b>, <b class=prg>*LPD3DXMESHCONTAINER</b>;
+</div>
+
+<b class=prg-code><b class=prg>LPSTR</b> Name; </b>
+Se não for NULL, aqui recebemos o nome do meshcontainer.
+
+<b class=prg-code><b class=prg>DWORD</b> NumMaterials; <b class=prg>LPD3DXMATERIAL</b> pMaterials; </b>
+Aqui recebemos a indicação da quantidade de materiais e  o  acesso  a
+eles pelo ponteiro <b>pMaterials</b>.
+
+<b class=prg-code><b class=prg>DWORD</b> *pAdjacency; </b>
+Aqui recebemos acesso a uma array com dados de adjacências que indica
+qual triângulo é vizinho de quem.
+
+<b class=prg-code><b class=prg>D3DXMESHDATA</b> MeshData; </b>
+Aqui recebemos acesso aos dados da malha do mesh que pode ser do tipo
+normal ( <b class=prg>LPD3DXMESH</b> ), mesh  progressivo ( <b class=prg>LPD3DXPMESH</b> )  ou  o  tipo
+mais incomum conhecido  como  patch  mesh ( <b class=prg>LPD3DXPATCHMESH</b> ). Nossas
+aplicações carregará apenas o tipo comum ( <b class=prg>LPD3DXMESH</b> ).
+
+<b class=prg-code><b class=prg>LPD3DXEFFECTINSTANCE</b> pEffects; </b>
+Aqui se trata de configurações particulares de  efeitos  hlsl  que  o
+meshcontainer possa ter. O modelo 3d que vamos utilizar não traz essa
+informação e portanto esse valor será <b class=prg>NULL</b>.
+
+<b class=prg-code><b class=prg>LPD3DXSKININFO</b> pSkinInfo; </b>
+Aqui temos  acesso  a  uma  interface  <b class=prg>ID3DXSkinInfo</b>  que  sustenta e
+manipula as informações de skinning  do  mesh  tais  como  os  ossos,
+suas matrizes e pesos de influência.
+
+<b class=prg-code><b class=prg>struct _D3DXMESHCONTAINER</b> *pNextMeshContainer; </b>
+Como se trata de uma hierarquia ou uma lista ligada de objetos,  esse
+membro aponta qual é o próximo meshcontainer conectado com este sendo
+tratado.
+
+
+A próxima estrutura com a qual devemos  travar  o  primeiro contato é
+<b class=prg>D3DXFRAME</b> que vai representar o osso.  Ela  traz  o  nome  <b>frame</b>  por 
+implicar   'quadro   de   referência'  relativo  ao  qual  ocorre  as
+transformações nos objetos 3d da hierarquia. Essa palavra  'frame'  é
+carregada de diversos significados em diversos contextos  e  isso  em
+dado momento pode levar a alguma confusão. Você  tem  o  'frame'  que
+significa a imagem final produzida  a  cada  ciclo  de  renderização,
+'frame' da medição de quadros por segundo e agora com  o  significado
+de quadro de referência das  transformações  que  vai ser explorado a
+seguir. Fique atento no contexto para filtrar o significado correto.
+A estrutura <b class=prg>D3DXFRAME</b> está definida desta forma:
+
+<div class=prg-code>
+<b class=prg>typedef struct</b> _D3DXFRAME
+{
+    <b class=prg>LPSTR</b>                   Name;
+    <b class=prg>D3DXMATRIX</b>              TransformationMatrix;
+    <b class=prg>LPD3DXMESHCONTAINER</b>     pMeshContainer;
+
+    <b class=prg>struct _D3DXFRAME</b>      *pFrameSibling;
+    <b class=prg>struct _D3DXFRAME</b>       *pFrameFirstChild;
+	
+} <b class=prg>D3DXFRAME</b>, <b class=prg>*LPD3DXFRAME</b>;
+</div>
+Bem, dissemos que o modelo 3d com skinning é um todo contínuo  e isso
+então quer dizer que a concretização da  hierarquia  está  nos ossos.
+Essa estrutura traz o membro <b>TransformationMatrix</b> que é a  matriz  do
+osso com sua posição e orientação própria. Essa estrutura  carece  de 
+um membro matriz que representa a  matriz  final  do  osso  que  deve 
+acumular as concatenações das influências  dos  ossos  anteriores  da
+hierarquia. Geralmente esse membro que falta  é  adicionado  por  uma
+nova estrutura derivada dessa em questão.  Os  outros  membros  dessa
+estrutura são:
+
+<b class=prg-code><b class=prg>LPSTR</b> Name;</b>
+Se não for NULL, essa string representa o nome do osso.
+
+<b class=prg-code><b class=prg>LPD3DXMESHCONTAINER</b> pMeshContainer; </b>
+Esse membro representa uma conexão com um outro meshcontainer.
+
+<b class=prg-code><b class=prg>struct _D3DXFRAME</b>      *pFrameSibling; </b>
+Se não for NULL, esse membro aponta para um osso irmão.
+
+<b class=prg-code><b class=prg>struct _D3DXFRAME</b>       *pFrameFirstChild;</b>
+Se não for NULL, esse membro aponta para um osso filho.	
+
+
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='dx9cpp2.html#start' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

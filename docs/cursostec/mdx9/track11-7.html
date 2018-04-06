@@ -1,0 +1,766 @@
+﻿<html>
+<head>
+<title>mdx9_fase11-7</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 11-7</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-6.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-8.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>11.7 Aumentando nível de detalhe com PatchMesh</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_PatchMesh.png></div>
+A classe <b class=prg>PatchMesh</b> produz um objeto que realiza o aumento do nível de
+detalhe  através do subdivisionamento consecutivo das faces do objeto
+3d.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_PatchMesh.png></div>
+A aplicação deste tópico produz uma esfera lowpoly, isto é, com baixo
+número  de  polígonos  e utiliza o objeto da classe <b class=prg>PatchMesh</b> que foi
+chamado  de  retalhador  para  subdividir  as faces da esfera e assim
+suavizá-la. Utilize as teclas  (+)  e  (-) para aumentar ou reduzir o
+fator de subdivisão que no programa é chamado de nível de tesselação,
+nível de detalhamento ou retalhamento da superfície. Esse processo de
+gerar um mesh mais detalhado é feito na função <b>gerarModeloRetalhado().</b>
+
+A base dessa aplicação é o projeto  <b>prj_Meshes01x</b>  do <b>tópico 4.3</b>  que
+foi alterado para este exemplo.
+
+<b><u>2.1 Campos da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+ <span class=sc2>// Variável para guardar uma malha 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para as propriedades dos objetos</span>
+ Propriedades3D g_props; 
+
+ <span class=sc2>// Essa variável controla o nível de retalhamento do objeto 3d</span>
+ <span class=prg>private </span><span class=prg>float </span>nTesselacao = <span class=sc4>4.0f;</span>
+
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+ <span class=sc2>// (...)</span>
+</div>
+<b><span class=sc2>// Essa variável controla o nível de retalhamento do objeto 3d</span>
+<span class=prg>private </span><span class=prg>float </span>nTesselacao = <span class=sc4>4.0f;</span></b>
+Esta variável se constitui no fator  de  detalhamento  do  novo  mesh
+produzido.   O  seu  pico máximo geralmente é 30.0f enquanto o mínimo
+depende  da  geometria  do objeto e só a experiência pode identificar
+melhor qual é.  O pressionamento das teclas (+)  e  (-) vai alterar o
+valor desta variável.
+
+<b><u>2.2 Inicialização da aplicação</u></b>
+O processo de inicialização da aplicação não apresenta novidades.
+
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+ <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+ <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>16.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b><u>2.3 Renderizando a cena</u></b>
+As esferas lowpoly  e  as detalhadas vão ser criadas dinamicamente no
+processo de renderização.
+
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+ <span class=sc2>// Atualiza a luz e camera</span>
+ AtualizarCamera();  
+ AtualizarLuz();  
+ <b><b>
+ <span class=sc2>// Deleta o objeto3d se ele existir neste ponto porque</span>
+ <span class=sc2>// ele será criado mais adiante no código.</span>
+ <span class=sc9>if </span>(objeto3D != <span class=prg>null</span>)  <span class=prg>objeto3D.Dispose</span>();  </b>
+
+ <span class=sc2>// Cria uma esfera lowpoly que será renderizada em wireframe</span>
+ <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+ objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+ <span class=sc2>// Desenha essa esfera no canto superior-esquerdo</span>
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>2.5f</span>, <span class=sc4>-7.0f</span>);  
+ rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-10</span>, 10, <span class=sc4>0</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+ <span class=prg>g_props.color </span>= <span class=prg>Color.SaddleBrown;</span>
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=sc2>// Deleta esfera anterior e cria uma outra para ser</span>
+ <span class=sc2>// retalhada</span>
+ <span class=prg>objeto3D.Dispose</span>();  
+ objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+ <span class=sc2>// Gera a esfera retalhada</span>
+ gerarModeloRetalhado(<span class=prg>ref </span>objeto3D, nTesselacao);  
+ <span class=sc2>// Posiciona-a no canto inferior-esquerdo</span>
+ <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>-2.0f</span>, <span class=sc4>-7.0f</span>);  
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=sc2>// Vamos gerar agora as versões sólidas das esferas.</span>
+ <span class=sc2>// Deleta a esfera anterior e estabelece o modo sólido</span>
+ <span class=sc2>// de renderização</span>
+ <span class=prg>objeto3D.Dispose</span>();  
+ <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+ <span class=sc2>// Gera a esfera retalhada e coloca-a no canto inferior-direito</span>
+ objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+ gerarModeloRetalhado(<span class=prg>ref </span>objeto3D, nTesselacao);  
+ <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-2.5f</span>, <span class=sc4>-2.0f</span>, <span class=sc4>-7.0f</span>);  
+ desenharObjeto(objeto3D, g_props);  
+ <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"nVértices: {0}"</span>, <span class=prg>objeto3D.NumberVertices</span>);  
+ MostrarMensagem(420, 10, info);  
+
+ <span class=sc2>// Deleta a esfera anterior e renderiza a versão lowpoly</span>
+ <span class=sc2>// no canto superior-direito</span>
+ <span class=prg>objeto3D.Dispose</span>();  
+ objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+ <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-2.5f</span>, <span class=sc4>2.5f</span>, <span class=sc4>-7.0f</span>);  
+ desenharObjeto(objeto3D, g_props);  
+ </b>
+ <span class=sc2>// Mostra o nível de tesselação e dica de teclado</span>
+ info = <span class=prg>String.Format</span>(<span class=sc6>"nTesselação: {0}"</span>, <span class=prg>nTesselacao.ToString</span>());  
+ MostrarMensagem(20, 10, info);  
+ info = <span class=sc6>"  </span>+ <span class=sc6>  Aumentar nível de detalhe       - Reduzir nível de detalhe";</span>
+ MostrarMensagem(20, <span class=prg>this.Height </span>- 60, info);  
+
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+<span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div><b>
+<span class=sc2>// Deleta o objeto3d se ele existir neste ponto porque</span>
+<span class=sc2>// ele será criado mais adiante no código.</span>
+<span class=sc9>if </span>(objeto3D != <span class=prg>null</span>)  <span class=prg>objeto3D.Dispose</span>();  </b>
+Essa linha não é executada no início da aplicação  pois  não  temos
+um objeto 3d.  Se houver um objeto 3d,  tal  como surge a partir do
+segundo  ciclo  da  renderização,   vamos  apagá-lo  para refazê-lo
+conforme a necessidade do breve contexto lowpoly adiante. 
+
+<b><span class=sc2>// Cria uma esfera lowpoly que será renderizada em wireframe</span>
+<span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+<span class=sc2>// Desenha essa esfera no canto superior-esquerdo</span>
+posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>2.5f</span>, <span class=sc4>-7.0f</span>);  
+rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-10</span>, 10, <span class=sc4>0</span>);  
+g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+<span class=prg>g_props.color </span>= <span class=prg>Color.SaddleBrown;</span>
+desenharObjeto(objeto3D, g_props);  </b>
+Criamos e desenhamos normalmente nossa esfera lowpoly.
+
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Deleta esfera anterior e cria uma outra para ser</span>
+<span class=sc2>// retalhada</span>
+<span class=prg>objeto3D.Dispose</span>();  
+objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+<span class=sc2>// Gera a esfera retalhada</span>
+gerarModeloRetalhado(<span class=prg>ref </span>objeto3D, nTesselacao);  
+<span class=sc2>// Posiciona-a no canto inferior-esquerdo</span>
+<span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>-2.0f</span>, <span class=sc4>-7.0f</span>);  
+desenharObjeto(objeto3D, g_props);  </b></div>
+Apagamos a esfera anterior e recriamos  a  esfera  com  um  fator  de
+retalhamento  ou  tesselação  definido  pelo usuário (<b>nTesselacao</b>). E
+nessa  linha  de  trabalho  construímos  duas   esferas   lowpoly   e 
+construimos versões  detalhadas  destas esferas renderizando cada par
+em wireframe  e  solidamente  para  o usuário verificar o trabalho de
+subdivisão do  objeto  da classe <b class=prg>PatchMesh</b> em <b>gerarModeloRetalhado()</b>.
+
+<b><u>2.4 Gerando o modelo retalhado</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>gerarModeloRetalhado(<span class=prg>ref </span><span class=sc5>Mesh </span>obj3d, <span class=prg>float </span>nivelTesselacao) 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Produz o mesh do tipo PatchMesh que vai retalhar o objeto</span>
+ <span class=sc2>// 3d original.</span>
+ <span class=sc5>PatchMesh </span>retalhador = <span class=prg>PatchMesh.CreateNPatchMesh</span>(obj3d);  
+
+ <span class=sc2>// Calcula a nova quantidade de vértices e faces para o novo mesh</span>
+ <span class=prg>int </span>nFaces = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberFaces </span>   * <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  
+ <span class=prg>int </span>nVerts = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberVertices </span>* <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  
+
+ <span class=sc2>// Obtém o formato de vértice do objeto 3d original</span>
+ <b class=prg>VertexFormats</b> obj_vfm = <span class=prg>obj3d.VertexFormat;</span>
+
+ <span class=sc2>// O objeto 3d original não é mais necessário e precisa</span>
+ <span class=sc2>// ser dispensado neste ponto</span>
+ <span class=prg>obj3d.Dispose</span>();  
+
+ <span class=sc2>// Recria o objeto com espaço necessário para as novas faces</span>
+ <span class=sc2>// e vértices</span>
+ obj3d = <span class=prg>new </span><span class=sc5>Mesh</span>(nFaces, nVerts, <span class=prg>MeshFlags.Managed</span>
+   | <span class=prg>MeshFlags.Use32Bit</span>, obj_vfm, device);  
+
+ <span class=sc2>// Retalha o objeto (obj3d) de acordo com o nível de retalhamento</span>
+ <span class=sc2>// dado por nivelTesselacao</span>
+ <span class=prg>retalhador.Tessellate</span>(nivelTesselacao, obj3d);  
+
+ <span class=sc2>// O objeto retalhador não é mais necessário</span>
+ <span class=prg>retalhador.Dispose</span>();  
+
+<span class=sc16>} <span class=sc2>// gerarModeloRetalhado().fim</span></span>
+</div><b>
+<span class=sc2>// Produz o mesh do tipo PatchMesh que vai retalhar o objeto</span>
+<span class=sc2>// 3d original.</span>
+<span class=sc5>PatchMesh </span>retalhador = <span class=prg>PatchMesh.CreateNPatchMesh</span>(obj3d);  </b>
+Com esta linha nós criamos o objeto <b>retalhador</b> da classe <span class=prg>PatchMesh</span>.
+
+<b><span class=sc2>// Calcula a nova quantidade de vértices e faces para o novo mesh</span>
+<span class=prg>int </span>nFaces = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberFaces </span>   * <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  
+<span class=prg>int </span>nVerts = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberVertices </span>* <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  </b>
+Neste bloco de código é calculado o novo número de faces  e  vértices
+que o objeto detalhado vai  possuir. Veja que o nível de tesselação é
+elevado  ao  cubo  e o resultado  disso  ainda  é  multiplicado  pela
+quantidade  atual  de  faces  e  vértices do objeto para  dar  o novo  
+número de faces e vértices do novo objeto detalhado.
+
+<b><span class=sc2>// Obtém o formato de vértice do objeto 3d original</span>
+<b class=prg>VertexFormats</b> obj_vfm = <span class=prg>obj3d.VertexFormat;</span> </b>
+Nesta linha obtivemos o formato de vértice do objeto original.
+
+<b><span class=sc2>// O objeto 3d original não é mais necessário e precisa</span>
+<span class=sc2>// ser dispensado neste ponto</span>
+<span class=prg>obj3d.Dispose</span>();  </b>
+Como já coletamos todos os dados do objeto original,   vamos apagá-lo
+para utilizar essa variável na sequência do código.
+
+<b><span class=sc2>// Recria o objeto com espaço necessário para as novas faces</span>
+<span class=sc2>// e vértices</span>
+obj3d = <span class=prg>new </span><span class=sc5>Mesh</span>(nFaces, nVerts, <span class=prg>MeshFlags.Managed</span>
+  | <span class=prg>MeshFlags.Use32Bit</span>, obj_vfm, device);  </b>
+Recriamos o objeto da classe <span class=prg>Mesh</span> com espaço necessário para acomodar
+a  quantidade  maior  de  vértices  e  faces  que  vão ser geradas na 
+próxima linha de código.
+
+<b><span class=sc2>// Retalha o objeto (obj3d) de acordo com o nível de retalhamento</span>
+<span class=sc2>// dado por nivelTesselacao</span>
+<span class=prg>retalhador.Tessellate</span>(nivelTesselacao, obj3d);  </b>
+Aqui  o objeto da classe <span class=prg>PatchMesh</span> faz o seu trabalho de detalhamento
+do mesh subdivindo suas faces conforme o fator de tesselação indicado.
+
+<b><span class=sc2>// O objeto retalhador não é mais necessário</span>
+<span class=prg>retalhador.Dispose</span>();  </b>
+Como não precisamos mais desse objeto  podemos dispensá-lo.
+
+<b><u>2.5 Controlando o nível de detalhe</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+<span class=sc16>{</span>
+
+ <span class=sc2>// A tecla '+' aumenta o nível de retalhamento</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  nTesselacao += <span class=sc4>0.1f;</span>
+
+ <span class=sc2>// A tecla '-' reduz o nível de retalhamento</span>
+ <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  nTesselacao -= <span class=sc4>0.1f;</span>
+
+ <span class=sc2>// O máximo nível de retalhamento é 30.0f</span>
+ <span class=sc2>// O nível mínimo depende da geometria de cada objeto</span>
+ <span class=sc2>// e deve ser percebido com a experiência.</span>
+ <span class=sc9>if </span>(nTesselacao &lt;= <span class=sc4>2.4f</span>)  nTesselacao = <span class=sc4>2.4f;</span>
+ <span class=sc9>if </span>(nTesselacao &gt; <span class=sc4>10.0f</span>)  nTesselacao = <span class=sc4>10.0f;</span>
+
+<span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+</div><b>
+<span class=sc2>// A tecla '+' aumenta o nível de retalhamento</span>
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  nTesselacao += <span class=sc4>0.1f;</span>
+<span class=sc2>// A tecla '-' reduz o nível de retalhamento</span>
+<span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  nTesselacao -= <span class=sc4>0.1f;</span> </b>
+Como as teclas (+) e (-) o usuário altera o nível  de  tesselação  do
+novo mesh detalhado a ser gerado.
+
+<b><span class=sc2>// O máximo nível de retalhamento é 30.0f</span>
+<span class=sc2>// O nível mínimo depende da geometria de cada objeto</span>
+<span class=sc2>// e deve ser percebido com a experiência.</span>
+<span class=sc9>if </span>(nTesselacao &lt;= <span class=sc4>2.4f</span>)  nTesselacao = <span class=sc4>2.4f;</span>
+<span class=sc9>if </span>(nTesselacao &gt; <span class=sc4>10.0f</span>)  nTesselacao = <span class=sc4>10.0f;</span></b>
+Limitamos o pico máximo de tesselação a 10.0f pois o alto volume de
+vértices  vai  penalizando  a  performance  da  aplicação.  O nível 
+mínimo  atingido  gera  uma  exceção então precisa ter o cuidado de
+filtrá-lo para que ele não seja passado para <b>gerarModeloRetalhado().</b>
+
+<b><u>3. Código fonte do projeto de exemplo:prj_PatchMesh</u></b>
+<div class=prg-code>
+<img src=images\prj_PatchMesh.png>
+
+<span class=sc2>// prj_PatchMesh - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como aumentar o detalhamento</span>
+<span class=sc2>// do modelo 3d utilizando a classe PatchMesh.</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+
+<span class=sc16>namespace </span>prj_PatchMesh 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação e cor</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+    <span class=prg>public </span><span class=sc5>Color </span>color; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+      color = <span class=prg>Color.White;</span>
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variável para guardar uma malha 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para as propriedades dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=sc2>// Essa variável controla o nível de retalhamento do objeto 3d</span>
+    <span class=prg>private </span><span class=prg>float </span>nTesselacao = <span class=sc4>4.0f;</span>
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+      <span class=prg>this.Size </span>= <span class=prg>new </span>Size(640, 480);  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      device = <span class=prg>new </span><span class=sc5>Device</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar mensagens</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>16.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+    <span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>100.0f;</span>
+
+      <span class=sc2>// Atualiza angulo para dar movivento</span>
+      angulo += <span class=sc4>0.05f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>5.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Atualiza a luz e camera</span>
+      AtualizarCamera();  
+      AtualizarLuz();  
+
+      <span class=sc2>// Deleta o objeto3d se ele existir neste ponto porque</span>
+      <span class=sc2>// ele será criado mais adiante no código.</span>
+      <span class=sc9>if </span>(objeto3D != <span class=prg>null</span>)  <span class=prg>objeto3D.Dispose</span>();  
+
+      <span class=sc2>// Cria uma esfera lowpoly que será renderizada em wireframe</span>
+      <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.WireFrame;</span>
+      objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+      <span class=sc2>// Desenha essa esfera no canto superior-esquerdo</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>2.5f</span>, <span class=sc4>-7.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-10</span>, 10, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+      <span class=prg>g_props.color </span>= <span class=prg>Color.SaddleBrown;</span>
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Deleta esfera anterior e cria uma outra para ser</span>
+      <span class=sc2>// retalhada</span>
+      <span class=prg>objeto3D.Dispose</span>();  
+      objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+      <span class=sc2>// Gera a esfera retalhada</span>
+      gerarModeloRetalhado(<span class=prg>ref </span>objeto3D, nTesselacao);  
+      <span class=sc2>// Posiciona-a no canto inferior-esquerdo</span>
+      <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>2.5f</span>, <span class=sc4>-2.0f</span>, <span class=sc4>-7.0f</span>);  
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Vamos gerar agora as versões sólidas das esferas.</span>
+      <span class=sc2>// Deleta a esfera anterior e estabelece o modo sólido</span>
+      <span class=sc2>// de renderização</span>
+      <span class=prg>objeto3D.Dispose</span>();  
+      <span class=prg>device.RenderState.FillMode </span>= <span class=prg>FillMode.Solid;</span>
+      <span class=sc2>// Gera a esfera retalhada e coloca-a no canto inferior-direito</span>
+      objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+      gerarModeloRetalhado(<span class=prg>ref </span>objeto3D, nTesselacao);  
+      <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-2.5f</span>, <span class=sc4>-2.0f</span>, <span class=sc4>-7.0f</span>);  
+      desenharObjeto(objeto3D, g_props);  
+      <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"nVértices: {0}"</span>, <span class=prg>objeto3D.NumberVertices</span>);  
+      MostrarMensagem(420, 10, info);  
+
+      <span class=sc2>// Deleta a esfera anterior e renderiza a versão lowpoly</span>
+      <span class=sc2>// no canto superior-direito</span>
+      <span class=prg>objeto3D.Dispose</span>();  
+      objeto3D = <span class=prg>Mesh.Sphere</span>(device, <span class=sc4>2.0f</span>, <span class=sc4>4</span>, <span class=sc4>4</span>);  
+      <span class=prg>g_props.position </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-2.5f</span>, <span class=sc4>2.5f</span>, <span class=sc4>-7.0f</span>);  
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Mostra o nível de tesselação e dica de teclado</span>
+      info = <span class=prg>String.Format</span>(<span class=sc6>"nTesselação: {0}"</span>, <span class=prg>nTesselacao.ToString</span>());  
+      MostrarMensagem(20, 10, info);  
+      info = <span class=sc6>"  </span>+ <span class=sc6>  Aumentar nível de detalhe       - Reduzir nível de detalhe";</span>
+      MostrarMensagem(20, <span class=prg>this.Height </span>- 60, info);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Ajusta rotação da caixa</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X</span>)  * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y </span>+ angulo) * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição da caixa</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+      <span class=sc2>// Prepara e aplica material na caixa</span>
+      <span class=sc5>Material </span>obj_mtl = <span class=prg>new </span><span class=sc5>Material</span>();  
+      <span class=prg>obj_mtl.Diffuse </span>= <span class=prg>props.color;</span>
+      <span class=prg>obj_mtl.Ambient </span>= <span class=prg>props.color;</span>
+
+      <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+      <span class=sc2>// na renderização</span>
+      <span class=prg>device.Material </span>= obj_mtl; 
+
+      <span class=sc2>// Renderiza o mesh</span>
+      <span class=prg>obj.DrawSubset</span>(<span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// desenharObjeto()</span></span>
+
+
+    <span class=sc2>// Configuração de luz</span>
+    <span class=prg>private </span><span class=prg>void </span>AtualizarLuz() 
+    <span class=sc16>{</span>
+      <span class=prg>device.RenderState.Ambient </span>= <span class=prg>Color.DarkGray;</span>
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>true;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Type </span>= <span class=prg>LightType.Directional;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse </span>= <span class=prg>Color.Yellow;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Direction </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>-1</span>, <span class=sc4>-1</span>);  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Commit</span>();  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Enabled </span>= <span class=prg>true;</span>
+    <span class=sc16>} <span class=sc2>// AtualizarLuz().fim</span></span>
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>gerarModeloRetalhado(<span class=prg>ref </span><span class=sc5>Mesh </span>obj3d, <span class=prg>float </span>nivelTesselacao) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Produz o mesh do tipo PatchMesh que vai retalhar o objeto</span>
+      <span class=sc2>// 3d original.</span>
+      <span class=sc5>PatchMesh </span>retalhador = <span class=prg>PatchMesh.CreateNPatchMesh</span>(obj3d);  
+
+      <span class=sc2>// Calcula a nova quantidade de vértices e faces para o novo mesh</span>
+      <span class=prg>int </span>nFaces = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberFaces </span>   * <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  
+      <span class=prg>int </span>nVerts = (<span class=prg>int</span>) (<span class=prg>obj3d.NumberVertices </span>* <span class=prg>Math.Pow</span>(nivelTesselacao, <span class=sc4>3</span>) );  
+
+      <span class=sc2>// Obtém o formato de vértice do objeto 3d original</span>
+      <b class=prg>VertexFormats</b> obj_vfm = <span class=prg>obj3d.VertexFormat;</span>
+
+      <span class=sc2>// O objeto 3d original não é mais necessário e precisa</span>
+      <span class=sc2>// ser dispensado neste ponto</span>
+      <span class=prg>obj3d.Dispose</span>();  
+
+      <span class=sc2>// Recria o objeto com espaço necessário para as novas faces</span>
+      <span class=sc2>// e vértices</span>
+      obj3d = <span class=prg>new </span><span class=sc5>Mesh</span>(nFaces, nVerts, <span class=prg>MeshFlags.Managed</span>
+          | <span class=prg>MeshFlags.Use32Bit</span>, obj_vfm, device);  
+
+      <span class=sc2>// Retalha o objeto (obj3d) de acordo com o nível de retalhamento</span>
+      <span class=sc2>// dado por nivelTesselacao</span>
+      <span class=prg>retalhador.Tessellate</span>(nivelTesselacao, obj3d);  
+
+      <span class=sc2>// O objeto retalhador não é mais necessário</span>
+      <span class=prg>retalhador.Dispose</span>();  
+
+    <span class=sc16>} <span class=sc2>// gerarModeloRetalhado().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>Tela_KeyDown(<span class=sc5>object </span>sender, <span class=sc5>KeyEventArgs </span>e) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// A tecla '+' aumenta o nível de retalhamento</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Add</span>)  nTesselacao += <span class=sc4>0.1f;</span>
+
+      <span class=sc2>// A tecla '-' reduz o nível de retalhamento</span>
+      <span class=sc9>if </span>(<span class=prg>e.KeyCode </span>== <span class=prg>Keys.Subtract</span>)  nTesselacao -= <span class=sc4>0.1f;</span>
+
+      <span class=sc2>// O máximo nível de retalhamento é 30.0f</span>
+      <span class=sc2>// O nível mínimo depende da geometria de cada objeto</span>
+      <span class=sc2>// e deve ser percebido com a experiência.</span>
+      <span class=sc9>if </span>(nTesselacao &lt;= <span class=sc4>2.4f</span>)  nTesselacao = <span class=sc4>2.4f;</span>
+      <span class=sc9>if </span>(nTesselacao &gt; <span class=sc4>10.0f</span>)  nTesselacao = <span class=sc4>10.0f;</span>
+
+    <span class=sc16>} <span class=sc2>// Tela_KeyDown().fim</span></span>
+
+
+    <span class=sc2>// Mostra texto na posição (x, y) da tela</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarMensagem(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, position, 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+    <span class=sc16>} <span class=sc2>// MostrarMensagem().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track11-6.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track11-8.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

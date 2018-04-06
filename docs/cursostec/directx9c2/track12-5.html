@@ -1,0 +1,1802 @@
+﻿<html>
+<head>
+<title>dx9cpp2_fase12-5</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:3px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+
+
+</head>
+
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12-5</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp2.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>12.5 Projeto Hierarquia Animada: Parte 4  - Renderização</h3><pre>
+<a href=#1.1>1.1  Visão geral</a>
+<a href=#1.2>1.2  Estrutura principal da classe CModelo</a>
+<a href=#2.1>2.1  Especificação da classe CModelo: Modelo3d.h</a>
+<a href=#2.2>2.2  Aspectos globais: arquivo Modelo3d.cpp</a>
+<a href=#2.3>2.3  CModelo::CModelo()         - Construtor da classe</a>
+<a href=#2.4>2.4  CModelo::~CModelo()        - Destrutor da classe</a>
+<a href=#2.5>2.5  Load()                     - Carregando a hierarquia</a>
+<a href=#2.6>2.6  SetupBoneMatrices()        - Configuração das matrizes dos ossos</a>
+<a href=#2.7>2.7  BoneMove()                 - Movendo o osso</a>
+<a href=#2.8>2.8  UpdateBoneMatrices()       - Atualizando as matrizes</a>
+<a href=#2.9>2.9  DrawMeshContainer()        - Renderização do modelo 3d</a>
+<a href=#2.10>2.10 DrawBone()                 - Renderizando o modelo 3d</a>
+<a href=#2.11>2.11 GetInitialCameraPosition() - Obtendo a posição inicial da câmera</a>
+<a href=#2.12>2.12 Render()                   - Iniciando a renderização do modelo 3d</a>
+<a href=#2.13>2.13 SetAnimationSet()          - Modificação do animation set</a>
+<a href=#2.14>2.14 NextAnimation()            - Avanço para a próxima animação</a>
+<a href=#2.15>2.15 GetAnimationSetName()      - Obtendo o nome da animação</a>
+<a href=#2.16>2.16 AnimateSlower()            - Desacelerando a animação</a>
+<a href=#2.17>2.17 AnimateFaster()            - Acelerando a animação</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+
+<a href=#topo>[topo]</a> <a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png></div>
+
+Neste capítulo nós vamos examinar a classe <b>CModelo</b> que tem  a  tarefa
+de carregar e renderizar o modelo 3d animado  e  hierarquizado  com o
+apoio principal da classe <b>CMeshHierarchy</b>.
+
+É comum o modelo animado trazer uma coleção de animações  diferentes,
+por exemplo,  uma animação para correr, uma animação para atirar etc.
+Vamos ver na listagem do  código  que  essa  coleção  de  animações é
+tratada pela interface  <b class=prg>ID3DXAnimationController</b>  e  que  a interface
+<b class=prg>ID3DXAnimationSet</b>  que   é  subelemento  da  primeira  apresentada  é
+responsável por segurar e tratar  cada  animação  individualmente. No
+vocabulário do directx cada animação diferente é chamada de <b>animation
+set</b> que pode ser traduzido como <b>conjunto de animação</b>. A palavra 'set'
+pode ser traduzida como 'conjunto'.  
+
+De um ponto de vista geral a classe <b>CModelo</b> vai manter dois conjuntos
+diferentes de propriedades e métodos:  um  conjunto  para  tratar  de 
+ossos com suas matrizes e meshes coligados e um segundo conjunto para
+gerenciar as diferentes animações do modelo.
+
+O processo de renderização do  modelo  3d  animado  é  complexo  pois
+envolve um volume relativamente grande de conceitos  concretizados no
+código e o uso de funções recursivas  para  realizar  as  ligações  e
+influências hierárquicas. Não vamos tentar explicar linha por linha a
+lógica de funcionamento de cada função. Nós deixamos essas explicações
+para os  comentários   originais   do  professor  <b>Keith Ditchburn</b> que
+foram traduzidos e mantidos no código fonte. Insistimos  que  é  mais
+importante agora uma  compreensão  geral  de  todo  o  processo  para
+simplesmente re-adaptar as classes  envolvidas em uma outra aplicação
+do que tentar adquirir o poder de 'reinventar a roda' sozinho.
+
+Vamos recapitular de forma geral os elementos envolvidos no  processo
+de renderizar  um  modelo 3d com animação:
+
+- carregar  o  modelo  3d  e  distribuir  em  variáveis  internas  as
+informações de ossos e da  malha  renderizável  do  modelo 3d.  Vamos
+lembrar que as informações  de  ossos  vão  consistir  na  matriz  de
+posição\orientação de cada osso,  no peso de influência que cada osso
+tem sobre os vértices do modelo e a matriz combinada de cada osso. As
+informações da malha 3d dizem respeito ao  formato  e  posicionamento
+dos vértices, às texturas e materiais e outros dados secundários; 
+
+- É necessário uma função que faça a preparação  inicial  dos  ossos
+e que reajuste a declaração do formato de vértice do modelo 3d  para
+indicar a presença de dados de skinning (  matrizes,  influência dos
+ossos etc ).
+
+- Como o modelo 3d é animado,  vai haver uma função recursiva que vai
+mover os ossos em função do tempo;
+
+- Como o osso se moveu deve ter uma função para  atualizar  a  matriz
+individual e combinada de cada osso bem como os vértices do modelo 3d
+influenciados  pelos  ossos;  Isso  é  complicado  e  envolve  código
+recursivo para concatenar as influências  individuais  de  cada  ramo
+hierárquico de ossos com 'filhos' e 'irmãos';
+
+- Como falamos em 'tempo' naturalmente têm as variáveis e o código de
+manutenção do timer;
+
+- A aplicação utiliza tecnologia de mistura de vértices para produzir
+deformações suaves  principalmente  nas  articulações  do  modelo.  O
+resultado final suavizado é produzido  pela  interpolação  das  poses
+inicial e final. Cada pose final, inicial e a pose do resultado final
+demanda um bloco de  memória  particular  com  o  posicionamento  dos 
+vértices e as matrizes que determinam as posições iniciais, finais  e
+misturadas dos vértices;
+
+- E finalmente tem o bloco de código  mais  familiar  da renderização
+aonde as texturas, os materiais, as matrizes  finais  são  instaladas
+no dispositivo renderizador para a renderização  de  cada  subset  do
+mesh.
+
+Destacamos então os passos que aparecem no processo  de  renderização
+de um modelo 3d animado.  Tem  ainda o código de gestão das animações
+que não foi considerado aqui  mas  este  é  facilmente  compreensível.
+
+Tem uma situação que merece destaque: o processamento da renderização
+do modelo 3d é feita em software. O melhor  dos  mundos  seria  fazer
+isso em código hlsl no hardware mas o  código  da  aplicação  ficaria
+ainda mais complicado. Vamos deixar a renderização em  hardware  para
+um livro futuro e recomendamos o livro do  autor  Frank  Luna  citado
+nas referências no qual ele faz a renderização  em  hardware  que é o
+mais adequado em uma aplicação comercial.
+
+<a href=#topo>[topo]</a> <a name='1.2'><b><u>1.2 Estrutura principal da classe CModelo</b></u>
+<div class=prg-code>
+<img src=images\cmodelo_diagrama.png></div>
+
+Veja o diagrama da classe <b>CModelo</b>. Didaticamente  podemos separar
+os  métodos  e  propriedades  dessa  classe  em  dois  conjuntos:
+ I) Métodos e propriedades da renderização da hierarquia;
+II) Métodos e propriedades da gestão das animações.
+
+<u>Métodos e propriedades da renderização da hierarquia</u>
+<div class=prg-code><span class=prg>std::string</span> m_filename;     <span class=sc2>// Nome do arquivo do modelo 3d</span>
+<span class=sc5>MESHPACK</span>   *m_firstMesh;    <span class=sc2>// O mesh container</span>
+<span class=sc5>D3DXFRAME</span>  *m_frameRoot;    <span class=sc2>// O osso raiz da hierarquia</span>
+<span class=sc5>D3DXMATRIX</span> *m_boneMatrices; <span class=sc2>// Ponteiro para a array de matrizes dos ossos</span>
+<span class=prg>int</span>          m_maxBones;     <span class=sc2>// Quantidade de ossos presentes no modelo 3d</span>
+
+<span class=sc2>// Dados para calcular a melhor posição da câmera</span>
+<span class=sc5>D3DXVECTOR3</span> m_sphereCentre; <span class=sc2>// Posição central da esfera de borda</span>
+<span class=prg>float</span>        m_sphereRadius; <span class=sc2>// Raio da esfera</span>
+</div>
+
+<div class=prg-code><span class=sc2>// Construtor</span>
+<span class=sc5>CModelo</span>( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice );  
+
+<span class=sc2>// Essa função obtém a posição inicial da câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>GetInitialCameraPosition() <span class=sc16>const</span>; 
+
+<span class=sc2>// Esse método carrega o arquivo do modelo 3d e inicializa a hierarquia</span>
+<span class=sc2>// através da utilização de uma instância da classe CMeshHierarchy</span>
+<span class=prg>bool </span>Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename);  
+
+<span class=sc2>// Configura a matriz dos ossos</span>
+<span class=prg>void </span>SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix);  
+
+<span class=sc2>// Move o osso e o mesh atrelado</span>
+<span class=prg>void </span>BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld);  
+
+<span class=sc2>// Atualiza a posição dos ossos que se 'animam' em função</span>
+<span class=sc2>// do tempo decorrido</span>
+<span class=prg>void </span>UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, 
+ <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix);  
+
+<span class=sc2>// Renderiza o mesh ligado ao osso</span>
+<span class=prg>void </span>DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>; 
+
+<span class=sc2>// Renderiza o mesh container</span>
+<span class=prg>void </span>DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, 
+ <span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>; 
+
+<span class=sc2>// Essa função desencadeia a renderização do modelo 3d animado</span>
+<span class=sc2>// chamando DrawBone() para renderizar o osso raiz</span>
+<span class=prg>void </span>Render() <span class=sc16>const</span>; 
+
+<span class=sc2>// Destrutor</span>
+~CModelo(<span class=prg>void</span>);   
+</div>
+
+
+<u>Métodos e propriedades da gestão das animações</u>
+<div class=prg-code><span class=sc5>ID3DXAnimationController</span> *m_animController;      <span class=sc2>// O controlador de animações</span>
+<span class=sc16>unsigned </span><span class=prg>int</span>               m_numAnimationSets;    <span class=sc2>// total de animation sets</span>
+<span class=sc16>unsigned </span><span class=prg>int</span>               m_currentAnimationSet; <span class=sc2>// animation set corrente</span>
+<span class=sc16>unsigned </span><span class=prg>int</span>               m_currentTrack;        <span class=sc2>// Trilha corrente</span>
+<span class=prg>float</span>                       m_currentTime;         <span class=sc2>// Tempo corrente</span>
+<span class=prg>float</span>                       m_speedAdjust;         <span class=sc2>// Ajuste de velocidade</span>
+</div>
+
+<div class=prg-code><span class=sc2>// Essa função estabelece o animation set corrente</span>
+<span class=prg>void </span>SetAnimationSet( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+
+<span class=sc2>// Essa função avança para o próximo animation set</span>
+<span class=prg>void </span>NextAnimation();  
+
+<span class=sc2>// Essa função acelera a animação</span>
+<span class=prg>void </span>AnimateFaster();  
+
+<span class=sc2>// Essa função desacelera a animação</span>
+<span class=prg>void </span>AnimateSlower();  
+
+<span class=sc2>// Esse método retorna o animation set atual</span>
+<span class=sc16>unsigned </span><span class=prg>int </span>GetCurrentAnimationSet() <span class=sc16>const</span>
+<span class=sc16>{ </span><span class=sc6>return </span>m_currentAnimationSet; <span class=sc16>}</span>
+
+<span class=sc2>// Esse método retorna o nome do animation set</span>
+<span class=prg>std::string </span>GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+</div>
+Agora na seção abaixo vamos iniciar o exame  mais  profundo  de  cada
+método e propriedade presente  na  especificação  da  classe  <b>CModelo</b>.
+
+<a href=#topo>[topo]</a> <a name='2.1'></a><b><u>2.1 Especificação da classe CModelo: Modelo3d.h </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Modelo3d.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span>&lt;string&gt; 
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+
+<span class=sc2>// Esta classe representa o modelo 3d animado (.x)</span>
+<span class=sc2>// Ela carrega o arquivo .x e realiza a atualização da animação e renderização</span>
+<span class=prg>class </span><span class=sc5>CModelo</span>
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// ponteiro de cópia do dispositivo 3d (não é uma boa idéia mas está aqui</span>
+  <span class=sc2>// para manter a simplicidade do código )</span>
+  <span class=sc5>IDirect3DDevice9 </span>  *m_d3dDevice; 
+
+
+  <span class=sc2>// Objetos do Direct3D requeridos para realizar a animação</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// O osso raiz da hierarquia</span>
+  <span class=sc5>D3DXFRAME </span>                   *m_frameRoot; 
+
+  <span class=sc2>// O mesh container</span>
+  <span class=sc5>MESHPACK  </span>                   *m_firstMesh; 
+
+  <span class=sc2>// O controlador de animações</span>
+  <span class=sc5>ID3DXAnimationController </span>   *m_animController; 
+
+
+  <span class=sc2>// Dados de ossos</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Ponteiro para a array de matrizes dos ossos</span>
+  <span class=sc5>D3DXMATRIX </span>    *m_boneMatrices; 
+
+  <span class=sc2>// Quantidade de ossos presentes no modelo 3d</span>
+  <span class=prg>int </span>      m_maxBones; 
+
+
+  <span class=sc2>// Variáveis de gerenciamento da animação</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// animation set corrente</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_currentAnimationSet; 
+
+  <span class=sc2>// total de animation sets</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_numAnimationSets; 
+
+  <span class=sc2>// Trilha corrente</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_currentTrack; 
+
+  <span class=sc2>// Tempo corrente</span>
+  <span class=prg>float </span>     m_currentTime; 
+
+  <span class=sc2>// Ajuste de velocidade</span>
+  <span class=prg>float </span>     m_speedAdjust; 
+
+
+  <span class=sc2>// Esfera de borda (bounding sphere) (para colocação da câmera )</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Posição central da esfera</span>
+  <span class=sc5>D3DXVECTOR3 </span>    m_sphereCentre; 
+
+  <span class=sc2>// Raio da esfera</span>
+  <span class=prg>float </span>     m_sphereRadius; 
+
+  <span class=sc2>// Nome do arquivo do modelo 3d</span>
+  <span class=prg>std::string </span>    m_filename; 
+
+
+  <span class=sc2>// Métodos privados da classe CModelo</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Atualiza a posição dos ossos que se 'animam' em função</span>
+  <span class=sc2>// do tempo decorrido</span>
+  <span class=prg>void </span>UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, 
+    <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix);  
+
+  <span class=sc2>// Renderiza o mesh ligado ao osso</span>
+  <span class=prg>void </span>DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>; 
+
+  <span class=sc2>// Renderiza o mesh container</span>
+  <span class=prg>void </span>DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, 
+    <span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>; 
+
+  <span class=sc2>// Configura a matriz dos ossos</span>
+  <span class=prg>void </span>SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix);  
+
+<span class=sc16>public:</span>
+  <span class=sc2>// Métodos públicos da classe CModelo</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Construtor</span>
+  <span class=sc5>CModelo</span>( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice );  
+
+  <span class=sc2>// Destrutor</span>
+  ~CModelo(<span class=prg>void</span>);   
+
+  <span class=sc2>// Esse método carrega o arquivo do modelo 3d e inicializa a hierarquia</span>
+  <span class=sc2>// através da utilização de uma instância da classe CMeshHierarchy</span>
+  <span class=prg>bool </span>Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename);  
+
+  <span class=sc2>// Move o osso e o mesh atrelado</span>
+  <span class=prg>void </span>BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld);  
+
+  <span class=sc2>// Essa função desencadeia a renderização do modelo 3d animado</span>
+  <span class=sc2>// chamando DrawBone() para renderizar o osso raiz</span>
+  <span class=prg>void </span>Render() <span class=sc16>const</span>; 
+
+  <span class=sc2>// Essa função obtém a posição inicial da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>GetInitialCameraPosition() <span class=sc16>const</span>; 
+
+  <span class=sc2>// Essa função estabelece o animation set corrente</span>
+  <span class=prg>void </span>SetAnimationSet( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+
+  <span class=sc2>// Essa função avança para o próximo animation set</span>
+  <span class=prg>void </span>NextAnimation();  
+
+  <span class=sc2>// Essa função acelera a animação</span>
+  <span class=prg>void </span>AnimateFaster();  
+
+  <span class=sc2>// Essa função desacelera a animação</span>
+  <span class=prg>void </span>AnimateSlower();  
+
+  <span class=sc2>// Esse método retorna o animation set atual</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>GetCurrentAnimationSet() <span class=sc16>const</span>
+  <span class=sc16>{ </span><span class=sc6>return </span>m_currentAnimationSet; <span class=sc16>}</span>
+
+  <span class=sc2>// Esse método retorna o nome do animation set</span>
+  <span class=prg>std::string </span>GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+
+  <span class=sc2>// Esse método retorna o nome do arquivo do modelo 3d animado</span>
+  <span class=prg>std::string </span>GetFilename() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_filename; <span class=sc16>}</span>
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CModelo</span>
+<span class=sc2>// fim do arquivo Modelo3d.h</span>
+</b></div>
+
+<b class=prg-code><span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span></b>
+A classe <b>CModelo</b> faz uso da classe <b>CMeshHierarchy</b> e das estruturas de
+apoio definidas neste arquivo.
+
+<b class=prg-code><span class=prg>class </span><span class=sc5>CModelo</span></b>
+A classe <b>CModelo</b> apenas trata o tipo de modelo 3d animado  nativo  do
+directx (arquivo com a extensão final x).
+
+<b class=prg-code><span class=sc5>IDirect3DDevice9</span> *m_d3dDevice; </b>
+Esse objeto que representa o  dispositivo  renderizador  é  elaborado
+originalmente na classe <b>CMotor</b> que transmite a referência  dele  para 
+as demais classes fazerem o seu trabalho.
+
+<b class=prg-code><span class=sc5>D3DXFRAME</span> *m_frameRoot; </b>
+Esse osso representa o osso raiz  da  hierarquia  3d.  A renderização
+dele por conta das conexões hierárquicas desencadeia  a  renderização
+de todo o modelo 3d através da recursividade do código. Esse primeiro
+osso é localizado pela função <b class=prg>D3DXLoadMeshHierarchyFromX()</b>  durante o
+carregamento do modelo 3d e é utilizado  na  função  <b>DrawBone()</b>  para
+iniciar o processo de renderização do mesh.
+
+<b class=prg-code><span class=prg>int </span>m_maxBones; </b>
+Indica a quantidade de ossos presentes no modelo 3d
+
+<b class=prg-code><span class=sc5>D3DXMATRIX</span> *m_boneMatrices;</b>
+Essa variável é um ponteiro que  permite  acessar  individualmente  e
+coletivamente a matriz de posição\orientação de cada osso. 
+
+<b class=prg-code><span class=sc5>MESHPACK </span>*m_firstMesh; </b>
+Esta variável vai concentrar os dados de renderização do primeiro mesh
+encontrado no arquivo do modelo 3d.   No arquivo de teste  de exemplo,
+<b>bones_all.x</b>,  há apenas um único mesh cuja malha de vértices descreve
+uma pele única e contínua. A hieraquia está consumada na rede de ossos
+cujo movimentação deforma a região da pele de sua influência.
+
+<b class=prg-code><span class=sc5>ID3DXAnimationController</span> *m_animController; </b>
+Este objeto representa  a coleção de animações ou 'animation sets' do
+modelo 3d.
+
+<b class=prg-code><span class=sc16>unsigned </span><span class=prg>int </span>m_numAnimationSets; </b>
+Indica o total de animações presentes no modelo 3d.
+
+<b class=prg-code><span class=sc16>unsigned </span><span class=prg>int </span>m_currentAnimationSet; </b>
+Indica a animação corrente que está tocando.
+
+<b class=prg-code><span class=sc16>unsigned </span><span class=prg>int </span>m_currentTrack; </b>
+Esta variável indica a trilha corrente.   Entre  outras  coisas,  por
+exemplo,  a trilha permite configurar eventos de transição entre duas
+animações.
+
+<b class=prg-code><span class=prg>float </span>m_currentTime; </b>
+Esta variável acumula o tempo de decorrido.   Ela  é  utilizada  na
+movimentação dos ossos e como argumento  para o sistema de controle
+das animações.
+
+<b class=prg-code><span class=prg>float </span>m_speedAdjust; </b>
+Essa variável permite ajustar a velocidade da animação. Ela atua como
+um redutor percentual do tempo decorrido.
+
+<b class=prg-code><span class=sc5>D3DXVECTOR3 </span> m_sphereCentre; </b>
+<b class=prg-code><span class=prg>float       </span> m_sphereRadius; </b>
+Estas variáveis auxiliam na determinação do melhor lugar para colocar
+a  câmera  no  mundo  3d  a  fim  de que o modelo 3d seja visualizado
+completamente. A variável  <b>m_sphereCentre</b> determina a posição central
+da esfera de borda que cerca o modelo enquanto  <b>m_sphereRadius</b> indica
+o seu raio.
+
+<b class=prg-code><span class=prg>std::string</span> m_filename; </b>
+Esta variável segura o nome do arquivo do modelo 3d animado.
+
+Agora na sequência vamos apresentar  os  métodos  na  possível  ordem
+lógica de trabalho deles para reforçar a percepção geral do  processo
+de renderização do modelo 3d animado.
+
+<b class=prg-code><span class=sc5>CModelo</span>( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice ); </b>
+O construtor zera as variáveis de  trabalho  de  classe  e  recebe  da
+classe <b>CMotor</b> uma referência ao dispositivo renderizador que  vai  ser
+utilizado   para   carregar  a  textura  e  renderizar  o  modelo  3d
+especialmente em <b>DrawMeshContainer()</b>.
+
+<b class=prg-code><span class=prg>bool </span>Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename);</b>
+Esse método carrega o arquivo do modelo 3d  e inicializa a hierarquia
+através da utilização de uma instância da classe <b>CMeshHierarchy</b>. Esse
+trabalho vai inicializar várias propriedades  de  trabalho  incluindo 
+<b>m_frameRoot, m_animController, m_sphereCentre,   m_sphereRadius</b>  e as
+matrizes dos ossos via <b>SetupBoneMatrices()</b>  que  vamos  ver  adiante.
+
+<b class=prg-code><span class=prg>void </span>SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix); </b>
+Essa variável configura inicialmente a matriz  de  posição\orientação
+dos ossos e as  matrizes  combinadas.  Isso envolve perpassar  toda a
+hierarquia de ossos para configurar  adequadamente todos  os  ossos e
+também preparar os dados de skinning como  o  ajuste   da  declaração 
+do formato de vértice.  Possivelmente  a  declaração  do  formato  de 
+vértice além de trazer a indicação de posição, coordenada de textura,
+normal (luz),  ainda  traga  a  indicação  de  qual  osso  modifica o 
+vértice e o peso dessa influência.
+
+<b class=prg-code><span class=prg>void </span>BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld); </b>
+Essa função move o osso em função do tempo decorrido  e  como  sempre
+isso   envolve   atualizar   as  matrizes  dos  ossos  coligados  com
+<b>UpdateBoneMatrices()</b> e ajustar devidamente os vértices do  modelo  3d
+para a deformação que isso gerou na pele do modelo.
+
+<b class=prg-code><span class=prg>void </span>UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, </b>
+<b class=prg-code><span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix);</b>  
+Esse método atualiza as matrizes individuais e combinadas  dos  ossos
+que se 'animam' em função do tempo decorrido. Essa função é recursiva
+para perpassar a hierarquia de ossos coligados.
+
+<b class=prg-code>void DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>; </b>
+Essa função é chamada inicialmente por <b>Render()</b> com o  primeiro  osso
+raiz.  Na  sequência  <b>DrawBone()</b>  chama   <b>DrawMeshContainer()</b> que faz
+o trabalho mais massivo de renderização para renderizar  a  malha  3d
+relacionada aos ossos. <b>DrawBone()</b> também é uma função recursiva.
+
+<b class=prg-code><span class=prg>void </span>DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, </b>
+<b class=prg-code><span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>; </b>
+Essa função é o passo final do  processo  de  renderização  e  faz  o
+trabalho de instalar materiais, texturas e a matriz  de  mundo  final
+dos ossos no dispositivo renderizador e desenha por fim o  subset  do
+mesh 3d atrelado ao osso.  Quando essa função é executada logicamente 
+que os ossos já foram movidos,  as  matrizes  finais  e  a  malha  de
+vértices do modelo 3d já foram atualizados.
+
+<b class=prg-code><span class=prg>void </span>Render() <span class=sc16>const</span>; </b>
+Essa função  desencadeia a renderização do modelo 3d animado chamando
+<b>DrawBone()</b> para renderizar o osso raiz.
+
+<b class=prg-code><span class=sc5>D3DXVECTOR3 </span>GetInitialCameraPosition() <span class=sc16>const</span>; </b>
+Essa função obtém a posição inicial da  câmera  que  é  utilizada  em
+conjunto  com  as  dimensões  da  esfera  de  borda do objeto 3d para
+reajustar a posição da câmera de forma  que  o  objeto  seja  mantido
+completamente visível.
+
+<b class=prg-code>~CModelo(<span class=prg>void</span>); </b>
+Esse método libera a memória dos objetos utilizados na renderização
+do modelo 3d hierarquizado e animado.
+
+<b class=prg-code><span class=prg>std::string </span>GetFilename() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_filename; <span class=sc16>}</span></b>
+Esse método retorna o nome do arquivo do modelo 3d animado.
+
+Agora vamos indicar a finalidade das funções de animação. Nós tínhamos
+a opção de cortá-las do código da aplicação mas optamos por deixá-las
+uma vez  que é muito desejável o controle das animações do personagem
+durante o decorrer dos eventos da aplicação; ademais o  código  delas
+é muito mais simples comparado ao que  já  passamos  no  processo  de
+renderização.
+
+<b class=prg-code><span class=prg>void </span>SetAnimationSet( <span class=sc16>unsigned </span><span class=prg>int </span>index );  </b>
+Essa função estabelece o animation set corrente. Essa função é a mais
+complexa do controle de animações mas não chega a  ser  complicada. A
+chave do entendimento dela é o uso de duas trilhas para  coordenar  a
+transição  suave  entre  duas  animações.  O  processo  de mudança de
+animação tem uma semelhança  com  o uso do backbuffer para suavizar a
+animação da renderização. A segunda trilha com  a  animação  que  vai
+entrar é preparada nos bastidores e  depois  'virada'  como  animação
+corrente.
+
+<b class=prg-code><span class=prg>void </span>NextAnimation(); </b>
+Essa função avança para o próximo animation set.
+
+<b class=prg-code><span class=prg>void </span>AnimateFaster();  </b>
+Essa função acelera a animação.
+
+<b class=prg-code><span class=prg>void </span>AnimateSlower();  </b>
+Essa função desacelera a animação.
+
+<b class=prg-code><span class=sc16>unsigned </span><span class=prg>int </span>GetCurrentAnimationSet() <span class=sc16>const</span></b>
+<b class=prg-code><span class=sc16>{ </span><span class=sc6>return </span>m_currentAnimationSet; <span class=sc16>}</span></b>
+Esse método retorna o animation set atual.
+
+<b class=prg-code><span class=prg>std::string </span>GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index );  </b>
+Esse método retorna o nome do animation set.
+
+Bem, finalizamos  a  apresentação  da  finalidade  das  propriedades e
+métodos da classe <b>CModelo</b> sem esgotar os detalhes que apenas o contato
+direto com o código pode transmitir. A partir desse ponto vamos cessar
+a adição das nossas considerações e deixar que o próprio  código fale
+por si mesmo com o apoio dos comentários embutidos. Propositalmente o
+código das funções foi simplesmente alistado sem a presença  habitual
+dos nossos esclarecimentos adicionais   que   ficariam  redundantes e
+inferiores diante dos comentários  originais  que  foram  traduzidos.
+
+<a href=#topo>[topo]</a> <a name='2.2'></a><b><u>2.2 Aspectos globais: arquivo Modelo3d.cpp </u></b>
+<div class=niceview><b><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Modelo3d.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Modelo3d.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+
+<span class=sc2>// Este é o 'tempo' de transição entre um animationSet e outro</span>
+<span class=sc2>// Para ver como a fusão (merging) trabalha, aumente o valor desta</span>
+<span class=sc2>// variável para retardar a transição.</span>
+<span class=sc16>const </span><span class=prg>float </span>kMoveTransitionTime = <span class=sc4>0.25f</span>; 
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.3'></a><b><u>2.3 CModelo::CModelo() - Construtor da classe </u></b>
+<div class=niceview><b>CModelo::CModelo( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice) : m_d3dDevice(d3dDevice), 
+m_speedAdjust(<span class=sc4>1.0f</span>), m_firstMesh(<span class=sc4>0</span>), m_currentTrack(<span class=sc4>0</span>), m_currentTime(<span class=sc4>0</span>), 
+m_numAnimationSets(<span class=sc4>0</span>), m_currentAnimationSet(<span class=sc4>0</span>), m_maxBones(<span class=sc4>0</span>), 
+m_sphereRadius(<span class=sc4>0</span>), m_sphereCentre(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_boneMatrices(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+<span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.4'></a><b><u>2.4 CModelo::~CModelo() - Destrutor da classe </u></b>
+<div class=niceview><b>CModelo::~CModelo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Deleta o controlador de animações</span>
+  <span class=sc9>if</span> ( m_animController ) 
+  <span class=sc16>{</span>
+    <span class=prg>m_animController-&gt;Release</span>();  
+    m_animController = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Deleta a hierarquia</span>
+  <span class=sc9>if</span> ( m_frameRoot ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Cria uma instância da classe de gestão da hierarquia para</span>
+    <span class=sc2>// controlar a remoção de memória da hierarquia de frames</span>
+    <span class=sc5>CMeshHierarchy </span>memoryAllocator; 
+    <span class=prg>D3DXFrameDestroy</span>( m_frameRoot, &memoryAllocator);  
+    m_frameRoot = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Deleta as matrizes dos ossos</span>
+  <span class=sc9>if</span> ( m_boneMatrices ) 
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] m_boneMatrices; 
+    m_boneMatrices = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// fim do destrutor</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.5'></a><b><u>2.5 Load() - Carregando a hierarquia </u></b>
+<div class=niceview><b><span class=sc2>// Carrega o arquivo x</span>
+<span class=sc2>// A função D3DXLoadMeshHierarchyFromX() requer um objeto de suporte para</span>
+<span class=sc2>// manipular a alocação\desalocação de memória para ossos e meshes.  Esse</span>
+<span class=sc2>// objeto se concretiza em uma instância da classe CMeshHierarchy</span>
+<span class=prg>bool </span>CModelo::Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto da classe de gestão da hierarquia para controlar a</span>
+  <span class=sc2>// alocação de memória. Apenas usada temporariamente.</span>
+  <span class=sc5>CMeshHierarchy </span>*memoryAllocator = <span class=prg>new </span><span class=sc5>CMeshHierarchy</span>; 
+
+  <span class=sc2>// Para facilitar a localização de texturas, atualize o diretório atual</span>
+  <span class=sc2>// para o diretório que contém o arquivo x.  Primeiro  vamos  guardar o</span>
+  <span class=sc2>// diretório corrente para recuperá-lo depois.</span>
+  <span class=prg>std::string </span>currentDirectory = Tools::GetTheCurrentDirectory();  
+  <span class=prg>std::string </span>xfilePath; 
+  Tools::SplitPath( filename, &xfilePath, &m_filename);  
+  <span class=prg>SetCurrentDirectory</span>( <span class=prg>xfilePath.c_str</span>() );  
+
+  <span class=sc2>// Esta  função  faz  todo  o  trabalho  de  carregar  o  arquivo x.  Nós</span>
+  <span class=sc2>// providenciamos um ponteiro para  uma  instância  do  nosso  objeto  de</span>
+  <span class=sc2>// alocação de memória para manipulação da alocação de memória que ocorre</span>
+  <span class=sc2>// no carregamento dos frames e dos meshes</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>D3DXLoadMeshHierarchyFromX</span>( <span class=prg>filename.c_str</span>(), 
+    <span class=sc4>D3DXMESH_MANAGED</span>, m_d3dDevice,  memoryAllocator, 
+    <span class=prg>NULL</span>, &m_frameRoot, &m_animController);  
+
+  <span class=sc2>// Nesse momento a aplicação já se apossou do conteúdo do arquivo</span>
+  <span class=sc2>// para dentro de suas variáveis internas.  Agora podemos deletar</span>
+  <span class=sc2>// a instância temporária da classe CMeshHierarchy</span>
+  <span class=prg>delete </span>memoryAllocator; 
+  memoryAllocator = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Recupera o diretório corrente</span>
+  <span class=prg>SetCurrentDirectory</span>( <span class=prg>currentDirectory.c_str</span>() );  
+
+  <span class=sc2>// Retorne se ocorreu alguma falha</span>
+  <span class=sc9>if</span> ( Tools::FailedHr(hr) ) <span class=sc6>return </span><span class=prg>false</span>; 
+
+  <span class=sc2>// Se o arquivo x contém alguma animação, vamos salvar quantos</span>
+  <span class=sc2>// sets de animação ele têm.</span>
+  <span class=sc9>if</span> ( m_animController ) 
+    m_numAnimationSets = <span class=prg>m_animController-&gt;GetMaxNumAnimationSets</span>();  
+
+  <span class=sc2>// Ossos para o skinning</span>
+  <span class=sc9>if</span> ( m_frameRoot ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configuração inicial dos ossos</span>
+    SetupBoneMatrices( (<span class=sc5>OSSO*</span>)  m_frameRoot, <span class=prg>NULL</span>);  
+
+    <span class=sc2>// Cria a array das matrizes de ossos para usar durante BoneMove()</span>
+    <span class=sc2>// para segurar a transformação final</span>
+    m_boneMatrices  = <span class=prg>new </span><span class=sc5>D3DXMATRIX</span>[ m_maxBones ];  
+    <span class=prg>ZeroMemory</span>( m_boneMatrices, <span class=sc16>sizeof</span>( <span class=sc5>D3DXMATRIX</span>) * m_maxBones );  
+
+    <span class=sc2>// Calcula   esfera   de   borda   para   este   modelo  (  usada  em</span>
+    <span class=sc2>// CalculateInitialViewMatrix() para posicionar a câmera corretamente</span>
+    <span class=prg>D3DXFrameCalculateBoundingSphere</span>( m_frameRoot, &m_sphereCentre, 
+      &m_sphereRadius );  
+  <span class=sc16>} <span class=sc2>// endif ( m_frameRoot )</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// Load().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.6'></a><b><u>2.6 SetupBoneMatrices() - Configuração das matrizes dos ossos </u></b>
+<div class=niceview><b><span class=sc2>// pFrame - o frame atual</span>
+<span class=sc2>// pParentMatrix - a matriz do frame pai (the parent frame matrix )</span>
+<span class=prg>void </span>CModelo::SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Primeiro realizamos um cast para nossa estrutura estendida</span>
+  <span class=sc5>MESHPACK* </span>pMesh = ( <span class=sc5>MESHPACK*</span>) <span class=prg>pFrame-&gt;pMeshContainer</span>; 
+
+  <span class=sc2>// Verifica se este frame tem um mesh</span>
+  <span class=sc9>if</span> ( pMesh ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Nós precisamos identificar e salvar qual é o primeiro mesh na</span>
+    <span class=sc2>// hierarquia para usá-lo mais tarde na atualização em BoneMove()</span>
+    <span class=sc9>if</span> ( !m_firstMesh ) m_firstMesh = pMesh; 
+
+    <span class=sc2>// se houver informação de skinning, então configure as matrizes de</span>
+    <span class=sc2>// ossos (bone matrices)</span>
+    <span class=sc9>if</span> ( <span class=prg>pMesh-&gt;pSkinInfo </span>&& <span class=prg>pMesh-&gt;MeshData.pMesh</span>)  
+    <span class=sc16>{</span>
+      <span class=sc2>// Crie uma cópia do mesh para utilizar skinning nele mais tarde</span>
+      <span class=sc5>D3DVERTEXELEMENT9 </span>Declaration[ <span class=sc4>MAX_FVF_DECL_SIZE </span>];  
+      <span class=sc9>if</span> ( <span class=prg>FAILED</span> ( <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;GetDeclaration</span>(Declaration) ) ) 
+        <span class=sc6>return</span>; 
+
+      <span class=sc2>// Clone o mesh agora com dados de skinning conforme declaração</span>
+      <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;CloneMesh</span>( <span class=sc4>D3DXMESH_MANAGED</span>, 
+        Declaration, m_d3dDevice, 
+        <span class=prg>&pMesh-&gt;exSkinMesh</span>);   
+
+      <span class=sc2>// m_maxBones é calculada para uso posterior para determinar depois</span>
+      <span class=sc2>// o tamanho da array de matrizes dos ossos ( bone matrices array )</span>
+      m_maxBones = max( m_maxBones, (<span class=prg>int</span>) <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>() );  
+
+      <span class=sc2>// Devemos trabalhar a matriz de cada osso individualmente</span>
+      <span class=prg>for</span> (<span class=sc16> unsigned </span><span class=prg>int </span>i = <span class=sc4>0</span>; i &lt; <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>();  i++ ) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Encontre o frame contendo o osso</span>
+        <span class=sc5>OSSO* </span>pTempFrame = ( <span class=sc5>OSSO*</span>) <span class=prg>D3DXFrameFind</span>( m_frameRoot, 
+            <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetBoneName</span>(i) );  
+
+        <span class=sc2>// configure a peça do osso - aponte-o para a matriz de</span>
+        <span class=sc2>// transformação</span>
+        <span class=prg>pMesh-&gt;exFrameCombinedMatrixPointer</span>[i] = 
+          <span class=prg>&pTempFrame-&gt;exCombinedTransformationMatrix</span>; 
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// endif ( pMesh-&gt;pSkinInfo && pMesh-&gt;MeshData.pMesh )</span></span>
+  <span class=sc16>} <span class=sc2>// endif (  pMesh )</span></span>
+
+  <span class=sc2>// Vamos prosseguir agora com os irmãos (sibling)</span>
+  <span class=sc9>if</span> ( <span class=prg>pFrame-&gt;pFrameSibling</span>)  
+    SetupBoneMatrices( ( <span class=sc5>OSSO*</span>) <span class=prg>pFrame-&gt;pFrameSibling</span>, pParentMatrix);  
+
+  <span class=sc2>// Vamos prosseguir agora com os filhos (children)</span>
+  <span class=sc9>if</span> ( <span class=prg>pFrame-&gt;pFrameFirstChild</span>)  
+    SetupBoneMatrices( ( <span class=sc5>OSSO*</span>) <span class=prg>pFrame-&gt;pFrameFirstChild</span>, 
+    <span class=prg>&pFrame-&gt;exCombinedTransformationMatrix</span>);   
+<span class=sc16>} <span class=sc2>// SetupBoneMatrices().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.7'></a><b><u>2.7 BoneMove() - Movendo o osso </u></b>
+<div class=niceview><b><span class=sc2>// CModelo::BoneMove() - chamado a cada atualização de frame com</span>
+<span class=sc2>// o tempo e a matriz de mundo atual.</span>
+<span class=sc2>// elapsedTime - tempo decorrido</span>
+<span class=sc2>// matWorld - matriz de mundo corrente do modelo</span>
+<span class=prg>void </span>CModelo::BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Ajuste da velocidade da animação</span>
+  elapsedTime /= m_speedAdjust; 
+
+  <span class=sc2>// Avance o tempo e configure-o no controlador</span>
+  <span class=sc9>if </span>( m_animController != <span class=prg>NULL</span>)  
+        <span class=prg>m_animController-&gt;AdvanceTime</span>( elapsedTime, <span class=prg>NULL</span>);   
+
+  <span class=sc2>// Vamos acumular o tempo decorrido</span>
+  m_currentTime += elapsedTime; 
+
+  <span class=sc2>// Agora atualize as matrizes do modelo na hierarquia</span>
+  UpdateBoneMatrices( m_frameRoot, matWorld );  
+
+  <span class=sc2>// Se o modelo contiver um skinned mesh atualize os vértices</span>
+  <span class=sc5>MESHPACK* </span>pMesh = m_firstMesh; 
+  <span class=sc9>if</span> ( pMesh && <span class=prg>pMesh-&gt;pSkinInfo</span>) 
+  <span class=sc16>{</span>
+    <span class=sc16>unsigned </span><span class=prg>int </span>Bones = <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>();  
+
+    <span class=sc2>// Cria as matrizes de ossos que transformam cada osso de espaço de osso</span>
+    <span class=sc2>// para espaço de figura ( via  exFrameCombinedMatrixPointer)  e  também</span>
+    <span class=sc2>// embrulha o mesh ao redor dos ossos utilizando  os  'bone offsets'  em</span>
+    <span class=sc2>// exBoneOffsetsArray</span>
+    <span class=prg>for </span>( <span class=sc16>unsigned </span><span class=prg>int </span>i = <span class=sc4>0</span>; i &lt; Bones; ++i) 
+      <span class=prg>D3DXMatrixMultiply</span>( &m_boneMatrices[i], 
+      <span class=prg>&pMesh-&gt;exBoneOffsets</span>[i], <span class=prg>pMesh-&gt;exFrameCombinedMatrixPointer</span>[i]);  
+
+    <span class=sc2>// Nós precisamos modificar as posições dos vértices baseado  nas novas</span>
+    <span class=sc2>// matrizes  de  ossos.  Isso  é  obtido  através  do  trancamento  dos</span>
+    <span class=sc2>// vertexbuffers e então chamar UpdateSkinnedMesh(). UpdateSkinnedMesh()</span>
+    <span class=sc2>// pega os dados originais de vértice ( em pMesh-&gt;MeshData.pMesh ),</span>
+    <span class=sc2>// aplica as matrizes e escreve os novos vértices para o skin mesh</span>
+    <span class=sc2>// ( pMesh-&gt;exSkinMesh )</span>
+
+    <span class=sc2>// UpdateSkinnedMesh() faz skinning em software que  é  a  maneira mais</span>
+    <span class=sc2>// lenta de realizar skinning mas é a maneira mais fácil de descrever e</span>
+    <span class=sc2>// de se trabalhar na maioria  das  placas  gráficas.   Existem  outros</span>
+    <span class=sc2>// métodos que fazem o skinning no hardware -  vejas notas e  o exemplo</span>
+    <span class=sc2>// de  skinning  em  hardware  das  amostras  de  exemplo  do  directx.</span>
+
+    <span class=sc2>// Tranque o vertexbuffer fonte</span>
+    <span class=prg>void </span>*srcPtr = <span class=sc4>0</span>;  
+    <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;LockVertexBuffer</span>( <span class=sc4>D3DLOCK_READONLY</span>, 
+      (<span class=prg>void**</span>)  &srcPtr );  
+
+    <span class=sc2>// Tranque o vertexbuffer destino</span>
+    <span class=prg>void </span>*destPtr = <span class=sc4>0</span>; 
+    <span class=prg>pMesh-&gt;exSkinMesh-&gt;LockVertexBuffer</span>(<span class=sc4>0</span>, (<span class=prg>void**</span>)  &destPtr );  
+
+
+    <span class=sc2>// Atualize o skinned mesh</span>
+    <span class=prg>pMesh-&gt;pSkinInfo-&gt;UpdateSkinnedMesh</span>( m_boneMatrices, <span class=prg>NULL</span>, srcPtr, 
+      destPtr );  
+
+    <span class=sc2>// Destranque os vertexbuffers do modelo 3d</span>
+    <span class=prg>pMesh-&gt;exSkinMesh-&gt;UnlockVertexBuffer</span>();  
+    <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;UnlockVertexBuffer</span>();  
+  <span class=sc16>} <span class=sc2>// endif ( pMesh && pMesh-&gt;pSkinInfo )</span></span>
+
+<span class=sc16>} <span class=sc2>// BoneMove().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.8'></a><b><u>2.8 UpdateBoneMatrices() - Atualizando as matrizes </u></b>
+<div class=niceview><b><span class=sc2>// CModelo::UpdateBoneMatrices() -  este método  é  chamado  para  atualizar as</span>
+<span class=sc2>// matrizes dos frames na hierarquia para refletir o estágio da animação atual.</span>
+<span class=sc2>// frameBase - o frame sendo verificado</span>
+<span class=sc2>// parentMatrix - a matriz dos pais (se existir um)</span>
+<span class=prg>void </span>CModelo::UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, 
+                 <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix) 
+<span class=sc16>{</span>
+  <span class=sc2>// Realizamos um cast para nosso tipo de osso</span>
+  <span class=sc5>OSSO </span>*currentFrame = ( <span class=sc5>OSSO*</span>) frameBase; 
+
+  <span class=sc2>// se existe uma matriz do pai, vamos multiplicar nosso frame por ela!</span>
+  <span class=sc9>if </span>( parentMatrix != <span class=prg>NULL</span>)  
+        <span class=prg>D3DXMatrixMultiply</span>( <span class=prg>&amp;currentFrame-&gt;exCombinedTransformationMatrix</span>, 
+    <span class=prg>&amp;currentFrame-&gt;TransformationMatrix</span>, parentMatrix);  
+    <span class=sc9>else</span>
+        <span class=prg>currentFrame-&gt;exCombinedTransformationMatrix </span>= 
+    <span class=prg>currentFrame-&gt;TransformationMatrix</span>; 
+
+  <span class=sc2>// se temos um irmão, então repetimos a função aqui.</span>
+  <span class=sc9>if</span> ( <span class=prg>currentFrame-&gt;pFrameSibling </span>!= <span class=prg>NULL</span>) 
+        UpdateBoneMatrices( <span class=prg>currentFrame-&gt;pFrameSibling</span>, parentMatrix);  
+
+  <span class=sc2>// se temos um filho, repetimos a função.</span>
+  <span class=sc9>if </span>( <span class=prg>currentFrame-&gt;pFrameFirstChild </span>!= <span class=prg>NULL</span>)  
+        UpdateBoneMatrices( <span class=prg>currentFrame-&gt;pFrameFirstChild</span>, 
+    <span class=prg>&amp;currentFrame-&gt;exCombinedTransformationMatrix</span>);   
+<span class=sc16>} <span class=sc2>// UpdateBoneMatrices().fim</span></span>
+</b></div>
+
+
+<a href=#topo>[topo]</a> <a name='2.9'></a><b><u>2.9 DrawMeshContainer() - Renderização do modelo 3d </u></b>
+<div class=niceview><b><span class=sc2>// DrawMeshContainer() - Chamada para renderizar o mesh</span>
+<span class=sc2>// meshContainerBase - o mesh container</span>
+<span class=sc2>// frameBase - o frame contendo o mesh</span>
+<span class=prg>void </span>CModelo::DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, 
+                <span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Realizamos um cast para nosso tipo de osso</span>
+  <span class=sc5>OSSO </span>*frame = ( <span class=sc5>OSSO*</span>) frameBase; 
+
+  <span class=sc2>// Realizamos um cast para nosso MESHPACK</span>
+  <span class=sc5>MESHPACK </span>*meshContainer = ( <span class=sc5>MESHPACK*</span>) meshContainerBase; 
+
+  <span class=sc2>// Configuração da matriz de mundo</span>
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, 
+  <span class=prg>&frame-&gt;exCombinedTransformationMatrix</span>);   
+
+  <span class=sc2>// Vamos repassar cada material e renderizar em cada ciclo o subset do mesh</span>
+  <span class=prg>for</span> ( <span class=sc16>unsigned </span><span class=prg>int </span>iMaterial = <span class=sc4>0</span>; iMaterial &lt; <span class=prg>meshContainer-&gt;NumMaterials</span>; 
+    iMaterial++) 
+    <span class=sc16>{</span>
+
+    <span class=sc2>// Use o material estocado em nosso membro estendido ao invés do</span>
+    <span class=sc2>// nativo meshContainer-&gt;pMaterials[iMaterial].MatD3D</span>
+    <span class=prg>m_d3dDevice-&gt;SetMaterial</span>( <span class=prg>&meshContainer-&gt;exMaterials</span>[iMaterial] );  
+    <span class=prg>m_d3dDevice-&gt;SetTexture</span>( <span class=sc4>0</span>, <span class=prg>meshContainer-&gt;exTextures</span>[iMaterial] );  
+
+    <span class=sc2>// Selecione o tipo certo de mesh carregado para renderizar</span>
+    <span class=sc2>// Se tiver dados de skinning então renderize o skinned mesh</span>
+    <span class=sc2>// ou caso contrário o mesh normal então.</span>
+    <span class=sc5>LPD3DXMESH </span>pDrawMesh = 
+      (<span class=prg>meshContainer-&gt;pSkinInfo</span>)  ? 
+      <span class=prg>meshContainer-&gt;exSkinMesh: </span><span class=prg>meshContainer-&gt;MeshData.pMesh</span>; 
+
+      <span class=sc2>// Finalmente uma chamada para renderizar o subset do mesh</span>
+      <span class=prg>pDrawMesh-&gt;DrawSubset</span>(iMaterial);  
+    <span class=sc16>} <span class=sc2>// endfor ( iMaterial )</span></span>
+<span class=sc16>} <span class=sc2>// DrawMeshContainer().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.10'></a><b><u>2.10 DrawBone() - Renderizando o modelo 3d </u></b>
+<div class=niceview><b><span class=sc2>// DrawBone() - Chamada para renderizar o frame na hierarquia</span>
+<span class=sc2>// frame - o frame para renderizar</span>
+<span class=prg>void </span>CModelo::DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Desenhe todos os mesh containers neste frame</span>
+  <span class=sc5>D3DXMESHCONTAINER </span>*meshContainer = <span class=prg>frame-&gt;pMeshContainer</span>; 
+  
+  <span class=sc9>while </span>( meshContainer ) 
+    <span class=sc16>{</span>
+        DrawMeshContainer( meshContainer, frame);  
+        meshContainer = <span class=prg>meshContainer-&gt;pNextMeshContainer</span>; 
+    <span class=sc16>}</span>
+
+  <span class=sc2>// Desenhe recursivamente os irmãos ( sibblings )</span>
+  <span class=sc9>if </span>( <span class=prg>frame-&gt;pFrameSibling </span>!= <span class=prg>NULL</span>)  
+        DrawBone(<span class=prg>frame-&gt;pFrameSibling</span>);   
+
+  <span class=sc2>// Desenhe recursivamente os filhos ( children )</span>
+  <span class=sc9>if </span>( <span class=prg>frame-&gt;pFrameFirstChild </span>!= <span class=prg>NULL</span>)  
+        DrawBone(<span class=prg>frame-&gt;pFrameFirstChild</span>);   
+<span class=sc16>} <span class=sc2>// DrawBone().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.11'></a><b><u>2.11 GetInitialCameraPosition() - Obtendo a posição inicial da câmera </u></b>
+<div class=niceview><b><span class=sc2>// Uma vez que esta app pode carregar modelos 3d com diversas formas e tamanhos</span>
+<span class=sc2>// configurar a posição da câmera é uma tarefa difícil.   Esta  função  utiliza</span>
+<span class=sc2>// a esfera de borda do modelo como base para estabelecer a posição  da  câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>CModelo::GetInitialCameraPosition() <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>cameraPos(<span class=sc4>0.0f</span>, <span class=prg>m_sphereCentre.y</span>, - (m_sphereRadius * <span class=sc4>3</span>)  );  
+  <span class=sc6>return </span>cameraPos; 
+<span class=sc16>} <span class=sc2>// GetInitialCameraPosition().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.12'></a><b><u>2.12 Render() - Iniciando a renderização do modelo 3d animado </u></b>
+<div class=niceview><b><span class=sc2>// CModelo::Render() - Renderiza o mesh animado</span>
+<span class=sc2>// Chama DrawBone() recursivamente na renderização com o frame raiz</span>
+<span class=prg>void </span>CModelo::Render() <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( m_frameRoot ) 
+    DrawBone( m_frameRoot );  
+<span class=sc16>} <span class=sc2>// Render().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.13'></a><b><u>2.13 SetAnimationSet() - Modificação do animation set </u></b>
+<div class=niceview><b><span class=sc2>// CModelo::SetAnimationSet() - Modifica o animation set</span>
+<span class=sc2>// manipula a transição entre as animações para torná-las</span>
+<span class=sc2>// suaves e evita solavancos para uma nova posição</span>
+<span class=sc2>// index - o indicador do novo animation set</span>
+<span class=prg>void </span>CModelo::SetAnimationSet( <span class=sc16>unsigned </span><span class=prg>int </span>index) 
+<span class=sc16>{</span>
+  <span class=sc2>// Se o índice indicado for igual ao animation set corrente</span>
+  <span class=sc2>// então retorne porque não tem o que mudar.</span>
+  <span class=sc9>if </span>( index == m_currentAnimationSet) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Se o índice está fora da faixa válida, vamos zerá-lo.</span>
+  <span class=sc9>if </span>( index &gt;= m_numAnimationSets) index = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Lembre-se do animation set corrente</span>
+  m_currentAnimationSet = index; 
+
+  <span class=sc2>// Pegue o animation set do controlador de animações</span>
+  <span class=sc5>ID3DXAnimationSet </span>*set; 
+  <span class=prg>m_animController-&gt;GetAnimationSet</span>( m_currentAnimationSet, &set );  
+
+  <span class=sc2>// Nota: para uma transição suave entre as animações, nós podemos usar</span>
+  <span class=sc2>// duas trilhas e assinalar a nova animação para uma trilha vaga ( que não</span>
+  <span class=sc2>// está tocando ) e então inserir chaves ( Keys ) na trilha de chaves</span>
+  <span class=sc2>// ( KeyTrack ) para fazer a transição entre as trilhas.</span>
+  <span class=sc2>// As trilhas podem ser misturadas juntas a fim de que possam gradualmente</span>
+  <span class=sc2>// se modificar para uma nova animação.</span>
+
+  <span class=sc2>// Alternando a nossa trilha</span>
+  <span class=prg>DWORD </span>newTrack = ( m_currentTrack == <span class=sc4>0 </span>? <span class=sc4>1 </span>: <span class=sc4>0</span>);  
+
+  <span class=sc2>// Assinale para a nossa trilha</span>
+  <span class=prg>m_animController-&gt;SetTrackAnimationSet</span>( newTrack, set );  
+  <span class=prg>set-&gt;Release</span>();  
+
+  <span class=sc2>// Vamos limpar qualquer evento de trilha atualmente assinalados</span>
+  <span class=sc2>// em nossas trilhas</span>
+  <span class=prg>m_animController-&gt;UnkeyAllTrackEvents</span>( m_currentTrack );  
+  <span class=prg>m_animController-&gt;UnkeyAllTrackEvents</span>( newTrack );  
+
+  <span class=sc2>// Adicione uma chave de evento para desabilitar a trilha atualmente</span>
+  <span class=sc2>// tocando kMoveTransitionTime segundos no futuro.</span>
+  <span class=prg>m_animController-&gt;KeyTrackEnable</span>( m_currentTrack, <span class=prg>FALSE</span>, m_currentTime 
+    + kMoveTransitionTime );  
+
+  <span class=sc2>// Adicione uma chave de evento para acelerar o completamento da animação</span>
+  <span class=sc2>// corrente em kMoveTransitionTime segundos.</span>
+  <span class=prg>m_animController-&gt;KeyTrackSpeed</span>( m_currentTrack, <span class=sc4>0.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Adiciona um evento para mudar o peso da trilha corrente</span>
+  <span class=sc2>// ( isso afeta a mistura com a segunda trilha )</span>
+  <span class=prg>m_animController-&gt;KeyTrackWeight</span>( m_currentTrack, <span class=sc4>0.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Habilite a nova trilha</span>
+  <span class=prg>m_animController-&gt;SetTrackEnable</span>( newTrack, <span class=prg>TRUE</span>);  
+
+  <span class=sc2>// Habilite uma chave de evento para configurar a velocidade</span>
+  <span class=sc2>// da trilha.</span>
+  <span class=prg>m_animController-&gt;KeyTrackSpeed</span>( newTrack, <span class=sc4>1.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Adiciona um evento para mudar o peso da trilha corrente</span>
+  <span class=sc2>// ( isso afeta a mistura com a primeira trilha )</span>
+  <span class=sc2>// Como vc pode ver isto vai caminhar de zero efeito (0.0f) até efeito</span>
+  <span class=sc2>// total (1.0f) em kMoveTransitionTime segundos e a primeira trilha</span>
+  <span class=sc2>// vai caminhar do efeito total até 0.0f no mesmo tempo.</span>
+
+  <span class=prg>m_animController-&gt;KeyTrackWeight</span>( newTrack, <span class=sc4>1.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Lembre-se da trilha corrente ( agora como nova trilha assumindo )</span>
+  m_currentTrack = newTrack; 
+
+<span class=sc16>} <span class=sc2>// SetAnimationSet().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.14'></a><b><u>2.14 NextAnimation() - Avanço para a próxima animação </u></b>
+<div class=niceview><b><span class=prg>void </span>CModelo::NextAnimation() 
+<span class=sc16>{</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>newAnimationSet = m_currentAnimationSet + <span class=sc4>1</span>; 
+  <span class=sc9>if </span>( newAnimationSet &gt;= m_numAnimationSets) 
+    newAnimationSet = <span class=sc4>0</span>; 
+
+  SetAnimationSet( newAnimationSet );  
+<span class=sc16>} <span class=sc2>// NextAnimation().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.15'></a><b><u>2.15 GetAnimationSetName() - Obtendo o nome da animação </u></b>
+<div class=niceview><b><span class=prg>std::string </span>CModelo::GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index ) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( index &gt;= m_numAnimationSets ) 
+    <span class=sc6>return </span><span class=sc6>"Error: No set exists"</span>; 
+
+  <span class=sc2>// Obtendo o set de animação</span>
+  <span class=sc5>ID3DXAnimationSet </span>*set; 
+  <span class=prg>m_animController-&gt;GetAnimationSet</span>( m_currentAnimationSet, &set );  
+
+  <span class=prg>std::string </span>nameString( <span class=prg>set-&gt;GetName</span>());  
+
+  <span class=prg>set-&gt;Release</span>();  
+
+  <span class=sc6>return </span>nameString; 
+<span class=sc16>} <span class=sc2>// GetAnimationSetName().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.16'></a><b><u>2.16 AnimateSlower() - Desacelerando animação </u></b>
+<div class=niceview><b><span class=prg>void </span>CModelo::AnimateSlower() 
+<span class=sc16>{</span>
+  m_speedAdjust += <span class=sc4>0.1f</span>; 
+<span class=sc16>} <span class=sc2>// AnimateSlower().fim</span></span>
+</b></div>
+
+<a href=#topo>[topo]</a> <a name='2.17'></a><b><u>2.17 AnimateFaster() - Acelerando a animação </u></b>
+<div class=niceview><b><span class=prg>void </span>CModelo::AnimateFaster() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( m_speedAdjust &gt; <span class=sc4>0.1f</span>)  
+   m_speedAdjust -= <span class=sc4>0.1f</span>; 
+<span class=sc16>} <span class=sc2>// AnimateFaster().fim</span></span>
+</b></div>
+
+<hr><a href=#topo>[topo]</a> <a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</u></b>
+<div class=prg-code><img src=images\prj_HierarquiaAnimada.png>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Modelo3d.h</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc16>#pragma </span><span class=sc16>once</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span>&lt;string&gt; 
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+
+<span class=sc2>// Esta classe representa o modelo 3d animado (.x)</span>
+<span class=sc2>// Ela carrega o arquivo .x e realiza a atualização da animação e renderização</span>
+<span class=prg>class </span><span class=sc5>CModelo</span>
+<span class=sc16>{</span>
+<span class=sc16>private:</span>
+
+  <span class=sc2>// ponteiro de cópia do dispositivo 3d (não é uma boa idéia mas está aqui</span>
+  <span class=sc2>// para manter a simplicidade do código )</span>
+  <span class=sc5>IDirect3DDevice9 </span>  *m_d3dDevice; 
+
+
+  <span class=sc2>// Objetos do Direct3D requeridos para realizar a animação</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// O osso raiz da hierarquia</span>
+  <span class=sc5>D3DXFRAME </span>                  *m_frameRoot; 
+
+  <span class=sc2>// O mesh container</span>
+  <span class=sc5>MESHPACK </span>    *m_firstMesh; 
+
+  <span class=sc2>// O controlador de animações</span>
+  <span class=sc5>ID3DXAnimationController </span>   *m_animController; 
+
+
+  <span class=sc2>// Dados de ossos</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Ponteiro para a array de matrizes dos ossos</span>
+  <span class=sc5>D3DXMATRIX</span> *m_boneMatrices; 
+
+  <span class=sc2>// Quantidade de ossos presentes no modelo 3d</span>
+  <span class=prg>int </span>      m_maxBones; 
+
+
+  <span class=sc2>// Variáveis de gerenciamento da animação</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// animation set corrente</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_currentAnimationSet; 
+
+  <span class=sc2>// total de animation sets</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_numAnimationSets; 
+
+  <span class=sc2>// Trilha corrente</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>   m_currentTrack; 
+
+  <span class=sc2>// Tempo corrente</span>
+  <span class=prg>float </span>     m_currentTime; 
+
+  <span class=sc2>// Ajuste de velocidade</span>
+  <span class=prg>float </span>     m_speedAdjust; 
+
+
+  <span class=sc2>// Esfera de borda (bounding sphere) (para colocação da câmera )</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Posição central da esfera</span>
+  <span class=sc5>D3DXVECTOR3 </span>    m_sphereCentre; 
+
+  <span class=sc2>// Raio da esfera</span>
+  <span class=prg>float </span>     m_sphereRadius; 
+
+  <span class=sc2>// Nome do arquivo do modelo 3d</span>
+  <span class=prg>std::string </span>    m_filename; 
+
+
+  <span class=sc2>// Métodos privados da classe CModelo</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Atualiza a posição dos ossos que se 'animam' em função</span>
+  <span class=sc2>// do tempo decorrido</span>
+  <span class=prg>void </span>UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, 
+    <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix);  
+
+  <span class=sc2>// Renderiza o mesh ligado ao osso</span>
+  <span class=prg>void </span>DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>; 
+
+  <span class=sc2>// Renderiza o mesh container</span>
+  <span class=prg>void </span>DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, 
+    <span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>; 
+
+  <span class=sc2>// Configura a matriz dos ossos</span>
+  <span class=prg>void </span>SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix);  
+
+<span class=sc16>public:</span>
+
+
+  <span class=sc2>// Métodos públicos da classe CModelo</span>
+  <span class=sc2>// ---------------------------------------------------------------------------</span>
+  <span class=sc2>// Construtor</span>
+  <span class=sc5>CModelo</span>( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice );  
+
+  <span class=sc2>// Destrutor</span>
+  ~CModelo(<span class=prg>void</span>);   
+
+  <span class=sc2>// Esse método carrega o arquivo do modelo 3d e inicializa a hierarquia</span>
+  <span class=sc2>// através da utilização de uma instância da classe CMeshHierarchy</span>
+  <span class=prg>bool </span>Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename);  
+
+  <span class=sc2>// Move o osso e o mesh atrelado</span>
+  <span class=prg>void </span>BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld);  
+
+  <span class=sc2>// Essa função desencadeia a renderização do modelo 3d animado</span>
+  <span class=sc2>// chamando DrawBone() para renderizar o osso raiz</span>
+  <span class=prg>void </span>Render() <span class=sc16>const</span>; 
+
+  <span class=sc2>// Essa função obtém a posição inicial da câmera</span>
+  <span class=sc5>D3DXVECTOR3 </span>GetInitialCameraPosition() <span class=sc16>const</span>; 
+
+  <span class=sc2>// Essa função estabelece o animation set corrente</span>
+  <span class=prg>void </span>SetAnimationSet( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+
+  <span class=sc2>// Essa função avança para o próximo animation set</span>
+  <span class=prg>void </span>NextAnimation();  
+
+  <span class=sc2>// Essa função acelera a animação</span>
+  <span class=prg>void </span>AnimateFaster();  
+
+  <span class=sc2>// Essa função desacelera a animação</span>
+  <span class=prg>void </span>AnimateSlower();  
+
+  <span class=sc2>// Esse método retorna o animation set atual</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>GetCurrentAnimationSet() <span class=sc16>const</span>
+  <span class=sc16>{ </span><span class=sc6>return </span>m_currentAnimationSet; <span class=sc16>}</span>
+
+  <span class=sc2>// Esse método retorna o nome do animation set</span>
+  <span class=prg>std::string </span>GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index );  
+
+  <span class=sc2>// Esse método retorna o nome do arquivo do modelo 3d animado</span>
+  <span class=prg>std::string </span>GetFilename() <span class=sc16>const </span><span class=sc16>{ </span><span class=sc6>return </span>m_filename; <span class=sc16>}</span>
+<span class=sc16>}</span>; 
+<span class=sc2>// fim da classe CModelo</span>
+<span class=sc2>// fim do arquivo Modelo3d.h</span>
+</div>
+
+<div class=prg-code><span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_HierarquiaAnimada - Arquivo: Modelo3d.cpp</span>
+<span class=sc2>// Esta aplicação mostra como renderizar uma hierarquia animada</span>
+<span class=sc2>// By Keith Ditchburn - Adaptação www.gameprog.com.br</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=sc16>#include </span><span class=sc6>"Modelo3d.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Tools.h"</span>
+<span class=sc16>#include </span><span class=sc6>"Hierarquia.h"</span>
+
+<span class=sc2>// Este é o 'tempo' de transição entre um animationSet e outro</span>
+<span class=sc2>// Para ver como a fusão (merging) trabalha, aumente o valor desta</span>
+<span class=sc2>// variável para retardar a transição.</span>
+<span class=sc16>const </span><span class=prg>float </span>kMoveTransitionTime = <span class=sc4>0.25f</span>; 
+
+
+<span class=sc2>// Construtor</span>
+CModelo::CModelo( <span class=sc5>IDirect3DDevice9 </span>*d3dDevice) : m_d3dDevice(d3dDevice), 
+m_speedAdjust(<span class=sc4>1.0f</span>), m_firstMesh(<span class=sc4>0</span>), m_currentTrack(<span class=sc4>0</span>), m_currentTime(<span class=sc4>0</span>), 
+m_numAnimationSets(<span class=sc4>0</span>), m_currentAnimationSet(<span class=sc4>0</span>), m_maxBones(<span class=sc4>0</span>), 
+m_sphereRadius(<span class=sc4>0</span>), m_sphereCentre(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>), m_boneMatrices(<span class=sc4>0</span>)  
+<span class=sc16>{</span>
+<span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+
+<span class=sc2>// Destrutor</span>
+CModelo::~CModelo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+
+  <span class=sc2>// Deleta o controlador de animações</span>
+  <span class=sc9>if</span>(m_animController ) 
+  <span class=sc16>{</span>
+    <span class=prg>m_animController-&gt;Release</span>();  
+    m_animController = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Deleta a hierarquia</span>
+  <span class=sc9>if</span>(m_frameRoot ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Cria uma instância da classe de gestão da hierarquia para</span>
+    <span class=sc2>// controlar a remoção de memória da hierarquia de frames</span>
+    <span class=sc5>CMeshHierarchy </span>memoryAllocator; 
+    <span class=prg>D3DXFrameDestroy</span>( m_frameRoot, &memoryAllocator);  
+    m_frameRoot = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Deleta as matrizes dos ossos</span>
+  <span class=sc9>if</span>(m_boneMatrices ) 
+  <span class=sc16>{</span>
+    <span class=prg>delete</span>[] m_boneMatrices; 
+    m_boneMatrices = <span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// fim do destrutor</span></span>
+
+
+
+<span class=sc2>// Carrega o arquivo x</span>
+<span class=sc2>// A função D3DXLoadMeshHierarchyFromX() requer um objeto de suporte para</span>
+<span class=sc2>// manipular a alocação\desalocação de memória para ossos e meshes.  Esse</span>
+<span class=sc2>// objeto se concretiza em uma instância da classe CMeshHierarchy</span>
+<span class=prg>bool </span>CModelo::Load( <span class=sc16>const </span><span class=prg>std::string </span>&filename) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto da classe de gestão da hierarquia para controlar a</span>
+  <span class=sc2>// alocação de memória. Apenas usada temporariamente.</span>
+  <span class=sc5>CMeshHierarchy </span>*memoryAllocator = <span class=prg>new </span><span class=sc5>CMeshHierarchy</span>; 
+
+  <span class=sc2>// Para facilitar a localização de texturas, atualize o diretório atual</span>
+  <span class=sc2>// para o diretório que contém o arquivo x.  Primeiro  vamos  guardar o</span>
+  <span class=sc2>// diretório corrente para recuperá-lo depois.</span>
+  <span class=prg>std::string </span>currentDirectory = Tools::GetTheCurrentDirectory();  
+  <span class=prg>std::string </span>xfilePath; 
+  Tools::SplitPath( filename, &xfilePath, &m_filename);  
+  <span class=prg>SetCurrentDirectory</span>( <span class=prg>xfilePath.c_str</span>() );  
+
+  <span class=sc2>// Esta  função  faz  todo  o  trabalho  de  carregar  o  arquivo x.  Nós</span>
+  <span class=sc2>// providenciamos um ponteiro para  uma  instância  do  nosso  objeto  de</span>
+  <span class=sc2>// alocação de memória para manipulação da alocação de memória que ocorre</span>
+  <span class=sc2>// no carregamento dos frames e dos meshes</span>
+  <span class=sc16>HRESULT </span>hr = <span class=prg>D3DXLoadMeshHierarchyFromX</span>( <span class=prg>filename.c_str</span>(), 
+    <span class=sc4>D3DXMESH_MANAGED</span>, m_d3dDevice,  memoryAllocator, 
+    <span class=prg>NULL</span>, &m_frameRoot, &m_animController);  
+
+  <span class=sc2>// Nesse momento a aplicação já se apossou do conteúdo do arquivo</span>
+  <span class=sc2>// para dentro de suas variáveis internas.  Agora podemos deletar</span>
+  <span class=sc2>// a instância temporária da classe CMeshHierarchy</span>
+  <span class=prg>delete </span>memoryAllocator; 
+  memoryAllocator = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Recupera o diretório corrente</span>
+  <span class=prg>SetCurrentDirectory</span>( <span class=prg>currentDirectory.c_str</span>() );  
+
+  <span class=sc2>// Retorne se ocorreu alguma falha</span>
+  <span class=sc9>if</span> ( Tools::FailedHr(hr) ) <span class=sc6>return </span><span class=prg>false</span>; 
+
+  <span class=sc2>// Se o arquivo x contém alguma animação, vamos salvar quantos</span>
+  <span class=sc2>// sets de animação ele têm.</span>
+  <span class=sc9>if</span> ( m_animController ) 
+    m_numAnimationSets = <span class=prg>m_animController-&gt;GetMaxNumAnimationSets</span>();  
+
+
+  <span class=sc2>// Ossos para o skinning</span>
+  <span class=sc9>if</span> ( m_frameRoot ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Configuração inicial dos ossos</span>
+    SetupBoneMatrices( (<span class=sc5>OSSO*</span>)  m_frameRoot, <span class=prg>NULL</span>);  
+
+    <span class=sc2>// Cria a array das matrizes de ossos para usar durante BoneMove()</span>
+    <span class=sc2>// para segurar a transformação final</span>
+    m_boneMatrices  = <span class=prg>new </span><span class=sc5>D3DXMATRIX</span>[ m_maxBones ];  
+    <span class=prg>ZeroMemory</span>( m_boneMatrices, <span class=sc16>sizeof</span>( <span class=sc5>D3DXMATRIX</span>) * m_maxBones );  
+
+    <span class=sc2>// Calcula   esfera   de   borda   para   este   modelo  (  usada  em</span>
+    <span class=sc2>// CalculateInitialViewMatrix() para posicionar a câmera corretamente</span>
+    <span class=prg>D3DXFrameCalculateBoundingSphere</span>( m_frameRoot, &m_sphereCentre, 
+      &m_sphereRadius );  
+  <span class=sc16>} <span class=sc2>// endif ( m_frameRoot )</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+<span class=sc16>} <span class=sc2>// Load().fim</span></span>
+
+
+<span class=sc2>// pFrame - o frame atual</span>
+<span class=sc2>// pParentMatrix - a matriz do frame pai (the parent frame matrix )</span>
+<span class=prg>void </span>CModelo::SetupBoneMatrices( <span class=sc5>OSSO </span>*pFrame, <span class=sc5>D3DXMATRIX </span>*pParentMatrix) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Primeiro realizamos um cast para nossa estrutura estendida</span>
+  <span class=sc5>MESHPACK* </span>pMesh = ( <span class=sc5>MESHPACK*</span>) <span class=prg>pFrame-&gt;pMeshContainer</span>; 
+
+  <span class=sc2>// Verifica se este frame tem um mesh</span>
+  <span class=sc9>if</span> ( pMesh ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Nós precisamos identificar e salvar qual é o primeiro mesh na</span>
+    <span class=sc2>// hierarquia para usá-lo mais tarde na atualização em BoneMove()</span>
+    <span class=sc9>if</span> ( !m_firstMesh ) m_firstMesh = pMesh; 
+
+    <span class=sc2>// se houver informação de skinning, então configure as matrizes de</span>
+    <span class=sc2>// ossos (bone matrices)</span>
+    <span class=sc9>if</span> ( <span class=prg>pMesh-&gt;pSkinInfo </span>&& <span class=prg>pMesh-&gt;MeshData.pMesh</span>)  
+    <span class=sc16>{</span>
+      <span class=sc2>// Crie uma cópia do mesh para utilizar skinning nele mais tarde</span>
+      <span class=sc5>D3DVERTEXELEMENT9 </span>Declaration[ <span class=sc4>MAX_FVF_DECL_SIZE </span>];  
+      <span class=sc9>if</span> ( <span class=prg>FAILED</span>( <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;GetDeclaration</span>(Declaration) ) ) 
+        <span class=sc6>return</span>; 
+
+      <span class=sc2>// Clone o mesh agora com dados de skinning conforme declaração</span>
+      <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;CloneMesh</span>( <span class=sc4>D3DXMESH_MANAGED</span>, 
+        Declaration, m_d3dDevice, 
+        <span class=prg>&pMesh-&gt;exSkinMesh</span>);   
+
+      <span class=sc2>// m_maxBones é calculada para uso posterior para determinar depois</span>
+      <span class=sc2>// o tamanho da array de matrizes dos ossos ( bone matrices array )</span>
+      m_maxBones = max( m_maxBones, (<span class=prg>int</span>) <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>() );  
+
+      <span class=sc2>// Devemos trabalhar a matriz de cada osso individualmente</span>
+      <span class=prg>for</span>(<span class=sc16>unsigned </span><span class=prg>int </span>i = <span class=sc4>0</span>; i &lt; <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>();  i++ ) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Encontre o frame contendo o osso</span>
+        <span class=sc5>OSSO* </span>pTempFrame = ( <span class=sc5>OSSO*</span>) <span class=prg>D3DXFrameFind</span>( m_frameRoot, 
+            <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetBoneName</span>(i) );  
+
+        <span class=sc2>// configure a peça do osso - aponte-o para a matriz de</span>
+        <span class=sc2>// transformação</span>
+        <span class=prg>pMesh-&gt;exFrameCombinedMatrixPointer</span>[i] = 
+          <span class=prg>&pTempFrame-&gt;exCombinedTransformationMatrix</span>; 
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// endif ( pMesh-&gt;pSkinInfo && pMesh-&gt;MeshData.pMesh )</span></span>
+  <span class=sc16>} <span class=sc2>// endif (  pMesh )</span></span>
+
+  <span class=sc2>// Vamos prosseguir agora com os irmãos (sibling)</span>
+  <span class=sc9>if</span> ( <span class=prg>pFrame-&gt;pFrameSibling</span>)  
+    SetupBoneMatrices( ( <span class=sc5>OSSO*</span>) <span class=prg>pFrame-&gt;pFrameSibling</span>, pParentMatrix);  
+
+  <span class=sc2>// Vamos prosseguir agora com os filhos (children)</span>
+  <span class=sc9>if</span>(<span class=prg>pFrame-&gt;pFrameFirstChild</span>)  
+    SetupBoneMatrices( ( <span class=sc5>OSSO*</span>) <span class=prg>pFrame-&gt;pFrameFirstChild</span>, 
+    <span class=prg>&pFrame-&gt;exCombinedTransformationMatrix</span>);   
+<span class=sc16>} <span class=sc2>// SetupBoneMatrices().fim</span></span>
+
+
+<span class=sc2>// CModelo::BoneMove() - chamado a cada atualização de frame com</span>
+<span class=sc2>// o tempo e a matriz de mundo atual.</span>
+<span class=sc2>// elapsedTime - tempo decorrido</span>
+<span class=sc2>// matWorld - matriz de mundo corrente do modelo</span>
+<span class=prg>void </span>CModelo::BoneMove( <span class=prg>float </span>elapsedTime, <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*matWorld ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Ajuste da velocidade da animação</span>
+  elapsedTime /= m_speedAdjust; 
+
+  <span class=sc2>// Avance o tempo e configure-o no controlador</span>
+  <span class=sc9>if </span>(m_animController != <span class=prg>NULL</span>)  
+        <span class=prg>m_animController-&gt;AdvanceTime</span>(elapsedTime, <span class=prg>NULL</span>);   
+
+  <span class=sc2>// Vamos acumular o tempo decorrido</span>
+  m_currentTime += elapsedTime; 
+
+  <span class=sc2>// Agora atualize as matrizes do modelo na hierarquia</span>
+  UpdateBoneMatrices( m_frameRoot, matWorld );  
+
+  <span class=sc2>// Se o modelo contiver um skinned mesh atualize os vértices</span>
+  <span class=sc5>MESHPACK* </span>pMesh = m_firstMesh; 
+  <span class=sc9>if</span> ( pMesh && <span class=prg>pMesh-&gt;pSkinInfo</span>) 
+  <span class=sc16>{</span>
+    <span class=sc16>unsigned </span><span class=prg>int </span>Bones = <span class=prg>pMesh-&gt;pSkinInfo-&gt;GetNumBones</span>();  
+
+    <span class=sc2>// Cria as matrizes de ossos que transformam cada osso de espaço de osso</span>
+    <span class=sc2>// para espaço de figura ( via  exFrameCombinedMatrixPointer)  e  também</span>
+    <span class=sc2>// embrulha o mesh ao redor dos ossos utilizando  os  'bone offsets'  em</span>
+    <span class=sc2>// exBoneOffsetsArray</span>
+    <span class=prg>for </span>( <span class=sc16>unsigned </span><span class=prg>int </span>i = <span class=sc4>0</span>; i &lt; Bones; ++i) 
+      <span class=prg>D3DXMatrixMultiply</span>( &m_boneMatrices[i], 
+      <span class=prg>&pMesh-&gt;exBoneOffsets</span>[i], <span class=prg>pMesh-&gt;exFrameCombinedMatrixPointer</span>[i]);  
+
+    <span class=sc2>// Nós precisamos modificar as posições dos vértices baseado  nas novas</span>
+    <span class=sc2>// matrizes  de  ossos.  Isso  é  obtido  através  do  trancamento  dos</span>
+    <span class=sc2>// vertexbuffers e então chamar UpdateSkinnedMesh(). UpdateSkinnedMesh()</span>
+    <span class=sc2>// pega os dados originais de vértice ( em pMesh-&gt;MeshData.pMesh ),</span>
+    <span class=sc2>// aplica as matrizes e escreve os novos vértices para o skin mesh</span>
+    <span class=sc2>// (pMesh-&gt;exSkinMesh )</span>
+
+    <span class=sc2>// UpdateSkinnedMesh() faz skinning em software que  é  a  maneira mais</span>
+    <span class=sc2>// lenta de realizar skinning mas é a maneira mais fácil de descrever e</span>
+    <span class=sc2>// de se trabalhar na maioria  das  placas  gráficas.   Existem  outros</span>
+    <span class=sc2>// métodos que fazem o skinning no hardware -  vejas notas e  o exemplo</span>
+    <span class=sc2>// de  skinning  em  hardware  das  amostras  de  exemplo  do  directx.</span>
+
+    <span class=sc2>// Tranque o vertexbuffer fonte</span>
+    <span class=prg>void </span>*srcPtr = <span class=sc4>0</span>;  
+    <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;LockVertexBuffer</span>( <span class=sc4>D3DLOCK_READONLY</span>, 
+      (<span class=prg>void**</span>)  &srcPtr );  
+
+    <span class=sc2>// Tranque o vertexbuffer destino</span>
+    <span class=prg>void </span>*destPtr = <span class=sc4>0</span>; 
+    <span class=prg>pMesh-&gt;exSkinMesh-&gt;LockVertexBuffer</span>(<span class=sc4>0</span>, (<span class=prg>void**</span>)  &destPtr );  
+
+
+    <span class=sc2>// Atualize o skinned mesh</span>
+    <span class=prg>pMesh-&gt;pSkinInfo-&gt;UpdateSkinnedMesh</span>( m_boneMatrices, <span class=prg>NULL</span>, srcPtr, 
+      destPtr );  
+
+    <span class=sc2>// Destranque os vertexbuffers do modelo 3d</span>
+    <span class=prg>pMesh-&gt;exSkinMesh-&gt;UnlockVertexBuffer</span>();  
+    <span class=prg>pMesh-&gt;MeshData.pMesh-&gt;UnlockVertexBuffer</span>();  
+  <span class=sc16>} <span class=sc2>// endif ( pMesh && pMesh-&gt;pSkinInfo )</span></span>
+
+<span class=sc16>} <span class=sc2>// BoneMove().fim</span></span>
+
+
+<span class=sc2>// CModelo::UpdateBoneMatrices() -  este método  é  chamado  para  atualizar as</span>
+<span class=sc2>// matrizes dos frames na hierarquia para refletir o estágio da animação atual.</span>
+<span class=sc2>// frameBase - o frame sendo verificado</span>
+<span class=sc2>// parentMatrix - a matriz dos pais (se existir um)</span>
+<span class=prg>void </span>CModelo::UpdateBoneMatrices(<span class=sc16>const </span><span class=sc5>D3DXFRAME </span>*frameBase, 
+                 <span class=sc16>const </span><span class=sc5>D3DXMATRIX </span>*parentMatrix) 
+<span class=sc16>{</span>
+    <span class=sc2>// Realizamos um cast para nosso tipo de osso</span>
+    <span class=sc5>OSSO </span>*currentFrame = ( <span class=sc5>OSSO*</span>) frameBase; 
+
+    <span class=sc2>// se existe uma matriz do pai, vamos multiplicar nosso frame por ela!</span>
+    <span class=sc9>if </span>( parentMatrix != <span class=prg>NULL</span>)  
+        <span class=prg>D3DXMatrixMultiply</span>( <span class=prg>&amp;currentFrame-&gt;exCombinedTransformationMatrix</span>, 
+    <span class=prg>&amp;currentFrame-&gt;TransformationMatrix</span>, parentMatrix);  
+    <span class=sc9>else</span>
+        <span class=prg>currentFrame-&gt;exCombinedTransformationMatrix </span>= 
+    <span class=prg>currentFrame-&gt;TransformationMatrix</span>; 
+
+    <span class=sc2>// se temos um irmão, então repetimos a função aqui.</span>
+    <span class=sc9>if</span> ( <span class=prg>currentFrame-&gt;pFrameSibling </span>!= <span class=prg>NULL</span>) 
+        UpdateBoneMatrices( <span class=prg>currentFrame-&gt;pFrameSibling</span>, parentMatrix);  
+
+    <span class=sc2>// se temos um filho, repetimos a função.</span>
+    <span class=sc9>if </span>( <span class=prg>currentFrame-&gt;pFrameFirstChild </span>!= <span class=prg>NULL</span>)  
+        UpdateBoneMatrices( <span class=prg>currentFrame-&gt;pFrameFirstChild</span>, 
+    <span class=prg>&amp;currentFrame-&gt;exCombinedTransformationMatrix</span>);   
+<span class=sc16>} <span class=sc2>// UpdateBoneMatrices().fim</span></span>
+
+
+<span class=sc2>// DrawMeshContainer() - Chamada para renderizar o mesh</span>
+<span class=sc2>// meshContainerBase - o mesh container</span>
+<span class=sc2>// frameBase - o frame contendo o mesh</span>
+<span class=prg>void </span>CModelo::DrawMeshContainer( <span class=sc5>D3DXMESHCONTAINER </span>*meshContainerBase, 
+                <span class=sc5>D3DXFRAME </span>*frameBase) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Realizamos um cast para nosso tipo de osso</span>
+  <span class=sc5>OSSO </span>*frame = ( <span class=sc5>OSSO*</span>) frameBase; 
+
+  <span class=sc2>// Realizamos um cast para nosso MESHPACK</span>
+  <span class=sc5>MESHPACK </span>*meshContainer = ( <span class=sc5>MESHPACK*</span>) meshContainerBase; 
+
+  <span class=sc2>// Configuração da matriz de mundo</span>
+  <span class=prg>m_d3dDevice-&gt;SetTransform</span>( <span class=sc4>D3DTS_WORLD</span>, 
+  <span class=prg>&frame-&gt;exCombinedTransformationMatrix</span>);   
+
+
+  <span class=sc2>// Vamos repassar cada material e renderizar em cada ciclo o subset do mesh</span>
+  <span class=prg>for</span> ( <span class=sc16>unsigned </span><span class=prg>int </span>iMaterial = <span class=sc4>0</span>; iMaterial &lt; <span class=prg>meshContainer-&gt;NumMaterials</span>; 
+    iMaterial++) 
+    <span class=sc16>{</span>
+
+    <span class=sc2>// Use o material estocado em nosso membro estendido ao invés do</span>
+    <span class=sc2>// nativo meshContainer-&gt;pMaterials[iMaterial].MatD3D</span>
+    <span class=prg>m_d3dDevice-&gt;SetMaterial</span>( <span class=prg>&meshContainer-&gt;exMaterials</span>[iMaterial] );  
+    <span class=prg>m_d3dDevice-&gt;SetTexture</span>( <span class=sc4>0</span>, <span class=prg>meshContainer-&gt;exTextures</span>[iMaterial] );  
+
+
+    <span class=sc2>// Selecione o tipo certo de mesh carregado para renderizar</span>
+    <span class=sc2>// Se tiver dados de skinning então renderize o skinned mesh</span>
+    <span class=sc2>// ou caso contrário o mesh normal então.</span>
+    <span class=sc5>LPD3DXMESH </span>pDrawMesh = 
+      (<span class=prg>meshContainer-&gt;pSkinInfo</span>)  ? 
+      <span class=prg>meshContainer-&gt;exSkinMesh: </span><span class=prg>meshContainer-&gt;MeshData.pMesh</span>; 
+
+    <span class=sc2>// Finalmente uma chamada para renderizar o subset do mesh</span>
+    <span class=prg>pDrawMesh-&gt;DrawSubset</span>(iMaterial);  
+    <span class=sc16>} <span class=sc2>// endfor ( iMaterial )</span></span>
+<span class=sc16>} <span class=sc2>// DrawMeshContainer().fim</span></span>
+
+
+<span class=sc2>// DrawBone() - Chamada para renderizar o frame na hierarquia</span>
+<span class=sc2>// device - o dispositivo renderizador do Direct3D</span>
+<span class=sc2>// frame - o frame para renderizar</span>
+<span class=prg>void </span>CModelo::DrawBone( <span class=sc5>D3DXFRAME </span>*frame) <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc2>// Desenhe todos os mesh containers neste frame</span>
+  <span class=sc5>D3DXMESHCONTAINER </span>*meshContainer = <span class=prg>frame-&gt;pMeshContainer</span>; 
+  <span class=sc9>while </span>( meshContainer ) 
+    <span class=sc16>{</span>
+        DrawMeshContainer( meshContainer, frame);  
+        meshContainer = <span class=prg>meshContainer-&gt;pNextMeshContainer</span>; 
+    <span class=sc16>}</span>
+
+  <span class=sc2>// Desenhe recursivamente os irmãos ( sibblings )</span>
+  <span class=sc9>if </span>( <span class=prg>frame-&gt;pFrameSibling </span>!= <span class=prg>NULL</span>)  
+        DrawBone( <span class=prg>frame-&gt;pFrameSibling</span>);   
+
+  <span class=sc2>// Desenhe recursivamente os filhos ( children )</span>
+  <span class=sc9>if </span>( <span class=prg>frame-&gt;pFrameFirstChild </span>!= <span class=prg>NULL</span>)  
+        DrawBone( <span class=prg>frame-&gt;pFrameFirstChild</span>);   
+<span class=sc16>} <span class=sc2>// DrawBone().fim</span></span>
+
+
+<span class=sc2>// Uma vez que esta app pode carregar modelos 3d com diversas formas e tamanhos</span>
+<span class=sc2>// configurar a posição da câmera é uma tarefa difícil.   Esta  função  utiliza</span>
+<span class=sc2>// a esfera de borda do modelo como base para estabelecer a posição  da  câmera</span>
+<span class=sc5>D3DXVECTOR3 </span>CModelo::GetInitialCameraPosition() <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc5>D3DXVECTOR3 </span>cameraPos(<span class=sc4>0.0f</span>, <span class=prg>m_sphereCentre.y</span>, - (m_sphereRadius * <span class=sc4>3</span>)  );  
+  <span class=sc6>return </span>cameraPos; 
+<span class=sc16>} <span class=sc2>// GetInitialCameraPosition().fim</span></span>
+
+
+<span class=sc2>// CModelo::Render() - Renderiza o mesh animado</span>
+<span class=sc2>// Chama DrawBone() recursivamente na renderização com o frame raiz</span>
+<span class=prg>void </span>CModelo::Render() <span class=sc16>const</span>
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( m_frameRoot ) DrawBone( m_frameRoot );  
+<span class=sc16>} <span class=sc2>// Render().fim</span></span>
+
+
+<span class=sc2>// CModelo::SetAnimationSet() - Modifica o animation set</span>
+<span class=sc2>// manipula a transição entre as animações para torná-las</span>
+<span class=sc2>// suaves e evita solavancos para uma nova posição</span>
+<span class=sc2>// index - o indicador do novo animation set</span>
+<span class=prg>void </span>CModelo::SetAnimationSet(<span class=sc16>unsigned </span><span class=prg>int </span>index) 
+<span class=sc16>{</span>
+  <span class=sc2>// Se o índice indicado fora igual ao animation set corrente</span>
+  <span class=sc2>// então retorne porque não tem o que mudar.</span>
+  <span class=sc9>if </span>(index == m_currentAnimationSet) <span class=sc6>return</span>; 
+
+
+  <span class=sc2>// Se o índice está fora da faixa válida, vamos zerá-lo.</span>
+  <span class=sc9>if </span>(index &gt;= m_numAnimationSets) index = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Lembre-se do animation set corrente</span>
+  m_currentAnimationSet = index; 
+
+  <span class=sc2>// Pegue o animation set do controlador de animações</span>
+  <span class=sc5>ID3DXAnimationSet </span>*set; 
+  <span class=prg>m_animController-&gt;GetAnimationSet</span>( m_currentAnimationSet, &set );  
+
+  <span class=sc2>// Nota: para uma transição suave entre as animações, nós podemos usar</span>
+  <span class=sc2>// duas trilhas e assinalar a nova animação para uma trilha vaga ( que não</span>
+  <span class=sc2>// está tocando ) e então inserir chaves ( Keys ) na trilha de chaves</span>
+  <span class=sc2>// ( KeyTrack ) para fazer a transição entre as trilhas.</span>
+  <span class=sc2>// As trilhas podem ser misturadas juntas a fim de que possam gradualmente</span>
+  <span class=sc2>// se modificar para uma nova animação.</span>
+
+
+  <span class=sc2>// Alternando a nossa trilha</span>
+  <span class=prg>DWORD </span>newTrack = ( m_currentTrack == <span class=sc4>0 </span>? <span class=sc4>1 </span>: <span class=sc4>0</span>);  
+
+  <span class=sc2>// Assinale para a nossa trilha</span>
+  <span class=prg>m_animController-&gt;SetTrackAnimationSet</span>( newTrack, set );  
+  <span class=prg>set-&gt;Release</span>();  
+
+  <span class=sc2>// Vamos limpar qualquer evento de trilha atualmente assinalados</span>
+  <span class=sc2>// em nossas trilhas</span>
+  <span class=prg>m_animController-&gt;UnkeyAllTrackEvents</span>( m_currentTrack );  
+  <span class=prg>m_animController-&gt;UnkeyAllTrackEvents</span>( newTrack );  
+
+  <span class=sc2>// Adicione uma chave de evento para desabilitar a trilha atualmente</span>
+  <span class=sc2>// tocando kMoveTransitionTime segundos no futuro.</span>
+  <span class=prg>m_animController-&gt;KeyTrackEnable</span>( m_currentTrack, <span class=prg>FALSE</span>, m_currentTime 
+    + kMoveTransitionTime );  
+
+  <span class=sc2>// Adicione uma chave de evento para acelerar o completamento da animação</span>
+  <span class=sc2>// corrente em kMoveTransitionTime segundos.</span>
+  <span class=prg>m_animController-&gt;KeyTrackSpeed</span>( m_currentTrack, <span class=sc4>0.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Adiciona um evento para mudar o peso da trilha corrente</span>
+  <span class=sc2>// ( isso afeta a mistura com a segunda trilha )</span>
+  <span class=prg>m_animController-&gt;KeyTrackWeight</span>( m_currentTrack, <span class=sc4>0.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Habilite a nova trilha</span>
+  <span class=prg>m_animController-&gt;SetTrackEnable</span>( newTrack, <span class=prg>TRUE</span>);  
+
+  <span class=sc2>// Habilite uma chave de evento para configurar a velocidade</span>
+  <span class=sc2>// da trilha.</span>
+  <span class=prg>m_animController-&gt;KeyTrackSpeed</span>( newTrack, <span class=sc4>1.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+
+  <span class=sc2>// Adiciona um evento para mudar o peso da trilha corrente</span>
+  <span class=sc2>// ( isso afeta a mistura com a primeira trilha )</span>
+  <span class=sc2>// Como vc pode ver isto vai caminhar de zero efeito (0.0f) até efeito</span>
+  <span class=sc2>// total (1.0f) em kMoveTransitionTime segundos e a primeira trilha</span>
+  <span class=sc2>// vai caminhar do efeito total até 0.0f no mesmo tempo.</span>
+
+  <span class=prg>m_animController-&gt;KeyTrackWeight</span>( newTrack, <span class=sc4>1.0f</span>, m_currentTime, 
+    kMoveTransitionTime, <span class=sc4>D3DXTRANSITION_LINEAR</span>);  
+
+  <span class=sc2>// Lembre-se da trilha corrente ( agora como nova trilha assumindo )</span>
+  m_currentTrack = newTrack; 
+
+<span class=sc16>} <span class=sc2>// SetAnimationSet().fim</span></span>
+
+
+<span class=prg>void </span>CModelo::NextAnimation() 
+<span class=sc16>{</span>
+  <span class=sc16>unsigned </span><span class=prg>int </span>newAnimationSet = m_currentAnimationSet + <span class=sc4>1</span>; 
+  <span class=sc9>if </span>( newAnimationSet &gt;= m_numAnimationSets) 
+    newAnimationSet = <span class=sc4>0</span>; 
+
+  SetAnimationSet( newAnimationSet );  
+<span class=sc16>} <span class=sc2>// NextAnimation().fim</span></span>
+
+
+<span class=prg>std::string </span>CModelo::GetAnimationSetName( <span class=sc16>unsigned </span><span class=prg>int </span>index ) 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( index &gt;= m_numAnimationSets ) 
+    <span class=sc6>return </span><span class=sc6>"Error: No set exists"</span>; 
+
+  <span class=sc2>// Obtendo o set de animação</span>
+  <span class=sc5>ID3DXAnimationSet </span>*set; 
+  <span class=prg>m_animController-&gt;GetAnimationSet</span>( m_currentAnimationSet, &set );  
+
+  <span class=prg>std::string </span>nameString( <span class=prg>set-&gt;GetName</span>());  
+
+  <span class=prg>set-&gt;Release</span>();  
+
+  <span class=sc6>return </span>nameString; 
+<span class=sc16>} <span class=sc2>// GetAnimationSetName().fim</span></span>
+
+
+<span class=prg>void </span>CModelo::AnimateSlower() 
+<span class=sc16>{</span>
+  m_speedAdjust += <span class=sc4>0.1f</span>; 
+<span class=sc16>} <span class=sc2>// AnimateSlower().fim</span></span>
+
+
+<span class=prg>void </span>CModelo::AnimateFaster() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>( m_speedAdjust &gt; <span class=sc4>0.1f</span>)  
+    m_speedAdjust -= <span class=sc4>0.1f</span>; 
+<span class=sc16>} <span class=sc2>// AnimateFaster().fim</span></span>
+
+<span class=sc2>// fim do arquivo Modelo3d.cpp</span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx11cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track12-4.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track12-6.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1  Visão geral</a>
+<a href=#1.2>1.2  Estrutura principal da classe CModelo</a>
+<a href=#2.1>2.1  Especificação da classe CModelo: Modelo3d.h</a>
+<a href=#2.2>2.2  Aspectos globais: arquivo Modelo3d.cpp</a>
+<a href=#2.3>2.3  CModelo::CModelo()         - Construtor da classe</a>
+<a href=#2.4>2.4  CModelo::~CModelo()        - Destrutor da classe</a>
+<a href=#2.5>2.5  Load()                     - Carregando a hierarquia</a>
+<a href=#2.6>2.6  SetupBoneMatrices()        - Configuração das matrizes dos ossos</a>
+<a href=#2.7>2.7  BoneMove()                 - Movendo o osso</a>
+<a href=#2.8>2.8  UpdateBoneMatrices()       - Atualizando as matrizes</a>
+<a href=#2.9>2.9  DrawMeshContainer()        - Renderização do modelo 3d</a>
+<a href=#2.10>2.10 DrawBone()                 - Renderizando o modelo 3d</a>
+<a href=#2.11>2.11 GetInitialCameraPosition() - Obtendo a posição inicial da câmera</a>
+<a href=#2.12>2.12 Render()                   - Iniciando a renderização do modelo 3d</a>
+<a href=#2.13>2.13 SetAnimationSet()          - Modificação do animation set</a>
+<a href=#2.14>2.14 NextAnimation()            - Avanço para a próxima animação</a>
+<a href=#2.15>2.15 GetAnimationSetName()      - Obtendo o nome da animação</a>
+<a href=#2.16>2.16 AnimateSlower()            - Desacelerando a animação</a>
+<a href=#2.17>2.17 AnimateFaster()            - Acelerando a animação</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_HierarquiaAnimada</a>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Julho/2015 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

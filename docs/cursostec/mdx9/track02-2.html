@@ -1,0 +1,518 @@
+﻿<html>
+<head>
+<title>mdx9_fase02-2</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 02-2</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track02-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track03-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track01"></a>
+<h3 style="background-color:#80ff80">02.2 Verificando recursos particulares</h3><pre>
+
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code>
+<img src=images\prj_verificarDispositivo.png>
+</div>
+Melhor do que verificar todos os recursos  é verificar o suporte a um
+recurso particular.    Por  exemplo,  possivelmente  você  vai  ficar 
+interessado  em  apresentar  sua  aplicação dentro  de  uma resolução
+gráfica particular ou vai querer  saber  se  a  placa  de  vídeo  tem
+suporte a um recurso importante  para o funcionamento adequado da sua 
+aplicação.
+
+<u>Formato de superfície</u>
+É muito comum expressar o ponto ou pixel das imagens no padrão RGB de
+cor de 24 bits, oito bits para vermelho (R), oito bits para verde (G)
+e oito bits para o azul(B).   Dentro  do  DirectX  dizemos  que  essa 
+<b>superfície</b> ( a imagem) tem um <b class=prg>formato X8R8G8B8</b>; o <b>X8</b> quer dizer que a
+imagem ou a <b>superfície</b> não tem o suporte à transparências. Geralmente
+o  ideal  é  que  o  backbuffer  e  o monitor acompanhem o formato da 
+superfície  mas  nem sempre isso ocorre e dá origem a uma necessidade
+chamada   <b>conversão   de    cor</b>.    Então  é  necessário  verificar a 
+disponibilidade de formato de <b>display</b>  (monitor) e de backbuffer para
+montar  a  imagem  final  adequadamente  na janela da aplicação ou no
+modo tela cheia do monitor.
+
+<b><u>1.2 Estrutura da aplicação de exemplo</b></u>
+A aplicação de exemplo vai verificar  se o dispositivo tem suporte ao
+formato de superfície <b class=prg>X8R8G8B8</b> simultaneamente para o backbuffer e  o 
+display no modo tela cheia.
+
+Ainda, a aplicação vai verificar se a placa de vídeo  apresenta algum
+suporte  para  os  shaders  <b>VertexShader</b> e <b>PixelShader</b> que são um dos
+aspectos  mais modernos e mais badalados da computação gráfica. Vamos
+ver  o que são estas coisas mais adiante no curso; por enquanto saiba
+que  o  VertexShader  é  um subsistema na placa de vídeo para aplicar
+transformações  nos  vértices  enquanto o PixelShader permite aplicar
+efeitos  especiais  na  imagem  final  através da manipulação de seus 
+pontos em tempo real.
+
+<b><u>2.1 Mostrando a versão dos shaders</b></u>
+Veja  na  função  abaixo  como  exibir  a  versão  do  VertexShader e 
+do PixelShader:
+
+<div class=niceview><span class="sc2">// mostrarVersaoShaders() - Mostrar versão dos Shaders</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0">  </span><span class="sc11">mostrarVersaoShaders</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+<span class="sc2">// Faz leitura das capacidades do dispositivo</span>
+<span class="sc5">Caps</span><span class="sc0"> </span><span class="sc11">caps = <span class="sc5">Manager.GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">);</span>
+
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"VertexShader: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc5">caps.VertexShaderVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" PixelShader: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc5">caps.PixelShaderVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrarVersaoShaders().fim
+</span></div>
+
+<b><u>2.2 Procurando uma versão adequada dos shaders</b></u>
+
+Essa função  <b>ShaderSuporte()</b> foi adaptada da documentação original do
+DirectX Gerenciado e  mostra  como  examinar em conjunto  por  alguma
+versão particular do PixelShader e do VertexShader:
+<div class=niceview>
+<span class="sc2">// ShaderSuporte() - Verifica suporte aos shaders</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0">  </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verificarShaderSuporte</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">Version</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">)</span>
+<span class="sc10">{</span>  
+<span class="sc2">// Faz leitura das capacidades do dispositivo</span>
+<span class="sc5">Caps</span><span class="sc0"> </span><span class="sc11">caps = <span class="sc5">Manager.GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">);</span>
+
+<span class="sc2">// Verifica suporte conjunto aos Shaders</span>
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc5">caps.VertexShaderVersion</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">&amp;&amp;</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">caps.PixelShaderVersion</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">))</span>
+<span class="sc10">{</span>
+<span class="sc5">return</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif</span>
+
+<span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ShaderSuporte().fim
+</span></div>
+
+Na função <b>Main()</b>, essa função é testada da seguinte forma:
+<span class=prg>
+bool sucesso = false;
+sucesso = <b>verificarShaderSuporte(new Version(2, 0));</b>
+if (sucesso) mostrar ( "PixelShader & VertexShader 2.0 Ok"); </span>
+
+<b><u>2.3 Examinando a disponibilidade de formatos de superfície</b></u>
+<div class=niceview><span class="sc2">// verificarDispositivo() Verifica possibilidade de configuração 
+// do dispositivo</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">bool</span><span class="sc0"> </span><b>verificarDispositivo</b><span class="sc10">(</span><span class="sc5">Format</span><span class="sc0"> </span><span class="sc11">video_formato</span><span class="sc10">,</span>
+<span class="sc5">Format</span><span class="sc0"> </span><span class="sc11">backbuffer_formato</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">)</span>
+<span class="sc10">{</span><span class="sc0">
+<span class="sc2">// Resultado </span>
+<span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span>
+
+<span class="sc2">// Aplicação vai rodar com o sem janela(false) </span>
+<span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">app_janelada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span>
+
+<span class="sc2">// Coleta informações do adaptador default </span>
+<span class="sc5">AdapterInformation</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Manager.Adapters.Default</span><span class="sc10">;</span>
+
+<span class="sc2">// Verifica se o dispositivo pode ser usado no adaptador default  </span>
+<span class="sc2">// com a superfície dada </span>
+<span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Manager.CheckDeviceType</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">.</span><span class="sc11">Adapter</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span>
+<span class="sc11">video_formato</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">backbuffer_formato</span><span class="sc10">,</span><span class="sc0">
+<span class="sc11">app_janelada</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">);</span>
+
+<span class="sc2">// Além de res, HRESULT é passado de volta em erro_info </span>
+<span class="sc5">return</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span>
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// verificarDispositivo().fim
+</span></div>
+Essa função <b>verificarDispositivo()</b> é apenas um embrulho em  torno  do
+método <b class=prg>Mananager.CheckDeviceType()</b>  que  faz  realmente o trabalho de 
+verificar de fato o dispositivo. Esse método, tal como foi usado aqui
+necessita de 6 argumentos:
+
+<b>info.Adapter</b>		um objeto <b class=prg>AdapterInformation</b> preenchido
+
+<b>DeviceType.Hardware</b>	o tipo de dispositivo que vai ser utilizado
+
+<b>video_formato</b>		o formato do display; exemplo: <b class=prg>Format.X8R8G8B8</b>
+
+<b>backbuffer_formato</b>	o formato do backbuffer; exemplo: <b class=prg>Format.X8R8G8B8</b>
+
+<b>app_janelada</b>		indicação booleana se a aplicação vai ter
+			janela ou não
+
+<b class=prg>out</b> <b>erro_info</b>		uma referência de um número inteiro  para
+			retornar informação extra do resultado.
+			
+O valor inteiro <b>erro_info</b> pode assumir centenas de valores referentes
+a erros que podem ocorrer no ambiente  da  aplicação  DirectX.  Esses
+possíveis  valores  estão  identificados nominalmente pela enumeração
+<b class=prg>ResultCode</b>  que  foi  utilizada  assim  em  <b>Main()</b> para  produzir uma 
+mensagem mais amigável e esclarecedora em caso de problemas:
+<span class=prg>
+<b>ResultCode</b> res = (<b>ResultCode</b>) erro_info;
+mostrar( "Legenda: " + <b>res.ToString());</b>
+</span>
+
+Por fim, essa função foi chamada em Main() dessa forma:
+<span class=sc2>
+// Verificação de formato de vídeo e de backfuffer tela cheia (fullscreen)</span>
+<span class=prg>sucesso = verificarDispositivo(Format.X8R8G8B8,
+Format.X8R8G8B8 , out erro_info); </span>
+
+Lembrando que dentro  dessa  função,  <b>app_janelada</b>  está  configurada
+como  <span class=prg>falsa</span>  ocasionando  a verificação referir-se a tela cheia. Para
+essa função ficar mais útil  e flexível você pode refazer essa função 
+trazendo  <b>app_janelada</b>  para  a  assinatura da função, dando assim ao 
+usuário oportunidade de fazer a verificação com janela ou sem janela.
+
+<b><u>2.4 A função que testa os recursos particulares: Main()</b></u>
+Segue abaixo a listagem da função <b>Main()</b>.  Siga  os comentários  para 
+compreendê-la.   As  partes  mais significantes já foram esclarecidas  
+na explicação das funções acima.
+
+<div class=niceview>
+<span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span>
+<span class="sc10">{</span>
+<span class="sc2">// Configura a janela de console</span>
+<span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_verificarDispositivo"</span><span class="sc10">);</span>
+
+<span class="sc2">// Variáveis de trabalho</span>
+<span class="sc16">int</span><span class="sc0">     </span><span class="sc11">erro_info</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">      </span><span class="sc2">// Informação extra sobre o erro</span>
+<span class="sc16">string</span><span class="sc0">  </span><span class="sc11">mensagem</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">   </span><span class="sc2">// mensagem ao usuário</span>
+<span class="sc16">bool</span><span class="sc0">    </span><span class="sc11">sucesso</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// Confirmação de sucesso ou não</span>
+
+<span class="sc2">// Verificação de formato de vídeo e de backfuffer tela cheia (fullscreen)
+// Teste outros formatos</span>
+<span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><b>verificarDispositivo</b><span class="sc10">(</span><span class="sc5">Format.X8R8G8B8</span><span class="sc10">,</span>
+<span class="sc5">Format.X8R8G8B8</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">);</span>
+
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span>
+<span class="sc11">mensagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">String</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"Ok - Formato de video\\backbuffer confirmada: {0}"</span><span class="sc10">,</span>
+<span class="sc11">erro_info</span><span class="sc10">);</span>
+<span class="sc5">else</span>
+<span class="sc11">mensagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">String</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">":-( Formato de video\\backbuffer indisponível: {0}"</span><span class="sc10">,</span>
+<span class="sc11">erro_info</span><span class="sc10">);</span>
+
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">mensagem</span><span class="sc10">);</span>
+<span class="sc5">ResultCode</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">ResultCode</span><span class="sc10">)</span><span class="sc11"> erro_info</span><span class="sc10">;</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"Legenda: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+
+<span class="sc2">// Verificação de suporte aos shaders</span>
+<span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><b>verificarShaderSuporte</b><span class="sc10">(</span><span class="sc5">new Version</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">));</span>
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 1.1 Ok"</span><span class="sc10">);</span>
+
+<span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><b>verificarShaderSuporte</b><span class="sc10">(</span><span class="sc5">new Version</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">));</span>
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 2.0 Ok"</span><span class="sc10">);</span>
+
+<span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><b>verificarShaderSuporte</b><span class="sc10">(</span><span class="sc5">new Version</span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">));</span>
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 3.0 Ok"</span><span class="sc10">);</span>
+
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n :-( Suporte fraco ou inexistente aos Shaders"</span><span class="sc10">);</span>
+<span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><b>mostrarVersaoShaders</b><span class="sc10">();</span><span class="sc0">
+
+<span class="sc2">// Aguarda a leitura da tela</span>
+<span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span>      
+
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span></div>
+
+<b><u>2.5 Compreendendo a legenda do formato de superfícies</b></u>
+A  enumeração  <b class=prg>Format</b>  apresenta os vários  formatos  que  o  DirectX
+suporta com a seguinte legenda:
+<div class=niceview>
+
+	A— alpha - para efeitos de transparência
+
+	X— não-usado
+
+	R— vermelho
+
+	G— verde
+
+	B— azul
+
+	L— luminância
+
+	P— palette.
+</div>
+					
+O fato do DirectX suportar  estes  formatos  não  quer  dizer  que  o 
+adaptador instalado vai suportá-los também.  Em nossos testes,  nossa
+placa de vídeo  suporta apenas quatro dos quais os mais interessantes
+são <b class=prg>X8R8G8B8</b>  e  <b class=prg>A2R10G10B10</b> (somente  para tela cheia).
+
+Em modo janela o formato  do  backbuffer  não  precisa  acompanhar  o
+formato do display. Porém, internamente isso vai gerar uma necessidade 
+de conversão de formato.Ainda, é necessário verificar se o dispositivo 
+apresenta suporte para conversão entre formatos diferentes com o método
+<b class=prg>Manager.CheckDeviceFormatConversion()</b>
+
+<b><u>3. Código fonte do projeto de exemplo: prj_verificarDispositivo</b></u>
+<div class=prg-code>
+<img src=images\prj_verificarDispositivo.png>
+
+<span class="sc2">// Projeto prj_verificarDispositivo - Arquivo: Program.cs
+// Este programa mostra como verificar a presença de recursos
+// particulares como formatos de vídeo e outros aspectos.
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_verificarDispositivo</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+  </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+  </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Configura a janela de console
+</span><span class="sc0">      </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_verificarDispositivo"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Variáveis de trabalho
+</span><span class="sc0">      </span><span class="sc16">int</span><span class="sc0">     </span><span class="sc11">erro_info</span><span class="sc0">   </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">      </span><span class="sc2">// Informação extra sobre o erro
+</span><span class="sc0">      </span><span class="sc16">string</span><span class="sc0">  </span><span class="sc11">mensagem</span><span class="sc0">    </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">null</span><span class="sc10">;</span><span class="sc0">   </span><span class="sc2">// mensagem ao usuário
+</span><span class="sc0">      </span><span class="sc16">bool</span><span class="sc0">    </span><span class="sc11">sucesso</span><span class="sc0">     </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">  </span><span class="sc2">// Confirmação de sucesso ou não
+</span><span class="sc0">
+      </span><span class="sc2">// Verificação de formato de vídeo e de backfuffer tela cheia (fullscreen)
+</span><span class="sc0">      </span><span class="sc2">// Teste outros formatos
+</span><span class="sc0">      </span><span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verificarDispositivo</span><span class="sc10">(</span><span class="sc11">Format</span><span class="sc10">.</span><span class="sc11">X8R8G8B8</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">Format</span><span class="sc10">.</span><span class="sc11">X8R8G8B8</span><span class="sc0"> </span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">mensagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">String</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"Ok - Formato de video\\backbuffer confirmada: {0}"</span><span class="sc10">,</span><span class="sc0"> 
+          </span><span class="sc11">erro_info</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">else</span><span class="sc0">
+        </span><span class="sc11">mensagem</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">String</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">":-( Formato de video\\backbuffer indisponível: {0}"</span><span class="sc10">,</span><span class="sc0"> 
+          </span><span class="sc11">erro_info</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">mensagem</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">ResultCode</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ResultCode</span><span class="sc10">)</span><span class="sc11">erro_info</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"Legenda: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+
+      </span><span class="sc2">// Verificação de suporte aos shaders
+</span><span class="sc0">      </span><span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verificarShaderSuporte</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Version</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">));</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 1.1 Ok"</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verificarShaderSuporte</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Version</span><span class="sc10">(</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">));</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 2.0 Ok"</span><span class="sc10">);</span><span class="sc0">
+      
+      </span><span class="sc11">sucesso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">verificarShaderSuporte</span><span class="sc10">(</span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Version</span><span class="sc10">(</span><span class="sc4">3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">));</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc6">"PixelShader &amp; VertexShader 3.0 Ok"</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n :-( Suporte fraco ou inexistente aos Shaders"</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">sucesso</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">mostrarVersaoShaders</span><span class="sc10">();</span><span class="sc0">
+
+      </span><span class="sc2">// Aguarda a leitura da tela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">      
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+
+    </span><span class="sc2">// mostra() mostras informação na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">informacao</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Geralmente Console.Writeline() chama ToString() do
+</span><span class="sc0">      </span><span class="sc2">// objeto
+</span><span class="sc0">      </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">informacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">
+
+    </span><span class="sc2">// verificarDispositivo() Verifica possibilidade de configuração 
+</span><span class="sc0">    </span><span class="sc2">// do dispositivo
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verificarDispositivo</span><span class="sc10">(</span><span class="sc11">Format</span><span class="sc0"> </span><span class="sc11">video_formato</span><span class="sc10">,</span><span class="sc0"> 
+      </span><span class="sc11">Format</span><span class="sc0"> </span><span class="sc11">backbuffer_formato</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Resultado
+</span><span class="sc0">      </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Aplicação vai rodar com o sem janela(false)
+</span><span class="sc0">      </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">app_janelada</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+      
+      </span><span class="sc2">// Coleta informações do adaptador default
+</span><span class="sc0">      </span><span class="sc11">AdapterInformation</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">Adapters</span><span class="sc10">.</span><span class="sc11">Default</span><span class="sc10">;</span><span class="sc0">      
+
+      </span><span class="sc2">// Verifica se o dispositivo pode ser usado no adaptador default 
+</span><span class="sc0">      </span><span class="sc2">// com a superfície dada
+</span><span class="sc0">      </span><span class="sc11">res</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">CheckDeviceType</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">.</span><span class="sc11">Adapter</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">,</span><span class="sc0"> 
+        </span><span class="sc11">video_formato</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">backbuffer_formato</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">app_janelada</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">out</span><span class="sc0"> </span><span class="sc11">erro_info</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc2">// Além de res, HRESULT é passado de volta em erro_info
+</span><span class="sc0">      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">res</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// verificarDispositivo().fim
+</span><span class="sc0">
+    
+    </span><span class="sc2">// ShaderSuporte() - Verifica suporte aos shaders
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0">  </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">verificarShaderSuporte</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">Version</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">      
+      </span><span class="sc2">// Faz leitura das capacidades do dispositivo
+</span><span class="sc0">      </span><span class="sc11">Caps</span><span class="sc0"> </span><span class="sc11">caps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">);</span><span class="sc0">  
+
+      </span><span class="sc2">// Verifica suporte conjunto aos Shaders
+</span><span class="sc0">      </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">((</span><span class="sc11">caps</span><span class="sc10">.</span><span class="sc11">VertexShaderVersion</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">&amp;&amp;</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">caps</span><span class="sc10">.</span><span class="sc11">PixelShaderVersion</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc11">ver</span><span class="sc10">))</span><span class="sc0">
+      </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">true</span><span class="sc10">;</span><span class="sc0">
+      </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0">
+      </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">false</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// ShaderSuporte().fim
+</span><span class="sc0">
+    </span><span class="sc2">// mostrarVersaoShaders() - Mostrar versão dos Shaders
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0">  </span><span class="sc11">mostrarVersaoShaders</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+      </span><span class="sc2">// Faz leitura das capacidades do dispositivo
+</span><span class="sc0">      </span><span class="sc11">Caps</span><span class="sc0"> </span><span class="sc11">caps</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">);</span><span class="sc0">
+
+      </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"VertexShader: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">caps</span><span class="sc10">.</span><span class="sc11">VertexShaderVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+      </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">" PixelShader: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">caps</span><span class="sc10">.</span><span class="sc11">PixelShaderVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrarVersaoShaders().fim
+</span><span class="sc0">
+  </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Adaptador
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track02-1.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track03-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

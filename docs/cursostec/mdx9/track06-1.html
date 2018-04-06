@@ -1,0 +1,821 @@
+﻿<html>
+<head>
+<title>mdx9_fase06-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 06-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>06.1 Sprite via Direct3D</h3><pre>
+<b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Sprite01.png></div>
+A sprite é um objeto preparado especialmente para desenhar  elementos
+bidimensionais  (2D)  numa aplicação geralmente uma imagem retangular
+que pode conter subimagens dentro de si.
+
+Tecnicamente a sprite é formada por uma textura aplicada em  um plano
+quadrado ou retangular. A textura puxa para dentro de si  uma  imagem 
+que pode conter uma grade de  células  para  compor  animações.  Este 
+tópico  vai   mostrar   como  renderizar  sprites e como configurar a 
+aplicação para rodar em <b>tela cheia</b>.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Sprite01.png></div>
+Nesta aplicação o usuário utiliza as setas do teclado para movimentar
+uma imagem retangular pela tela. A  sprite ( <b>g_sprite</b>)  é formada por 
+uma textura (<b>g_textura</b>) que carrega para dentro de si uma imagem.  Na
+renderização da sprite existe um retângulo (<b>g_recorte</b>)  que determina
+qual  parte  da textura  vai  ser  renderizada.   Na  aplicação  esse 
+retângulo  vai  apontar  para  o  tamanho  total da textura, mas para
+animações ele pode apontar para quadros individuais dentro da imagem.
+
+Além  da  textura  e  do  retângulo da área desenhável, o processo de 
+renderizar a sprite precisa saber de sua posição, centro e de uma cor
+que  combina-se  com  as  cores  da sprite para compor a imagem final. 
+Esses  dados  de posição, cor e centro foram empacotados na estrutura
+<span class=prg>SpriteInfo</span> <b>g_sInfo</b>. A função  <b>inicializarJogador()</b>  vai se encarregar
+de configurar esses dados de posicionamento da sprite.
+
+<b><u>1.3 Listagem da estrutura SpriteInfo</u></b>
+Esta estrutura é para permitir configurar e utilizar propriedades para
+a cor e posicionamento da sprite na tela ao longo da aplicação.
+
+<div class=niceview><span class=sc2>// Estrutura para propriedades da sprite</span>
+<span class=sc2>// posição, posição do centro e cor</span>
+<span class=prg>struct </span>SpriteInfo 
+<span class=sc16>{</span>
+ <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+ <span class=prg>public </span><span class=sc5>Vector3 </span>center; 
+ <span class=prg>public </span><span class=sc5>Color </span>color; 
+
+ <span class=prg>public </span>SpriteInfo(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>centro) 
+ <span class=sc16>{</span>
+   position = pos; 
+   center = centro; 
+   color = <span class=prg>Color.White;</span>
+ <span class=sc16>}</span>
+<span class=sc16>};</span>
+</div>
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+
+ <span class=sc2>// Variável para criação do dispositivo de gerenciamento teclado</span>
+ <span class=prg>private </span><span class=prg>DirectInput.Device </span>teclado = <span class=prg>null;</span>
+
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// A tecla Escape terminará a aplicação</span>
+ <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+ <b><span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+ <span class=prg>int </span>xtela = 0; 
+ <span class=prg>int </span>ytela = 0; </b>
+
+ <b><span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+ <span class=sc2>// na tela</span>
+ <span class=sc2>// O objeto sprite em si</span>
+ <span class=prg>private </span><span class=sc5>Sprite </span>g_sprite = <span class=prg>null;</span>
+
+ <span class=sc2>// A imagem da sprite é composta por uma textura</span>
+ <span class=prg>private </span><span class=sc5>Texture </span>g_textura = <span class=prg>null;</span>
+
+ <span class=sc2>// Esse retângulo indica a área a ser desenhada da sprite</span>
+ <span class=sc2>// Isso permite produzir animações recortando partes diferentes da</span>
+ <span class=sc2>// sprite</span>
+ <span class=prg>private </span><span class=sc5>Rectangle </span>g_recorte; 
+
+ <span class=sc2>// Esse objeto vai guardar cor, posição, posição do centro da sprite</span>
+ <span class=prg>private </span>SpriteInfo g_sInfo; </b>
+
+ <span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div>
+<b>
+<span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+<span class=prg>int </span>xtela = 0; 
+<span class=prg>int </span>ytela = 0; </b>
+Estas variáveis vão servir para coletar e configurar a  resolução  de
+vídeo da aplicação em tela cheia.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+<span class=sc2>// na tela</span>
+<span class=sc2>// O objeto sprite em si</span>
+<span class=prg>private </span><span class=sc5>Sprite </span>g_sprite = <span class=prg>null;</span>
+<span class=sc2>// A imagem da sprite é composta por uma textura</span>
+<span class=prg>private </span><span class=sc5>Texture </span>g_textura = <span class=prg>null;</span>
+
+<span class=sc2>// Esse retângulo indica a área a ser desenhada da sprite</span>
+<span class=sc2>// Isso permite produzir animações recortando partes diferentes da</span>
+<span class=sc2>// sprite</span>
+<span class=prg>private </span><span class=sc5>Rectangle </span>g_recorte; 
+
+<span class=sc2>// Esse objeto vai guardar cor, posição, posição do centro da sprite</span>
+<span class=prg>private </span>SpriteInfo g_sInfo; </b></div>
+Todos esses objetos com os papéis específicos já apontados participam
+na criação e na gestão da sprite pela aplicação. Além desses objetos,
+na  inicialização  da  sprite  foi  necessário criar ainda mais  dois 
+objetos temporários para pegar em tempo de execução largura e  altura 
+da textura utilizada.
+
+<b><u>2.2 Inicialização gráfica</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+<span class=sc2>// Configuração dos parâmetros de apresentação</span>
+<span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+<span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+<b>
+<span class=sc2>// Obtém a configuração do modo de vídeo atual</span>
+xtela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Width;</span>
+ytela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Height;</span>
+<span class=sc5>Format </span>video_fmt = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Format;</span>
+
+<span class=prg>bool </span>tela_cheia_ok = <span class=prg>false;</span>
+
+<span class=sc2>// O modo de video atual permite tela cheia?</span>
+tela_cheia_ok = <span class=prg>Manager.CheckDeviceType</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, 
+ video_fmt, video_fmt, <span class=prg>false</span>);  
+
+<span class=sc2>// Configura tela cheia se houver esse suporte no modo de video atual</span>
+<span class=sc9>if </span>(tela_cheia_ok) 
+<span class=sc16>{</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>false;</span>
+  <span class=prg>pps.BackBufferCount </span>= 1; 
+  <span class=prg>pps.BackBufferFormat </span>= video_fmt; 
+  <span class=prg>pps.BackBufferWidth </span>= xtela; 
+  <span class=prg>pps.BackBufferHeight </span>= ytela; 
+
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+ <span class=sc2>// Se não tiver suporte para tela cheia, pode ser janela mesmo!</span>
+ else</span>
+ <span class=sc16>{</span>
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=sc16>} <span class=sc2>// end else</span></span>
+</b>
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+  <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Configuração das fontes para mostrar títulos</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+<b>
+ inicializarSprite();  
+ inicializarJogador();  
+ inicializarTeclado();</b>
+
+<span class=sc16>} <span class=sc2>// initGfx()</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// Obtém a configuração do modo de vídeo atual</span>
+xtela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Width;</span>
+ytela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Height;</span>
+<span class=sc5>Format </span>video_fmt = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Format;</span>
+</b></div>Esse bloco de código obtém largura, altura e formato do modo de vídeo
+atual.
+
+
+
+<div class=niceview style="border-style:dashed;"><b>
+<span class=sc2>// O modo de video atual permite tela cheia?</span>
+<span class=prg>bool </span>tela_cheia_ok = <span class=prg>false;</span>
+tela_cheia_ok = <span class=prg>Manager.CheckDeviceType</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, 
+       video_fmt, video_fmt, <span class=prg>false</span>); </b></div>
+Esse bloco de código retorna verdadeiro caso seja possível configurar
+o modo de vídeo atual em tela cheia.	   
+
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Configura tela cheia se houver esse suporte no modo de video atual</span>
+<span class=sc9>if </span>(tela_cheia_ok) 
+ <span class=sc16>{</span>
+ 
+ <span class=sc2>// Janelada = falso quer dizer tela cheia.</span>
+ <span class=prg>pps.Windowed </span>= <span class=prg>false;</span>
+ 
+ <span class=sc2>// Aqui indica que apenas um backbuffer será usado</span> 
+ <span class=prg>pps.BackBufferCount </span>= 1; 
+ 
+ <span class=sc2>// configuração da largura, altura e formato do backbuffer</span>
+ <span class=prg>pps.BackBufferFormat </span>= video_fmt; 
+ <span class=prg>pps.BackBufferWidth </span>= xtela; 
+ <span class=prg>pps.BackBufferHeight </span>= ytela; 
+ 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc2>// Se não tiver suporte para tela cheia, pode ser janela mesmo!</span>
+else</span>
+ <span class=sc16>{</span>
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=sc16>} <span class=sc2>// end else</span></span>
+</b></div>Esse bloco aproveita a verificação de tela cheia (<b>tela_cheia_ok</b>) para
+fazer a configuração efetiva do modo tela cheia ou  deixa a aplicação
+com janela tradicional caso este modo não seja possível.
+
+
+<div class=niceview style="border-style:dashed;"><b>inicializarSprite();  
+inicializarJogador();  
+inicializarTeclado();</b></div>A função <b>initGfx()</b> se encarrega de chamar as funções que  inicializam
+a sprite para uso, o teclado e o posicionamento inicial da sprite em
+<b>inicializarJogador()</b>.
+
+<b><u>2.3 Inicializando a sprite</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarSprite() 
+<span class=sc16>{</span>
+ <span class=sc2>// Diretório base de imagens</span>
+ <span class=prg>string </span>diretorioBase = <span class=sc6>@"c:\gameprog\gdkmedia\bitmap\";</span>
+
+ <span class=sc2>// Carrega a textura do diretório base</span>
+ g_textura = <span class=prg>TextureLoader.FromFile</span>(device, diretorioBase + <span class=sc6>"logo.tga"</span>);  
+
+ <span class=sc2>// Acessa a superfície da textura</span>
+ <span class=sc2>// Esse objeto apresenta um objeto Graphics!</span>
+ <span class=sc5>Surface </span>tex_superficie = <span class=prg>g_textura.GetSurfaceLevel</span>(<span class=sc4>0</span>);  
+
+ <span class=sc2>// Obtém a descrição da superfície</span>
+ <span class=sc5>SurfaceDescription </span>desc = <span class=prg>tex_superficie.Description;</span>
+
+ <span class=sc2>// Faz um recorte da área a ser desenhada; nesse caso a textura toda</span>
+ g_recorte = <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+ <span class=sc2>// Dispensa a superfície</span>
+ <span class=prg>tex_superficie.Dispose</span>();  
+
+ <span class=sc2>// Cria uma sprite</span>
+ g_sprite = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  
+
+<span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+</div>
+
+<b><span class=sc2>// Carrega a textura do diretório base</span>
+g_textura = <span class=prg>TextureLoader.FromFile</span>(device, diretorioBase + <span class=sc6>"logo.tga"</span>);</b>
+Essa função retorna um objeto textura a partir da imagem carregada.
+
+<b><span class=sc2>// Acessa a superfície da textura</span>
+<span class=sc2>// Esse objeto apresenta um objeto Graphics!</span>
+<span class=sc5>Surface </span>tex_superficie = <span class=prg>g_textura.GetSurfaceLevel</span>(<span class=sc4>0</span>); </b>
+O método <span class=prg>Texture.GetSurfaceLevel(0)</span> retorna uma superfície  que  pode
+ser manipulada.  No  entanto  vamos apenas utilizar a superfície para
+pegar  informações  sobre  a  dimensão da imagem. Este objeto <b class=prg>Surface</b>
+apresenta  o  método <b class=prg>GetGraphics()</b> que retorna um objeto <b class=prg>Graphics</b> que
+traz dezenas de funções que permitem desenhar em tempo de execução na
+textura. Isso é ideal para produzir pequenos efeitos especiais. 
+
+<b><span class=sc2>// Obtém a descrição da superfície</span>
+<span class=sc5>SurfaceDescription </span>desc = <span class=prg>tex_superficie.Description;</span></b>
+Aqui partir do objeto <b class=prg>Surface</b> criamos um objeto com informações sobre
+a textura utilizada.
+
+<b><span class=sc2>// Faz um recorte da área a ser desenhada; nesse caso a textura toda</span>
+g_recorte = <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  </b>
+Esse retângulo configura aqui indical qual área da  sprite  deve  ser
+renderizada.  A  configuração  desse  retângulo  é  importante para a 
+produção de animações quando a imagem carregada possui vários quadros
+dentro de si. Neste caso pegamos a dimensão total da image.
+
+<b><span class=sc2>// Dispensa a superfície</span>
+<span class=prg>tex_superficie.Dispose</span>();</b>
+Aqui dispensamos a superfície que tecnicamente  seria  dispensada  no
+final da função. É  importante  dispensar  os  recursos  com o método 
+<span class=prg>Dispose()</span> quando eles não forem mais necessários.Isso evita vazamento
+de  recursos  que  diminuem a perfomance do computador e da aplicação.
+
+<span class=sc2>// Cria uma sprite</span>
+g_sprite = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  
+
+
+<b><u>2.4 Inicializando dados do jogador</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarJogador() 
+<span class=sc16>{</span>
+ <span class=sc2>// Vetores para configura posição e centro da sprite</span>
+ <span class=sc5>Vector3 </span>posicao, centro; 
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+
+ <span class=sc2>// Calcula o centro da tela para ser o centro da sprite</span>
+ centro = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+ <span class=prg>centro.X </span>= xtela / <span class=sc4>-2;</span>
+ <span class=prg>centro.Y </span>= ytela / <span class=sc4>-2;</span>
+
+ <span class=sc2>// Inicializa g_sInfo com posição e centro da sprite</span>
+ g_sInfo = <span class=prg>new </span>SpriteInfo(posicao, centro);  
+
+<span class=sc16>} <span class=sc2>// inicializarJogador().fim</span></span>
+</div>
+<b>
+<span class=sc2>// Inicializa g_sInfo com posição e centro da sprite</span>
+g_sInfo = <span class=prg>new </span>SpriteInfo(posicao, centro); </b>
+Esses dados são usados para configurar a posição da sprite e a posição
+do centro da sprite.  
+
+O movimento de posicionamento da sprite ocorre relativo ao centro. O
+controle  da  sprite pelo espaço não vai ter o conforto da lógica 2D
+mas  isso dá a vantagem das transformações de rotação e escala visto 
+que a sprite internamente é um  objeto  tridimensional.   O  uso  de
+transformações  necessita  informar  o objeto sprite com a matriz de
+mundo e de visão com o método adequado para isso.
+
+<b><u>2.5 Renderizando a sprite</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+<b>
+ verificarTeclado();  
+ <span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+</b>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+<b>
+ <span class=sc2>// Mostra 'jogador' e sua posição na tela</span>
+ <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, 
+ <span class=prg>g_sInfo.position.X</span>, <span class=prg>g_sInfo.position.Y</span>);  
+ MostrarTitulo(10, 10, info, <span class=prg>Color.Black</span>);  
+
+ <span class=sc2>// SpriteFlags.AlphaBlend - permite efeito de transparência</span>
+ <span class=prg>g_sprite.Begin</span>(<span class=prg>SpriteFlags.AlphaBlend</span>);  
+
+ <span class=sc2>// Desenha a sprite utilizando a textura, imagem, centro,</span>
+ <span class=sc2>// posição e cor apontados</span>
+ <span class=prg>g_sprite.Draw</span>(g_textura, g_recorte, 
+ <span class=prg>g_sInfo.center</span>, <span class=prg>g_sInfo.position</span>, <span class=prg>g_sInfo.color</span>);  
+
+ <span class=sc2>// terminar de desenhar as sprites</span>
+ <span class=prg>g_sprite.End</span>();  
+</b>
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+ <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div>
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// SpriteFlags.AlphaBlend - permite efeito de transparência</span>
+<span class=prg>g_sprite.Begin</span>(<span class=prg>SpriteFlags.AlphaBlend</span>);  
+
+<span class=sc2>// Desenha a sprite utilizando a textura, imagem, centro,</span>
+<span class=sc2>// posição e cor apontados</span>
+<span class=prg>g_sprite.Draw</span>(g_textura, g_recorte, 
+<span class=prg>g_sInfo.center</span>, <span class=prg>g_sInfo.position</span>, <span class=prg>g_sInfo.color</span>);  
+
+<span class=sc2>// terminar de desenhar as sprites</span>
+<span class=prg>g_sprite.End</span>();</b></div>
+Esse  bloco  de  código  ilustra como renderizar a sprite utilizando
+efeito de transparência que geralmente existe em imagens do tipo png
+ou tga. 
+
+<b><u>4. Código fonte do projeto de exemplo:prj_Sprite01</u></b>
+<div class=prg-code>
+<img src=images\prj_Sprite01.png>
+
+<span class=sc2>// prj_Sprite01 - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como desenhar sprites via Direct3d</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>DirectInput = <span class=prg>Microsoft.DirectX.DirectInput;</span>
+
+<span class=sc16>namespace </span>prj_Sprite01 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura para propriedades da sprite</span>
+  <span class=sc2>// posição, posição do centro e cor</span>
+  <span class=prg>struct </span>SpriteInfo 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>center; 
+    <span class=prg>public </span><span class=sc5>Color </span>color; 
+
+    <span class=prg>public </span>SpriteInfo(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>centro) 
+    <span class=sc16>{</span>
+      position = pos; 
+      center = centro; 
+      color = <span class=prg>Color.White;</span>
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+  
+  
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Variável para criação do dispositivo de gerenciamento teclado</span>
+    <span class=prg>private </span><span class=prg>DirectInput.Device </span>teclado = <span class=prg>null;</span>
+
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// A tecla Escape terminará a aplicação</span>
+    <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=sc2>// Vamos guardar aqui a resolução do modo de vídeo corrente</span>
+    <span class=prg>int </span>xtela = 0; 
+    <span class=prg>int </span>ytela = 0; 
+
+    <span class=sc2>// Todos esses objetos giram em torno de se desenhar uma sprite</span>
+    <span class=sc2>// na tela</span>
+    <span class=sc2>// O objeto sprite em si</span>
+    <span class=prg>private </span><span class=sc5>Sprite </span>g_sprite = <span class=prg>null;</span>
+
+    <span class=sc2>// A imagem da sprite é composta por uma textura</span>
+    <span class=prg>private </span><span class=sc5>Texture </span>g_textura = <span class=prg>null;</span>
+
+    <span class=sc2>// Esse retângulo indica a área a ser desenhada da sprite</span>
+    <span class=sc2>// Isso permite produzir animações recortando partes diferentes da</span>
+    <span class=sc2>// sprite</span>
+    <span class=prg>private </span><span class=sc5>Rectangle </span>g_recorte; 
+
+   <span class=sc2>// Esse objeto vai guardar cor, posição, posição do centro da sprite</span>
+    <span class=prg>private </span>SpriteInfo g_sInfo;   
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+      <span class=prg>this.Size </span>= <span class=prg>new </span>Size(640, 480);  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Obtém a configuração do modo de vídeo atual</span>
+      xtela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Width;</span>
+      ytela = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Height;</span>
+      <span class=sc5>Format </span>video_fmt = <span class=prg>Manager.Adapters</span>[<span class=sc4>0</span>]<span class=prg>.CurrentDisplayMode.Format;</span>
+
+      <span class=prg>bool </span>tela_cheia_ok = <span class=prg>false;</span>
+
+      <span class=sc2>// O modo de video atual permite tela cheia?</span>
+      tela_cheia_ok = <span class=prg>Manager.CheckDeviceType</span>(<span class=sc4>0</span>, <span class=prg>DeviceType.Hardware</span>, 
+        video_fmt, video_fmt, <span class=prg>false</span>);  
+
+      <span class=sc2>// Configura tela cheia se houver esse suporte no modo de video atual</span>
+      <span class=sc9>if </span>(tela_cheia_ok) 
+      <span class=sc16>{</span>
+        <span class=prg>pps.Windowed </span>= <span class=prg>false;</span>
+        <span class=prg>pps.BackBufferCount </span>= 1; 
+        <span class=prg>pps.BackBufferFormat </span>= video_fmt; 
+        <span class=prg>pps.BackBufferWidth </span>= xtela; 
+        <span class=prg>pps.BackBufferHeight </span>= ytela; 
+
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+      <span class=sc2>// Se não tiver suporte para tela cheia, pode ser janela mesmo!</span>
+      else</span>
+      <span class=sc16>{</span>
+        <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=sc16>} <span class=sc2>// end else</span></span>
+
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar títulos</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      inicializarSprite();  
+      inicializarJogador();  
+      inicializarTeclado();  
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+	
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarSprite() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Diretório base de imagens</span>
+      <span class=prg>string </span>diretorioBase = <span class=sc6>@"c:\gameprog\gdkmedia\bitmap\";</span>
+
+      <span class=sc2>// Carrega a textura do diretório base</span>
+      g_textura = <span class=prg>TextureLoader.FromFile</span>(device, diretorioBase + <span class=sc6>"logo.tga"</span>);  
+
+      <span class=sc2>// Acessa a superfície da textura</span>
+      <span class=sc2>// Esse objeto apresenta um objeto Graphics!</span>
+      <span class=sc5>Surface </span>tex_superficie = <span class=prg>g_textura.GetSurfaceLevel</span>(<span class=sc4>0</span>);  
+
+      <span class=sc2>// Obtém a descrição da superfície</span>
+      <span class=sc5>SurfaceDescription </span>desc = <span class=prg>tex_superficie.Description;</span>
+
+      <span class=sc2>// Faz um recorte da área a ser desenhada; nesse caso a textura toda</span>
+      g_recorte = <span class=prg>new </span><span class=sc5>Rectangle</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+      <span class=sc2>// Dispensa a superfície</span>
+      <span class=prg>tex_superficie.Dispose</span>();  
+
+      <span class=sc2>// Cria uma sprite</span>
+      g_sprite = <span class=prg>new </span><span class=sc5>Sprite</span>(device);  
+
+    <span class=sc16>} <span class=sc2>// inicializarSprite().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarJogador() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Vetores para configura posição e centro da sprite</span>
+      <span class=sc5>Vector3 </span>posicao, centro; 
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>1.0f</span>);  
+
+      <span class=sc2>// Calcula o centro da tela para ser o centro da sprite</span>
+      centro = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=prg>centro.X </span>= xtela / <span class=sc4>-2;</span>
+      <span class=prg>centro.Y </span>= ytela / <span class=sc4>-2;</span>
+
+      <span class=sc2>// Inicializa g_sInfo com posição e centro da sprite</span>
+      g_sInfo = <span class=prg>new </span>SpriteInfo(posicao, centro);  
+
+    <span class=sc16>} <span class=sc2>// inicializarJogador().fim</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      verificarTeclado();  
+      <span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Mostra 'jogador' e sua posição na tela</span>
+      <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, 
+        <span class=prg>g_sInfo.position.X</span>, <span class=prg>g_sInfo.position.Y</span>);  
+      MostrarTitulo(10, 10, info, <span class=prg>Color.Black</span>);  
+
+      <span class=sc2>// SpriteFlags.AlphaBlend - permite efeito de transparência</span>
+      <span class=prg>g_sprite.Begin</span>(<span class=prg>SpriteFlags.AlphaBlend</span>);  
+
+      <span class=sc2>// Desenha a sprite utilizando a textura, imagem, centro,</span>
+      <span class=sc2>// posição e cor apontados</span>
+      <span class=prg>g_sprite.Draw</span>(g_textura, g_recorte, 
+        <span class=prg>g_sInfo.center</span>, <span class=prg>g_sInfo.position</span>, <span class=prg>g_sInfo.color</span>);  
+
+      <span class=sc2>// terminar de desenhar as sprites</span>
+      <span class=prg>g_sprite.End</span>();  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      Renderizar();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>inicializarTeclado() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Cria o dispositivo de gerenciamento do teclado</span>
+      teclado = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>DirectInput.SystemGuid.Keyboard</span>);  
+
+      <span class=sc2>// Configura nível de cooperação</span>
+      <span class=prg>teclado.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+        <span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+           <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+      <span class=sc2>// Adquire o teclado</span>
+      <span class=prg>teclado.Acquire</span>();  
+
+    <span class=sc16>} <span class=sc2>// inicializarTeclado().fim</span></span>
+
+
+    <span class=prg>void </span>verificarTeclado() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Variáveis para guardar o estado das teclas</span>
+      <span class=prg>int </span>seta_esquerda = 0; 
+      <span class=prg>int </span>seta_direita = 0; 
+      <span class=prg>int </span>seta_cima = 0; 
+      <span class=prg>int </span>seta_abaixo = 0; 
+
+      <span class=prg>DirectInput.Key</span>[] teclasPressionadas = <span class=prg>teclado.GetPressedKeys</span>();  
+
+      <span class=sc2>// Verifica teclado e atualiza teclas de estado</span>
+      <span class=prg>foreach </span>(<span class=prg>DirectInput.Key </span>tecla <span class=prg>in </span>teclasPressionadas) 
+      <span class=sc16>{</span>
+
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.DownArrow</span>)  seta_abaixo = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.UpArrow</span>)  seta_cima = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.LeftArrow</span>)  seta_esquerda = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightArrow</span>)  seta_direita = 1; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightShift</span>)  <span class=prg>g_sInfo.position.X </span>= 0; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.RightShift</span>)  <span class=prg>g_sInfo.position.Y </span>= 0; 
+        <span class=sc9>if </span>(tecla == <span class=prg>DirectInput.Key.Escape</span>)  terminar = <span class=prg>true;</span>
+      <span class=sc16>} <span class=sc2>// endfor each</span></span>
+
+      <span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+      <span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>)  <span class=prg>g_sInfo.position.Y </span>+= 5; 
+      <span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>)  <span class=prg>g_sInfo.position.Y </span>-= 5; 
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  <span class=prg>g_sInfo.position.X </span>-= 5; 
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  <span class=prg>g_sInfo.position.X </span>+= 5; 
+
+      <span class=sc2>// Processa a tecla Escape</span>
+      <span class=sc9>if </span>(terminar) 
+      <span class=sc16>{</span>
+        <span class=prg>device.Dispose</span>();  
+        <span class=prg>teclado.Dispose</span>();  
+        <span class=prg>this.Close</span>();  
+        <span class=prg>Application.Exit</span>();  
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc16>} <span class=sc2>// AtualizarTeclado()</span></span>
+
+    <span class=sc2>// Mostra texto com tamanho de fonte grande para títulos</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarTitulo(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfTitulo.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, font_cor);  
+    <span class=sc16>} <span class=sc2>// MostrarTitulo().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-5.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track06-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

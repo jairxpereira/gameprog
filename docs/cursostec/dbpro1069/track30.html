@@ -1,0 +1,205 @@
+<html><head>
+<title>darkbasicPro_track30</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:50px;
+	width:500pt;
+	background-color:lightblue;
+}
+
+.prg-code {
+	margin-left:50px;
+	width:500pt;
+	background-color:lightyellow;
+}
+
+
+.niceview {
+	margin-left:50px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:50px;
+width:45.0em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+
+
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Curso completo de Darkbasic Pro Versão 1.069</b><br><b>track30.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track29.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track31.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+
+<a name="track30"></a>                                                                                                  
+<h3 style="background-color:#80ff80">30. Sub-objetos 3D</h3>                                                            
+ É muito comum os objetos 3D serem compostos de peças ou sub-objetos que o DarkBasic                                    
+ denomina <b>LIMBS ou membros</b> em bom português. Essa denominação de membro do sub-objeto                            
+ tem uma referência bem apropriada aos membros que compõem o corpo humano porque                                        
+ tal como nossos membros, geralmente a ligação entre esses sub-objetos é hierárquica.                                   
+                                                                                                                        
+ O DarkBasic apresenta comandos e funções para manipular os membros de um objeto 3D.                                    
+ Esses comandos não oferecem dificuldade em seu uso pois são semelhantes em formas                                      
+ e efeitos aos que você usa para manipular os objetos inteiros. Você vai encontrar                                      
+ comandos para texturizar, movimentar, rotacionar e escalar individualmente cada                                        
+ membro componente de um objeto. Essa possibilidade é útil para imprimir movimentos                                     
+ bem calculados aos nossos objetos.                                                                                     
+                                                                                                                        
+ A consequência da ligação hierárquica entre os membros consiste no fato de que                                         
+ a <u>transformação</u> que você aplica em um membro reflete-se nos outros membros que                                  
+ estão coligados numa linha de subordinação com esse membro. Para ilustrar isso                                         
+ um bom exemplo é o que ocorre quando movimentamos nosso braço: o movimento do                                          
+ braço reflete-se na mão que está coligada ao braço.                                                                    
+ (*) Transformação em computação gráfica ou geometria refere-se a aplicação de                                          
+ rotação, movimentação, posicionamento e escala nos objetos 3D.                                                         
+                                                                                                                        
+ Na sintaxe dos comandos que manipulam membros você vai encontrar a palavra <b>limb</b>                                 
+ associada ao nome do comando em conjunto com o nHandle do objeto e o nHandle                                           
+ que se refere ao membro dentro desse objeto. Vamos lembrar que o nHandle é um                                          
+ número inteiro que identifica um objeto e lhe serve como "alça" de manipulação.                                        
+                                                                                                                        
+ <u><b>PERFORM CHECKLIST FOR OBJECT LIMBS nObjeto</u></b>                                                               
+ Este comando realiza uma pesquisa de membros no objeto especificado. A quantidade                                      
+ de membros você pega na função <b>nqtd = CHECKLIST QUANTITY()</b>. Cada membro do objeto                               
+ costuma ter um nome que você pega na função <b>nome$ = CHECKLIST STRING$(ndx)</b>.                                     
+                                                                                                                        
+ Veja nosso programa exemplo:                                                                                           
+<font color="darkblue"><div style="background-color:lightyellow">                                                       
+rem pesquisando os membros de um objeto 3D                                                                              
+cls: hide mouse                                                                                                         
+cd "c:\dbCurso"                                                                                                         
+                                                                                                                        
+load object "walk.x",1                                                                                                  
+set camera view 150,0,640,480                                                                                           
+                                                                                                                        
+perform checklist for object limbs 1                                                                                    
+nqtd = checklist quantity()                                                                                             
+                                                                                                                        
+print nqtd                                                                                                              
+for ncx = 1 to nqtd                                                                                                     
+print checklist string$(ncx),"_",ncx                                                                                    
+next ncx                                                                                                                
+suspend for key</div></font>                                                                                            
+                                                                                                                        
+ <u><b>Exibição de limbs</u></b>                                                                                        
+ <b>HIDE LIMB nObjeto, nMembro</b> ..... Esconde o membro do objeto especificado                                        
+ <b>SHOW LIMB nObjeto, nMembro</b> ..... Re-exibe o membro do objeto especificado                                       
+                                                                                                                        
+ <u><b>Comandos e funções de transformação de limbs</u></b>                                                             
+ <b>OFFSET LIMB nObjeto, nMembro, dx, dy, dz</b>                                                                        
+ Este comando desloca o membro com relação ao posicionamento do objeto e ainda com                                      
+ relação ao sub-objeto que lhe é superior. Os sub-objetos que estão subordinados                                        
+ ao membro também serão reposicionados.                                                                                 
+                                                                                                                        
+ <b>ROTATE LIMB nObjeto, nMembro, rx, ry, rx</b>                                                                        
+ Este comando rotaciona um membro do objeto especificado nos eixos x,y,z.                                               
+                                                                                                                        
+ <b>SCALE LIMB nObjeto, nMembro, sx,sy,sz</b>                                                                           
+ Este comando escala um membro do objeto especificado nos eixos x,y,z.                                                  
+                                                                                                                        
+ <u><b>texturização de limbs</u></b>                                                                                    
+ <b>TEXTURE LIMB nObjeto, nMembro, nImagem</b>                                                                          
+ Este comando texturiza um membro com a imagem especificada.                                                            
+                                                                                                                        
+ <b>COLOR LIMB nObjeto, nMembro, nCor</b>                                                                               
+ Este comando colore um membro com a cor especificada.                                                                  
+                                                                                                                        
+ <b>SCROLL LIMB TEXTURE nObjeto, nMembro, dx, dy</b>                                                                    
+ Este comando rola a textura aplicada ao membro objeto. Os argumentos dx,dy devem                                       
+ ser dados em números reais (decimais).                                                                                 
+                                                                                                                        
+ <b>SCALE LIMB TEXTURE nObjeto, nMembro, sx, sy</b>                                                                     
+ Este comando escala a textura do membro do objeto especificados, determinando o                                        
+ espalhamento, repetição ou tiling da textura sobre o membro. Os argumentos sx,sy                                       
+ devem ser dados em números reais (decimais).                                                                           
+                                                                                                                        
+ <u><b>Adição e ligação de limbs</u></b>                                                                                
+ ADD LIMB will create a new limb from a mesh and add it to an existing 3D object                                        
+ LINK LIMB will link a newly added limb to the hierarchy of the main 3D object                                          
+                                                                                                                        
+<hr>                                                                                                                    
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track29.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track31.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

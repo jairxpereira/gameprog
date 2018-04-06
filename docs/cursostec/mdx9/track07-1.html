@@ -1,0 +1,770 @@
+﻿<html>
+<head>
+<title>mdx9_fase07-1</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 07-1</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track06-2.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track07-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>07.1 Modificação de textura</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_ModificarTextura.png></div>
+De um  ponto de vista  prático  a  textura  é  apenas  um  recipiente
+retangular de cores.  A  modificação  da  textura  envolve  conseguir
+acesso  a  sua  área  retangular que pode ser pensada como uma tabela
+quadriculada de linhas e colunas onde cada  célula  tem  uma  cor.  A
+modificação  efetiva  da  textura  vai  consistir, em último grau, na 
+reconfiguração de cor de cada ponto.  Aliás  essa  visão simplista da
+textura enquadra-se  naturalmente bem à  tela  e ao  backubuffer.  Em 
+última  análise estas superfícies retangulares são apenas recipientes
+de cores.
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_ModificarTextura.png></div>
+Esse  projeto  é baseado  no projeto <b>prj_Modelo3D</b> do tópico 4.4 desse
+curso.  Fizemos  pequenas  modificações nesse projeto e acrescentamos
+uma função para preencher a área das texturas do modelo 3d  carregado
+com cores aleatórias dando um efeito final de  'tv colorida  fora  do 
+ar'.Essa função é nominalmente a <b>ModificarTextura()</b> que é chamada por
+<b>DesenharObjeto()</b> antes de cada renderização e por <b>CarregarModelo()</b> no
+início da aplicação.
+
+A capacidade de modificar a textura em tempo de  execução  permite  o
+efeito de texturas animadas.  Um exemplo de uso  de  textura  animada
+consiste  em   usá-la  na  simulação  de 'letreiros  eletrônicos'  de
+informação  ou  o  interior  de naves espaciais com luzes que piscam.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+ <span class=sc2>// a animação do objeto</span>
+ <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+ <span class=sc2>// Variável para guardar uma malha 3d</span>
+ <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de materiais do mesh</span>
+ <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+ <span class=sc2>// Recipiente de texturas do mesh</span>
+ <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+ <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+ <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+ <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+ <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+ <span class=sc2>// Variável global para propriedade dos objetos</span>
+ Propriedades3D g_props; 
+
+<span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div>
+<span class=prg>
+private <b>Mesh</b> objeto3D = null; </span>
+Esta variável vai receber o mesh carregado pela função <b>CarregarModelo()</b>
+e vai ser utilizada na função <b>DesenharObjeto()</b> para renderizar o objeto
+ao qual ela dá acesso.
+
+<span class=prg>private <b>Material[]</b> g_meshMtl = null; </span>
+Esta variável vai receber uma coleção de materiais presentes no arquivo
+do modelo 3d carregado.
+
+<span class=prg>private <b>Texture[]</b> g_meshTex = null; </span>
+Esta variável vai receber uma coleção de texturas que serão criadas 
+dinamicamente  na  função  <b>CarregarModelo()</b> e preenchidas na função
+<b>ModificarTextura()</b>.
+
+Estas três variáveis são globais dentro da classe porque precisam ser
+alimentadas   na  função  <b>CarregarModelo()</b>  e serem utilizadas para o
+estabelecimento  do  material  e  da  textura  no  dispositivo para o
+processo de renderização do mesh na função <b>DesenharObjeto().</b>
+
+<b><u>2.2 Criando a textura dinamicamente</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+<span class=sc16>{</span>
+ <span class=sc2>// Composição do nome final do arquivo</span>
+ <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+ <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+ <span class=prg>int </span>nTam = 0; 
+
+ <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+ <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+ <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+ objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+ device, <span class=prg>out </span>xMtl);  
+
+ <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+ nTam = <span class=prg>xMtl.Length;</span>
+
+ <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+ <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+ <span class=sc16>{</span>
+
+ <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+ g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+ g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+<span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+<span class=sc16>{</span>
+  <span class=sc2>// Carrega materiais</span>
+  g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+<b>
+  <span class=sc2>// Cria dinamicamente uma nova textura</span>
+  g_meshTex[ncx] = <span class=prg>new </span><span class=sc5>Texture</span>(device, 256, 256, <span class=sc4>1</span>, <span class=sc4>0</span>, 
+	<span class=prg>Format.X8R8G8B8</span>, <span class=prg>Pool.Managed</span>); 
+	
+  <span class=sc2>// Preenche a área da textura com cores aleatórias</span>
+  ModificarTextura(g_meshTex[ncx]);  
+</b>
+  <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+ <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+<span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+</div>
+<b>
+<span class=sc2>// Cria uma nova textura e preenche com cores aleatórias</span>
+g_meshTex[ncx] = <span class=prg>new </span><span class=sc5>Texture</span>(device, 256, 256, <span class=sc4>1</span>, <span class=sc4>0</span>, <span class=prg>Format.X8R8G8B8</span>, 
+							<span class=prg>Pool.Managed</span>);</b>
+Esta linha cria uma textura com as dimensões (256, 256);  O  valor  1
+refere-se ao nível de mipmap; 0 é o tipo de uso; o formato da textura
+é do tipo rgb (<b class=prg>X8R8G8B8</b>) e ficará estocada na memória  gerenciada  do
+do sistema (<b class=prg>Pool.Managed</b>). 
+ 
+O <b>mipmap</b> é uma coleção de  texturas  geralmente  cópias  em  tamanhos
+diferentes da textura principal para serem utilizadas quando o objeto
+está em diferentes distâncias da câmera.  Quanto  mais  o objeto está
+perto da câmera melhor e mais detalhada é a textura utilizada.  Com o
+objeto  longe  da  câmera  a  textura  pode  ter  tamanho e qualidade 
+reduzida para benefício da performance da aplicação. 
+ 
+<b>ModificarTextura(g_meshTex[ncx]);</b>  
+Esta função altera cada ponto da textura com cores aleatórias.
+
+<b><u>2.3 Modificando a textura</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>ModificarTextura(<span class=sc5>Texture </span>textura) 
+<span class=sc16>{</span>
+ <span class=sc2>// Gerador de números aleatórios</span>
+ <span class=sc5>Random </span>sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+
+ <span class=sc2>// Componentes rgb para montar depois a cor final</span>
+ <span class=prg>byte </span>r, g, b; 
+
+ <span class=sc2>// Obtém a descrição da textura</span>
+ <span class=sc5>SurfaceDescription </span>desc = <span class=prg>textura.GetLevelDescription</span>(<span class=sc4>0</span>);  
+
+ <span class=sc2>// Obtém a área de dados da textura</span>
+ <span class=prg>uint </span>[,] cores; 
+ cores = (<span class=prg>uint </span>[,]) <span class=prg>textura.LockRectangle</span>(<span class=sc16>typeof</span>(<span class=prg>uint</span>), <span class=sc4>0</span>, 
+  <span class=prg>LockFlags.None</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+ <span class=sc2>// Escreve uma cor aleatória em cada ponto da textura</span>
+ <span class=prg>for </span>(<span class=prg>int </span>linha = 0; linha &lt; <span class=prg>desc.Width; </span>linha++) 
+ <span class=sc16>{</span>
+  <span class=prg>for </span>(<span class=prg>int </span>coluna = 0; coluna &lt; <span class=prg>desc.Height; </span>coluna++) 
+   <span class=sc16>{</span>
+    <span class=sc2>// Produz uma cor aleatória</span>
+    r = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+    g = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+    b = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+    <span class=sc5>Color </span>cor = <span class=prg>Color.FromArgb</span>(r, g, b);  
+
+    <span class=sc2>// Escreve a cor na área de dados da textura</span>
+    cores[linha, coluna] = (<span class=prg>uint</span>)  <span class=prg>cor.ToArgb</span>();  
+
+   <span class=sc16>} <span class=sc2>// endfor coluna</span></span>
+ <span class=sc16>} <span class=sc2>// endfor linha</span></span>
+
+ <span class=sc2>// Libera a textura para o sistema\placa de vídeo</span>
+ <span class=prg>textura.UnlockRectangle</span>(<span class=sc4>0</span>);  
+
+<span class=sc16>} <span class=sc2>// ModificarTextura().fim</span></span>
+</div>
+<b><span class=sc2>// Obtém a descrição da textura</span>
+<span class=sc5>SurfaceDescription </span>desc = <span class=prg>textura.GetLevelDescription</span>(<span class=sc4>0</span>);</b>
+Esta linha obtém informação da textura, do nível zero(0)  de  mipmap,
+isto é, a textura principal.
+
+<b><span class=sc2>// Obtém a área de dados da textura</span>
+<span class=prg>uint </span>[,] cores; 
+cores = (<span class=prg>uint </span>[,]) <span class=prg>textura.LockRectangle</span>(<span class=sc16>typeof</span>(<span class=prg>uint</span>), <span class=sc4>0</span>, 
+  <span class=prg>LockFlags.None</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>); </b>
+Esta  linha  obtém uma array bidimensional com os  dados  de  cor  da
+textura.   Nesta  função  a  área  retangular  indicada  da textura é 
+trancada para nosso uso.  Neste  exemplo,  tomamos acesso do total da
+textura.
+
+<div class=niceview style="border-style:dashed;"><b><span class=sc2>// Escreve uma cor aleatória em cada ponto da textura</span>
+<span class=prg>for </span>(<span class=prg>int </span>linha = 0; linha &lt; <span class=prg>desc.Width; </span>linha++) 
+<span class=sc16>{</span>
+
+ <span class=prg>for </span>(<span class=prg>int </span>coluna = 0; coluna &lt; <span class=prg>desc.Height; </span>coluna++) 
+ <span class=sc16>{</span>
+
+  <span class=sc2>// Produz uma cor aleatória</span>
+  r = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+  g = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+  b = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+
+  <span class=sc5>Color </span>cor = <span class=prg>Color.FromArgb</span>(r, g, b);  
+
+  <span class=sc2>// Escreve a cor na área de dados da textura</span>
+  cores[linha, coluna] = (<span class=prg>uint</span>)  <span class=prg>cor.ToArgb</span>();  
+
+ <span class=sc16>} <span class=sc2>// endfor coluna</span></span>
+<span class=sc16>} <span class=sc2>// endfor linha</span></span></b></div> 
+Este bloco de código utiliza a instrução <span class=prg>for</span> para repassar e configurar
+os pontos de cor da textura acessados pelo par (<b>linha, coluna</b>).
+
+<b><span class=sc2>// Libera a textura para o sistema\placa de vídeo</span>
+<span class=prg>textura.UnlockRectangle</span>(<span class=sc4>0</span>);</b>
+O método <span class=prg>UnlockRectangle()</span> destranca o retângulo  que  estava  retido
+para modificações.
+
+<b><u>2.4 Desenhando o objeto 3D</u></b>
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Ajusta rotação do objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+ <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+ <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+ <span class=sc2>// Ajusta posição do objeto 3d</span>
+ <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+ <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+ <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+ <span class=sc2>// Prepara e aplica uma material\textura no objeto</span>
+ <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+ <span class=sc16>{</span>
+ <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+ <span class=sc2>// na renderização</span>
+ <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+ <b>
+ <span class=sc2>// Modifica a textura</span>
+ ModificarTextura(g_meshTex[ncx]);  
+ </b>
+ <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+ <span class=sc2>// Renderiza o mesh</span>
+ <span class=prg>obj.DrawSubset</span>(ncx);  
+ <span class=sc16>} <span class=sc2>// endfor</span></span>
+<span class=sc16>} <span class=sc2>// desenharObjeto()</span></span>
+</div>
+<b>
+<span class=sc2>// Modifica a textura</span>
+ModificarTextura(g_meshTex[ncx]);</b>
+Aqui  a  função  <b>ModificarTextura()</b>  é  chamada  em  todo  ciclo  de
+renderização para  compor  um  simples  efeito  de  textura  animada.
+
+<b><u>2.5 Renderização da cena</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>Renderizar() 
+<span class=sc16>{</span>
+ <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+ <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+ <span class=prg>Color.White.ToArgb</span>(), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+ <span class=prg>device.BeginScene</span>();  
+ <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+ <span class=sc2>// Atualiza a câmera</span>
+ AtualizarCamera();  
+ AtualizarLuz();  
+
+ <span class=sc2>// Desenha o primeiro mesh</span>
+ posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-200.0f</span>);  
+ rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+ g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+<b>
+ <span class=sc2>// Modifica propriedades da textura</span>
+ <span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.Linear;</span>
+</b>
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=sc2>// Desenha um segundo mesh</span>
+ <span class=prg>g_props.position.X </span>= <span class=sc4>100.0f; </span><span class=prg>g_props.position.Y </span>= <span class=sc4>0.2f;</span>
+<b>
+
+ <span class=sc2>// Modifica propriedades da textura</span>
+ <span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.None</span>;  
+</b>
+ desenharObjeto(objeto3D, g_props);  
+
+ <span class=prg>device.EndScene</span>();  
+
+ <span class=sc2>// Apresenta a cena renderizada na tela</span>
+ <span class=prg>device.Present</span>();  
+
+ <span class=sc2>// Libera a janela para processar outros eventos</span>
+ <span class=prg>Application.DoEvents</span>();  
+ <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+</div>
+<b><span class=sc2>// Modifica propriedades da textura</span>
+<span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.Linear;</span>
+<span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.None</span>;</b>
+A função  Renderizar()  desenha duas vezes o mesmo objeto 3d com esse
+filtro  de textura ligado e desligado para o acompanhamento do efeito
+prático ocasionado na textura.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_ModificarTextura</u></b>
+<div class=prg-code>
+<img src=images\prj_ModificarTextura.png>
+
+<span class=sc2>// prj_ModificarTextura - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como modificar a textura</span>
+<span class=sc2>// Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+
+<span class=sc16>namespace </span>prj_ModificarTextura 
+<span class=sc16>{</span>
+  <span class=sc2>// Estrutura para propriedades 3d do objeto</span>
+  <span class=sc2>// posição, rotação e cor</span>
+  <span class=prg>struct </span>Propriedades3D 
+  <span class=sc16>{</span>
+    <span class=prg>public </span><span class=sc5>Vector3 </span>position; 
+    <span class=prg>public </span><span class=sc5>Vector3 </span>rotation; 
+    <span class=prg>public </span><span class=sc5>Color </span>color; 
+
+    <span class=prg>public </span>Propriedades3D(<span class=sc5>Vector3 </span>pos, <span class=sc5>Vector3 </span>rot) 
+    <span class=sc16>{</span>
+      position = pos; 
+      rotation = rot; 
+      color = <span class=prg>Color.White;</span>
+    <span class=sc16>}</span>
+  <span class=sc16>};</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// Essa variável atualizada a cada ciclo ocasionará</span>
+    <span class=sc2>// a animação do objeto</span>
+    <span class=prg>private </span><span class=prg>float </span>angulo = <span class=sc4>0.0f;</span>
+
+    <span class=sc2>// Variável para guardar uma malha 3d</span>
+    <span class=prg>private </span><span class=sc5>Mesh </span>objeto3D = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de materiais do mesh</span>
+    <span class=prg>private </span><span class=sc5>Material</span>[] g_meshMtl = <span class=prg>null;</span>
+
+    <span class=sc2>// Recipiente de texturas do mesh</span>
+    <span class=prg>private </span><span class=sc5>Texture</span>[] g_meshTex = <span class=prg>null;</span>
+
+    <span class=sc2>// Pasta de localização do arquivo mesg e sua textura</span>
+    <span class=prg>private </span><span class=prg>string </span>diretorioBase = <span class=prg>null;</span>
+
+    <span class=sc2>// Vetores para a posição e rotação do objeto 3d</span>
+    <span class=sc5>Vector3 </span>posicao, rotacao; 
+
+    <span class=sc2>// Variável global para propriedade dos objetos</span>
+    Propriedades3D g_props; 
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+	
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Ativando o buffer de profundidade</span>
+      <span class=prg>pps.EnableAutoDepthStencil </span>= <span class=prg>true;</span>
+      <span class=prg>pps.AutoDepthStencilFormat </span>= <span class=prg>DepthFormat.D16;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      diretorioBase = <span class=sc6>@"c:\Gameprog\Gdkmedia\Modelos\Tiny\";</span>
+      CarregarModelo(diretorioBase, <span class=sc6>"tiny.x"</span>);  
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>CarregarModelo(<span class=prg>string </span>diretorioBase, <span class=prg>string </span>arquivo) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Composição do nome final do arquivo</span>
+      <span class=prg>string </span>caminhoFinal = diretorioBase + arquivo; 
+
+      <span class=sc2>// Quantidade de materiais\texturas encontrados no modelo3d</span>
+      <span class=prg>int </span>nTam = 0; 
+
+      <span class=sc2>// Pacote de materiais e texturas do modelo 3d</span>
+      <span class=sc5>ExtendedMaterial</span>[] xMtl; 
+
+      <span class=sc2>// Carrega modelo 3d com suas texturas e materiais</span>
+      objeto3D = <span class=prg>Mesh.FromFile</span>(caminhoFinal, <span class=prg>MeshFlags.Managed</span>, 
+        device, <span class=prg>out </span>xMtl);  
+
+      <span class=sc2>// Verifica quantidade de texturas\materiais do modelo</span>
+      nTam = <span class=prg>xMtl.Length;</span>
+
+      <span class=sc2>// Carrega as texturas caso nTam &gt; 0</span>
+      <span class=sc9>if </span>((xMtl != <span class=prg>null</span>)  && (nTam &gt; <span class=sc4>0</span>) ) 
+      <span class=sc16>{</span>
+
+        <span class=sc2>// Inicializa as variáveis arrays de materiais e texturas</span>
+        g_meshMtl = <span class=prg>new </span><span class=sc5>Material</span>[nTam];  
+        g_meshTex = <span class=prg>new </span><span class=sc5>Texture</span>[nTam];  
+
+        <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; nTam; ncx++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Carrega materiais</span>
+          g_meshMtl[ncx] = xMtl[ncx]<span class=prg>.Material3D;</span>
+
+          <span class=sc2>// Cria uma nova textura e preenche com cores aleatórias</span>
+          g_meshTex[ncx] = <span class=prg>new </span><span class=sc5>Texture</span>(device, 256, 256, <span class=sc4>1</span>, <span class=sc4>0</span>, 
+            <span class=prg>Format.X8R8G8B8</span>, <span class=prg>Pool.Managed</span>);  
+          ModificarTextura(g_meshTex[ncx]);  
+
+        <span class=sc16>} <span class=sc2>// endfor (materiais\texturas)</span></span>
+      <span class=sc16>} <span class=sc2>// endif (verificação de texturas\materiais presentes)</span></span>
+    <span class=sc16>} <span class=sc2>// CarregarModelo().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>ModificarTextura(<span class=sc5>Texture </span>textura) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Gerador de números aleatórios</span>
+      <span class=sc5>Random </span>sorteio = <span class=prg>new </span><span class=sc5>Random</span>();  
+
+      <span class=sc2>// Componentes rgb para montar depois a cor final</span>
+      <span class=prg>byte </span>r, g, b; 
+
+      <span class=sc2>// Obtém a descrição da textura</span>
+      <span class=sc5>SurfaceDescription </span>desc = <span class=prg>textura.GetLevelDescription</span>(<span class=sc4>0</span>);  
+
+      <span class=sc2>// Obtém a área de dados da textura</span>
+      <span class=prg>uint </span>[,] cores; 
+      cores = (<span class=prg>uint </span>[,]) <span class=prg>textura.LockRectangle</span>(<span class=sc16>typeof</span>(<span class=prg>uint</span>), <span class=sc4>0</span>, 
+          <span class=prg>LockFlags.None</span>, <span class=prg>desc.Width</span>, <span class=prg>desc.Height</span>);  
+
+      <span class=sc2>// Escreve uma cor aleatória em cada ponto da textura</span>
+      <span class=prg>for </span>(<span class=prg>int </span>linha = 0; linha &lt; <span class=prg>desc.Width; </span>linha++) 
+      <span class=sc16>{</span>
+        <span class=prg>for </span>(<span class=prg>int </span>coluna = 0; coluna &lt; <span class=prg>desc.Height; </span>coluna++) 
+        <span class=sc16>{</span>
+          <span class=sc2>// Produz uma cor aleatória</span>
+          r = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+          g = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+          b = (<span class=prg>byte</span>)  <span class=prg>sorteio.Next</span>(255);  
+          <span class=sc5>Color </span>cor = <span class=prg>Color.FromArgb</span>(r, g, b);  
+
+          <span class=sc2>// Escreve a cor na área de dados da textura</span>
+          cores[linha, coluna] = (<span class=prg>uint</span>)  <span class=prg>cor.ToArgb</span>();  
+
+        <span class=sc16>} <span class=sc2>// endfor coluna</span></span>
+      <span class=sc16>} <span class=sc2>// endfor linha</span></span>
+
+      <span class=sc2>// Libera a textura para o sistema\placa de vídeo</span>
+      <span class=prg>textura.UnlockRectangle</span>(<span class=sc4>0</span>);  
+
+    <span class=sc16>} <span class=sc2>// ModificarTextura().fim</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>desenharObjeto(<span class=sc5>Mesh </span>obj, Propriedades3D props) 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Ajusta rotação do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_rot = <span class=prg>Matrix.RotationX</span>(<span class=prg>props.rotation.X </span>+ angulo) * 
+        <span class=prg>Matrix.RotationY</span>(<span class=prg>props.rotation.Y</span>)  * 
+        <span class=prg>Matrix.RotationZ</span>(<span class=prg>props.rotation.Z</span>);  
+
+      <span class=sc2>// Ajusta posição do objeto 3d</span>
+      <span class=sc5>Matrix </span>obj_pos = <span class=prg>Matrix.Translation</span>(<span class=prg>props.position</span>);  
+
+      <span class=sc2>// Tranfere posição e rotação para o mundo</span>
+      <span class=prg>device.Transform.World </span>= obj_rot * obj_pos; 
+
+      <span class=sc2>// Prepara e aplica uma material\textura no objeto</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; <span class=prg>g_meshMtl.Length; </span>ncx++) 
+      <span class=sc16>{</span>
+        <span class=sc2>// Informa ao dispositivo o material a ser utilizado</span>
+        <span class=sc2>// na renderização</span>
+        <span class=prg>device.Material </span>= g_meshMtl[ncx];  
+
+        <span class=sc2>// Modifica a textura</span>
+        ModificarTextura(g_meshTex[ncx]);  
+
+        <span class=prg>device.SetTexture</span>(<span class=sc4>0</span>, g_meshTex[ncx]);  
+
+        <span class=sc2>// Renderiza o mesh</span>
+        <span class=prg>obj.DrawSubset</span>(ncx);  
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+    <span class=sc16>} <span class=sc2>// desenharObjeto()</span></span>
+
+
+    <span class=prg>private </span><span class=prg>void </span>AtualizarCamera() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Dados para a configuração da matriz de projeção</span>
+      <span class=prg>int largura = this.Width; <span class=sc2>// largura da janela</span></span>
+      <span class=prg>int altura = this.Height;  <span class=sc2>// altura da janela</span></span>
+      <span class=prg>float aspecto = largura / altura; <span class=sc2>// aspecto dos gráficos</span></span>
+      <span class=prg>float campo_visao = (float)Math.PI / 4; <span class=sc2>// Campo de visão</span></span>
+      <span class=prg>float </span>corte_perto = <span class=sc4>1.0f;</span>
+
+      <span class=sc2>// Essa variável foi modificar para acomodar o tamanho</span>
+      <span class=sc2>// do modelo</span>
+      <span class=prg>float </span>corte_longe = <span class=sc4>10000.0f;</span>
+
+      <span class=sc2>// Atualiza angulo para dar movimento ao objeto 3d</span>
+      angulo += <span class=sc4>0.01f;</span>
+
+      <span class=sc2>// Mostra a parte interna do polígono</span>
+      <span class=sc2>// Experimente desativar essa linha com a instrução de comentário</span>
+      <span class=prg>device.RenderState.CullMode </span>= <span class=prg>Cull.None;</span>
+
+      <span class=sc2>// Configura a matriz de projeção</span>
+      <span class=prg>device.Transform.Projection </span>= <span class=prg>Matrix.PerspectiveFovLH</span>(campo_visao, 
+          aspecto, corte_perto, corte_longe);  
+
+      <span class=sc2>// Dados para a configuração da matriz de visualização</span>
+      <span class=sc2>// O eixo z foi modificar para comportar o tamanho do modelo</span>
+      <span class=sc5>Vector3 </span>cam_pos = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>600.0f</span>);  
+
+      <span class=sc5>Vector3 </span>cam_alvo = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>, <span class=sc4>0.0f</span>);  
+      <span class=sc5>Vector3 </span>cam_orientacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Configura a matriz de visualização</span>
+      <span class=prg>device.Transform.View </span>= <span class=prg>Matrix.LookAtLH</span>(cam_pos, cam_alvo, cam_orientacao);  
+    <span class=sc16>}  <span class=sc2>// AtualizarCamera()</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target </span>| <span class=prg>ClearFlags.ZBuffer</span>, 
+        <span class=prg>Color.White.ToArgb</span>(), <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Atualiza a câmera</span>
+      AtualizarCamera();  
+      AtualizarLuz();  
+
+      <span class=sc2>// Desenha o primeiro mesh</span>
+      posicao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>-150.0f</span>, <span class=sc4>40.0f</span>, <span class=sc4>-200.0f</span>);  
+      rotacao = <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      g_props = <span class=prg>new </span>Propriedades3D(posicao, rotacao);  
+
+      <span class=sc2>// Modifica propriedades da textura</span>
+      <span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.Linear;</span>
+
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=sc2>// Desenha um segundo mesh</span>
+      <span class=prg>g_props.position.X </span>= <span class=sc4>100.0f; </span><span class=prg>g_props.position.Y </span>= <span class=sc4>0.2f;</span>
+
+      <span class=sc2>// Modifica propriedades da textura</span>
+      <span class=prg>device.SamplerState</span>[<span class=sc4>0</span>]<span class=prg>.MagFilter </span>= <span class=prg>TextureFilter.None</span>;  
+
+      desenharObjeto(objeto3D, g_props);  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+
+
+    <span class=sc2>// Configuração de luz</span>
+    <span class=prg>private </span><span class=prg>void </span>AtualizarLuz() 
+    <span class=sc16>{</span>
+      <span class=prg>device.RenderState.Ambient </span>= <span class=prg>Color.White;</span>
+      <span class=prg>device.RenderState.Lighting </span>= <span class=prg>true;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Type </span>= <span class=prg>LightType.Directional;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Diffuse </span>= <span class=prg>Color.White;</span>
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Direction </span>= <span class=prg>new </span><span class=sc5>Vector3</span>(<span class=sc4>0</span>, <span class=sc4>-1</span>, <span class=sc4>-1</span>);  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Commit</span>();  
+      <span class=prg>device.Lights</span>[<span class=sc4>0</span>]<span class=prg>.Enabled </span>= <span class=prg>true;</span>
+
+    <span class=sc16>} <span class=sc2>// AtualizarLuz().fim</span></span>
+
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      <span class=prg>this.Renderizar</span>();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track07-0.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track07-2.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

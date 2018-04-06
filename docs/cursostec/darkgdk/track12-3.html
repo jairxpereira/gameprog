@@ -1,0 +1,333 @@
+﻿<html>
+<head>
+<title>DarkGdk_fase12-3</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:500pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+</style>
+<body><font color="black">
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DarkGdk</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 12.3</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track12-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track13-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><br>
+<hr><a name="track12-3"></a><h3 style="background-color:#80ff80">12.3 Texturas</h3><pre>
+<b><u>1. Visão geral</b></u>
+<img src="images\textura_comp.png">
+Comparando-se as duas imagens na ilustração acima percebe-se que a textura
+adiciona um grande grau de realismo a uma cena 3d.
+
+Para texturizar um objeto basicamente é necessário carregar uma imagem de
+textura e usar uma função para aplicá-la no objeto. Pode ser que o resultado
+não fique muito bom, então é necessário o uso de outras funções para ajustar
+a textura no objeto como escalar, mover ou rotacionar a textura.
+
+<u><b>2.Funções de textura</b></u>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbTextureObject ( int iID, int iImage );</b>
+<b class=prg>void dbTextureObject ( nObjeto, nImagem );</b>
+Esta função aplica uma textura ao objeto.
+
+Exemplo: <span class=prg>
+// Identificação dos objetos
+const int obj_piso = 1;
+// Identificação das texturas
+const int txt_piso = 1;
+dbMakeObjectPlain (obj_piso,2800,2500); 
+dbLoadImage ("grass3.jpg", txt_piso);
+<b>dbTextureObject(obj_piso, txt_piso);</b>
+</span>
+
+-------------------------------------------------------------------------------
+<b class=sntx>void dbScaleObjectTexture ( int iID, float fU, float fV );</b>
+<b class=prg>dbScaleObjectTexture( nObjeto , uFatorx, vFatory);</b>
+Essa função aplica escala à  textura  de  um  objeto.  É semelhante ao
+processo de tiling ou azulajamento de uma aplicação 3d como Blender ou
+3D Studio Max,  na qual a textura se repete pelos eixos horizontal(x),
+e vertical (y) da image. 
+
+No   vocabulário   de  textura  chama-se (u) o eixo horizontal da textura, 
+enquanto o eixo vertical chama-se (v).    A textura é 'forrada' no objeto
+deitando o eixo u da textura sobre o eixo x do objeto e o eixo u cobrindo
+o eixo y do objeto. Segue abaixo a descrição dos argumentos dessa função:
+
+	<b>uFatorx</b>		- fator de escala do eixo u da textura
+	<b>vFatory</b>		- fator de escala do eixo v da textura
+
+Exemplo: <span class=prg>
+// Identificação dos objetos
+const int obj_piso = 1;
+// Identificação das texturas
+const int txt_piso = 1;
+dbMakeObjectPlain (obj_piso,2800,2500); 
+dbLoadImage ("grass3.jpg", txt_piso);
+dbTextureObject(obj_piso, txt_piso);
+// Corrigindo a textura do piso
+<b>dbScaleObjectTexture(obj_piso, 5.0f, 5.0f);</b>
+</span>
+
+Veja agora o programa completo:
+<div class=prg-code>
+<img src=images\textura_cpp.png>
+<span class="sc2">// textura.cpp
+// Esse programa ilustra como texturizar os objetos
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">primitivas</span><span class="sc10">();</span><span class="sc0">          </span><span class="sc2">// Cria formas primitivas
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// Leitura do teclado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">carregar_textura</span><span class="sc10">();</span><span class="sc0">    </span><span class="sc2">// Carrega imagens de textura
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">          </span><span class="sc2">// Texturiza os objetos
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Identificação dos objetos
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_piso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_esfera</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_retangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_caixa</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_cilindro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">obj_cone</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// Identificação das texturas
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_piso</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_esfera</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_retangulo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_caixa</span><span class="sc0">  </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_cilindro</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">txt_cone</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc11">carregar_textura</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">primitivas</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc2">// Configuração da camera
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">979.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">475.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">254.0f</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbRotateCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">29.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">3.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">6.0f</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Looping principal
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+    
+    </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">
+    
+    </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Vamos deletar os objetos
+</span><span class="sc0">        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc0"> </span><span class="sc10">&lt;=</span><span class="sc0"> </span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ncx</span><span class="sc10">++)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">dbDeleteObject</span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">);</span><span class="sc0">
+            </span><span class="sc11">dbDeleteImage</span><span class="sc10">(</span><span class="sc11">ncx</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endfor (deletar objetos)
+</span><span class="sc0">
+        </span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// endif
+</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// DarkGDK().fim
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"textura.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbSetAmbientLight</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetDisplayMode</span><span class="sc10">(</span><span class="sc4">640</span><span class="sc10">,</span><span class="sc4">480</span><span class="sc10">,</span><span class="sc4">32</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowSize</span><span class="sc10">(</span><span class="sc4">640</span><span class="sc10">,</span><span class="sc4">480</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+</span><span class="sc2">// Leitura do teclado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+
+ </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"??"</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+
+ </span><span class="sc2">// Vamos encerrar se a tecla "q" for pressionada
+</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"q"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">terminar</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+ </span><span class="sc11">strcpy</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"??"</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"Pressione 'q' para sair"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// teclado().fim
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">primitivas</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">// Criação dos objetos 3D primitivos
+</span><span class="sc11">dbMakeObjectCube</span><span class="sc10">(</span><span class="sc11">obj_caixa</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectSphere</span><span class="sc10">(</span><span class="sc11">obj_esfera</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectBox</span><span class="sc10">(</span><span class="sc11">obj_retangulo</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectCone</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cone</span><span class="sc10">,</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeObjectCylinder</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cilindro</span><span class="sc10">,</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc11">dbMakeObjectPlain</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_piso</span><span class="sc10">,</span><span class="sc4">2800</span><span class="sc10">,</span><span class="sc4">2500</span><span class="sc10">);</span><span class="sc0"> 
+
+</span><span class="sc2">// Posicionamento dos objetos
+</span><span class="sc11">dbPositionObject</span><span class="sc10">(</span><span class="sc11">obj_caixa</span><span class="sc10">,</span><span class="sc4">590</span><span class="sc10">,</span><span class="sc4">220</span><span class="sc10">,</span><span class="sc4">182</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc10">(</span><span class="sc11">obj_esfera</span><span class="sc10">,</span><span class="sc4">702</span><span class="sc10">,</span><span class="sc4">220</span><span class="sc10">,</span><span class="sc4">175</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc10">(</span><span class="sc11">obj_retangulo</span><span class="sc10">,</span><span class="sc4">816</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">,</span><span class="sc4">175</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cone</span><span class="sc10">,</span><span class="sc4">1005</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">220</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">175</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cilindro</span><span class="sc10">,</span><span class="sc4">1205</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">220</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">175</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_piso</span><span class="sc10">,</span><span class="sc4">800</span><span class="sc10">,-</span><span class="sc4">220</span><span class="sc10">,</span><span class="sc4">175</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Corrigindo a visualização do cilindro
+</span><span class="sc11">dbSetObjectCull</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cilindro</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Corrigindo a textura do piso
+</span><span class="sc11">dbScaleObjectTexture</span><span class="sc10">(</span><span class="sc11">obj_piso</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">5.0f</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Aplicando escala no cilindro e rodando a caixa
+</span><span class="sc11">dbScaleObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_cilindro</span><span class="sc10">,</span><span class="sc4">100</span><span class="sc10">,</span><span class="sc4">200</span><span class="sc10">,</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbRotateObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_caixa</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,-</span><span class="sc4">25</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc2">// Vamos rodar o piso
+</span><span class="sc11">dbRotateObject</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">obj_piso</span><span class="sc10">,</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">90</span><span class="sc10">,</span><span class="sc4">90</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// primitivas().fim
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">carregar_textura</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">dbSetDir</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gameprog\\gdkmedia\\textura"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"grass3.jpg"</span><span class="sc10">,</span><span class="sc0">          </span><span class="sc11">txt_piso</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"pjbasesky.jpg"</span><span class="sc10">,</span><span class="sc0">       </span><span class="sc11">txt_esfera</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"archpart7.jpg"</span><span class="sc10">,</span><span class="sc0">       </span><span class="sc11">txt_retangulo</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"x_support.tga"</span><span class="sc10">,</span><span class="sc0">       </span><span class="sc11">txt_caixa</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"concrete.jpg"</span><span class="sc10">,</span><span class="sc0">        </span><span class="sc11">txt_cilindro</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"ceilingtech02.jpg"</span><span class="sc10">,</span><span class="sc0">   </span><span class="sc11">txt_cone</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// carregar_textura().end
+</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_piso</span><span class="sc10">,</span><span class="sc0">       </span><span class="sc11">txt_piso</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_esfera</span><span class="sc10">,</span><span class="sc0">     </span><span class="sc11">txt_esfera</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_retangulo</span><span class="sc10">,</span><span class="sc0">  </span><span class="sc11">txt_retangulo</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_caixa</span><span class="sc10">,</span><span class="sc0">      </span><span class="sc11">txt_caixa</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_cilindro</span><span class="sc10">,</span><span class="sc0">   </span><span class="sc11">txt_cilindro</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbTextureObject</span><span class="sc10">(</span><span class="sc11">obj_cone</span><span class="sc10">,</span><span class="sc0">       </span><span class="sc11">txt_cone</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// texturizar().end</span></div>
+
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="darkgdk.html#start" style="color:blue"> index </a></td>
+<td><a href="track12-2.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track13-1.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr>
+<div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+

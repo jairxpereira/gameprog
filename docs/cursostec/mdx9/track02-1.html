@@ -1,0 +1,446 @@
+﻿<html>
+<head>
+<title>mdx9_fase02-1</title>
+<head>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;
+	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 02-1</b></center>
+<hr>
+<table align="left" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-7.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><br><pre>
+
+<hr><a name="track02"></a>
+<h3 style="background-color:#80ff80">02.1 Investigando o adaptador gráfico</h3><pre>
+<div class=prg-code>
+<b><u>1.1 Visão geral</u></b>
+<img src=images\prj_Adaptador_01.png></div>
+
+O DirectX apresenta a classe <b class=prg>Manager</b> que faz a leitura das capacidades
+da placa gráfica instalada desde informações gerais,  modos  de  vídeo 
+e <b>centenas</b>  de  tipos  de  recursos  de  processamento  eletrônico  de 
+aspectos gráficos.
+
+Enquanto os consoles de videogame apresentam uma configuração padrão,
+o mesmo não ocorre com os  computadores  domésticos  que  apresentam
+capacidades  gráficas  diferentes conforme o fabricante da placa mãe,
+conforme a placa de vídeo instalada. Não  é prudente acreditar que a
+configuração  aonde  foi  produzido  o  software vai  ser a mesma do 
+usuário final.  É  necessário  verificar a configuração da máquina e
+constranger  o software dentro dela ou fechar a aplicação de maneira
+simpática.
+
+<u>Adaptadores e tipos de dispositivo</u>
+<span class=prg>int adaptador = 0;
+device = new Device(<b>adaptador</b>, <b>DeviceType.Hardware</b>, this, 
+	CreateFlags.SoftwareVertexProcessing, pps); </span>
+	
+<b class=prg>int adaptador = 0;</b>
+Um computador pode conter várias placas de vídeos ao mesmo tempo ou 
+ainda,  a  placa de vídeo pode ter suporte ou saída simultânea para
+dois  monitores,  neste  caso  cada saída de vídeo é enxergada pelo
+sistema  como  um  adaptador  de  vídeo  independente.  O  primeiro 
+argumento  de  alocação  do dispositivo  pode apontar para qualquer
+outro adaptador que esteja embutido  no  sistema;  configurado como
+zero(0) essa opção aponta para o adaptador default.
+
+<b class=prg>DeviceType.Hardware</b>
+Essa  opção  aponta  para  o  hardware de aceleração 3D  para fazer o 
+trabalho  principal  do processo de renderização, iluminação e outras 
+coisas. É a melhor opção possível de tipo de dispositivo.
+
+<b class=prg>DeviceType.Reference</b> 
+Essa opção indica que o DirectX vai emular os recursos  de aceleração 
+3D via software utilizando o melhor que a CPU pode oferecer.  Costuma
+ser muito e serve apenas para testar recursos do DirectX que  a placa
+de vídeo não oferece suporte.
+
+<b class=prg>DeviceType.Software</b> 
+Essa opção abre espaço para um plugin de software  de terceiros  para
+fazer o trabalho de aceleração 3D. 
+
+<u>Processamento de vértices</u>
+<span class=prg>int adaptador = 0;
+device = new Device(adaptador, DeviceType.Hardware, this, 
+	<b>CreateFlags.SoftwareVertexProcessing</b>, pps); </span>
+O processamento de vértices pode ser feito no software,  no  hardware
+da placa se esta suportar ou em ambos.
+
+<b class=prg>CreateFlags.SoftwareVertexProcessing</b>
+Este flag indica que o processamento de vértices vai ser feito via
+software. 
+
+<b class=prg>CreateFlags.HardwareVertexProcessing</b>
+Este flag indica que o processamento de vértices vai ser feito pelo
+hardware de aceleração gráfica.
+
+<b class=prg>CreateFlags.MixedVertexProcessing</b>
+Este flag indica que o processamento de vértices vai ser feito pelo
+software como também no hardware.    
+
+<b><u>1.2 Estrutura da aplicação</b></u>
+A aplicação foi desenvolvida em modo console para manter o código  o
+mais limpo e simples possível. A aplicação vai usar a classe <b class=prg>Manager</b>
+para mostrar informações gerais do adaptador, modo de vídeo corrente,
+modos de vídeo suportados e vai mostrar uma lista de capacidades que
+podem  ou  não estarem disponíveis no  adaptador  de  vídeo  default.
+
+<b><u>2.1 Exibindo informações gerais e modos de vídeo</b></u>
+<div class=niceview><span class="sc2">// adaptador_exibirInfoGeral()
+// Exibe informações gerais e modo de vídeo do adaptador</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">adaptador_exibirInfoGeral</span><span class="sc10">()</span>
+<span class="sc10">{</span><span class="sc0">
+
+<span class="sc2">// Obtém informações gerais do adaptador</span>
+<span class="sc5">AdapterInformation</span><span class="sc0"> </span><span class="sc11">placaVideo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Manager.Adapters</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">];</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"Adaptador: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc5">placaVideo.Adapter</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">placaVideo.Information.Description</span><span class="sc10">);</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">placaVideo.Information.DriverName</span><span class="sc10">);</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">placaVideo.Information.DriverVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Modo de video atual: "</span><span class="sc10">);</span>
+<span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info_modo_atual</span><span class="sc10">;</span>
+<span class="sc2">// Acessa informação do modo de video corrente</span>
+<span class="sc5">DisplayMode</span><span class="sc0"> </span><span class="sc11">modo_atual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">placaVideo.CurrentDisplayMode</span><span class="sc10">;</span>
+<span class="sc2">// Formata a informação do modo de video e mostra-a</span>
+<span class="sc11">info_modo_atual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"{0} x {1} - Formato:{2}\n"</span><span class="sc10">,</span>
+<span class="sc5">modo_atual.Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span>
+<span class="sc5">modo_atual.Height</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span>
+<span class="sc5">modo_atual.Format</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">info_modo_atual</span><span class="sc10">);</span>
+
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Modos de video suportados: "</span><span class="sc10">);</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"--------------------------------------------------------"</span><span class="sc10">);</span>
+<span class="sc2">// Obtém informação dos outros modos de vídeos suportadores, formata</span>
+<span class="sc2">// e exibe-a.</span>
+<span class="sc5">DisplayModeEnumerator</span><span class="sc0"> </span><span class="sc11">modos_video</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">placaVideo.SupportedDisplayModes</span><span class="sc10">;</span>
+
+ <span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">DisplayMode</span><span class="sc0"> </span><span class="sc11">mdvideo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">modos_video</span><span class="sc10">)</span>
+ <span class="sc10">{</span><span class="sc0">
+ <span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">;</span>
+ <span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"{0} x {1} -{2}"</span><span class="sc10">,</span>
+ <span class="sc5">mdvideo.Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span>
+ <span class="sc5">mdvideo.Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span>
+ <span class="sc5">mdvideo.Format</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span>
+ <span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span>
+ <span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//endfor each  
+
+<span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// adaptador_exibirInfoGeral().fim
+</span></div>    
+
+<u>Obtendo informações gerais do adaptador</u>
+<b class=prg>AdapterInformation</b> placaVideo = <b class=prg>Manager.Adapters[0];</b>
+Aqui o objeto <b>placaVideo</b> do tipo <b class=prg>AdapterInformation</b> foi preenchido com
+informações  do  adaptador  default  obtido  por  <b class=prg>Manager.Adapters[0]</b>.
+Este objeto tem uma estrutura chamada <b class=prg>Information</b> que retorna nome do
+driver,  descrição  e   versão   através   dos   membros <span class=prg>.DriverName</span>, 
+<span class=prg>.Description</span> e <span class=prg>.DriverVersion</span>:
+<span class=prg>
+mostrar(<b class=prg>placaVideo.Information.DriverName</b>);
+mostrar(<b class=prg>placaVideo.Information.Description</b>);
+mostrar(<b class=prg>placaVideo.Information.DriverVersion</b>.ToString()); </span>
+
+O objeto <b>placaVideo</b> tem a propriedade <span class=prg>Adapter</span> que  retorna  o  índice 
+ordinal  do  adaptador  gráfico  acessado; zero (0) em nosso exemplo: <span class=prg>
+mostrar("Adaptador: " + <b class=prg>placaVideo.Adapter</b>.ToString());</span>
+
+<u>Obtendo informações do modo de vídeo corrente</u><span class=prg>
+<b class=prg>DisplayMode</b> modo_atual = <b class=prg>placaVideo.CurrentDisplayMode;</b> </span>
+A propriedade <span class=prg>.CurrentDisplayMode</span> retorna um objeto  <b class=prg>DisplayMode</b>  com
+informações  de  altura,  largura,  formato e outros dados do modo de
+vídeo corrente: <span class=prg>
+info_modo_atual = string.Format("{0} x {1} - Formato:{2}\n",
+<b class=prg>modo_atual.Width.</b>ToString(),
+<b class=prg>modo_atual.Height</b>.ToString(),
+<b class=prg>modo_atual.Format</b>.ToString()); </span>
+
+<u>Obtendo a lista de modos de vídeo suportados</u> <span class=prg>
+<b>DisplayModeEnumerator</b> modos_video = placaVideo<b>.SupportedDisplayModes;</b> </span>
+A  propriedade  <span class=prg>.SupportedDisplayModes</span>  retorna  um <b>iterador</b>  do tipo 
+<b class=prg>DisplayModeEnumerator</b> que dá acesso a uma lista de objetos <b class=prg>DisplayMode</b>
+com informações dos modos de vídeo suportados. Como  <b>modos_video</b> é um
+iterador  você  deve  utilizar <span class=prg>foreach</span>  para acessar cada elemento da 
+lista: <span class=prg>
+foreach (<b>DisplayMode</b> mdvideo in modos_video)
+{
+	string info;
+	info = string.Format("{0} x {1} -{2}",
+	  <b>mdvideo.Width</b>.ToString(),
+	  <b>mdvideo.Width</b>.ToString(),
+	  <b>mdvideo.Format</b>.ToString());
+	mostrar(info);
+} </span>  
+
+<b><u>2.2 Mostrando capacidades</b></u>
+<div class=niceview><span class="sc2">// Exibe centenas de capacidades gráficas que podem ou não
+// estarem disponíveis no adaptador gráfico default.</span>
+<span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">adaptador_exibirCapacidades</span><span class="sc10">()</span>
+<span class="sc10">{</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Capacidades do adaptador: "</span><span class="sc10">);</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"--------------------------------------------------------"</span><span class="sc10">);</span>
+<span class="sc5">Caps</span><span class="sc0"> </span><span class="sc11">capacidades</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Manager.GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">DeviceType.Hardware</span><span class="sc10">);</span>
+<span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">capacidades.ToString</span><span class="sc10">());</span>
+<span class="sc10">}</span><span class="sc2">// adaptador_exibirCapacidades()
+</span></div>
+<span class="sc5">Caps</span><span class="sc0"> </span><span class="sc11">capacidades</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">Manager.GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">DeviceType.Hardware</span><span class="sc10">);</span>
+<b>Caps</b> é uma abreviação para a palavra capacidades. O método <b class=prg>GetDeviceCaps()</b>
+que  recebe  um  adaptador (0)  e  um  tipo  de dispositivo como argumento, 
+retorna  um  objeto  <b>Caps</b>  com  informações  das  capacidades  do hardware 
+identificado. Este objeto <b class=prg>Caps</b>, chamado <b>capacidades</b> em nosso código, possui
+dezenas de estruturas com dezenas de membros totalizando centenas de itens
+de processamento eletrônico de aspectos da computação gráfica.
+
+<b class=prg>capacidades.ToString()</b>
+<img src=images\prj_Adaptador_02.png>
+Geralmente este método tem um significado óbvio retornando um objeto na
+forma  de  string.   Porém  este método particular assusta no volume de 
+informações  retornadas,  equivalente a um texto de 500 a 600 linhas de
+conteúdo referente  a  aspectos  de  computação gráfica que o adaptador
+verificado pode ou não suportar.
+
+<b><u>3. Código fonte do projeto de exemplo: prj_Adaptador</b></u>
+<div class=prg-code>
+<img src=images\prj_Adaptador_01.png>
+
+<span class="sc2">// Projeto prj_Adaptador - Arquivo: Program.cs
+// Este programa mostra como verificar os recursos oferecidos
+// pela placa gráfica como modos de vídeo e outros aspectos.
+// Produzido por www.gameprog.com.br
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">System</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">Microsoft</span><span class="sc10">.</span><span class="sc11">DirectX</span><span class="sc10">.</span><span class="sc11">Direct3D</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">prj_Adaptador</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+ </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Program</span><span class="sc0">
+ </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">Main</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">args</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Configura a janela de console
+</span><span class="sc0">        </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc6">"prj_Adaptador"</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc2">// Exibe informações gerais da placa
+</span><span class="sc0">        </span><span class="sc11">adaptador_exibirInfoGeral</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc2">// Exibe capacidades da placa gráfica
+</span><span class="sc0">        </span><span class="sc11">adaptador_exibirCapacidades</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc2">// Aguarda a leitura da tela
+</span><span class="sc0">        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Read</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// main() fim
+</span><span class="sc0">
+    </span><span class="sc2">// Método para configurar a janela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">config_janela</span><span class="sc10">(</span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Vamos configurar a janela
+</span><span class="sc0">        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">ForegroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">Blue</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">BackgroundColor</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">ConsoleColor</span><span class="sc10">.</span><span class="sc11">White</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Title</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">titulo</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetBufferSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">SetWindowSize</span><span class="sc10">(</span><span class="sc4">80</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">30</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">Clear</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// config_janela() fim    
+</span><span class="sc0">
+    
+    </span><span class="sc2">// adaptador_exibirInfoGeral()
+</span><span class="sc0">    </span><span class="sc2">// Exibe informações gerais e modo de vídeo do adaptador
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">adaptador_exibirInfoGeral</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc2">// Obtém informações gerais do adaptador
+</span><span class="sc0">        </span><span class="sc11">AdapterInformation</span><span class="sc0"> </span><span class="sc11">placaVideo</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">Adapters</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">];</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"Adaptador: "</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">Adapter</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">Information</span><span class="sc10">.</span><span class="sc11">Description</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">Information</span><span class="sc10">.</span><span class="sc11">DriverName</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">Information</span><span class="sc10">.</span><span class="sc11">DriverVersion</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+        
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Modo de video atual: "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info_modo_atual</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc2">// Acessa informação do modo de video corrente
+</span><span class="sc0">        </span><span class="sc11">DisplayMode</span><span class="sc0"> </span><span class="sc11">modo_atual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">CurrentDisplayMode</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc2">// Formata a informação do modo de video e mostra-a
+</span><span class="sc0">        </span><span class="sc11">info_modo_atual</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"{0} x {1} - Formato:{2}\n"</span><span class="sc10">,</span><span class="sc0">
+          </span><span class="sc11">modo_atual</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span><span class="sc0">
+          </span><span class="sc11">modo_atual</span><span class="sc10">.</span><span class="sc11">Height</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span><span class="sc0">
+          </span><span class="sc11">modo_atual</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">info_modo_atual</span><span class="sc10">);</span><span class="sc0">
+        
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Modos de video suportados: "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"--------------------------------------------------------"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc2">// Obtém informação dos outros modos de vídeos suportadores, formata
+</span><span class="sc0">        </span><span class="sc2">// e exibe-a.
+</span><span class="sc0">        </span><span class="sc11">DisplayModeEnumerator</span><span class="sc0"> </span><span class="sc11">modos_video</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">placaVideo</span><span class="sc10">.</span><span class="sc11">SupportedDisplayModes</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc5">foreach</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">DisplayMode</span><span class="sc0"> </span><span class="sc11">mdvideo</span><span class="sc0"> </span><span class="sc5">in</span><span class="sc0"> </span><span class="sc11">modos_video</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc16">string</span><span class="sc0"> </span><span class="sc11">info</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">info</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc16">string</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">(</span><span class="sc6">"{0} x {1} -{2}"</span><span class="sc10">,</span><span class="sc0">
+              </span><span class="sc11">mdvideo</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span><span class="sc0">
+              </span><span class="sc11">mdvideo</span><span class="sc10">.</span><span class="sc11">Width</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">(),</span><span class="sc0">
+              </span><span class="sc11">mdvideo</span><span class="sc10">.</span><span class="sc11">Format</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+            </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">info</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//endfor each  
+</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// adaptador_exibirInfoGeral().fim
+</span><span class="sc0">    
+    </span><span class="sc2">// Exibe centenas de capacidades gráficas que podem ou não
+</span><span class="sc0">    </span><span class="sc2">// estarem disponíveis no adaptador gráfico.
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">adaptador_exibirCapacidades</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"\n Capacidades do adaptador: "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc6">"--------------------------------------------------------"</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">Caps</span><span class="sc0"> </span><span class="sc11">capacidades</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">Manager</span><span class="sc10">.</span><span class="sc11">GetDeviceCaps</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">DeviceType</span><span class="sc10">.</span><span class="sc11">Hardware</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc11">capacidades</span><span class="sc10">.</span><span class="sc11">ToString</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc2">// adaptador_exibirCapacidades()
+</span><span class="sc0">
+    </span><span class="sc2">// mostra() mostras informação na tela
+</span><span class="sc0">    </span><span class="sc5">private</span><span class="sc0"> </span><span class="sc16">static</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">mostrar</span><span class="sc10">(</span><span class="sc5">object</span><span class="sc0"> </span><span class="sc11">informacao</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// Geralmente Console.Writeline() chama ToString() do
+</span><span class="sc0">        </span><span class="sc2">// objeto
+</span><span class="sc0">        </span><span class="sc11">Console</span><span class="sc10">.</span><span class="sc11">WriteLine</span><span class="sc10">(</span><span class="sc6">" {0}"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">informacao</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// mostrar().fim
+</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da classe Program
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do namespace prj_Adaptador
+</span></div>
+<hr>
+<table align="bottom" border="0" cellspacing="0" cellpadding="0" width="20%">
+<tr><td><a href="mdx9.html#start" style="color:blue"> index </a></td>
+<td><a href="track01-7.html" style="color:blue">&lt;&lt;</a></td>
+<td><a href="track02-2.html" style="color:blue">&gt;&gt;</a></td></tr></table><pre>
+<hr><div style="background-color:lightyellow;color:blue">
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+http://www.gameprog.com.br</center><hr></div></div></body></html>

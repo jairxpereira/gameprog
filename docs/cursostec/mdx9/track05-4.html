@@ -1,0 +1,746 @@
+﻿<html>
+<head>
+<title>mdx9_fase05-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX Gerenciado</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.4 Joystick</h3><pre>
+<b><u>1. Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Joystick.png></div>
+Tomando bomo base a inicialização do mouse e do teclado,o DirectInput
+apresenta  um  padrão  de  trabalho  bem  consistente.   Entretanto o
+acesso ao joystick apresenta um pouco de  dificuldade   especialmente 
+na inicialização tratada na função <b>inicializarJoystick()</b>.
+
+A primeira coisa notável dessa função é que ela é mais complicada que
+o código encontrado na inicialização do  mouse  ou  o  teclado.  Essa
+complexidade decorre do fato de que os joysticks não são dispositivos
+fortemente padronizados tal como são o mouse e o teclado. Há joysticks
+com diferentes números de botões e com variações de sensibilidade nos
+eixos. O próprio  DirectX não tem um <span class=prg>SystemGuid</span> fácil para conectar o
+primeiro  joystick  que esteja disponível no sistema sendo necessário
+uma pesquisa aos controladores conectados.
+
+Depois que se faz a inicialização, a verificação de  eixos  e  botões
+voltar  a ter a semelhança com o processo de verificação utilizado no
+acesso ao mouse.
+
+<b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code>
+<img src=images\esquema_prj_Joystick.png></div>
+Nessa aplicação o usuário controla o jogador utilizando o joystick. O
+botão   <b>btn[1]</b>   do  joystick  resseta  a  variável  <b>(xcol, ylin)</b>.  O 
+pressionamento dos dois botões, <b>btn[0]</b> e <b>btn[1]</b>, encerra a aplicação. 
+
+A estrutura em si da aplicação continua com os padrões  dos  projetos
+anteriores deste capítulo com as funções  para inicializar, verificar
+e mostrar os estados do dispositivo de entrada.
+
+<b><u>2.1 Variáveis da classe</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+<span class=sc16>{</span>
+<b>
+ <span class=sc2>// Variável para criação do dispositivo de gerenciamento do joystick</span>
+ <span class=prg>private </span><span class=prg>DirectInput.Device </span>joystick = <span class=prg>null;</span>
+</b>
+ <span class=sc2>// Para criação do dispositivo gráfico</span>
+ <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+ <span class=sc2>// A tecla Escape terminará a aplicação</span>
+ <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+ <span class=sc2>// Dados para o 'jogador'</span>
+ <span class=prg>private </span><span class=prg>int </span>xcol; 
+ <span class=prg>private </span><span class=prg>int </span>ylin; 
+ <span class=prg>string </span>jogador = <span class=prg>null;</span>
+
+ <span class=sc2>// Fontes para mostrar o 'jogador' na tela</span>
+ <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+ <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+ <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+ <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+<span class=sc2>// (...)</span>
+
+} <span class=sc2>// fim da classe</span>
+</div>
+<b>
+<span class=sc2>// Variável para criação do dispositivo de gerenciamento do joystick</span>
+<span class=prg>private </span><span class=prg>DirectInput.Device </span>joystick = <span class=prg>null;</span>
+</b>
+
+<b><u>2.2 Inicializando o joystick</u></b>
+<div class=niceview><span class=prg>public </span><span class=prg>void </span>initGfx() 
+<span class=sc16>{</span>
+
+ <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+ <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+ <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+ <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+ <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+ <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+ <span class=prg>int </span>adaptador = 0; 
+ device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+ <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+ <span class=sc2>// Configuração das fontes para mostrar Mensagens e títulos</span>
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+ g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+ dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+ <span class=sc2>// Inicializa jogador</span>
+ xcol = 320; 
+ ylin = 240; 
+ jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+ <b>inicializarJoystick(); </b>
+
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+
+<b>inicializarJoystick();</b>
+Essa função que será detalhada logo abaixo inicializa o joystick. Ela
+tem essa forma:
+<div class=niceview><span class=prg>private </span><span class=prg>void </span>inicializarJoystick() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Verifica os controles de videogames conectados</span>
+  <span class=prg>DirectInput.DeviceList </span>Dispositivos = 
+	<span class=prg>DirectInput.Manager.GetDevices</span>(<span class=prg>DirectInput.DeviceClass.GameControl</span>, 
+	   <span class=prg>DirectInput.EnumDevicesFlags.AttachedOnly</span>);  
+
+  <span class=sc2>// Repassa a lista de controles e pega o primeiro item</span>
+  <span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceInstance </span>dispositivo <span class=prg>in </span>Dispositivos) 
+  <span class=sc16>{</span>
+	joystick = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>dispositivo.InstanceGuid</span>);  
+	<span class=sc6>break;</span>
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Se não tiver Joystick vá embora da função...</span>
+  <span class=sc9>if </span>(joystick == <span class=prg>null</span>)  return; 
+
+  <span class=sc2>// Os dados do dispositivo serão tratados como dados de Joystick</span>
+  <span class=prg>joystick.SetDataFormat</span>(<span class=prg>DirectInput.DeviceDataFormat.Joystick</span>);  
+
+  <span class=sc2>// Configura nível de cooperação</span>
+  <span class=prg>joystick.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+	<span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+	 <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+  <span class=sc2>// Configura eixo</span>
+   <span class=prg>joystick.Properties.AxisModeAbsolute </span>= <span class=prg>true;</span>
+
+  <span class=sc2>// Configura faixa de valor retornado pelos eixos</span>
+  <span class=prg>DirectInput.InputRange </span>eixo_faixaValor; 
+  eixo_faixaValor = <span class=prg>new </span><span class=prg>DirectInput.InputRange</span>(<span class=sc4>-5000</span>, <span class=sc4>5000</span>);  
+  <span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceObjectInstance </span>item <span class=prg>in </span><span class=prg>joystick.Objects</span>)  
+  <span class=sc16>{</span>
+
+	<span class=prg>int </span>eixo_ok = <span class=prg>item.ObjectId </span>& (<span class=prg>int</span>) <span class=prg>DirectInput.DeviceObjectTypeFlags.Axis;</span>
+	<span class=sc9>if </span>(eixo_ok != <span class=sc4>0</span>)  
+	<span class=sc16>{</span>
+	  <span class=sc2>// Configura a faixa de valores do eixo encontrado</span>
+	  <span class=prg>joystick.Properties.SetRange</span>(<span class=prg>DirectInput.ParameterHow.ById</span>, 
+		  <span class=prg>item.ObjectId</span>, eixo_faixaValor);  
+	<span class=sc16>} <span class=sc2>// endif</span></span>
+  <span class=sc16>} <span class=sc2>// endfor each</span></span>
+
+  <span class=prg>joystick.Acquire</span>();  
+
+<span class=sc16>} <span class=sc2>// inicializarJoystick().fim</span></span>
+</div>
+<b><span class=sc2>// Verifica os controles de videogames conectados</span>
+<span class=prg>DirectInput.DeviceList </span>Dispositivos = 
+<span class=prg>DirectInput.Manager.GetDevices</span>(<span class=prg>DirectInput.DeviceClass.GameControl</span>, 
+   <span class=prg>DirectInput.EnumDevicesFlags.AttachedOnly</span>);</b>
+Com  essa  grande  linha  de código pegamos uma lista de dispositivos
+controladores de jogos conectados ao sistema.
+
+<b><span class=sc2>// Repassa a lista de controles e pega o primeiro item</span>
+<span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceInstance </span>dispositivo <span class=prg>in </span>Dispositivos) 
+<span class=sc16>{</span>
+joystick = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>dispositivo.InstanceGuid</span>);  
+<span class=sc6>break;</span>
+<span class=sc16>}</span></b>
+Com esse bloco de código usamos um <span class=prg>foreach</span> para repassar a  lista  de
+dispositivos conectados. Usamos um <span class=sc6>break</span> na  primeira  iteração  para
+pegar o primeiro controlador de jogo conectado.
+
+<b><span class=sc2>// Se não tiver Joystick vá embora da função...</span>
+<span class=sc9>if </span>(joystick == <span class=prg>null</span>)  return;</b> 
+Caso  nenhum  joystick  esteja presente a função pára por aqui mesmo.
+Porém  esse  é  um  cuidado meramente básico, uma aplicação para  ser
+robusta deve usar o tratamento de exceções visto que o  joystick pode
+ser desconectado após ter sido inicializado.
+
+<b><span class=sc2>// Os dados do dispositivo serão tratados como dados de Joystick</span>
+<span class=prg>joystick.SetDataFormat</span>(<span class=prg>DirectInput.DeviceDataFormat.Joystick</span>); </b>
+Essa função certifica ao DirectX que um joystick está sendo conectado
+e que os dados recebidos por esse dispositivo devem ser tratados como
+um controlador de jogo mesmo.
+
+<b><span class=sc2>// Configura nível de cooperação</span>
+<span class=prg>joystick.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+<span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+ <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>); </b>
+O nível de cooperação configurado continua semelhante  ao  mouse  ou
+teclado  com a aplicação recebendo dados do joystick em background e
+não assumindo exclusividade no uso desse dispositivo.
+
+<b><span class=sc2>// Configura eixo</span>
+<span class=prg>joystick.Properties.AxisModeAbsolute </span>= <span class=prg>true;</span></b>
+Para joysticks é mais confortável utilizar  valores absolutos para os
+eixos.
+
+<b><span class=sc2>// Configura faixa de valor retornado pelos eixos</span>
+<span class=prg>DirectInput.InputRange </span>eixo_faixaValor; 
+eixo_faixaValor = <span class=prg>new </span><span class=prg>DirectInput.InputRange</span>(<span class=sc4>-5000</span>, <span class=sc4>5000</span>);  
+<span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceObjectInstance </span>item <span class=prg>in </span><span class=prg>joystick.Objects</span>)  
+<span class=sc16>{</span>
+
+<span class=prg>int </span>eixo_ok = <span class=prg>item.ObjectId </span>& (<span class=prg>int</span>) <span class=prg>DirectInput.DeviceObjectTypeFlags.Axis;</span>
+ <span class=sc9>if </span>(eixo_ok != <span class=sc4>0</span>)  
+ <span class=sc16>{</span>
+  <span class=sc2>// Configura a faixa de valores do eixo encontrado</span>
+  <span class=prg>joystick.Properties.SetRange</span>(<span class=prg>DirectInput.ParameterHow.ById</span>, 
+	  <span class=prg>item.ObjectId</span>, eixo_faixaValor);  
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+<span class=sc16>} <span class=sc2>// endfor each</span></span></b>
+Esse bloco de código estampa no joystick um padrão de retorno na faixa
+de valores retornado pelos eixos.   Certamente  esses  valores  variam
+conforme o tipo de joystick instalado então  é prudente estabelecer um
+valor padrão para uso dentro de sua aplicação. Os recursos do joystick
+tais como botões, eixos, alavancas etc. são referidos como  objetos do
+joystick sendo consultados pela propriedade <b class=prg>Objects</b> desse dispositivo.
+
+<span class=prg>joystick.Acquire</span>(); 
+Adquirimos aqui o joystick para nossa aplicação.
+
+<b><u>2.4 Verificando o joystick</u></b>
+<div class=niceview><span class=prg>void </span>verificarJoystick() 
+<span class=sc16>{</span>
+
+<span class=sc9>if </span>(joystick == <span class=prg>null</span>)  return; 
+
+<span class=sc2>// Variáveis para guardar o estado das teclas</span>
+<span class=prg>int </span>seta_esquerda = 0; 
+<span class=prg>int </span>seta_direita = 0; 
+<span class=prg>int </span>seta_cima = 0; 
+<span class=prg>int </span>seta_abaixo = 0; 
+<b>
+<span class=prg>DirectInput.JoystickState </span>state = <span class=prg>joystick.CurrentJoystickState;</span>
+<span class=prg>byte</span>[] btn = <span class=prg>state.GetButtons</span>();  
+
+<span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>-40</span>)  seta_esquerda = 1; 
+<span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>1</span>)  seta_direita = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>1</span>)  seta_abaixo = 1; 
+</b>
+<span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+<span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>)  ylin += 5; 
+<span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>)  ylin -= 5; 
+<span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  xcol -= 5; 
+<span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  xcol += 5; 
+
+<span class=sc2>// Muda 'jogador' conforme seta pressionada</span>
+<span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  jogador = <span class=sc6>"&lt;</span>(<span class=sc6>-:";</span>
+<span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+<span class=sc2>// Aplique um reset se botão 1 for pressionando</span>
+ <span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  
+ <span class=sc16>{</span>
+   xcol = 320; 
+   ylin = 240; 
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc2>// Pressione os dois botões [0] e [1] do joystick para sair</span>
+<span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span>
+
+ <span class=sc2>// Processa a tecla Escape</span>
+ <span class=sc9>if </span>(terminar) 
+  <span class=sc16>{</span>
+  <span class=prg>device.Dispose</span>();  
+  <span class=prg>joystick.Dispose</span>();  
+  <span class=prg>this.Close</span>();  
+  <span class=prg>Application.Exit</span>();  
+ <span class=sc16>} <span class=sc2>// endif</span></span>
+
+<span class=sc16>} <span class=sc2>// Atualizarjoystick()</span></span>
+</div>
+
+A  verificação  de  estados dos eixos e botões  do  joystick é  muito
+semelhante a como se faz com o mouse:
+
+<b><span class=prg>DirectInput.JoystickState </span>state = <span class=prg>joystick.CurrentJoystickState;</span></b>
+Coletamos aqui o estado atual do joystick  e  a  partir  desse  ponto
+temos acessso direto aos eixos <span class=prg>X, Y, Z</span> e com  o  método  <span class=prg>GetButtons()</span>
+conseguimos o acesso aos botões:
+
+<b><span class=prg>byte</span>[] btn = <span class=prg>state.GetButtons</span>();</b>
+Aqui é coletado o estado atual dos botões.  
+<b>
+<span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>-40</span>)  seta_esquerda = 1; 
+<span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>1</span>)  seta_direita = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+<span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>1</span>)  seta_abaixo = 1; </b>
+Esse bloco de código configura as variáveis de estado conforme o valor
+encontrado nos eixos do joystick.  É  importante  verificar  e guardar 
+o  valor  inicial  dos eixos para corrigir as diferenças encontradas a
+cada  tipo  de  joystick  com  a qual a sua aplicação se depare. Nesta 
+amostra  o  valor inicial dos eixos representado pelos números <b>-40,1,0</b>
+foram  colocados  'duramente'  aqui mas numa melhor prática eles serão
+guardados  em  variáveis globais para futuras verificações de mudanças
+relativas aos seus estados iniciais.
+
+<b><span class=sc2>// Aplique um reset se botão 1 for pressionando</span>
+<span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  
+<span class=sc16>{</span>
+xcol = 320; 
+ylin = 240; 
+<span class=sc16>} <span class=sc2>// endif</span></span></b>
+Aqui pressionando o botão <b>btn[1]</b>,  segundo botão na array, resseta as
+coordenadas <b>(xcol, ylin)</b>.
+
+<b><span class=sc2>// Pressione os dois botões [0] e [1] do joystick para sair</span>
+<span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span>
+</b>Com os dois botões pressionados, <b>btn[0] e btn[1]</b>, o usuário encerra a 
+aplicação.
+
+<b><u>3. Código fonte do projeto de exemplo:prj_Joystick</u></b>
+<div class=prg-code>
+<img src=images\prj_Joystick.png>
+
+<span class=sc2>// prj_Joystick - Arquivo: Tela.cs</span>
+<span class=sc2>// Esse projeto mostra como usar o joystick via DirectInput</span>
+<span class=sc2>// Exemplo 01 - Produzido por www.gameprog.com.br</span>
+<span class=sc16>using </span><span class=sc16>System;</span>
+<span class=sc16>using </span><span class=prg>System.Drawing;</span>
+<span class=sc16>using </span><span class=prg>System.ComponentModel;</span>
+<span class=sc16>using </span><span class=prg>System.Windows.Forms;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX;</span>
+<span class=sc16>using </span><span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>Direct3D = <span class=prg>Microsoft.DirectX.Direct3D;</span>
+<span class=sc16>using </span>DirectInput = <span class=prg>Microsoft.DirectX.DirectInput;</span>
+
+<span class=sc16>namespace </span>prj_Joystick 
+<span class=sc16>{</span>
+
+  <span class=prg>public </span><span class=prg>partial </span><span class=prg>class </span>Tela : <span class=sc5>Form</span>
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Variável para criação do dispositivo de gerenciamento do joystick</span>
+    <span class=prg>private </span><span class=prg>DirectInput.Device </span>joystick = <span class=prg>null;</span>
+
+    <span class=sc2>// Para criação do dispositivo gráfico</span>
+    <span class=prg>private </span><span class=sc5>Device </span>device = <span class=prg>null;</span>
+
+    <span class=sc2>// A tecla Escape terminará a aplicação</span>
+    <span class=prg>private </span><span class=prg>bool </span>terminar = <span class=prg>false;</span>
+
+    <span class=sc2>// Dados para o 'jogador'</span>
+    <span class=prg>private </span><span class=prg>int </span>xcol; 
+    <span class=prg>private </span><span class=prg>int </span>ylin; 
+    <span class=prg>string </span>jogador = <span class=prg>null;</span>
+
+    <span class=sc2>// Fontes para mostrar o 'jogador' na tela</span>
+    <span class=sc2>// Objeto Font do DirectX para mostrar texto (titulos)</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfTitulo = <span class=prg>null;</span>
+    <span class=prg>private </span><span class=prg>Direct3D.Font </span>dxfMensagem = <span class=prg>null;</span>
+    <span class=sc2>// Objeto Font tradicional do namespace System.Drawing</span>
+    <span class=prg>private </span><span class=prg>System.Drawing.Font </span>g_font = <span class=prg>null;</span>
+
+    <span class=sc2>// (...)</span>
+
+    <span class=prg>public </span>Tela() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Inicialização dos componentes.</span>
+      InitializeComponent();  
+      <span class=prg>this.Size </span>= <span class=prg>new </span>Size(640, 480);  
+
+      <span class=sc2>// Toda renderização deverá ocorrer dentro do evento onPaint()</span>
+      <span class=sc2>// Isso evita interferência estrangeira de processamento default</span>
+      <span class=sc2>// do sistema Windows</span>
+      <span class=prg>this.SetStyle</span>(<span class=prg>ControlStyles.AllPaintingInWmPaint </span>| <span class=prg>ControlStyles.Opaque</span>, <span class=prg>true</span>);  
+
+    <span class=sc16>} <span class=sc2>// construtor</span></span>
+
+
+    <span class=prg>public </span><span class=prg>void </span>initGfx() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Configuração dos parâmetros de apresentação</span>
+      <span class=sc5>PresentParameters </span>pps = <span class=prg>new </span><span class=sc5>PresentParameters</span>();  
+      <span class=prg>pps.Windowed </span>= <span class=prg>true;</span>
+      <span class=prg>pps.SwapEffect </span>= <span class=prg>SwapEffect.Discard;</span>
+
+      <span class=sc2>// Adaptador default, processamento no hardware, processamento de vértice</span>
+      <span class=sc2>// no software, janela (this), parâmetros de apresentação (pps)</span>
+      <span class=prg>int </span>adaptador = 0; 
+      device = <span class=prg>new </span><span class=sc5>Device</span>(adaptador, <span class=prg>DeviceType.Hardware</span>, <span class=prg>this</span>, 
+        <span class=prg>CreateFlags.SoftwareVertexProcessing</span>, pps);  
+
+      <span class=sc2>// Configuração das fontes para mostrar Mensagens e títulos</span>
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>36.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfTitulo = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+      g_font = <span class=prg>new </span><span class=prg>System.Drawing.Font</span>(<span class=sc6>"Arial"</span>, <span class=sc4>12.0f</span>, <span class=prg>FontStyle.Bold</span>);  
+      dxfMensagem = <span class=prg>new </span><span class=prg>Direct3D.Font</span>(device, g_font);  
+
+      <span class=sc2>// Inicializa jogador</span>
+      xcol = 320; 
+      ylin = 240; 
+      jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+	  
+      inicializarJoystick();  
+
+    <span class=sc16>} <span class=sc2>// initGfx()</span></span>
+	
+	
+	    <span class=prg>public </span><span class=prg>void </span>Renderizar() 
+    <span class=sc16>{</span>
+
+      <span class=sc9>if </span>(joystick != <span class=prg>null</span>)  
+      <span class=sc16>{</span>
+        verificarJoystick();  
+        <span class=sc9>if </span>(terminar == <span class=prg>true</span>)  return; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+      <span class=sc2>// Limpa os dispositivos e os buffers de apoio</span>
+      <span class=prg>device.Clear</span>(<span class=prg>ClearFlags.Target</span>, <span class=prg>Color.White</span>, <span class=sc4>1.0f</span>, <span class=sc4>0</span>);  
+
+      <span class=prg>device.BeginScene</span>();  
+      <span class=sc2>// (...) Todo o código de desenhar vai aqui</span>
+
+      <span class=sc2>// Mostra 'jogador' e sua posição na tela</span>
+      <span class=sc5>String </span>info = <span class=prg>String.Format</span>(<span class=sc6>"</span>({0},{1})<span class=sc6>"</span>, xcol, ylin);  
+      MostrarTitulo(10, 10, info, <span class=prg>Color.Black</span>);  
+      MostrarTitulo(xcol, ylin, jogador, <span class=prg>Color.Red</span>);  
+      mostrarJoystickInfo();  
+
+      <span class=prg>device.EndScene</span>();  
+
+      <span class=sc2>// Apresenta a cena renderizada na tela</span>
+      <span class=prg>device.Present</span>();  
+
+      <span class=sc2>// Libera a janela para processar outros eventos</span>
+      <span class=prg>Application.DoEvents</span>();  
+    <span class=sc16>} <span class=sc2>// Renderizar()</span></span>
+	
+	
+    <span class=prg>protected </span><span class=prg>override </span><span class=prg>void </span>OnPaint(<span class=sc5>PaintEventArgs </span>e) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Trate outros processos padrões</span>
+      <span class=prg>base.OnPaint</span>(e);  
+
+      <span class=sc2>// Renderize a cena</span>
+      Renderizar();  
+
+      <span class=sc2>// Invalide para chamar novamente onPaint()</span>
+      <span class=prg>this.Invalidate</span>();  
+    <span class=sc16>} <span class=sc2>// onPaint().fim</span></span>
+
+    <span class=prg>void </span>verificarJoystick() 
+    <span class=sc16>{</span>
+
+      <span class=sc9>if </span>(joystick == <span class=prg>null</span>)  return; 
+
+      <span class=sc2>// Variáveis para guardar o estado das teclas</span>
+      <span class=prg>int </span>seta_esquerda = 0; 
+      <span class=prg>int </span>seta_direita = 0; 
+      <span class=prg>int </span>seta_cima = 0; 
+      <span class=prg>int </span>seta_abaixo = 0; 
+
+      <span class=prg>DirectInput.JoystickState </span>state = <span class=prg>joystick.CurrentJoystickState;</span>
+      <span class=prg>byte</span>[] btn = <span class=prg>state.GetButtons</span>();  
+
+      <span class=sc9>if </span>(<span class=prg>state.X </span>&lt; <span class=sc4>-40</span>)  seta_esquerda = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.X </span>&gt; <span class=sc4>1</span>)  seta_direita = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.Y </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.Y </span>&gt; <span class=sc4>0</span>)  seta_abaixo = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.Z </span>&lt; <span class=sc4>-40</span>)  seta_cima = 1; 
+      <span class=sc9>if </span>(<span class=prg>state.Z </span>&gt; <span class=sc4>1</span>)  seta_abaixo = 1; 
+
+      <span class=sc2>// Atualiza posicionamento do 'jogador'</span>
+      <span class=sc9>if </span>(seta_abaixo == <span class=sc4>1</span>)  ylin += 5; 
+      <span class=sc9>if </span>(seta_cima == <span class=sc4>1</span>)  ylin -= 5; 
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  xcol -= 5; 
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  xcol += 5; 
+
+      <span class=sc2>// Muda 'jogador' conforme seta pressionada</span>
+      <span class=sc9>if </span>(seta_esquerda == <span class=sc4>1</span>)  jogador = <span class=sc6>"&lt;</span>(<span class=sc6>-:";</span>
+      <span class=sc9>if </span>(seta_direita == <span class=sc4>1</span>)  jogador = <span class=sc6>":-</span>)<span class=sc6>&gt;";</span>
+
+      <span class=sc2>// Aplique um reset se botão 1 for pressionando</span>
+      <span class=sc9>if </span>(btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  
+      <span class=sc16>{</span>
+        xcol = 320; 
+        ylin = 240; 
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+      <span class=sc2>// Pressione os dois botões [0] e [1] do joystick para sair</span>
+      <span class=sc9>if </span>((btn[<span class=sc4>1</span>] &gt; <span class=sc4>0</span>)  && (btn[<span class=sc4>0</span>] &gt; <span class=sc4>1</span>) ) terminar = <span class=prg>true;</span>
+
+      <span class=sc2>// Processa a tecla Escape</span>
+      <span class=sc9>if </span>(terminar) 
+      <span class=sc16>{</span>
+        <span class=prg>device.Dispose</span>();  
+        <span class=prg>joystick.Dispose</span>();  
+        <span class=prg>this.Close</span>();  
+        <span class=prg>Application.Exit</span>();  
+      <span class=sc16>} <span class=sc2>// endif</span></span>
+
+    <span class=sc16>} <span class=sc2>// Atualizarjoystick()</span></span>
+	
+	
+    <span class=sc2>// Mostra texto com tamanho de fonte grande para títulos</span>
+    <span class=prg>private </span><span class=prg>void </span>MostrarTitulo(<span class=prg>int </span>xpos, <span class=prg>int </span>ylin, <span class=prg>string </span>txt, <span class=sc5>Color </span>font_cor) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Configura posição</span>
+      <span class=sc5>Rectangle </span>position = <span class=prg>new </span><span class=sc5>Rectangle</span>(xpos, ylin, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+
+      <span class=sc2>// Mostra texto</span>
+      <span class=prg>dxfTitulo.DrawText</span>(<span class=prg>null</span>, txt, position, <span class=prg>DrawTextFormat.NoClip</span>, font_cor);  
+    <span class=sc16>} <span class=sc2>// MostrarTitulo().fim</span></span>
+	
+	
+    <span class=prg>private </span><span class=prg>void </span>inicializarJoystick() 
+    <span class=sc16>{</span>
+
+      <span class=sc2>// Verifica os controles de videogames conectados</span>
+      <span class=prg>DirectInput.DeviceList </span>Dispositivos = 
+        <span class=prg>DirectInput.Manager.GetDevices</span>(<span class=prg>DirectInput.DeviceClass.GameControl</span>, 
+           <span class=prg>DirectInput.EnumDevicesFlags.AttachedOnly</span>);  
+
+      <span class=sc2>// Repassa a lista de controles e pega o primeiro item</span>
+      <span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceInstance </span>dispositivo <span class=prg>in </span>Dispositivos) 
+      <span class=sc16>{</span>
+        joystick = <span class=prg>new </span><span class=prg>DirectInput.Device</span>(<span class=prg>dispositivo.InstanceGuid</span>);  
+        <span class=sc6>break;</span>
+      <span class=sc16>}</span>
+
+      <span class=sc2>// Se não tiver Joystick vá embora da função...</span>
+      <span class=sc9>if </span>(joystick == <span class=prg>null</span>)  return; 
+
+      <span class=sc2>// Os dados do dispositivo serão tratados como dados de Joystick</span>
+      <span class=prg>joystick.SetDataFormat</span>(<span class=prg>DirectInput.DeviceDataFormat.Joystick</span>);  
+
+      <span class=sc2>// Configura nível de cooperação</span>
+      <span class=prg>joystick.SetCooperativeLevel</span>(<span class=prg>this</span>, 
+        <span class=prg>DirectInput.CooperativeLevelFlags.Background </span>| 
+         <span class=prg>DirectInput.CooperativeLevelFlags.NonExclusive</span>);  
+
+      <span class=sc2>// Configura eixo</span>
+       <span class=prg>joystick.Properties.AxisModeAbsolute </span>= <span class=prg>true;</span>
+
+      <span class=sc2>// Configura faixa de valor retornado pelos eixos</span>
+      <span class=prg>DirectInput.InputRange </span>eixo_faixaValor; 
+      eixo_faixaValor = <span class=prg>new </span><span class=prg>DirectInput.InputRange</span>(<span class=sc4>-5000</span>, 5000);  
+      <span class=prg>foreach </span>(<span class=prg>DirectInput.DeviceObjectInstance </span>item <span class=prg>in </span><span class=prg>joystick.Objects</span>)  
+      <span class=sc16>{</span>
+
+        <span class=prg>int </span>eixo_ok = <span class=prg>item.ObjectId </span>& (<span class=prg>int</span>) <span class=prg>DirectInput.DeviceObjectTypeFlags.Axis;</span>
+        <span class=sc9>if </span>(eixo_ok != <span class=sc4>0</span>)  
+        <span class=sc16>{</span>
+          <span class=sc2>// Configura a faixa de valores do eixo encontrado</span>
+          <span class=prg>joystick.Properties.SetRange</span>(<span class=prg>DirectInput.ParameterHow.ById</span>, 
+              <span class=prg>item.ObjectId</span>, eixo_faixaValor);  
+        <span class=sc16>} <span class=sc2>// endif</span></span>
+      <span class=sc16>} <span class=sc2>// endfor each</span></span>
+
+      <span class=prg>joystick.Acquire</span>();  
+
+    <span class=sc16>} <span class=sc2>// inicializarJoystick().fim</span></span>
+
+    <span class=prg>private </span><span class=prg>void </span>mostrarJoystickInfo() 
+    <span class=sc16>{</span>
+      <span class=sc2>// Variáveis para coletar e mostrar dados do joystick</span>
+      <span class=prg>DirectInput.JoystickState </span>joy_state; 
+      <span class=prg>byte</span>[] btn = <span class=prg>null;</span>
+      <span class=prg>string </span>info = <span class=prg>null;</span>
+
+      <span class=sc2>// Coleta informações do estado de eixos e botões</span>
+      joy_state = <span class=prg>joystick.CurrentJoystickState;</span>
+      btn = <span class=prg>joy_state.GetButtons</span>();  
+
+      <span class=sc2>// Mostre os botões na tela</span>
+      <span class=prg>int </span>ntam = <span class=prg>btn.Length;</span>
+      <span class=prg>for </span>(<span class=prg>int </span>ncx = 0; ncx &lt; 12; ncx++) 
+      <span class=sc16>{</span>
+        info = <span class=prg>String.Format</span>(<span class=sc6>"btn</span>[{0}]<span class=sc6>:{1}"</span>, ncx, btn[ncx]<span class=prg>.ToString</span>() );  
+        Mensagem(550, (ncx + <span class=sc4>1</span>)  * 22, info);  
+
+      <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+      <span class=sc2>// Mostre o estado dos eixos</span>
+      info = <span class=prg>String.Format</span>(<span class=sc6>"eixo_x:{0}"</span>, <span class=prg>joy_state.X.ToString</span>() );  
+      Mensagem(450, 22, info);  
+
+      info = <span class=prg>String.Format</span>(<span class=sc6>"eixo_y:{0}"</span>, <span class=prg>joy_state.Y.ToString</span>());  
+      Mensagem(450, 44, info);  
+
+      info = <span class=prg>String.Format</span>(<span class=sc6>"eixo_z:{0}"</span>, <span class=prg>joy_state.Z.ToString</span>());  
+      Mensagem(450, 66, info);  
+
+      info = <span class=prg>String.Format</span>(<span class=sc6>"Rz:{0}"</span>, <span class=prg>joy_state.Rz.ToString </span>());  
+      Mensagem(450, 88, info);  
+
+    <span class=sc16>} <span class=sc2>// mostrarJoystickInfo()</span></span>
+	
+
+    <span class=prg>private </span><span class=prg>void </span>Mensagem(<span class=prg>int </span>coluna, <span class=prg>int </span>linha, <span class=prg>string </span>txt) 
+    <span class=sc16>{</span>
+      <span class=sc5>Rectangle </span>pos = <span class=prg>new </span><span class=sc5>Rectangle</span>(coluna, linha, <span class=sc4>0</span>, <span class=sc4>0</span>);  
+      <span class=prg>dxfMensagem.DrawText</span>(<span class=prg>null</span>, txt, pos, 
+        <span class=prg>DrawTextFormat.NoClip</span>, <span class=prg>Color.Blue</span>);  
+    <span class=sc16>} <span class=sc2>// Mensagem().fim</span></span>
+	
+  <span class=sc16>} <span class=sc2>// fim da classe</span></span>
+<span class=sc16>} <span class=sc2>// fim do namespace</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='mdx9.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Março/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>
+

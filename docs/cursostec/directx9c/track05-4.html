@@ -1,0 +1,2166 @@
+﻿<html>
+<head>
+<title>dx9cpp_fase05-4</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+.sntx {
+	color: darkgreen;
+	}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000; font-weight: bold;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:0px;
+	width:500pt;
+	background-color:lightblue;	
+}
+
+.prg-code {
+	margin-left:0px;
+	width:515pt;
+	background-color:lightyellow;
+	padding:10px;
+	font-weight:bold;
+}
+
+
+.niceview {
+	margin-left:0px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+	padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.pagebody
+{
+padding:10px;
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+border-color:lightgray;
+background-image:url('background.png');
+}
+</style>
+</head>
+<body class=mybody><font color='black'>
+<div class=pagebody>
+<hr>
+<center><b style='font-size:1.5em;' >Curso completo de DirectX 9 com C\C++</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>Fase 05-4</b></center>
+<hr>
+<table align='left' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><br><pre>
+<hr><a name='topo'></a>
+<h3 style='background-color:#80ff80'>05.4 Joystick</h3><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo: motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Inicialização do DirectInput</a>
+<a href=#2.5>2.5 Tratamento do joystick via DirectInput</a>
+<a href=#2.6>2.6 Renderização da cena</a>
+<a href=#2.7>2.7 Limpeza do DirectInput</a>
+<a href=#2.8>2.8 Informações dos estados do joystick</a>
+<a href=#3.1>3.1 Aspectos globais: arquivo: joystick.h</a>
+<a href=#3.2>3.2 Aspectos globais: arquivo: joystick.cpp</a>
+<a href=#3.3>3.3 Inicialização do joystick</a>
+<a href=#3.4>3.4 Alistamento dos controles conectados no sistema</a>
+<a href=#3.5>3.5 Alistamento dos componentes presentes no joystick</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Joystick</a>
+
+<a name='1.1'><b><u>1.1 Visão geral</b></u>
+<div class=prg-code><img src=images\prj_Joystick.png></div>
+Tomando bomo base a inicialização do mouse e do teclado, o DirectInput
+apresenta  um  padrão  de  trabalho  bem  consistente.   Entretanto o
+acesso ao joystick apresenta um pouco de  dificuldade   especialmente 
+na inicialização tratada na função <b>inicializar_Joystick()</b>.
+
+A primeira coisa notável dessa função é que ela é mais complicada que
+o código encontrado na inicialização do  mouse  ou  do teclado.  Essa
+complexidade decorre do fato de que os joysticks não são dispositivos
+fortemente padronizados tal como são o mouse e o teclado. Há joysticks
+com diferentes números de botões e com variações de sensibilidade nos
+eixos. O próprio directx não tem um simples <b class=sc5>GUID_</b> fácil para conectar
+o primeiro joystick que esteja disponível no sistema sendo necessário
+uma pesquisa aos controladores conectados.
+
+Depois que se faz a inicialização, a verificação de  eixos  e  botões
+volta a ter a semelhança com o processo  de  verificação utilizado no
+acesso ao mouse.
+
+Nessa aplicação o usuário controla o jogador utilizando o joystick. O
+O  pressionamento  dos  dois  botões,  <b>btn[0]</b>  e  <b>btn[1]</b>,  recoloca o
+jogador simbólico em outra posição pré-definida na janela.
+
+A estrutura em si da aplicação continua com os padrões  dos  projetos
+anteriores deste capítulo com as funções  para inicializar, verificar
+e mostrar os estados do dispositivo de entrada.  Porém, no tocante ao
+joystick é necessário ter uma função para  alistar  os  controladores
+atrelados no sistema e outra função para sondar os  componentes  como
+eixos e outras  funcionalidades que possam estar presentes ou não  no
+joystick localizado.
+
+Esta  aplicação  traz  uma  classe  <b class=prg>Relatorio</b>  utilizada  para salvar
+informações em um arquivo texto sobre alguns componentes  que  possam
+estar  presentes  no  joystick  utilizado para controlar a aplicação.
+
+<a name='1.2'><b><u>1.2 Estrutura principal da aplicação</b></u>
+<div class=prg-code><b class=sc2>Arquivo: motor.h</b>
+<div class=niceview style="border-style:dashed;"><b class=prg>Classe Relatorio</b>
+<img src=images\clsRelatorio.png>
+<b class=sc16>Inicializar()</b>
+	Abre o arquivo joystick.txt em modo texto para gravação
+	
+<b class=sc16>Grava ( mensagem )</b>
+	Grava uma string no arquivo aberto
+	
+<b class=sc16>Fechar()</b>
+	Fecha o arquivo aberto
+</div>
+
+<b class=sc2>Arquivos: joystick.h \ joystick.cpp</b>
+<div class=niceview style="border-style:dashed;">
+<b class=sc16>inicializar_Joystick()</b>	
+	Verifica os controles conectados ao sistema com 
+		<b class=prg>g_DirectInput->EnumDevices</b>( <b class=prg>alistarJoysticks()</b>, <b class=sc2>// (...)</b> )
+		
+	Inicializa o controle ( g_joystick) em <b class=prg>alistarJoysticks()</b>	
+	Configura formato de dados	
+	Configura nível de cooperação
+	
+	Verifica e inicializa os componentes do controle com
+		<b class=prg>g_joystick->EnumObjects</b>( <b class=prg>alistarControleComponentes()</b>, <b class=sc2>// (...)</b> )
+	
+<b class=sc16>alistarJoysticks()</b>	
+	Recebe cada joystick encontrado e cria uma interface para uso do mesmo
+
+<b class=sc16>alistarControleComponentes()</b>	
+	Recebe cada componente encontrado no joystick	
+	Configura a faixa de valor de trabalho dos eixos	
+	Salva informações sobre o joystick no arquivo joystick.txt	
+</div>
+
+<b class=sc2>Arquivo: motor.cpp</b>
+<div class=niceview style="border-style:dashed;">
+inicializar_DirectInput()
+	inicializa o objeto DirectInput ( g_DirectInput ) 
+	
+initGfx()
+	Inicializa o motor gráfico	
+	Inicializa o objeto DirectInput via inicializar_DirectInput()
+	<b class=sc16>Inicializa o objeto g_joystick via inicializar_Joystick()</b>
+
+<b class=sc16>tratar_Joystick()</b>
+	Verifica o estado dos eixos e botões do joystick
+	
+	Atualiza variáveis de movimento do jogador conforme os eixos e
+		botões acionados.		
+	
+<b class=sc16>mostrar_joyinfo()</b>
+	Prepara e mostra informações sobre os estados do joystick
+
+Renderizar()
+	<b class=sc16>Verifica e processa o joystick via tratar_Joystick()</b>
+	Limpa a tela	
+	mostra o jogador simbólico	
+	<b class=sc16>mostra informações dos estados do joystick via mostrar_joyinfo()</b>
+
+<b class=sc16>limpar_DirectInput()	 </b>
+	Libera o objeto DirectInput ( g_DirectInput )
+	Libera o dispositivo de entrada ( g_joystick ) </b>
+</div></div>
+
+
+<a name='2.1'><b><u>2.1 Aspectos globais: arquivo: motor.h </u></b>
+<div class=niceview>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+
+<span class=sc2>// Desativa aviso de função string insegura</span>
+<span class=sc16>#pragma </span>warning ( disable:4996 ) 
+
+<span class=sc2>// ********** Classe para gravar um relatório ***********************</span>
+<span class=prg>class </span>Relatorio 
+<span class=sc16>{</span>
+<span class=sc16>public:</span>
+  FILE *m_arquivo; 
+
+<span class=sc2>// Construtor</span>
+Relatorio() 
+  <span class=sc16>{</span>
+    m_arquivo = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+~Relatorio() 
+  <span class=sc16>{</span>
+  <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+  <span class=prg>void </span>Inicializar() 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(m_arquivo == <span class=prg>NULL</span>)  
+    m_arquivo = fopen(<span class=sc6>"joystick.txt"</span>, <span class=sc6>"wt"</span>);   
+  <span class=sc16>} <span class=sc2>// abrirArquivo().fim</span></span>
+
+  <span class=prg>void </span>Gravar(<span class=prg>char </span>*info) 
+  <span class=sc16>{</span>
+  <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  
+  <span class=prg>fprintf</span>(m_arquivo, <span class=sc6>"%s\n"</span>, info);  
+  <span class=sc16>} <span class=sc2>// gravarDados().fim</span></span>
+
+  <span class=prg>void </span>Fechar() 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  
+    m_arquivo = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// fecharArquivo().fim</span></span>
+<span class=sc16>}; <span class=sc2>// fim da classe Relatorio</span></span>
+<span class=sc2>// ********** Classe para gravar um relatório ***********************</span>
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+<span class=prg>void </span>inicializarTexto();  
+
+<span class=sc2>// Configura posição do jogador</span>
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos);  
+
+<span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+<span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+<span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput();  
+
+<span class=sc2>// Mostra informações de estados do joystick</span>
+<span class=prg>void </span>mostrar_joyinfo();  
+
+<span class=sc2>// Essa função trata a entrada via joystick</span>
+<span class=sc16>HRESULT </span>tratar_Joystick(<span class=prg>void</span>);   
+
+<span class=sc2>// Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput();  
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+<u>Classe relatório</u>
+<span class=prg>FILE *m_arquivo;</span>
+Este  é  o  handle  para  manipulação  de  arquivos, em nosso caso, o
+arquivo  texto  joystick.txt  pré-definido  na  abertura  do arquivo.
+
+<b>Relatorio() <span class=sc16>{</span>  m_arquivo = <span class=prg>NULL</span>;  <span class=sc16>} <span class=sc2>// fim do construtor</span></span></b>
+Esta  é  a  função construtora da classe que apenas limpa o handle de
+arquivo.
+  
+<b>~Relatorio() <span class=sc16>{</span> <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  <span class=sc16>} </span></b>
+Esta  é  a  função destrutora da classe que apenas fecha o arquivo se
+estiver aberto.  
+
+<b><span class=prg>void </span>Inicializar() <span class=sc16>{</span>
+<span class=sc9>if </span>(m_arquivo == <span class=prg>NULL</span>) m_arquivo = fopen(<span class=sc6>"joystick.txt"</span>, <span class=sc6>"wt"</span>); <span class=sc16>} </span> </b>
+Esta função abre o arquivo joystick.txt  para gravação em modo texto.
+Este arquivo será usado  para gravar informações sobre a presença de
+alguns componentes do joystick.
+
+<b><span class=prg>void </span>Gravar(<span class=prg>char </span>*info) <span class=sc16>{</span>
+<span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>) <span class=prg>fprintf</span>(m_arquivo, <span class=sc6>"%s\n"</span>, info);  <span class=sc16>}</span> </b>
+Esta função grava uma string no arquivo aberto.
+
+<b><span class=prg>void </span>Fechar() <span class=sc16>{</span>
+<span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  
+m_arquivo = <span class=prg>NULL</span>; <span class=sc16>} </span> </b>
+Esta função fecha o arquivo aberto.
+<b class=sc2>// ------------------------------------------------------------------</b>
+
+<u>Protótipo das funções</u>
+<b><span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  </b>
+Além  de  inicializar  o  motor  gráfico essa função chama as funções
+que fazem o trabalho de inicialização do DirectInput, do joystick, de
+texto, do objeto emissor de relatório e faz a inicialização básica do
+jogador simbólico sobre a tela.
+
+<b><span class=prg>void </span>Renderizar(); </b>
+Antes  de  renderizar  a  cena  esta função  chama  <b>tratar_Joystick()</b>
+para  atualizar  a  lógica da aplicação conforme o uso  que o usuário
+faz do joystick. Essa função também exibe as informações referente aos
+estados do joystick através do uso da função <b>mostrar_joyinfo()</b>.
+
+<b><span class=prg>void </span>mostrar_joyinfo();  </b>
+A função <b>mostrar_joyinfo()</b> mostra as informações referente aos estados
+do joystick.
+
+<b><span class=sc16>HRESULT </span>tratar_Joystick(<span class=prg>void</span>); </b>
+Essa função verifica e processa os estados do joystick  e atualiza a
+lógica da aplicação  em  conformidade  com os estados acionados pelo
+usuário.
+
+<a name='2.2'><b><u>2.2 Aspectos globais: arquivo: motor.cpp </u></b>
+<div class=niceview><span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8 </span>*g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de entrada joystick</span>
+<span class=sc5>IDirectInputDevice8 </span> *g_joystick = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Objeto para gravar informações em arquivo texto</span>
+Relatorio g_relatorio; 
+
+<span class=sc2>// Estrutura para coletar os estados do joystick</span>
+<span class=sc16>extern </span><span class=sc5>DIJOYSTATE2 </span>g_jsStatus; 
+</div>
+<b><span class=sc5>IDirectInput8       </span> *g_DirectInput = <span class=prg>NULL</span>; 
+<span class=sc5>IDirectInputDevice8 </span> *g_joystick    = <span class=prg>NULL</span>; </b>
+Estas variáveis que se referem ao  objeto  DirectInput  e  ao  objeto
+dispositivo  de  entrada  joystick  são extensamente usadas também no
+arquivo  <span class=prg>joystick.cpp</span>  e  lá  aparecem  com  a  marca  de <span class=prg>extern</span>.
+
+<b>Relatorio g_relatorio; </b>
+Este  objeto  global  será utilizado para gravar informações sobre os
+componentes  do  joystick no disco. Ele também aparece com a marca de
+<span class=prg>extern</span> no arquivo <span class=prg>joystick.cpp</span>.
+
+<b><span class=sc16>extern </span><span class=sc5>DIJOYSTATE2 </span>g_jsStatus; </b>
+Esta  estrutura  é  utilizada  para coletar e processar os estados do
+joystick. Ela está definida no arquivo <span class=prg>joystick.cpp</span>.
+
+<a name='2.3'><b><u>2.3 Inicialização do motor gráfico </u></b>
+<div class=niceview><span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_esquerda; 
+
+  <span class=sc2>// Reset posição do jogador</span>
+  setJogadorPos(320, 240);  
+<b>
+  <span class=sc2>// Inicia o objeto para salvar informações no disco</span>
+  g_relatorio = Relatorio();  
+  <span class=prg>g_relatorio.Inicializar</span>();  
+
+  <span class=sc2>// Inicializa DirectInput e o dispositivo de joystick depois</span>
+  inicializar_DirectInput();  
+  inicializar_Joystick();  
+</b>
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+</div>
+<b>g_relatorio = Relatorio();  <span class=prg>g_relatorio.Inicializar</span>();  </b>
+Aqui  inicializamos  o  objeto  relatório  para salvar informações no
+disco.
+
+<b>inicializar_DirectInput();  inicializar_Joystick(); </b>
+Aqui ocorre a inicialização do DirectInput e do joystick.
+
+<a name='2.4'><b><u>2.4 Inicialização do DirectInput </u></b>
+Segue abaixo a simples listagem da função <b>inicializar_DirectInput()</b>.
+
+<div class=niceview><span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc5>IID_IDirectInput8</span>, (<span class=prg>void**</span>)  &g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+</div>
+
+<a name='2.5'><b><u>2.5 Tratamento do joystick via DirectInput </u></b>
+<div class=niceview><span class=sc16>HRESULT </span>tratar_Joystick( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Resultado das operações</span>
+  <span class=sc16>HRESULT </span>      hr; 
+
+  <span class=sc2>// Retorne se não houver um joystick ok</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_joystick )  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Limpe a estrutura e colete o estado do joystick</span>
+  <span class=prg>ZeroMemory</span>( &g_jsStatus, <span class=sc16>sizeof</span>(g_jsStatus) );  
+
+  <span class=sc2>// Verifique o estado atual do dispositivo</span>
+  hr = <span class=prg>g_joystick-&gt;Poll</span>();  
+
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+    <span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+    <span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+    <span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+    <span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+    <span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+    <span class=sc2>// continue tentando a reaquisição.</span>
+    hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+    <span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+
+    <span class=sc2>// Retorne se houver algum erro</span>
+    <span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+    <span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+    <span class=sc2>// transição. Então, tente mais tarde-&gt;.</span>
+    <span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+      <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Obtém os estados do joystick</span>
+  hr = <span class=prg>g_joystick-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIJOYSTATE2</span>), &g_jsStatus );  
+
+  <span class=sc2>// Retorne imediamente em caso de falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Testa botão 01</span>
+  <span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+
+  <span class=sc2>// Testa botão 02</span>
+  <span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Declara variáveis de estados das setas</span>
+  <span class=prg>int </span>seta_direita, seta_esquerda, seta_cima, seta_baixo; 
+  seta_direita  = <span class=sc4>0</span>; 
+  seta_esquerda = <span class=sc4>0</span>; 
+  seta_cima   = <span class=sc4>0</span>; 
+  seta_baixo  = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a movimentação dos eixos e atualiza os flags de movimento</span>
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>== <span class=sc4>-1000</span>)  seta_esquerda = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>==  1000) seta_direita  = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>== <span class=sc4>-1000</span>)  seta_cima     = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>==  1000) seta_baixo    = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tratamento da seta esquerda</span>
+  <span class=sc9>if</span>( seta_esquerda ) 
+  <span class=sc16>{</span>
+    xcol = xcol - nVelocidade; 
+    sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// endif seta_esquerda</span></span>
+
+  <span class=sc2>// Tratamento da seta direita</span>
+  <span class=sc9>if</span>( seta_direita ) 
+  <span class=sc16>{</span>
+    xcol = xcol + nVelocidade; 
+    sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif seta_direita</span></span>
+
+  <span class=sc2>// Tratamento da seta cima \ seta baixo</span>
+  <span class=sc9>if</span>( seta_cima  ) ylin = ylin - nVelocidade; 
+  <span class=sc9>if</span>( seta_baixo ) ylin = ylin + nVelocidade; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// tratar_Joystick().fim</span></span>
+</div>
+<b>hr = <span class=prg>g_joystick-&gt;Poll</span>();  </b>
+Esta  função  participa  na  obtenção  do  estado  do joystick. Nossa
+aplicação funciona muito bem sem ela  mas a documentação do directx 8
+informa  que  alguns  dispositivos  de  entrada só emitem os dados de 
+estados mediante o uso prévio dessa função.
+
+<u>Verificação de erro no processo de leitura do joystick</u>
+<div class=niceview><b><span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+<span class=sc16>{</span>
+<span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+<span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+<span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+<span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+<span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+<span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+<span class=sc2>// continue tentando a reaquisição.</span>
+hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+<span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+
+<span class=sc2>// Retorne se houver algum erro</span>
+<span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+<span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+<span class=sc2>// transição. Então, tente mais tarde-&gt;.</span>
+<span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; <span class=sc16>} <span class=sc2>// endif</span></span></b></div>
+Essa código vai persistir na reaquisição do joystick caso a aplicação
+tenha perdido acesso a esse dispositivo.
+
+<b>hr = <span class=prg>g_joystick-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIJOYSTATE2</span>), &g_jsStatus );  
+<span class=sc9>if</span>( <span class=prg>FAILED </span>(hr) ) <span class=sc6>return </span>hr; </b>
+Aqui fazemos a leitura do estado do dispositivo. Em caso de insucesso
+a função  simplesmente  retorna para tentar de novo no próximo frame.
+
+<div class=niceview><b><span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+<span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  
+
+<span class=sc2>// Verifica a movimentação dos eixos e atualiza os flags de movimento</span>
+<span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>== <span class=sc4>-1000</span>)  seta_esquerda = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>==  1000) seta_direita  = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>== <span class=sc4>-1000</span>)  seta_cima     = <span class=sc4>1</span>; 
+<span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>==  1000) seta_baixo    = <span class=sc4>1</span>; </b></div>
+A  forma  de  acessar eixos e botões é praticamente igual ao processo
+utilizado com o mouse.
+
+<a name='2.6'><b><u>2.6 Renderização da cena - Renderizar()</u></b>
+Antes  de  renderizar  a  cena  esta função  chama  <b>tratar_Joystick()</b>
+para  atualizar  a  lógica da aplicação conforme o uso  que o usuário
+faz do joystick.
+
+A função <b>mostrar_joyinfo()</b> mostra as informações referente aos estados
+do joystick.
+
+<div class=niceview><span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+  <b><span class=sc2>// Verifica e trata joystick</span>
+  tratar_Joystick();  </b>
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, 
+    <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+<b>
+    <span class=sc2>// Mostra o jogador</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Mostra as mensagens</span>
+    mostrarTexto (10, 10, <span class=sc6>"Joystick: movimentação"</span>);   
+    mostrarTexto (10, 50, <span class=sc6>"Botão 1 ou 2: Resseta posição"</span>);   
+
+    <span class=sc2>// Mostra informações sobre o joystick</span>
+    mostrar_joyinfo();  
+</b>
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+</div>
+
+<a name='2.7'><b><u>2.7 Limpeza do DirectInput </u></b>
+Destacamos nessa função  que o joystick precisa ser <i>desadequirido</i> com
+<span class=prg>g_joystick->Unacquire()</span> antes de ser liberado.
+
+<div class=niceview><span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_joystick) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do joystick</span>
+      <span class=sc2>// Chame primeiro unacquire() antes de chamar Release().</span>
+      <span class=prg>g_joystick-&gt;Unacquire</span>();  
+      <span class=prg>g_joystick-&gt;Release</span>();  
+      g_joystick = <span class=prg>NULL</span>; 
+    <span class=sc16>} <span class=sc2>// endif (g_joystick)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+</div>
+
+<a name='2.8'><b><u>2.8 Informações dos estados do joystick </u></b>
+<div class=niceview><span class=prg>void </span>mostrar_joyinfo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Tamanho do buffer de texto</span>
+  <span class=sc16>#define </span>tam_buffer 64 
+
+  <span class=sc2>// Controle de texto</span>
+  <span class=sc2>// (coluna, linha) e espaço de separação entre linhas</span>
+  <span class=prg>int </span>linha, coluna, spc_linha; 
+  linha   = 80; 
+  coluna  = 10; 
+  spc_linha = 30; 
+
+  <span class=sc2>// Informação de eixos de posição</span>
+  <span class=prg>char </span>pos_eixo[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( pos_eixo, <span class=sc6>"xyz position: %ld %ld %d"</span>, 
+    <span class=prg>g_jsStatus.lX</span>, <span class=prg>g_jsStatus.lY</span>, <span class=prg>g_jsStatus.lZ</span>);   
+  mostrarTexto(coluna, linha, pos_eixo);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação de eixos de rotação</span>
+  <span class=prg>char </span>rot_eixo[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( rot_eixo, <span class=sc6>"xyz rotation: %ld %ld %d"</span>, 
+    <span class=prg>g_jsStatus.lRx</span>, <span class=prg>g_jsStatus.lRy</span>, <span class=prg>g_jsStatus.lRz</span>);   
+  mostrarTexto(coluna, linha, rot_eixo);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação sobre slider (alavanca que escorrega)</span>
+  <span class=prg>char </span>info_slider[tam_buffer]  = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( info_slider, <span class=sc6>"rglSlider: %ld %d"</span>, 
+    <span class=prg>g_jsStatus.rglSlider</span>[<span class=sc4>0 </span>], <span class=prg>g_jsStatus.rglSlider</span>[<span class=sc4>1</span>]);  
+  mostrarTexto(coluna, linha, info_slider);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação sobre pov's ( point of view ou pontos de vista )</span>
+  <span class=prg>char </span>info_pov[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( info_pov, <span class=sc6>"rgdwPOV: %ld %ld %ld %ld"</span>, 
+    <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>0 </span>], <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>1 </span>], 
+    <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>2 </span>], <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>3</span>]);  
+  mostrarTexto(coluna, linha, info_pov);  
+  linha += spc_linha; 
+
+  <span class=sc2>// ******************************************************************</span>
+  <span class=sc2>// Coleta e exibição de informação sobre os botões</span>
+  <span class=prg>char </span>      btnText[128];  
+  <span class=prg>char* </span>     str; 
+
+  <span class=sc2>// Preencha o texto com os botões pressionados</span>
+  str = btnText; 
+  <span class=prg>for</span>( <span class=prg>int </span>nbtn = <span class=sc4>0</span>; nbtn &lt; 128; nbtn++ ) 
+  <span class=sc16>{</span>
+    <span class=sc9>if</span>(<span class=prg>g_jsStatus.rgbButtons</span>[nbtn] & <span class=sc4>0x80</span>) 
+      str += <span class=prg>sprintf</span>( str, <span class=sc6>"%02d "</span>, nbtn );  
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Termine a string</span>
+  *str = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Mostre a string de botões</span>
+  mostrarTexto(coluna, linha, <span class=sc6>"Botões: "</span>);   
+  mostrarTexto(coluna + 80, linha, btnText);  
+  linha += spc_linha; 
+<span class=sc16>} <span class=sc2>// mostrar_joyinfo().fim</span></span>
+</div>
+<b><span class=sc16>#define </span>tam_buffer 64 </b>
+Aqui é o tamanho do buffer temporário aonde a string de informação
+é montada.
+
+<b><span class=prg>int </span>linha, coluna, spc_linha; 
+linha   = 80; 	coluna  = 10; 	spc_linha = 30; </b>
+Estas variáveis controlam exibição de texto na forma de linha inicial,
+coluna inicial e espaçamento entre as linhas ( <b>spc_linha</b> ).
+
+ 
+<div class=niceview><b><span class=sc2>// Informação de eixos de posição</span>
+<span class=prg>char </span>pos_eixo[tam_buffer]    = <span class=sc6>"\0"</span>; 
+<span class=prg>sprintf</span>( pos_eixo, <span class=sc6>"xyz position: %ld %ld %d"</span>, 
+<span class=prg>g_jsStatus.lX</span>, <span class=prg>g_jsStatus.lY</span>, <span class=prg>g_jsStatus.lZ</span>);   
+mostrarTexto(coluna, linha, pos_eixo);  linha += spc_linha;  </b></div>
+Este bloco representa  um  bloco típico de exibição de informações na
+tela: preparamos uma string temporária, montamos nela as informações,
+ela  é  exibida  e  na sequência a variável linha é atualizada para o
+próximo processo de exibição.
+
+
+<div class=niceview><b><span class=sc2>// Coleta e exibição de informação sobre os botões</span>
+<span class=prg>char </span>      btnText[128];  
+<span class=prg>char* </span>     str; 
+
+<span class=sc2>// Preencha o texto com os botões pressionados</span>
+str = btnText; 
+<span class=prg>for</span>( <span class=prg>int </span>nbtn = <span class=sc4>0</span>; nbtn &lt; 128; nbtn++ ) 
+<span class=sc16>{</span>
+<span class=sc9>if</span>(<span class=prg>g_jsStatus.rgbButtons</span>[nbtn] & <span class=sc4>0x80</span>) 
+str += <span class=prg>sprintf</span>( str, <span class=sc6>"%02d "</span>, nbtn );  
+<span class=sc16>} <span class=sc2>// endfor</span></span>
+
+<span class=sc2>// Termine a string</span>
+*str = <span class=sc4>0</span>; 
+
+<span class=sc2>// Mostre a string de botões</span>
+mostrarTexto(coluna, linha, <span class=sc6>"Botões: "</span>);   
+mostrarTexto(coluna + 80, linha, btnText);  
+linha += spc_linha;  </b></div>
+Esse bloco de código prepara e mostra informações  sobre o estado dos
+botões.   Esse bloco faz um uso elegante e eficiente de ponteiros, e,
+por  conta  disso  resolvemos  transcrevê-lo  do  exemplo  oficial do
+directx 8 para nosso código de exemplo.
+
+<a name='3.1'><b><u>3.1 Aspectos globais: arquivo: joystick.h </u></b>
+<div class=niceview>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: joystick.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>joystick_h 
+ <span class=sc16>#define </span>joystick_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+
+<span class=sc2>// Alista ou enumera os joysticks disponíveis</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarJoysticks( 
+                               <span class=sc16>const </span><span class=sc5>DIDEVICEINSTANCE </span>*diControle, 
+                               <span class=prg>void* </span>pContext );  
+
+<span class=sc2>// Inicializa o joystick</span>
+<span class=sc16>HRESULT </span>inicializar_Joystick( <span class=prg>void</span>);  
+
+
+<span class=sc2>// Alista ou enumera os objetos componentes do joystick localizado</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarControleComponentes( 
+  <span class=sc16>const </span><span class=sc5>DIDEVICEOBJECTINSTANCE </span>*joycomp, <span class=prg>void* </span>pContext );  
+
+<span class=sc16>#endif</span>
+</div>
+
+<b><span class=sc16>HRESULT </span>inicializar_Joystick( <span class=prg>void</span>); </b>
+Essa função faz a inicialização do joystick ( <b>g_joystick</b> )  pegando o
+primeiro  joystick  que  esteja  fisicamente  instalado  no  sistema.
+Para  esse  trabalho  essa função utiliza duas funções auxiliares que
+vão ser descritas logo abaixo.
+
+<b><span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarJoysticks(<span class=sc16>const </span><span class=sc5>DIDEVICEINSTANCE </span>*diControle, 
+						   <span class=prg>void* </span>pContext ); </b>
+Essa  função  faz  parte do processo de alistamento ou enumeração dos
+joysticks  disponíveis  dentro  do  critério de pesquisa definido por
+<span class=prg>g_DirectInput->EnumDevices()</span>  que a utiliza como função callback para
+receber  os  joysticks  localizados. Essa função <b>alistarJoysticks()</b> é
+responsável  pela  criação  do  dispositivo  de  entrada  joystick. O
+argumento  <b>pContext</b>  é  ignorado  dentro  dessa  função  e  a própria
+documentação do DirectInput não esclarece sua finalidade.
+
+<b><span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarControleComponentes( <span class=sc16>const 
+		</span><span class=sc5>DIDEVICEOBJECTINSTANCE </span>*joycomp, <span class=prg>void* </span>pContext );   </b>
+Depois  que  um joystick válido foi localizado e criado essa função é
+responsável por sondar a estrutura do joystick,  alistar e configurar
+os  componentes  do  joystick  tais como eixos, botões e outros itens
+que  possam  estar  presentes  no controle. Essa função é chamada por
+<span class=prg>g_joystick->EnumObjects()</span>  para cada componente presente no joystick.
+A documentação original  do DirectInput denomina  genericamente  cada
+item como '<b>objeto do dispositivo</b>'.
+
+<a name='3.2'><b><u>3.2 Aspectos globais: arquivo: joystick.cpp </u></b>
+<div class=niceview>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: joystick.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"joystick.h"</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<b>
+<span class=sc2>// Handle da janela da aplicação</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc2>// Objeto para salvar informações do joystick em arquivo texto</span>
+<span class=sc16>extern </span>Relatorio g_relatorio; 
+
+<span class=sc2>// Ponteiro uma instância do DirectInput</span>
+<span class=sc16>extern </span><span class=sc5>IDirectInput8 </span>*g_DirectInput; 
+
+<span class=sc2>// Ponteiro para o dispositivo de entrada joystick</span>
+<span class=sc16>extern </span><span class=sc5>IDirectInputDevice8 </span> *g_joystick; 
+
+<span class=sc2>// Estrutura de dados</span>
+<span class=sc5>DIJOYSTATE2 </span>g_jsStatus; </b>
+</div>
+
+<b><span class=sc5>DIJOYSTATE2 </span>g_jsStatus; </b>
+Esta  estrutura  de  dados  é  utilizada para configurar o formato de
+dados  do  dispositivo  de  entrada joystick localizado. Depois ela é
+utilizada para coletar e processar os estados do joystick ao longo da
+aplicação.
+
+<a name='3.3'><b><u>3.3 Inicialização do joystick </u></b>
+<div class=niceview><span class=sc16>HRESULT </span>inicializar_Joystick( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc16>HRESULT </span>    hr; 
+
+  <span class=sc2>// Procura por um joystick que possa ser usado</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_DirectInput-&gt;EnumDevices</span>( <span class=sc4>DI8DEVCLASS_GAMECTRL</span>, 
+    alistarJoysticks, 
+    <span class=prg>NULL</span>, <span class=sc4>DIEDFL_ATTACHEDONLY</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Verificação de falha</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_joystick ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>( <span class=prg>NULL</span>, <span class=sc6>"Joystick não encontrado."</span>, 
+      <span class=sc6>"inicializar_Joystick</span>()<span class=sc6>"</span>, 
+      <span class=sc4>MB_ICONERROR </span>| <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Configuração do formato de dados para um formato pré-definido</span>
+  <span class=sc2>// O formato de dados especifica quais os controles em um dispositivo</span>
+  <span class=sc2>// estamos interessado e como eles deverão ser reportados. O formato</span>
+  <span class=sc2>// aqui indicado avisa ao directInput que vamos o utilizar a estrutura</span>
+  <span class=sc2>// de dados DIJOYSTATE2</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;SetDataFormat</span>( <span class=sc4>&c_dfDIJoystick2</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Configuração do modo de cooperação</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;SetCooperativeLevel</span>( hJanela, 
+    <span class=sc4>DISCL_EXCLUSIVE </span>| <span class=sc4>DISCL_FOREGROUND</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Alistamento dos objetos do joytick. A função callback habilita a</span>
+  <span class=sc2>// aplicação fazer uso dos objetos que são encontrados e configura</span>
+  <span class=sc2>// os valores mínimos e máximos dos eixos descobertos.</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;EnumObjects</span>( alistarControleComponentes, 
+    (<span class=prg>void*</span>)  hJanela, <span class=sc4>DIDFT_ALL</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// inicializar_Joystick( ).fim</span></span>
+</div><b>
+hr = <span class=prg>g_DirectInput-&gt;EnumDevices</span>( <span class=sc4>DI8DEVCLASS_GAMECTRL</span>, alistarJoysticks, 	
+						<span class=prg>NULL</span>, <span class=sc4>DIEDFL_ATTACHEDONLY</span>); </b>
+Essa função alista os dispositivos de entrada que estejam disponíveis
+conforme o critério estabelecido. Cada controle localizado é passado
+para  a  função  <b>alistarJoysticks()</b>  que  faz  de  fato  a criação do
+dispositivo  de  entrada.  Os  critérios dados de pesquisa são estes:
+<b>DI8DEVCLASS_GAMECTRL</b>  -  dispositivos  da classe de controle de jogos
+<b>DIEDFL_ATTACHEDONLY</b>   -  apenas dispositivos  fisicamente conectados.
+
+<b>hr = <span class=prg>g_joystick-&gt;SetDataFormat</span>( <span class=sc4>&c_dfDIJoystick2</span>); </b>
+Aqui  se  trata da configuração do formato de dados para  um  formato
+pré-definido.  O formato de dados especifica quais os controles em um
+dispositivo estamos interessado e como eles deverão ser reportados. O
+formato  aqui  indicado  avisa  ao DirectInput que vamos o utilizar a
+estrutura de dados <b>DIJOYSTATE2</b>. 
+
+<b>hr = <span class=prg>g_joystick-&gt;SetCooperativeLevel</span>( hJanela, 
+					<span class=sc4>DISCL_EXCLUSIVE </span>| <span class=sc4>DISCL_FOREGROUND</span>); </b>
+Aqui é a configuração do modo de cooperação.
+
+
+hr = <span class=prg>g_joystick-&gt;EnumObjects</span>( alistarControleComponentes, 
+					(<span class=prg>void*</span>)  hJanela, <span class=sc4>DIDFT_ALL</span>); 
+Esse método vai chamar a função <b>alistarControleComponentes()</b> para cada
+item  presente  no  joystick  tais  como eixos ou botões entre outras
+possibilidades.   Por   sua   vez,   <b>alistarControleComponentes()</b>   é
+responsável por configurar cada item,  especialmente a faixa de valor
+retornada  pelos  eixos,  e  de  preparar  cada  item  para servir de
+interface para a aplicação.
+
+<a name='3.4'><b><u>3.4 Alistamento dos controles conectados no sistema </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// alistarJoysticks()</span>
+<span class=sc2>// Essa função é chamada para cada joystick localizado. Quando um</span>
+<span class=sc2>// joystick é encontrado é criado uma interface para que ele possa</span>
+<span class=sc2>// ser utilizado.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarJoysticks( <span class=sc16>const </span><span class=sc5>DIDEVICEINSTANCE </span>*diControle, 
+                               <span class=prg>void* </span>pContext ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Coleta de resultado das operações</span>
+  <span class=sc16>HRESULT </span>hr; 
+
+  <span class=sc2>// Obtém uma interface para o joystick localizado</span>
+  hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>( <span class=prg>diControle-&gt;guidInstance</span>, &g_joystick, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Se ocorreu falha não podemos utilizar o joystick. Talvez o usuário</span>
+  <span class=sc2>// tenha desconectado ele no meio do alistamento.</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) <span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; 
+
+  <span class=sc2>// Pare o alistamento! Nota: estamos pegando apenas o primeiro joystick</span>
+  <span class=sc2>// encontrado. Você poderia alistar todos os joysticks encontrados e</span>
+  <span class=sc2>// deixar para o usuário a escolha final do controle a ser usado.</span>
+  <span class=sc6>return </span><span class=sc4>DIENUM_STOP</span>; 
+<span class=sc16>} <span class=sc2>// alistarJoysticks().fim</span></span>
+</div>
+<b>hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>( <span class=prg>diControle-&gt;guidInstance</span>, &g_joystick, <span class=prg>NULL</span>);  
+<span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) <span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; </b>
+Este bloco obtém uma interface para o joystick localizado. Em caso de
+falha o processo de busca por um dispositivo válido continua conforme
+requisitado por <b>DIENUM_CONTINUE</b>.
+
+<b><span class=sc6>return </span><span class=sc4>DIENUM_STOP</span>; </b>
+Caso  um  joystick  válido  seja  encontrado  o trabalho dessa função
+termina aqui.  Entretando, em uma aplicação mais sofisticada você vai
+alistar todos os controles válidos e deixar  para o usuário a escolha
+do dispositivo final.
+
+<a name='3.5'><b><u>3.5 Alistamento dos componentes presentes no joystick </u></b>
+<div class=niceview>//-----------------------------------------------------------------------------</span>
+<span class=sc2>// alistarControleComponentes()</span>
+<span class=sc2>// Esta função alista ou enumera os componentes de um joystick tais</span>
+<span class=sc2>// como eixos, botões, pov's etc. . ., Esta função configura a faixa de</span>
+<span class=sc2>// valor dos eixos encontrados. Os componentes também são chamados de</span>
+<span class=sc2>// 'objetos do dispositivo'.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarControleComponentes( <span class=sc16>const </span><span class=sc5>DIDEVICEOBJECTINSTANCE </span>*joycomp, 
+                                         VOID* pContext ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Quantidade de sliders</span>
+  static <span class=prg>int </span>nSliderCount = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de POV's</span>
+  static <span class=prg>int </span>nPOVCount = <span class=sc4>0</span>; 
+
+  <span class=sc2>// A faixa de alcance é configurada no caso dos eixos encontrados</span>
+  <span class=sc9>if</span>( <span class=prg>joycomp-&gt;dwType </span>& <span class=sc4>DIDFT_AXIS</span>) 
+  <span class=sc16>{</span>
+    <span class=sc5>DIPROPRANGE </span>diprg; 
+    <span class=prg>diprg.diph.dwSize </span>      = <span class=sc16>sizeof</span>(<span class=sc5>DIPROPRANGE</span>);   
+    <span class=prg>diprg.diph.dwHeaderSize </span>= <span class=sc16>sizeof</span>(<span class=sc5>DIPROPHEADER</span>);   
+    <span class=prg>diprg.diph.dwHow </span>       = <span class=sc4>DIPH_BYID</span>; 
+
+    <span class=sc2>// Indica o eixo alistado!</span>
+    <span class=prg>diprg.diph.dwObj </span>       = <span class=prg>joycomp-&gt;dwType</span>; 
+
+    <span class=sc2>// Define o valor da faixa de valor dos eixos</span>
+    <span class=prg>diprg.lMin </span>             = <span class=sc4>-1000</span>; 
+    <span class=prg>diprg.lMax </span>             = +1000; 
+
+    <span class=sc2>// Configura a faixa de valor dos eixos</span>
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( <span class=prg>g_joystick-&gt;SetProperty</span>( <span class=sc4>DIPROP_RANGE</span>, <span class=prg>&diprg.diph</span>) ) ) 
+      <span class=sc6>return </span><span class=sc4>DIENUM_STOP</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif(configuração da faixa dos eixos)</span></span>
+
+  <span class=sc2>// Grave um relatório para refletir quais objetos ou</span>
+  <span class=sc2>// componentes o joystick suporta</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_XAxis</span>)  
+    <span class=prg>g_relatorio.Gravar </span>(<span class=sc6>"GUID_XAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_YAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_YAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_ZAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_ZAxis presente\n"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RxAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RxAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RyAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RyAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RzAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RzAxis presente\n"</span>);   
+
+  <span class=sc2>// Verifica a presença de sliders</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_Slider</span>)  
+  <span class=sc16>{</span>
+    <span class=sc9>switch</span>( nSliderCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>1</span>]<span class=sc6> presente\n"</span>);   
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Verifica a presença de POVs</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_POV</span>)  
+  <span class=sc16>{</span>
+    <span class=sc9>switch</span>( nPOVCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>1</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>2 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>2</span>]<span class=sc6> presente"</span>);   
+
+    <span class=sc9>case </span><span class=sc4>3 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>3</span>]<span class=sc6> presente\n"</span>);   
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; 
+<span class=sc16>} <span class=sc2>// alistarControleComponentes().fim</span></span>
+</div>
+<b>static <span class=prg>int </span>nSliderCount = <span class=sc4>0</span>; 
+static <span class=prg>int </span>nPOVCount = <span class=sc4>0</span>; </b>
+Estas   variáveis   são  utilizadas  para  fazer  a  contagem  desses
+componentes  que  podem estar presentes no joystick sendo verificado.
+Pela  tradução,  possivelmente  o slider é uma alavanca que escorrega
+tipo  manche  de  avião;  o  POV,  point  of  view  ou ponto de vista
+simplesmente é um botão para alterar a câmera.
+
+<b><span class=sc9>if</span>( <span class=prg>joycomp-&gt;dwType </span>& <span class=sc4>DIDFT_AXIS</span>)</b>
+Se o componente for um eixo então esse eixo vai ter sua faixa de valor
+configurada neste bloco de código habilitado pela instrução <span class=prg>if</span>.
+
+<b><span class=sc5>DIPROPRANGE </span>diprg; 
+<span class=prg>diprg.diph.dwSize </span>      = <span class=sc16>sizeof</span>(<span class=sc5>DIPROPRANGE</span>);   
+<span class=prg>diprg.diph.dwHeaderSize </span>= <span class=sc16>sizeof</span>(<span class=sc5>DIPROPHEADER</span>);   
+<span class=prg>diprg.diph.dwHow </span>       = <span class=sc4>DIPH_BYID</span>; 
+<span class=sc2>// Indica o eixo alistado!</span>
+<span class=prg>diprg.diph.dwObj </span>       = <span class=prg>joycomp-&gt;dwType</span>; </b>
+Aqui é um esquema de preparação da configuração da faixa de valor de
+cada eixo do joystick.
+
+<b><span class=prg>diprg.lMin </span>             = <span class=sc4>-1000</span>; 
+<span class=prg>diprg.lMax </span>             = +1000; </b>
+Aqui  é  definido  o valor mínimo e máximo do retorno dos eixos. Esse
+valor  geralmente  não é padrão e altera-se a cada modelo de joystick
+e por conta disso é importante configurá-lo para uso da sua aplicação.
+
+<b>g_joystick-&gt;SetProperty</span>( <span class=sc4>DIPROP_RANGE</span>, <span class=prg>&diprg.diph</span>);</b>
+Aqui  de  fato  o  eixo  tem sua faixa de valor reconfigurada para os
+valores definidos pela aplicação.
+
+A configuração da faixa de valor dos eixos representa de maneira geral
+como   se  configura  uma  propriedade  do  dispositivo  de  entrada.
+O restante do código abaixo se concentra apenas em gravar uma simples
+informação  que  indica a presença de outros componentes encontrados.
+
+<u>Indicação de presença dos eixos de posicionamento (x, y, z)</u>
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_XAxis</span>) <span class=prg>g_relatorio.Gravar </span>(<span class=sc6>"GUID_XAxis presente"</span>);   
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_YAxis</span>) <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_YAxis presente"</span>);   
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_ZAxis</span>) <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_ZAxis presente\n"</span>);  
+
+<u>Indicação de presença dos eixos de rotação (x, y, z)</u>
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RxAxis</span>) <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RxAxis presente"</span>);   
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RyAxis</span>) <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RyAxis presente"</span>);   
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RzAxis</span>) <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RzAxis presente\n"</span>);   
+
+<u>Indicação de presença de sliders</u>
+<div class=niceview><b><span class=sc2>// Verifica a presença de sliders</span>
+<span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_Slider</span>) 
+<span class=sc16>{</span>
+    <span class=sc9>switch</span>( nSliderCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>1</span>]<span class=sc6> presente\n"</span>);   
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+<span class=sc16>} <span class=sc2>// endif</span></span> </b></div>
+
+<u>Indicação da presentes de POVs</u>
+<div class=niceview><b><span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_POV</span>)  
+  <span class=sc16>{</span>
+    <span class=sc9>switch</span>( nPOVCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>1</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>2 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>2</span>]<span class=sc6> presente"</span>); 
+
+    <span class=sc9>case </span><span class=sc4>3 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>3</span>]<span class=sc6> presente\n"</span>);   
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+<span class=sc16>} <span class=sc2>// endif</span></span> </b></div>
+
+<b><span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; </b>
+Esse  retorno  indica  para  continuar  o  alistamento dos objetos do
+dispositivo.
+
+<hr><a name='Anx'<b><u>Anx. Código fonte do projeto de exemplo: prj_Joystick</u></b>
+<div class=prg-code><img src=images\prj_Joystick.png>
+//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - Arquivo: motor.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>motor_h 
+ <span class=sc16>#define </span>motor_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+
+<span class=sc2>// Desativa aviso de função string insegura</span>
+<span class=sc16>#pragma </span>warning ( disable:4996 ) 
+
+<span class=sc2>// ********** Classe para gravar um relatório ***********************</span>
+<span class=prg>class </span>Relatorio 
+<span class=sc16>{</span>
+<span class=sc16>public:</span>
+  FILE *m_arquivo; 
+
+<span class=sc2>// Construtor</span>
+Relatorio() 
+  <span class=sc16>{</span>
+    m_arquivo = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+~Relatorio() 
+  <span class=sc16>{</span>
+  <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  
+  <span class=sc16>} <span class=sc2>// fim do construtor</span></span>
+
+  <span class=prg>void </span>Inicializar() 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(m_arquivo == <span class=prg>NULL</span>)  
+    m_arquivo = fopen(<span class=sc6>"joystick.txt"</span>, <span class=sc6>"wt"</span>);   
+  <span class=sc16>} <span class=sc2>// abrirArquivo().fim</span></span>
+
+  <span class=prg>void </span>Gravar(<span class=prg>char </span>*info) 
+  <span class=sc16>{</span>
+  <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  
+  <span class=prg>fprintf</span>(m_arquivo, <span class=sc6>"%s\n"</span>, info);  
+  <span class=sc16>} <span class=sc2>// gravarDados().fim</span></span>
+
+  <span class=prg>void </span>Fechar() 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(m_arquivo != <span class=prg>NULL</span>)  fclose (m_arquivo);  
+    m_arquivo = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// fecharArquivo().fim</span></span>
+<span class=sc16>}; <span class=sc2>// fim da classe Relatorio</span></span>
+<span class=sc2>// ********** Classe para gravar um relatório ***********************</span>
+
+<span class=sc2>// Esta função inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx (<span class=sc16>HWND </span>hJanela);  
+
+<span class=sc2>// Essa função libera os objetos utilizados</span>
+<span class=prg>void </span>Limpar();  
+
+<span class=sc2>// Essa função desenha a cena</span>
+<span class=prg>void </span>Renderizar();  
+
+<span class=sc2>// Esta função inicializa o objeto para mostrar texto</span>
+<span class=prg>void </span>inicializarTexto();  
+
+<span class=sc2>// Configura posição do jogador</span>
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos);  
+
+<span class=sc2>// Esta função mostra um texto na coordenada (x, y) da janela</span>
+<span class=prg>void </span>mostrarTexto( <span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto);  
+
+<span class=sc2>// Essa função inicializa o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput();  
+
+<span class=sc2>// Mostra informações de estados do joystick</span>
+<span class=prg>void </span>mostrar_joyinfo();  
+
+<span class=sc2>// Essa função trata a entrada via joystick</span>
+<span class=sc16>HRESULT </span>tratar_Joystick(<span class=prg>void</span>);   
+
+<span class=sc2>// Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput();  
+
+<span class=sc2>//  Declaração da função que atende as mensagens da janela</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+      <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam);  
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: motor.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;stdio.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"joystick.h"</span>
+
+<span class=sc2>// Inclui as bibliotecas do Direct3D</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3d9.lib"</span>) 
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"d3dx9.lib"</span>)  
+
+<span class=sc2>// Bibliotecas do DirectInput</span>
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dinput8.lib"</span>)  
+<span class=sc16>#pragma </span><span class=prg>comment</span>(lib, <span class=sc6>"dxguid.lib"</span>) 
+
+<span class=sc2>// Ponteiro para o objeto DirectInput</span>
+<span class=sc5>IDirectInput8 </span>*g_DirectInput = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para o dispositivo de entrada joystick</span>
+<span class=sc5>IDirectInputDevice8 </span> *g_joystick = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Objeto para gravar informações em arquivo texto</span>
+Relatorio g_relatorio; 
+
+<span class=sc2>// Estrutura para coletar os estados do joystick</span>
+<span class=sc16>extern </span><span class=sc5>DIJOYSTATE2 </span>g_jsStatus; 
+
+
+<span class=sc2>// Alça e dimensões da janela</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_xtela; 
+<span class=sc16>extern </span><span class=prg>int </span>g_ytela; 
+
+<span class=sc2>// Represeñtação simbólica do jogador</span>
+<span class=prg>char* </span>smove_esquerda = <span class=sc6>"&lt;</span>(<span class=sc6>-:"</span>; 
+<span class=prg>char* </span>smove_direita = <span class=sc6>":-</span>) <span class=sc6>&gt;"</span>; 
+<span class=prg>char* </span>sjogador; 
+
+<span class=sc2>// Controle de movimento</span>
+<span class=prg>int </span>xcol = 320; 
+<span class=prg>int </span>ylin = 240; 
+<span class=prg>int </span>nVelocidade = <span class=sc4>2</span>; 
+
+<span class=sc2>// Variáveis globais</span>
+<span class=sc2>// Representa o dispositivo D3D</span>
+<span class=sc5>LPDIRECT3D9 </span>            g_Direct3d = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Representa o dispositivo Renderizador</span>
+<span class=sc5>IDirect3DDevice9 </span>      *g_device = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Ponteiro para uma fonte do directx</span>
+ID3DXFont        *gdxFonte = <span class=prg>NULL</span>; 
+
+<span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+<span class=sc16>HRESULT </span>g_hr = <span class=sc4>0</span>; 
+
+
+<span class=sc2>// initGfx() - Inicializa o Direct3D</span>
+<span class=sc16>HRESULT </span>initGfx( <span class=sc16>HWND </span>hJanela ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Cria o objeto D3D que é necessário para criar o dispositivo gráfico</span>
+  g_Direct3d = <span class=prg>Direct3DCreate9</span>( <span class=sc4>D3D_SDK_VERSION</span>);  
+
+  <span class=sc2>// Verifica se objeto Direct3D foi criado</span>
+  <span class=sc9>if</span>(g_Direct3d == <span class=prg>NULL</span>)  
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, 
+      <span class=sc6>"Falha na inialização do Direct3D"</span>, <span class=sc6>"InitGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Declara  a variável para os parâmetros de apresentação</span>
+  <span class=sc5>D3DPRESENT_PARAMETERS </span>pps; 
+
+  <span class=sc2>// Limpa a estrutura</span>
+  <span class=prg>ZeroMemory</span>( &pps, <span class=sc16>sizeof</span>(pps) );  
+
+  <span class=sc2>// Configura os parâmetros de apresentação</span>
+  <span class=sc2>// A aplicação vai ter janela</span>
+  <span class=prg>pps.Windowed </span>= <span class=prg>TRUE</span>; 
+
+  <span class=sc2>// Esse método vira rapidamente o backbuffer para a tela imediata</span>
+  <span class=prg>pps.SwapEffect </span>= <span class=sc4>D3DSWAPEFFECT_DISCARD</span>; 
+
+  <span class=sc2>// Esse formato vai procurar se encaixar no modo de video corrente</span>
+  <span class=prg>pps.BackBufferFormat </span>= <span class=sc4>D3DFMT_UNKNOWN</span>; 
+
+  <span class=sc2>// Configuração do renderizador a ser criado</span>
+  <span class=sc2>// Adaptador default (0)</span>
+  <span class=prg>int </span>nAdaptador = <span class=sc4>D3DADAPTER_DEFAULT</span>; 
+
+  <span class=sc2>// Tipo de dispositivo Hardware ou emulador de referência (software)</span>
+  <span class=prg>D3DDEVTYPE </span>dispositivo_tipo = <span class=sc4>D3DDEVTYPE_HAL</span>; 
+
+  <span class=sc2>// Flags de configuração do dispositivo</span>
+  <span class=prg>DWORD </span>create_flags = <span class=sc4>D3DCREATE_SOFTWARE_VERTEXPROCESSING</span>; 
+
+  <span class=sc2>// Criamos aqui o dispositivo renderizador</span>
+  g_hr = <span class=prg>g_Direct3d-&gt;CreateDevice</span>( nAdaptador, dispositivo_tipo, 
+    hJanela, create_flags, &pps, &g_device );  
+
+  <span class=sc2>// Verifica se houve falha no processo</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( g_hr ) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação: g_device"</span>, <span class=sc6>"initGfx</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Faz inicialização da interface de texto</span>
+  inicializarTexto();  
+
+  <span class=sc2>// Define forma do jogador</span>
+  sjogador = smove_esquerda; 
+
+  <span class=sc2>// Reset posição do jogador</span>
+  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Inicia o objeto para salvar informações no disco</span>
+  g_relatorio = Relatorio();  
+  <span class=prg>g_relatorio.Inicializar</span>();  
+
+  <span class=sc2>// Inicializa DirectInput e o dispositivo de joystick depois</span>
+    inicializar_DirectInput();  
+  inicializar_Joystick();  
+
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// initGfx().fim</span></span>
+
+
+<span class=sc2>// inicializar_DirectInput() - Cria o objeto DirectInput</span>
+<span class=prg>bool </span>inicializar_DirectInput() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Criação do objeto DirectInput</span>
+  g_hr = <span class=prg>DirectInput8Create</span>( <span class=prg>GetModuleHandle</span>(<span class=prg>NULL</span>), <span class=sc4>DIRECTINPUT_VERSION</span>, 
+    <span class=sc5>IID_IDirectInput8</span>, (<span class=prg>void**</span>)  &g_DirectInput, <span class=prg>NULL</span>);   
+
+  <span class=sc9>if </span><span class=prg>FAILED</span>(g_hr) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(<span class=prg>NULL</span>, <span class=sc6>"DirectInput: falha na criação"</span>, 
+      <span class=sc6>"inicializar_DirectInput</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=sc6>return </span><span class=prg>false</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=prg>true</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_DirectInput().fim</span></span>
+
+
+<span class=sc16>HRESULT </span>tratar_Joystick( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Resultado das operações</span>
+  <span class=sc16>HRESULT </span>      hr; 
+
+  <span class=sc2>// Retorne se não houver um joystick ok</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_joystick )  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc2>// Limpe a estrutura e colete o estado do joystick</span>
+  <span class=prg>ZeroMemory</span>( &g_jsStatus, <span class=sc16>sizeof</span>(g_jsStatus) );  
+
+  <span class=sc2>// Verifique o estado atual do dispositivo</span>
+  hr = <span class=prg>g_joystick-&gt;Poll</span>();  
+
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) 
+  <span class=sc16>{</span>
+    <span class=sc2>// o directInput poderia estar informando de que o fluxo de</span>
+    <span class=sc2>// entrada foi interrompido. Não estamos rastreando qualquer</span>
+    <span class=sc2>// estado entre as pesquisas (polls), então nós não temos</span>
+    <span class=sc2>// nenhum procedimento especial de reconfiguração que precisa</span>
+    <span class=sc2>// ser feito. Simplesmente re-adquirimos e tentamos de novo.</span>
+
+    <span class=sc2>// Se o dispositivo de entrada foi perdido então</span>
+    <span class=sc2>// continue tentando a reaquisição.</span>
+    hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+    <span class=sc9>while</span>( hr == <span class=sc4>DIERR_INPUTLOST</span>) hr = <span class=prg>g_joystick-&gt;Acquire</span>();  
+
+    <span class=sc2>// Retorne se houver algum erro</span>
+    <span class=sc2>// hr pode ser DIERR_OTHERAPPHASPRIO e outros erros que podem</span>
+    <span class=sc2>// ocorrer quando a aplicação está minimizada ou em processo de</span>
+    <span class=sc2>// transição. Então, tente mais tarde-&gt;.</span>
+    <span class=sc9>if</span>( hr == <span class=sc4>DIERR_OTHERAPPHASPRIO </span>|| hr == <span class=sc4>DIERR_NOTACQUIRED</span>) 
+      <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Obtém os estados do joystick</span>
+  hr = <span class=prg>g_joystick-&gt;GetDeviceState</span>( <span class=sc16>sizeof</span>(<span class=sc5>DIJOYSTATE2</span>), &g_jsStatus );  
+
+  <span class=sc2>// Retorne imediamente em caso de falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Testa botão 01</span>
+  <span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>0</span>] & <span class=sc4>0x80</span>)  setJogadorPos(10, 100);  
+
+  <span class=sc2>// Testa botão 02</span>
+  <span class=sc9>if </span>(<span class=prg>g_jsStatus.rgbButtons</span>[<span class=sc4>1</span>] & <span class=sc4>0x80</span>)  setJogadorPos(320, 240);  
+
+  <span class=sc2>// Declara variáveis de estados das setas</span>
+  <span class=prg>int </span>seta_direita, seta_esquerda, seta_cima, seta_baixo; 
+  seta_direita  = <span class=sc4>0</span>; 
+  seta_esquerda = <span class=sc4>0</span>; 
+  seta_cima   = <span class=sc4>0</span>; 
+  seta_baixo  = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Verifica a movimentação dos eixos e atualiza os flags de movimento</span>
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>== <span class=sc4>-1000</span>)  seta_esquerda = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lX </span>==  1000) seta_direita  = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>== <span class=sc4>-1000</span>)  seta_cima     = <span class=sc4>1</span>; 
+  <span class=sc9>if</span>( <span class=prg>g_jsStatus.lY </span>==  1000) seta_baixo    = <span class=sc4>1</span>; 
+
+  <span class=sc2>// Tratamento da seta esquerda</span>
+  <span class=sc9>if</span>( seta_esquerda ) 
+  <span class=sc16>{</span>
+    xcol = xcol - nVelocidade; 
+    sjogador = smove_esquerda; 
+  <span class=sc16>} <span class=sc2>// endif seta_esquerda</span></span>
+
+  <span class=sc2>// Tratamento da seta direita</span>
+  <span class=sc9>if</span>( seta_direita ) 
+  <span class=sc16>{</span>
+    xcol = xcol + nVelocidade; 
+    sjogador = smove_direita; 
+  <span class=sc16>} <span class=sc2>// endif seta_direita</span></span>
+
+  <span class=sc2>// Tratamento da seta cima \ seta baixo</span>
+  <span class=sc9>if</span>( seta_cima  ) ylin = ylin - nVelocidade; 
+  <span class=sc9>if</span>( seta_baixo ) ylin = ylin + nVelocidade; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+<span class=sc16>} <span class=sc2>// tratar_Joystick().fim</span></span>
+
+<span class=prg>void </span>inicializarTexto() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Altura</span>
+  <span class=prg>int </span> nAltura = 24; 
+
+  <span class=sc2>// Largura</span>
+  <span class=prg>UINT </span>nLargura = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Peso ( weight )</span>
+  <span class=prg>UINT </span>nPeso = <span class=sc4>FW_BOLD</span>; 
+
+  <span class=sc2>// Nível de mipmap - 0: mipmap automático</span>
+  <span class=prg>UINT </span>nMipmap = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Efeito itálico</span>
+  <span class=prg>bool </span>bItalico = <span class=prg>false</span>; 
+
+  <span class=sc2>// Conjunto de caracteres (charset)</span>
+  <span class=prg>DWORD </span>nCharset = <span class=sc4>DEFAULT_CHARSET</span>; 
+
+  <span class=sc2>// Precisão (OutputPrecision)</span>
+  <span class=prg>DWORD </span>nPrecisao = <span class=sc4>OUT_DEFAULT_PRECIS</span>; 
+
+  <span class=sc2>// Qualidade</span>
+  <span class=prg>DWORD </span>nQualidade = <span class=sc4>DEFAULT_QUALITY</span>; 
+
+  <span class=sc2>// Pitch e família</span>
+  <span class=prg>DWORD </span>nFamilia = <span class=sc4>DEFAULT_PITCH </span>| <span class=sc4>FF_DONTCARE</span>; 
+
+  <span class=sc2>// Nome da fonte</span>
+  <span class=prg>char* </span>sFonte = <span class=sc6>"Arial"</span>; 
+
+  g_hr = <span class=prg>D3DXCreateFont</span>( g_device, nAltura, nLargura, nPeso, nMipmap, bItalico, 
+    nCharset, nPrecisao, nQualidade, nFamilia, sFonte, &gdxFonte );  
+
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(g_hr) ) 
+    <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Texto: falha na inicialização"</span>, <span class=sc6>"inicializarTexto</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+
+<span class=sc16>} <span class=sc2>// inicializarTexto()</span></span>
+<span class=prg>void </span>mostrarTexto(<span class=prg>int </span>x, <span class=prg>int </span>y, <span class=prg>char* </span>texto) 
+<span class=sc16>{</span>
+  <span class=sc2>// Retorne se não houver fonte inicializada</span>
+  <span class=sc9>if</span>(gdxFonte == <span class=prg>NULL</span>) <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc5>D3DCOLOR </span>azul = <span class=prg>D3DCOLOR_XRGB</span>(<span class=sc4>0</span>, <span class=sc4>0</span>, 255);  
+
+  <span class=sc2>// Configura a área limite</span>
+  <span class=sc5>RECT </span>area_limite; 
+  <span class=prg>SetRect</span>( &area_limite, x, y, g_xtela, g_ytela );  
+
+  <span class=sc2>// Desenha o texto</span>
+  <span class=prg>gdxFonte-&gt;DrawText</span>( <span class=prg>NULL</span>, texto, <span class=sc4>-1</span>, &area_limite, <span class=sc4>0</span>,  azul );  
+
+<span class=sc16>} <span class=sc2>// mostrarTexto(); </span></span>
+<span class=sc2>// Limpar() -  Libera todos os objetos previamente inicializados</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=prg>VOID </span>Limpar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Libera objeto de mostrar texto</span>
+  <span class=sc9>if</span>( gdxFonte != <span class=prg>NULL</span>)  <span class=prg>gdxFonte-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o dispositivo gráfico</span>
+  <span class=sc9>if</span>( g_device != <span class=prg>NULL</span>)  <span class=prg>g_device-&gt;Release</span>();  
+
+  <span class=sc2>// Libera o motor do Direct3D</span>
+  <span class=sc9>if</span>( g_Direct3d != <span class=prg>NULL</span>)  <span class=prg>g_Direct3d-&gt;Release</span>();  
+
+  <span class=sc2>// Limpe os objetos do DirectInput</span>
+  limpar_DirectInput();  
+
+  <span class=sc2>// Feche o arquivo de relatório</span>
+  <span class=prg>g_relatorio.Fechar</span>();  
+
+<span class=sc16>} <span class=sc2>// Limpar().fim</span></span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+<span class=sc2>// Renderizar() - Desenha a cena</span>
+<span class=sc2>// -----------------------------------------------------------------------------</span>
+
+<span class=prg>VOID </span>Renderizar() 
+<span class=sc16>{</span>
+
+  <span class=sc2>// Verifica e trata joystick</span>
+  tratar_Joystick();  
+
+  <span class=sc2>// Retorne se o dispositivo estiver nulo</span>
+  <span class=sc9>if</span>( g_device == <span class=prg>NULL</span>)  <span class=sc6>return</span>; 
+
+  <span class=sc2>// Cor de fundo da janela</span>
+  <span class=sc16>const </span><span class=sc5>D3DCOLOR </span>branco = <span class=prg>D3DCOLOR_XRGB</span>( 255, 255, 255 );  
+
+  <span class=sc2>// Limpa o backbuffer com uma cor branca</span>
+  <span class=prg>g_device-&gt;Clear</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=sc4>D3DCLEAR_TARGET</span>, branco, 
+    <span class=sc4>1.0f</span>, <span class=sc4>0</span>);   
+
+  <span class=sc2>// Começa a cena</span>
+  <span class=sc9>if</span>( <span class=prg>SUCCEEDED</span>( <span class=prg>g_device-&gt;BeginScene</span>() ) ) 
+  <span class=sc16>{</span>
+
+    <span class=sc2>// Mostra o jogador</span>
+    mostrarTexto (xcol, ylin, sjogador);  
+
+    <span class=sc2>// Mostra as mensagens</span>
+    mostrarTexto (10, 10, <span class=sc6>"Joystick: movimentação"</span>);   
+    mostrarTexto (10, 50, <span class=sc6>"Botão 1 ou 2: Resseta posição"</span>);   
+
+    <span class=sc2>// Mostra informações sobre o joystick</span>
+    mostrar_joyinfo();  
+
+
+
+    <span class=sc2>// Finalizando a cena</span>
+    <span class=prg>g_device-&gt;EndScene</span>();  
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=prg>g_device-&gt;Present</span>( <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>, <span class=prg>NULL</span>);  
+<span class=sc16>} <span class=sc2>// Renderizar().fim</span></span>
+
+
+
+<span class=sc2>//  Esta função é chamada por DispatchMessage()</span>
+<span class=sc16>LRESULT </span><span class=sc16>CALLBACK </span>processaJanela (<span class=sc16>HWND </span>hJanela, <span class=prg>UINT </span>mensagem, 
+                                 <span class=sc16>WPARAM </span>wParam, <span class=sc16>LPARAM </span>lParam) 
+<span class=sc16>{</span>
+  <span class=sc9>switch </span>(mensagem) 
+  <span class=sc16>{</span>
+  <span class=sc9>case </span><span class=sc4>WM_DESTROY:</span>
+    <span class=sc2>// Coloca uma mensagem WM_QUIT na fila de mensagem</span>
+    Limpar();  
+    <span class=prg>PostQuitMessage </span>(<span class=sc4>0</span>);   
+    <span class=sc6>break</span>; 
+
+  <span class=sc9>case </span><span class=sc4>WM_KEYDOWN:</span>
+    <span class=sc9>if </span>(wParam == <span class=sc4>VK_ESCAPE</span>)  
+    <span class=sc16>{</span>
+      Limpar();  
+      <span class=prg>PostQuitMessage</span>( <span class=sc4>0</span>);  
+    <span class=sc16>} <span class=sc2>// endif</span></span>
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Essa mensagem vai ocorrer a todo momento</span>
+  <span class=sc9>case </span><span class=sc4>WM_PAINT:</span>
+    <span class=sc2>// Renderiza a cena</span>
+    Renderizar();  
+    <span class=sc2>// Invalida a tela para chamar WM_PAINT novamente</span>
+    <span class=prg>InvalidateRect</span>( hJanela, <span class=prg>NULL</span>, <span class=prg>false</span>);  
+    <span class=sc6>break</span>; 
+
+    <span class=sc2>// Processamento default de mensagens não tratada pela aplicação</span>
+  <span class=sc9>default:</span>
+    <span class=sc6>return </span><span class=prg>DefWindowProc </span>(hJanela, mensagem, wParam, lParam);  
+  <span class=sc16>} <span class=sc2>// endswitch</span></span>
+
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+<span class=sc16>} <span class=sc2>// processaJanela().fim</span></span>
+
+<span class=prg>void </span>setJogadorPos( <span class=prg>int </span>xpos, <span class=prg>int </span>ypos) 
+<span class=sc16>{</span>
+  <span class=sc2>// Variáveis de apoio: ( pt.x, pt.y )</span>
+  <span class=sc5>POINT </span>pt; 
+
+  <span class=sc2>// Posiciona o ponteiro do mouse convertendo coordenada</span>
+  <span class=sc2>// de janela para coordenada de tela</span>
+  <span class=prg>pt.x </span>= xpos; 
+  <span class=prg>pt.y </span>= ypos; 
+  <span class=prg>ClientToScreen </span>(hJanela, &pt);  
+  <span class=prg>SetCursorPos</span>(<span class=prg>pt.x</span>, <span class=prg>pt.y</span>);  
+
+  <span class=sc2>// Recupera a posição do mouse</span>
+  <span class=prg>GetCursorPos </span>(&pt);  
+
+  <span class=sc2>// Converte coordenada de tela para coordenada de janela</span>
+  <span class=prg>ScreenToClient </span>(hJanela, &pt);  
+
+  <span class=sc2>// Configura posição do jogador</span>
+  xcol = <span class=prg>pt.x </span>+ 20; 
+  ylin = <span class=prg>pt.y </span>+ 20; 
+
+<span class=sc16>} <span class=sc2>// setJogadorPos().fim</span></span>
+
+
+
+<span class=sc2>// limpar_DirectInput() - Libera os objetos do DirectInput</span>
+<span class=prg>void </span>limpar_DirectInput() 
+<span class=sc16>{</span>
+  <span class=sc9>if </span>(g_DirectInput) 
+  <span class=sc16>{</span>
+    <span class=sc9>if </span>(g_joystick) 
+    <span class=sc16>{</span>
+      <span class=sc2>// Liberação do joystick</span>
+      <span class=sc2>// Chame primeiro unacquire() antes de chamar Release().</span>
+      <span class=prg>g_joystick-&gt;Unacquire</span>();  
+      <span class=prg>g_joystick-&gt;Release</span>();  
+      g_joystick = <span class=prg>NULL</span>; 
+    <span class=sc16>} <span class=sc2>// endif (g_joystick)</span></span>
+
+    <span class=sc2>// Liberação do objeto DirectInput</span>
+    <span class=prg>g_DirectInput-&gt;Release</span>();  
+    g_DirectInput = <span class=prg>NULL</span>; 
+  <span class=sc16>} <span class=sc2>// endif (g_DirectInput)</span></span>
+<span class=sc16>} <span class=sc2>// limpar_DirectInput().fim</span></span>
+
+
+<span class=prg>void </span>mostrar_joyinfo(<span class=prg>void</span>)  
+<span class=sc16>{</span>
+  <span class=sc2>// Tamanho do buffer de texto</span>
+  <span class=sc16>#define </span>tam_buffer 64 
+
+  <span class=sc2>// Controle de texto</span>
+  <span class=sc2>// (coluna, linha) e espaço de separação entre linhas</span>
+  <span class=prg>int </span>linha, coluna, spc_linha; 
+  linha   = 80; 
+  coluna  = 10; 
+  spc_linha = 30; 
+
+  <span class=sc2>// Informação de eixos de posição</span>
+  <span class=prg>char </span>pos_eixo[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( pos_eixo, <span class=sc6>"xyz position: %ld %ld %d"</span>, 
+    <span class=prg>g_jsStatus.lX</span>, <span class=prg>g_jsStatus.lY</span>, <span class=prg>g_jsStatus.lZ</span>);   
+  mostrarTexto(coluna, linha, pos_eixo);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação de eixos de rotação</span>
+  <span class=prg>char </span>rot_eixo[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( rot_eixo, <span class=sc6>"xyz rotation: %ld %ld %d"</span>, 
+    <span class=prg>g_jsStatus.lRx</span>, <span class=prg>g_jsStatus.lRy</span>, <span class=prg>g_jsStatus.lRz</span>);   
+  mostrarTexto(coluna, linha, rot_eixo);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação sobre slider (alavanca que escorrega)</span>
+  <span class=prg>char </span>info_slider[tam_buffer]  = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( info_slider, <span class=sc6>"rglSlider: %ld %d"</span>, 
+    <span class=prg>g_jsStatus.rglSlider</span>[<span class=sc4>0 </span>], <span class=prg>g_jsStatus.rglSlider</span>[<span class=sc4>1</span>]);  
+  mostrarTexto(coluna, linha, info_slider);  
+  linha += spc_linha; 
+
+  <span class=sc2>// Informação sobre pov's ( point of view ou pontos de vista )</span>
+  <span class=prg>char </span>info_pov[tam_buffer]    = <span class=sc6>"\0"</span>; 
+  <span class=prg>sprintf</span>( info_pov, <span class=sc6>"rgdwPOV: %ld %ld %ld %ld"</span>, 
+    <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>0 </span>], <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>1 </span>], 
+    <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>2 </span>], <span class=prg>g_jsStatus.rgdwPOV</span>[<span class=sc4>3</span>]);  
+  mostrarTexto(coluna, linha, info_pov);  
+  linha += spc_linha; 
+
+  <span class=sc2>// ******************************************************************</span>
+  <span class=sc2>// Coleta e exibição de informação sobre os botões</span>
+  <span class=prg>char </span>      btnText[128];  
+  <span class=prg>char* </span>     str; 
+
+  <span class=sc2>// Preencha o texto com os botões pressionados</span>
+  str = btnText; 
+  <span class=prg>for</span>( <span class=prg>int </span>nbtn = <span class=sc4>0</span>; nbtn &lt; 128; nbtn++ ) 
+  <span class=sc16>{</span>
+    <span class=sc9>if</span>(<span class=prg>g_jsStatus.rgbButtons</span>[nbtn] & <span class=sc4>0x80</span>) 
+      str += <span class=prg>sprintf</span>( str, <span class=sc6>"%02d "</span>, nbtn );  
+  <span class=sc16>} <span class=sc2>// endfor</span></span>
+
+  <span class=sc2>// Termine a string</span>
+  *str = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Mostre a string de botões</span>
+  mostrarTexto(coluna, linha, <span class=sc6>"Botões: "</span>);   
+  mostrarTexto(coluna + 80, linha, btnText);  
+  linha += spc_linha; 
+
+<span class=sc16>} <span class=sc2>// mostrar_joyinfo().fim</span></span>
+</div>
+
+<div class=prg-code>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: joystick.h</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#ifndef </span>joystick_h 
+ <span class=sc16>#define </span>joystick_h 
+
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+
+<span class=sc2>// Alista ou enumera os joysticks disponíveis</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarJoysticks( 
+                               <span class=sc16>const </span><span class=sc5>DIDEVICEINSTANCE </span>*diControle, 
+                               <span class=prg>void* </span>pContext );  
+
+<span class=sc2>// Inicializa o joystick</span>
+<span class=sc16>HRESULT </span>inicializar_Joystick( <span class=prg>void</span>);  
+
+
+<span class=sc2>// Alista ou enumera os objetos componentes do joystick localizado</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarControleComponentes( 
+  <span class=sc16>const </span><span class=sc5>DIDEVICEOBJECTINSTANCE </span>*joycomp, <span class=prg>void* </span>pContext );  
+
+<span class=sc16>#endif</span>
+</div>
+
+<div class=prg-code>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: joystick.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;dinput.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"joystick.h"</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Handle da janela da aplicação</span>
+<span class=sc16>extern </span><span class=sc16>HWND </span>hJanela; 
+
+<span class=sc16>extern </span>Relatorio g_relatorio; 
+
+<span class=sc2>// Ponteiro uma instância do DirectInput</span>
+<span class=sc16>extern </span><span class=sc5>IDirectInput8 </span>*g_DirectInput; 
+
+<span class=sc2>// Ponteiro para o dispositivo de entrada joystick</span>
+<span class=sc16>extern </span><span class=sc5>IDirectInputDevice8 </span> *g_joystick; 
+
+<span class=sc2>// Estrutura de dados</span>
+<span class=sc5>DIJOYSTATE2 </span>g_jsStatus; 
+
+
+<span class=sc16>HRESULT </span>inicializar_Joystick( <span class=prg>void</span>) 
+<span class=sc16>{</span>
+
+  <span class=sc16>HRESULT </span>    hr; 
+
+  <span class=sc2>// Procura por um joystick que possa ser usado</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_DirectInput-&gt;EnumDevices</span>( <span class=sc4>DI8DEVCLASS_GAMECTRL</span>, 
+    alistarJoysticks, 
+    <span class=prg>NULL</span>, <span class=sc4>DIEDFL_ATTACHEDONLY</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Verificação de falha</span>
+  <span class=sc9>if</span>( <span class=prg>NULL </span>== g_joystick ) 
+  <span class=sc16>{</span>
+    <span class=prg>MessageBox</span>( <span class=prg>NULL</span>, <span class=sc6>"Joystick não encontrado."</span>, 
+      <span class=sc6>"inicializar_Joystick</span>()<span class=sc6>"</span>, 
+      <span class=sc4>MB_ICONERROR </span>| <span class=sc4>MB_OK</span>);  
+    <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+  <span class=sc16>}</span>
+
+  <span class=sc2>// Configuração do formato de dados para um formato pré-definido</span>
+  <span class=sc2>// O formato de dados especifica quais os controles em um dispositivo</span>
+  <span class=sc2>// estamos interessado e como eles deverão ser reportados. O formato</span>
+  <span class=sc2>// aqui indicado avisa ao directInput que vamos o utilizar a estrutura</span>
+  <span class=sc2>// de dados DIJOYSTATE2</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;SetDataFormat</span>( <span class=sc4>&c_dfDIJoystick2</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Configuração do modo de cooperação</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;SetCooperativeLevel</span>( hJanela, 
+    <span class=sc4>DISCL_EXCLUSIVE </span>| <span class=sc4>DISCL_FOREGROUND</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc2>// Alistamento dos objetos do joystick. A função callback habilita a</span>
+  <span class=sc2>// aplicação fazer uso dos objetos que são encontrados e configura</span>
+  <span class=sc2>// os valores mínimos e máximos dos eixos descobertos.</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>( hr = <span class=prg>g_joystick-&gt;EnumObjects</span>( alistarControleComponentes, 
+    (<span class=prg>void*</span>)  hJanela, <span class=sc4>DIDFT_ALL</span>) ) ) 
+    <span class=sc6>return </span>hr; 
+
+  <span class=sc6>return </span><span class=sc4>S_OK</span>; 
+
+<span class=sc16>} <span class=sc2>// inicializar_Joystick( ).fim</span></span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// alistarJoysticks()</span>
+<span class=sc2>// Essa função é chamada para cada joystick localizado. Quando um</span>
+<span class=sc2>// joystick é encontrado é criado uma interface para que ele possa</span>
+<span class=sc2>// ser utilizado.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarJoysticks( <span class=sc16>const </span><span class=sc5>DIDEVICEINSTANCE </span>*diControle, 
+                               <span class=prg>void* </span>pContext ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Coleta de resultado das operações</span>
+  <span class=sc16>HRESULT </span>hr; 
+
+  <span class=sc2>// Obtém uma interface para o joystick localizado</span>
+  hr = <span class=prg>g_DirectInput-&gt;CreateDevice</span>( <span class=prg>diControle-&gt;guidInstance</span>, &g_joystick, <span class=prg>NULL</span>);  
+
+  <span class=sc2>// Se ocorreu falha não podemos utilizar o joystick. Talvez o usuário</span>
+  <span class=sc2>// tenha desconectado ele no meio do alistamento.</span>
+  <span class=sc9>if</span>( <span class=prg>FAILED</span>(hr) ) <span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; 
+
+  <span class=sc2>// Pare o alistamento! Nota: estamos pegando apenas o primeiro joystick</span>
+  <span class=sc2>// encontrado. Você poderia alistar todos os joysticks encontrados e</span>
+  <span class=sc2>// deixar para o usuário a escolha final do controle a ser usado.</span>
+  <span class=sc6>return </span><span class=sc4>DIENUM_STOP</span>; 
+<span class=sc16>} <span class=sc2>// alistarJoysticks().fim</span></span>
+
+
+//-----------------------------------------------------------------------------</span>
+<span class=sc2>// alistarControleComponentes()</span>
+<span class=sc2>// Esta função alista ou enumera os componentes de um joystick tais</span>
+<span class=sc2>// como eixos, botões, pov's etc. . ., Esta função configura a faixa de</span>
+<span class=sc2>// valor dos eixos encontrados. Os componentes também são chamados de</span>
+<span class=sc2>// 'objetos do dispositivo'.</span>
+//-----------------------------------------------------------------------------</span>
+<span class=prg>BOOL </span><span class=sc16>CALLBACK </span>alistarControleComponentes( <span class=sc16>const </span><span class=sc5>DIDEVICEOBJECTINSTANCE </span>*joycomp, 
+                                         VOID* pContext ) 
+<span class=sc16>{</span>
+  <span class=sc2>// Quantidade de sliders</span>
+  static <span class=prg>int </span>nSliderCount = <span class=sc4>0</span>; 
+
+  <span class=sc2>// Quantidade de POV's</span>
+  static <span class=prg>int </span>nPOVCount = <span class=sc4>0</span>; 
+
+  <span class=sc2>// A faixa de alcance é configurada no caso dos eixos encontrados</span>
+  <span class=sc9>if</span>( <span class=prg>joycomp-&gt;dwType </span>& <span class=sc4>DIDFT_AXIS</span>) 
+  <span class=sc16>{</span>
+    <span class=sc5>DIPROPRANGE </span>diprg; 
+    <span class=prg>diprg.diph.dwSize </span>      = <span class=sc16>sizeof</span>(<span class=sc5>DIPROPRANGE</span>);   
+    <span class=prg>diprg.diph.dwHeaderSize </span>= <span class=sc16>sizeof</span>(<span class=sc5>DIPROPHEADER</span>);   
+    <span class=prg>diprg.diph.dwHow </span>       = <span class=sc4>DIPH_BYID</span>; 
+
+    <span class=sc2>// Indica o eixo alistado!</span>
+    <span class=prg>diprg.diph.dwObj </span>       = <span class=prg>joycomp-&gt;dwType</span>; 
+
+    <span class=sc2>// Define o valor da faixa de valor dos eixos</span>
+    <span class=prg>diprg.lMin </span>             = <span class=sc4>-1000</span>; 
+    <span class=prg>diprg.lMax </span>             = +1000; 
+
+    <span class=sc2>// Configura a faixa de valor dos eixos</span>
+    <span class=sc9>if</span>( <span class=prg>FAILED</span>( <span class=prg>g_joystick-&gt;SetProperty</span>( <span class=sc4>DIPROP_RANGE</span>, <span class=prg>&diprg.diph</span>) ) ) 
+      <span class=sc6>return </span><span class=sc4>DIENUM_STOP</span>; 
+
+  <span class=sc16>} <span class=sc2>// endif(configuração da faixa dos eixos)</span></span>
+
+  <span class=sc2>// Grave um relatório para refletir quais objetos ou</span>
+  <span class=sc2>// componentes o joystick suporta</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_XAxis</span>)  
+    <span class=prg>g_relatorio.Gravar </span>(<span class=sc6>"GUID_XAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_YAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_YAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_ZAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_ZAxis presente\n"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RxAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RxAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RyAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RyAxis presente"</span>);   
+
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_RzAxis</span>)  
+    <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"GUID_RzAxis presente\n"</span>);   
+
+  <span class=sc2>// Verifica a presença de sliders</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_Slider</span>)  
+  <span class=sc16>{</span>
+    <span class=sc9>switch</span>( nSliderCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"Slider</span>[<span class=sc4>1</span>]<span class=sc6> presente\n"</span>);   
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Verifica a presença de POVs</span>
+  <span class=sc9>if </span>(<span class=prg>joycomp-&gt;guidType </span>== <span class=sc5>GUID_POV</span>)  
+  <span class=sc16>{</span>
+    <span class=sc9>switch</span>( nPOVCount++ ) 
+    <span class=sc16>{</span>
+    <span class=sc9>case </span><span class=sc4>0 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>0</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>1 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>1</span>]<span class=sc6> presente"</span>);   
+      <span class=sc6>break</span>; 
+
+    <span class=sc9>case </span><span class=sc4>2 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>2</span>]<span class=sc6> presente"</span>);   
+
+    <span class=sc9>case </span><span class=sc4>3 </span>: 
+      <span class=prg>g_relatorio.Gravar</span>(<span class=sc6>"POV</span>[<span class=sc4>3</span>]<span class=sc6> presente\n"</span>);   
+      <span class=sc6>break</span>; 
+    <span class=sc16>} <span class=sc2>// endswitch</span></span>
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc6>return </span><span class=sc4>DIENUM_CONTINUE</span>; 
+<span class=sc16>} <span class=sc2>// alistarControleComponentes().fim</span></span>
+</div>
+
+<div class=prg-code>//-------------------------------------------------------------------</span>
+<span class=sc2>// Projeto: prj_Joystick - arquivo: entrada.cpp</span>
+<span class=sc2>// Esta aplicação mostra como utilizar o Joystick</span>
+<span class=sc2>// via DirectInput. Produzido por www.gameprog.com.br</span>
+//-------------------------------------------------------------------</span>
+<span class=sc16>#include </span><span class=prg>&lt;windows.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3d9.h&gt;</span>
+<span class=sc16>#include </span><span class=prg>&lt;d3dx9.h&gt;</span>
+<span class=sc16>#include </span><span class=sc6>"motor.h"</span>
+
+<span class=sc2>// Variável global da classe da janela</span>
+<span class=prg>char </span>sclasseJanela[ ] = <span class=sc6>"cls_directx"</span>; 
+
+<span class=sc2>// Dimensões da janela</span>
+<span class=prg>int </span>g_xtela = 640; 
+<span class=prg>int </span>g_ytela = 480; 
+
+<span class=sc2>// alça da janela</span>
+  <span class=sc16>HWND </span>hJanela; 
+
+<span class=prg>int </span><span class=sc16>WINAPI </span><span class=prg>WinMain </span>(<span class=sc16>HINSTANCE </span>app_instancia, <span class=sc16>HINSTANCE </span>app_anterior, 
+                    <span class=prg>LPSTR </span>sComando,<span class=prg>int </span>nExibir) <span class=sc16>{</span>
+
+  <span class=sc2>// Estrutura de recepção das mensagens</span>
+  <span class=sc5>MSG </span>mensagem; 
+
+  <span class=sc2>// Estrutura de descrição da janela</span>
+  <span class=sc5>WNDCLASSEX </span>wcls; 
+
+  <span class=sc2>// Estrutura que descreve a janela</span>
+  <span class=prg>wcls.hInstance </span>= app_instancia; 
+  <span class=prg>wcls.lpszClassName </span>= sclasseJanela; 
+  <span class=prg>wcls.lpfnWndProc </span>= processaJanela; 
+  <span class=prg>wcls.style </span>= <span class=sc4>CS_HREDRAW </span>| <span class=sc4>CS_VREDRAW</span>; 
+  <span class=prg>wcls.cbSize </span>= <span class=sc16>sizeof </span>(<span class=sc5>WNDCLASSEX</span>);   
+
+  <span class=sc2>// O cursor e os ícones da aplicação são default</span>
+  <span class=prg>wcls.hIcon </span>  = <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hIconSm </span>= <span class=prg>LoadIcon </span>(<span class=prg>NULL</span>, <span class=sc4>IDI_APPLICATION</span>);   
+  <span class=prg>wcls.hCursor </span>= <span class=prg>LoadCursor </span>(<span class=prg>NULL</span>, <span class=sc4>IDC_ARROW</span>);   
+
+  <span class=sc2>// Aplicação sem menu</span>
+  <span class=prg>wcls.lpszMenuName </span>= <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a classe da janela (wcls)</span>
+  <span class=prg>wcls.cbClsExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Nada de espaço extra atrelado a janela</span>
+  <span class=prg>wcls.cbWndExtra </span>= <span class=sc4>0</span>; 
+
+  <span class=sc2>// Cor default da janela</span>
+  <span class=prg>wcls.hbrBackground </span>= ( <span class=sc16>HBRUSH</span>) <span class=sc4>COLOR_BACKGROUND</span>; 
+
+  <span class=sc2>// Registra a janela e retorna se esta operação falhar</span>
+  <span class=prg>int </span>status = <span class=prg>RegisterClassEx </span>(&wcls);  
+  <span class=sc9>if</span>(status == <span class=sc4>0</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Registro falhou!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Com a classe criada pode-se criar a janela</span>
+  <span class=prg>DWORD </span>estiloExtra = <span class=sc4>0</span>; 
+  <span class=sc16>const </span><span class=prg>char </span>janelaTitulo[] = <span class=sc6>"prj_Joystick"</span>; 
+  <span class=prg>DWORD </span>controleEstilo = <span class=sc4>WS_OVERLAPPED </span>| <span class=sc4>WS_SYSMENU </span>| <span class=sc4>WS_MINIMIZEBOX</span>; 
+  <span class=prg>int </span>xpos = 160; 
+  <span class=prg>int </span>ypos = 120; 
+  <span class=sc16>HWND </span>hjanelaPai = <span class=sc16>HWND_DESKTOP</span>; 
+  <span class=sc16>HMENU </span>sem_menu = <span class=prg>NULL</span>; 
+  <span class=prg>LPVOID </span>dadoExtra = <span class=prg>NULL</span>; 
+
+  <span class=sc2>// Cria a janela</span>
+  hJanela = <span class=prg>CreateWindowEx</span>(estiloExtra, sclasseJanela, janelaTitulo, 
+    controleEstilo, xpos, xpos,  g_xtela, g_ytela, hjanelaPai, sem_menu, 
+    app_instancia, dadoExtra );  
+
+  <span class=sc2>// Verifica se janela foi criada</span>
+  <span class=sc9>if</span>(hJanela == <span class=prg>NULL</span>)  <span class=sc16>{</span>
+  <span class=prg>MessageBox</span>(<span class=prg>NULL</span>, <span class=sc6>"Falha na criação da janela!"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+  <span class=sc6>return </span><span class=sc4>0</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Essa variável recebe informação de erro do Directx</span>
+  <span class=sc16>HRESULT </span>hr; 
+  <span class=sc2>// Inicia o Direct3D</span>
+  hr = initGfx ( hJanela );  
+
+  <span class=sc2>// Encerre a aplicação se houve falha</span>
+  <span class=sc9>if</span>(<span class=prg>FAILED </span>(hr) ) <span class=sc16>{</span>
+    <span class=prg>MessageBox </span>(hJanela, 
+      <span class=sc6>"Direct3D: falha na inicialização"</span>, <span class=sc6>"WinMain</span>()<span class=sc6>"</span>, <span class=sc4>MB_OK</span>);   
+    <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+    <span class=sc6>return </span><span class=sc4>E_FAIL</span>; 
+  <span class=sc16>} <span class=sc2>// endif</span></span>
+
+  <span class=sc2>// Mostra a janela</span>
+  <span class=prg>ShowWindow</span>(hJanela, nExibir);  
+  <span class=prg>UpdateWindow</span>(hJanela );  
+
+  <span class=sc2>// Rode a bombeamento de mensagens até GetMessage() retornar 0</span>
+  <span class=sc9>while </span>(<span class=prg>GetMessage</span>(&mensagem, <span class=prg>NULL</span>, <span class=sc4>0</span>, <span class=sc4>0</span>)) 
+  <span class=sc16>{</span>
+    <span class=sc2>// Traduz mensagem de tecla virtual em mensagem de caracteres</span>
+    <span class=prg>TranslateMessage</span>( &mensagem );  
+
+    <span class=sc2>// Despacha a mensagem para a função  processaJanela */</span>
+    <span class=prg>DispatchMessage</span>( &mensagem );  
+  <span class=sc16>} <span class=sc2>// endwhile</span></span>
+
+  <span class=sc2>// O valor de retorno é zero(0) passado por PostQuitMessage()</span>
+  <span class=prg>UnregisterClass</span>( sclasseJanela, <span class=prg>wcls.hInstance</span>);  
+  <span class=sc6>return </span><span class=prg>mensagem.wParam</span>; 
+<span class=sc16>} <span class=sc2>// WinMain().fim</span></span>
+</div>
+<hr>
+<table align='bottom' border='0' cellspacing='0' cellpadding='0' width='20%'>
+<tr><td><a href='dx9cpp.html#start' style='color:blue'> index </a></td>
+<td><a href='track05-3.html' style='color:blue'>&lt;&lt;</a></td>
+<td><a href='track05-5.html' style='color:blue'>&gt;&gt;</a></td></tr></table><pre>
+<a href=#1.1>1.1 Visão geral</a>
+<a href=#1.2>1.2 Estrutura principal da aplicação</a>
+<a href=#2.1>2.1 Aspectos globais: arquivo: motor.h</a>
+<a href=#2.2>2.2 Aspectos globais: arquivo: motor.cpp</a>
+<a href=#2.3>2.3 Inicialização do motor gráfico</a>
+<a href=#2.4>2.4 Inicialização do DirectInput</a>
+<a href=#2.5>2.5 Tratamento do joystick via DirectInput</a>
+<a href=#2.6>2.6 Renderização da cena</a>
+<a href=#2.7>2.7 Limpeza do DirectInput</a>
+<a href=#2.8>2.8 Informações dos estados do joystick</a>
+<a href=#3.1>3.1 Aspectos globais: arquivo: joystick.h</a>
+<a href=#3.2>3.2 Aspectos globais: arquivo: joystick.cpp</a>
+<a href=#3.3>3.3 Inicialização do joystick</a>
+<a href=#3.4>3.4 Alistamento dos controles conectados no sistema</a>
+<a href=#3.5>3.5 Alistamento dos componentes presentes no joystick</a>
+<a href=#Anx>Anx. Código fonte do projeto de exemplo: prj_Joystick</a>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Agosto/2014 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</center><hr></div></div></body></html>

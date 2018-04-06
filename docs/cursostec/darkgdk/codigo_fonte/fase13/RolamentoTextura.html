@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/strict.dtd">
+<html>
+<head>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+<title>Exported from Notepad++</title>
+<style type="text/css">
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #FF8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #808080;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #8000FF;
+}
+</style>
+</head>
+<body>
+<div style="float: left; white-space: pre; line-height: 1; background: #FFFFFF; "><span class="sc2">// RolamentoTextura.cpp
+// Esse programa mostra como rolar a textura através das funções shift cima, baixo,
+// esquerda, direita; e mostra efeito ghost e wireframe
+</span><span class="sc9">#include "DarkGDK.h"
+</span><span class="sc0">
+</span><span class="sc2">// Protótipo das funções
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// inicializa o sistema
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">             </span><span class="sc2">// Interpreta o teclado
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">          </span><span class="sc2">// Texturiza a matrix
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">DarkGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//  Começo da aplicação DarkGdk
+</span><span class="sc11">initsys</span><span class="sc10">();</span><span class="sc0">  
+
+</span><span class="sc2">// Criação básica de um terreno com o posicionamento da câmera para visualizá-lo
+</span><span class="sc11">dbLoadImage</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"c:\\gdkmedia\\bitmap\\textura2x2.bmp"</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbMakeMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2000</span><span class="sc10">,</span><span class="sc4">10000</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPrepareMatrixTexture</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">,</span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc11">LoopGDK</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> 
+    </span><span class="sc11">teclado</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">dbSync</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim do while
+</span><span class="sc5">return</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// fim da função: DarkGDK
+</span><span class="sc0">
+</span><span class="sc2">// ----------------------------------------------------------------------------
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initsys</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">    
+</span><span class="sc2">// Esta função inicializa o sistema
+</span><span class="sc11">dbSyncOn</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbSetWindowTitle</span><span class="sc10">(</span><span class="sc6">"RolamentoTextura.cpp"</span><span class="sc10">);</span><span class="sc0"> 
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// initsys().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+// texturizar() - Aplica aleatóriamente a textura na matrix
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">++)</span><span class="sc0"> 
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">50</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">++)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbRnd</span><span class="sc10">(</span><span class="sc4">4</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">dbSetMatrixTile</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">coluna</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">linha</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">tile</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// linha
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">//coluna
+</span><span class="sc0">
+</span><span class="sc11">dbUpdateMatrix</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">dbPositionCamera</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">1005</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">475</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc4">600</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// texturizar().fim
+</span><span class="sc0">
+
+</span><span class="sc2">// ----------------------------------------------------------------------------
+// teclado() - Lê o teclado e executa comandos do usuário
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teclado</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Lê o teclado
+</span><span class="sc0">    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">stecla</span><span class="sc10">=</span><span class="sc6">"??"</span><span class="sc10">;</span><span class="sc0">  
+    </span><span class="sc11">stecla</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">dbInKey</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc2">// Rolagem da textura:
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbUpKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">dbShiftMatrixUp</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbDownKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">dbShiftMatrixDown</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbLeftKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">dbShiftMatrixLeft</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dbRightKey</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc11">dbShiftMatrixRight</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">    
+    
+    </span><span class="sc2">// Testando visualização wireframe
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"w"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbSetMatrixWireframeOn</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"t"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbSetMatrixWireframeOff</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Testando efeito ghost (fantasma)
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"g"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbGhostMatrixOn</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"v"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">dbGhostMatrixOff</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Resseta a textura para recuperar o bug de dbShiftMatrixLeft(1);
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">strcmp</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"r"</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc11">texturizar</span><span class="sc10">();</span><span class="sc0">
+    
+    </span><span class="sc2">// Atualiza  e desacelera o atendimento do teclado
+</span><span class="sc0">    </span><span class="sc11">dbUpdateMatrix</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"w/t - Liga/Desliga visualizacao Wireframe"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">30</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"g/v - Liga/Desliga efeito Ghost"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbText</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">10</span><span class="sc10">,</span><span class="sc4">50</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc6">"r - Re-textura para corrigir bug de dbShiftMatrixLeft(1)"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">dbSleep</span><span class="sc10">(</span><span class="sc4">100</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Resseta o teclado
+</span><span class="sc0">    </span><span class="sc11">strcpy</span><span class="sc10">(</span><span class="sc11">stecla</span><span class="sc10">,</span><span class="sc6">"??"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc10">}</span><span class="sc0"> </span><span class="sc2">// teclado().fim</span></div></body>
+</html>

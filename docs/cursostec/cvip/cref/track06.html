@@ -1,0 +1,1290 @@
+<html><head>
+<title>cbiblioteca_track06_process</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Guia completo de referência da biblioteca padrão da Linguagem C [Borland Turbo C/++ ver 3.1]</b><br><b>track06.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track05.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track07.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr>
+<A NAME="6.00"></A>
+<CENTER><H2>6.00 process.h</H2></CENTER>
+<A HREF="#6.01">6.0</a> abort.............Esta função quebra a execução do programa
+<A HREF="#6.02">6.02</a> execl.............Executa um programa filho com nro de argumentos fixo
+<A HREF="#6.03">6.03</a> execle............Executa um programa filho com um nro de argumentos variáveis
+<A HREF="#6.04">6.04</a> execlp............Executa um programa passando um nro de argumentos fixo
+<A HREF="#6.05">6.05</a> execlpe...........Executa um programa passando um nro de argumentos fixos e variáveis
+<A HREF="#6.06">6.06</a> execv.............Executa um programa passando um nro de argumentos variáveis
+<A HREF="#6.07">6.07</a> execve............Executa um programa passando **sCmd e **sStrings
+<A HREF="#6.08">6.08</a> execvp............Executa um programa passando um nro de argumentos variáveis.
+<A HREF="#6.09">6.09</a> execvpe...........Executa um programa passando os argumentos **sCmd e **sStrings
+<A HREF="#6.10">6.10</a> _exit.............Termina normalmente o programa
+
+<A HREF="#6.11">6.11</a> exit..............Efetiva os dados nos buffers e termina normalmente o programa
+<A HREF="#6.12">6.12</a> spawnl............Executa um programa filho,retorna depois ao programa pai
+<A HREF="#6.13">6.13</a> spawnle...........Executa um programa filho,passa **sStrings,retorna ao programa principal
+<A HREF="#6.14">6.14</a> spawnlp...........Executa um programa filho,retorna depois ao programa pai
+<A HREF="#6.15">6.15</a> spawnlpe..........Executa um programa filho,passa **sStrings,retorna ao programa principal
+<A HREF="#6.16">6.16</a> spawnv............Executa um programa filho,passa **sCmd, retorna ao programa principal
+<A HREF="#6.17">6.17</a> spawnve...........Executa programa filho,passa **sCmd e **sString, retorna ao prg principal
+<A HREF="#6.18">6.18</a> spawnvp...........Executa um programa filho,passa **sCmd, retorna ao programa principal
+<A HREF="#6.19">6.19</a> spawnvpe..........Executa programa filho,passa **sCmd e **sString, retorna ao prg principal
+<A HREF="#6.20">6.20</a> system............Executa um programa do MsDos .bat, .exe ou .com
+.......................................................................................
+<A NAME="6.01"><b>6.01 abort</b></A>
+        Esta função quebra a execução do programa.
+        <b style="color:green">
+        void abort(void);
+        abort();</b>
+
+        Ex.:    abort();
+
+.......................................................................................
+<A NAME="6.02"><b>6.02 execl</b></A>
+        Esta função executa um programa filho. Você usa esta função quando
+        você sabe que o número de argumentos passados ao processo filho
+        é conhecido. O programa que será chamado com esta função deve estar
+        presente no diretório corrente aonde está o programa principal.
+        <b style="color:green">
+        int execl(char *path, char *arg0,...,NULL);
+        nSts = execl(sPrograma,sPrograma,vVar01,vVar02,...,NULL);</b>
+
+        sPrograma........É o nome do programa que será executado
+        sPrograma........No segundo parâmetro, repete-se o primeiro argumento.
+        vVar.............Significa qualquer parâmetro de linha de comando
+        NULL.............NULL indica final de argumentos.
+        nSts.............Em caso de falha o valor de retorno é -1.
+
+        Ex.:    execl("prgteste.exe","prgteste.exe","arquivo.txt","/c","/p",NULL);
+
+                execl("filho.exe","filho.exe","Um","Dois",NULL);
+
+                execl("prgteste.exe","prgteste.exe",NULL);
+
+                execl(sPrograma,sPrograma,sNome,sIdade,NULL);
+
+        Dica: No programa filho use atoi() para converter sIdade para um número inteiro.
+
+.......................................................................................
+<A NAME="6.03"><b>6.03 execle</b></A>
+        Esta função chama um programa executável filho passando um nro de
+        argumentos fixos e variáveis. O programa a ser chamado deve estar
+        presente no diretório corrente do programa principal.
+        <b style="color:green">
+        int execle(char *path, char *arg0,...,NULL,char **envp);
+        nSts = execle(sPrograma,sPrograma,vVar01,vVar02,...,NULL,sStrings);</b>
+
+        sPrograma........É o nome do programa que será executado
+        sPrograma........No segundo parâmetro, repete-se o primeiro argumento.
+        vVar.............Significa qualquer parâmetro de linha de comando
+        NULL.............NULL indica final de argumentos fixos.
+        nSts.............Em caso de falha o valor de retorno é -1.
+        sStrings.........É uma array de strings passada ao processo filho.
+
+        Dentro do programa principal a declaração da array de strings (sStrings)
+        pode ter este modelo: char *sStrings[]={"Nome01","Nome02",NULL};
+        O NULL final é obrigatório para usá-la em execle();
+
+        Em seguida você deve declarar assim a função main() do programa a
+        ser chamado:  main (int nCmd, char *sCmd[], char *sStrings[]);
+        Depois o uso é normal, Ex.: printf("%s\n",sStrings[0]);
+
+        Ex.:    execle("programa.exe","programa.exe","Teste","33",NULL,sNomes);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /************** Pai.c ******************/
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+        char *sNomes[]={"Romeu","Julieta","Marcus",NULL};
+
+        clrscr();
+
+        execle("filho.exe","filho.exe",NULL,sNomes);
+
+        puts("\nEnd of Program");
+        getch();}
+
+        /********** Filho.c *******************/
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd,char *sNomes[]) {
+        int i;
+
+        clrscr();
+        gotoxy(20,13); printf("Programa Filho\n");
+        printf("Nro de argumentos passados: %d\n",nCmd);
+        for (i=0;i&lt;3;i++) printf("%d_%s\n",i+1,sNomes[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+                Programa Filho
+        Nro de argumentos passados: 1
+        1_Romeu
+        2_Julieta
+        3_Marcus
+
+.......................................................................................
+<A NAME="6.04"><b>6.04 execlp</b></A>
+        Esta função executa um programa filho com um número determinado de
+        argumentos. Esta função, caso o programa não esteja no diretório
+        corrente, procura pelo programa nos caminhos apontados pela variável
+        de sistema PATH.
+        <b style="color:green">
+        int execlp(char *path,char *arg0,...,NULL);
+        nSts = execlp(sPrograma,sPrograma,sVar01,sVar02,NULL);</b>
+
+        sPrograma........É o nome do programa que será executado
+        sPrograma........No segundo parâmetro, repete-se o primeiro argumento.
+        vVar.............Significa qualquer parâmetro de linha de comando
+        NULL.............NULL indica final de argumentos.
+        nSts.............Em caso de falha o valor de retorno é -1.
+
+        Ex.:    execlp("prgteste.exe","prgteste.exe","arquivo.txt","/c","/p",NULL);
+
+                execlp("filho.exe","filho.exe","Um","Dois",NULL);
+
+                execlp("prgteste.exe","prgteste.exe",NULL);
+
+                execlp(sPrograma,sPrograma,sNome,sIdade,NULL);
+
+                execlp("debug.exe","debug.exe","basico.com",NULL);
+
+        Dica: No programa filho use atoi() para converter sIdade para um número inteiro.
+
+
+.......................................................................................
+<A NAME="6.05"><b>6.05 execlpe</b></A>
+        Esta função chama um programa executável filho passando um nro de
+        argumentos fixos e variáveis. Caso o programa não esteja no diretório
+        corrente, o programa é procurado nos caminhos apontados pela variável
+        de sistema Path.
+        <b style="color:green">
+        int execlpe(char *path, char *arg0,...,NULL,char **envp);
+        nSts = execlpe(sPrograma,sPrograma,vVar01,vVar02,...,NULL,sStrings);</b>
+
+        sPrograma........É o nome do programa que será executado
+        sPrograma........No segundo parâmetro, repete-se o primeiro argumento.
+        vVar.............Significa qualquer parâmetro de linha de comando
+        NULL.............NULL indica final de argumentos fixos.
+        nSts.............Em caso de falha o valor de retorno é -1.
+        sStrings.........É uma array de strings passada ao processo filho.
+
+        Dentro do programa principal a declaração da array de strings (sStrings)
+        pode ter este modelo: char *sStrings[]={"Nome01","Nome02",NULL};
+        O NULL final é obrigatório para usá-la em execlpe();
+
+        Em seguida você deve declarar assim a função main() do programa a
+        ser chamado:  main (int nCmd, char *sCmd[], char *sStrings[]);
+        Depois o uso é normal, Ex.: printf("%s\n",sStrings[0]);
+
+        Ex.:    execlpe("programa.exe","programa.exe","Teste","33",NULL,sNomes);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /************** Pai.c ******************/
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+        char *sNomes[]={"Romeu","Julieta","Marcus",NULL};
+
+        clrscr();
+
+        execlpe("filho.exe","filho.exe",NULL,sNomes);
+
+        puts("\nEnd of Program");
+        getch();}
+
+        /********** Filho.c *******************/
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd,char *sNomes[]) {
+        int i;
+
+        clrscr();
+        gotoxy(20,13); printf("Programa Filho\n");
+        printf("Nro de argumentos passados: %d\n",nCmd);
+        for (i=0;i&lt;3;i++) printf("%d_%s\n",i+1,sNomes[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+                Programa Filho
+        Nro de argumentos passados: 1
+        1_Romeu
+        2_Julieta
+        3_Marcus
+.......................................................................................
+<A NAME="6.06"><b>6.06 execv</b></A>
+        Executa um programa filho, passando um número de argumentos variáveis.
+        O programa a ser chamado deve estar no mesmo diretório que o
+        programa principal.
+        <b style="color:green">
+        int execv(char *path, char *argv[]);
+        nSts = execv(sPrograma,sStrings);</b>
+
+        nSts.........A função retorna -1 em caso de insucesso
+        sPrograma....Nome do programa que vai ser chamado
+        sStrings.....Array de argumentos variáveis que é passada ao programa chamado
+
+        Ex.:    char *sStrings[]={"ReservadoNomePrograma","Romeu","Julieta","Karen",NULL);
+                char sPrograma[]="teste.exe";
+                execv(sPrograma,sStrings);
+
+        Detalhes:
+        sString é passada como os argumentos principais do programa, em nossos
+        programas a declaração destes argumentos principais vem sendo feita
+        desta maneira char **sCmd dentro dos argumentos de main(), a Borland
+        costuma declarar assim *argv[] que é equivalente.
+        Em nossos testes, o conteúdo de sString[0] foi sobreescrito pelo
+        nome do programa que foi chamado. Vamos lembrar também que o conteúdo de
+        sStrings deve ser finalizado com NULL.
+
+        Veja estes dois programas exemplos: <font color="darkblue">
+        /* ***** Pai.c ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        int i;
+        char *sNomes[]={"NomePrograma","Romeu","Julieta","Marcus",NULL};
+
+        clrscr();
+
+        execv("filho.exe",sNomes);
+
+        puts("\nEnd of Program");
+
+        getch();}
+
+        /* ***** Filho.c ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+
+        clrscr();
+        gotoxy(20,13); printf("Programa Filho\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}
+        </font>
+
+        Saída:
+                   Programa Filho
+        Nro de argumentos passados: 4
+        1_C:\TC\FILHO.EXE
+        2_Romeu
+        3_Julieta
+        4_Marcus
+
+.......................................................................................
+<A NAME="6.07"><b>6.07 execve</b></A>
+        Esta função executa um processo filho, passando na chamada a este
+        programa os argumentos **sCmd (conhecido tb como *argv[]) e **sStrings
+        que é uma array de ponteiros.
+        O programa a ser chamado deve estar presente no mesmo diretório que
+        o programa principal.
+        <b style="color:green">
+        int execve(char *path,char *argv[],**envp);
+        nSts = execve(sPrograma,sCmd, sStrings);</b>
+
+        nSts........A função retorna -1 em caso de falha
+        sCmd........Argumentos principais passados ao programa filho
+        sString.....Argumentos extras passados ao programa filho
+
+        Ex.:    char *sCmd[]={"ReservadoNomePrograma","Romeu","45",NULL};
+                char *sStrings[]={"Dado01","Dado02","...",NULL};
+                int nSts;
+                nSts = execve("myprg.exe",sCmd,sStrings);
+
+        No programa filho você pode declarar assim a função main():
+        main (int nCmd, char **sCmd,char **sStrings);
+
+        Detalhes: sCmd[0] é usado para receber o nome do programa. sCmd e sStrings
+        devem ser finalizados com NULL.
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **argv) {
+
+        int i,nSts;
+        char *sCmd[]={"NomePrograma","Romeu","Julieta","Marcus",NULL};
+        char *sStrings[]={"01.Data","02.Data","03.Data",NULL};
+
+        clrscr();
+
+        nSts = execve("filho.exe",sCmd,sStrings);
+        if (nSts==-1) printf("Erro na chamada do programa\n");
+
+        puts("\nEnd of Program");
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int i;
+
+        clrscr();
+
+        gotoxy(20,2); printf("Programa Filho\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        for (i=0;i&lt;3;i++) printf("%s\n",sStrings[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+
+                   Programa Filho
+        Nro de argumentos passados: 4
+        1_C:\TC\FILHO.EXE
+        2_Romeu
+        3_Julieta
+        4_Marcus
+        01.Data
+        02.Data
+        03.Data
+
+.......................................................................................
+<A NAME="6.08"><b>6.08 execvp</b></A>
+        Executa um programa filho, passando um número de argumentos variáveis.
+        Caso o programa chamado não esteja no diretório corrente, o mesmo é
+        procurado nos caminhos apontados pela variável de sistema Path.
+        <b style="color:green">
+        int execvp(char *path, char *argv[]);
+        nSts = execvp(sPrograma,sStrings);</b>
+
+        nSts.........A função retorna -1 em caso de insucesso
+        sPrograma....Nome do programa que vai ser chamado
+        sStrings.....Array de argumentos variáveis que é passada ao programa chamado
+
+        Ex.:    char *sStrings[]={"ReservadoNomePrograma","Romeu","Julieta","Karen",NULL);
+                char sPrograma[]="teste.exe";
+                execvp(sPrograma,sStrings);
+
+        Detalhes:
+        sString é passada como os argumentos principais do programa, em nossos
+        programas a declaração destes argumentos principais vem sendo feita
+        desta maneira char **sCmd dentro dos argumentos de main(), a Borland
+        costuma declarar assim *argv[] que é equivalente.
+        Em nossos testes, o conteúdo de sString[0] foi sobreescrito pelo
+        nome do programa que foi chamado. Vamos lembrar também que o conteúdo de
+        sStrings deve ser finalizado com NULL.
+
+        Veja estes dois programas exemplos: <font color="darkblue">
+        /* ***** Pai.c ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        int i;
+        char *sNomes[]={"NomePrograma","Romeu","Julieta","Marcus",NULL};
+
+        clrscr();
+
+        execvp("filho.exe",sNomes);
+
+        puts("\nEnd of Program");
+
+        getch();}
+
+        /* ***** Filho.c ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+
+        clrscr();
+        gotoxy(20,13); printf("Programa Filho\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}
+        </font>
+
+        Saída:
+                   Programa Filho
+        Nro de argumentos passados: 4
+        1_C:\TC\FILHO.EXE
+        2_Romeu
+        3_Julieta
+        4_Marcus
+
+.......................................................................................
+<A NAME="6.09"><b>6.09 execvpe</b></A>
+        Esta função executa um processo filho, passando na chamada a este
+        programa os argumentos **sCmd (conhecido tb como *argv[]) e **sStrings
+        que é uma array de ponteiros.
+        Caso o programa chamado não esteja no diretório corrente, o mesmo é
+        procurado nos caminhos apontados pela variável de sistema Path.
+        <b style="color:green">
+        int execvpe(char *path,char *argv[],**envp);
+        nSts = execvpe(sPrograma,sCmd, sStrings);</b>
+
+        nSts........A função retorna -1 em caso de falha
+        sCmd........Argumentos principais passados ao programa filho
+        sString.....Argumentos extras passados ao programa filho
+
+        Ex.:    char *sCmd[]={"ReservadoNomePrograma","Romeu","45",NULL};
+                char *sStrings[]={"Dado01","Dado02","...",NULL};
+                int nSts;
+                nSts = execvpe("myprg.exe",sCmd,sStrings);
+
+        No programa filho você pode declarar assim a função main():
+        main (int nCmd, char **sCmd,char **sStrings);
+
+        Detalhes: sCmd[0] é usado para receber o nome do programa. sCmd e sStrings
+        devem ser finalizados com NULL.
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **argv) {
+
+        int i,nSts;
+        char *sCmd[]={"NomePrograma","Romeu","Julieta","Marcus",NULL};
+        char *sStrings[]={"01.Data","02.Data","03.Data",NULL};
+
+        clrscr();
+
+        nSts = execvpe("filho.exe",sCmd,sStrings);
+        if (nSts==-1) printf("Erro na chamada do programa\n");
+
+        puts("\nEnd of Program");
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int i;
+
+        clrscr();
+
+        gotoxy(20,2); printf("Programa Filho\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        for (i=0;i&lt;3;i++) printf("%s\n",sStrings[i]);
+
+        getch();
+        puts("\nEnd of Program");
+        getch();}</font>
+
+        Saída:
+
+                   Programa Filho
+        Nro de argumentos passados: 4
+        1_C:\TC\FILHO.EXE
+        2_Romeu
+        3_Julieta
+        4_Marcus
+        01.Data
+        02.Data
+        03.Data
+
+.......................................................................................
+<A NAME="6.10"><b>6.10 _exit</b></A>
+        Esta função termina normalmente o programa, retornando o valor
+        de status para o sistema operacional.
+        <b style="color:green">
+        void _exit(int status);
+        _exit(nSts);</b>
+
+        Ex.: _exit(0);
+
+.......................................................................................
+<A NAME="6.11"><b>6.11 exit</b></A>
+        Esta função termina normalmente o programa e retorna o valor de status
+        para o sistema operacional. Antes de encerrar o programa, esta função
+        salva os dados que estiverem nos buffers de saída, fecha os arquivos
+        abertos e chama as funções de saída do programa.
+        <b style="color:green">
+        void exit(int status);
+        exit(nSts);</b>
+
+        Ex.: exit(1);
+
+        Detalhes: Você pode usar a função atexit()de stdlib.h para registrar
+                  funções que finalizam o seu programa.
+
+.......................................................................................
+<A NAME="6.12"><b>6.12 spawnl</b></A>
+        Esta função executa um processo filho, passando a este programa um
+        número conhecido de argumentos fixos. Após a execução deste, o
+        controle é retornado ao programa principal.
+        O programa filho deve estar no diretório corrente do programa principal.
+        <b style="color:green">
+        int spawnl(int mode, char *path, char *arg0,...,NULL);
+        nSts = spawnl(nMode,sPrograma,sPrograma,vVar01,vVar02,...,NULL);</b>
+
+        nSts......Em caso de falha o valor de retorno é -1. Em caso de sucesso
+                  o valor é o valor retornado pelo processo filho.
+
+        nMode.....Representa o modo de chamada do processo filho, podendo ter
+                  estes dois valores a seguir, P_WAIT que faz o programa principal
+                  aguardar na memória pela finalização do processo filho; o outro
+                  valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                  pelo processo filho.
+
+        sPrograma.É o nome do programa que representa o processo filho
+
+        sVar......São os argumentos que podem ser passados ao programa filho
+
+        NULL......Indica finalização de argumentos
+
+        Ex.:    spawnl(P_WAIT,"teste.exe","teste.exe","arquivo.txt","/w",NULL);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **argv) {
+
+        int i,nSts;
+        char sVar[]="01.Data";
+        char sPrograma[]="filho.exe";
+        char sMsg[]="\x22Pressione uma tecla pra ciclar entre programas\x22";
+
+        clrscr();
+        gotoxy(20,2); printf("Programa Pai.C\n");
+
+        printf("%s \n",sMsg); getch();
+
+        nSts= spawnl(P_WAIT,sPrograma,sPrograma,sVar,sMsg,NULL);
+        if (nSts == -1) printf("Erro na chamada do programa %s\n",sPrograma);
+
+        if (nSts != -1) {
+        printf("\nO processo filho foi executado com sucesso.\n");
+        printf("O controle está agora com o programa principal.\n");}
+        printf("Valor retornado pelo processo filho %d\n",nSts);
+
+        puts("\n (Father) End of Program");
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+
+        clrscr();
+        gotoxy(20,2); printf("Programa Filho.C\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        puts("\n (Child) End of Program");
+        printf("%s\n",sCmd[2]);
+        getch();
+        return 16;}</font>
+
+        Saída conjunta destes dois programas:
+
+                  Programa Pai.C
+        "Pressione uma tecla pra ciclar entre programas"
+
+
+                  Programa Filho.C
+        Número de argumentos passados: 3
+        1_C:\TC\FILHO.EXE
+        2_01.Data
+        3_Pressione uma tecla pra ciclar entre programas
+
+        (Child) End of Program
+         Pressione uma tecla pra ciclar entre programas
+
+        O processo filho foi executado com sucesso.
+        O controle está agora com o programa principal.
+        O Valor retornado pelo processo filho 16
+
+        (Father) End of Program
+
+        Detalhe: Note a string sMsg[] começa e termina com o carácter 0x22 ("). Isto
+        é necessário para que o MsDos a considere um só parâmetro.
+
+.......................................................................................
+<A NAME="6.13"><b>6.13 spawnle</b></A>
+        Esta função executa um processo filho, passando a este programa um número
+        conhecido de argumentos fixos, e passando uma array de ponteiros **sStrings.
+        Após a execução do processo filho o controle é devolvido ao programa principal.
+        O programa filho deve estar no mesmo diretório que a aplicação principal.
+        <b style="color:green">
+        int spawnle(int mode,char *path,char *arg0,...,NULL,**env);
+        nSts = spawnle(nMode, sPrograma,sPrograma,vVar01,vVar02,...,NULL,sStrings);</b>
+
+
+        nSts.............Em caso de falha o valor de retorno é -1.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        vVar.............Significa qualquer parâmetro de linha de comando
+
+        NULL.............NULL indica final de argumentos fixos.
+
+        sStrings.........É uma array de strings passada ao processo filho.
+
+
+        Dentro do programa principal a declaração da array de strings (sStrings)
+        pode ter este modelo: char *sStrings[]={"Nome01","Nome02",NULL};
+        O NULL final é obrigatório para usá-la em spawnle();
+
+        Em seguida você deve declarar assim a função main() do programa a
+        ser chamado:  main (int nCmd, char *sCmd[], char *sStrings[]);
+        Depois o uso é normal, Ex.: printf("%s\n",sStrings[0]);
+
+        Ex.:    char sPrograma[]="teste.exe";
+                char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+                char sNome[]="LeadBeater";
+                char sIdade[]="88";
+                int nSts=0;
+                nSts = spawnle(P_WAIT,sPrograma,sPrograma,sNome,sIdade,NULL,sStrings);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Noname.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPrograma[]="teste.exe";
+        char sNome[]="LeadBeater";
+        char sIdade[]="88";
+        char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+        int nSts;
+
+        clrscr();
+
+        nSts = spawnle(P_WAIT,sPrograma,sPrograma,sNome,sIdade,NULL,sStrings);
+
+        if (nSts==-1) printf("Erro na chamada do programa.");
+
+        puts("\n (Father) End of Program");
+        getch();}
+
+        /* ***** Test.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int cx;
+
+        clrscr();
+
+        for ( cx=0; cx&lt;nCmd; cx++ ) {
+        printf("%d_%s\n",cx,sCmd[cx]);}
+
+        cx=0;
+        do {
+        printf("%d_%s\n",cx,sStrings[cx]);
+        cx++;} while (sStrings[cx] != NULL);
+
+        puts("\n (Child) End of Program");
+        getch();
+        return 16;}</font>
+
+        Saída:
+        0_C:\TC\TESTE.EXE
+        1_LeadBeater
+        2_88
+        0_Ordem
+        1_Rigor
+        2_Método
+        3_Organização
+        4_Sucesso
+
+         (Child) End of Program
+
+         (Father) End of Program
+
+.......................................................................................
+<A NAME="6.14"><b>6.14 spawnlp</b></A>
+        Esta função executa um processo filho, passando a este programa um
+        número conhecido de argumentos fixos. Após a execução deste, o
+        controle é retornado ao programa principal.
+        Caso o programa filho não esteja no diretório corrente, o mesmo é
+        procurado nos caminhos apontados pela variável de sistema Path.
+        <b style="color:green">
+        int spawnlp(int mode, char *path, char *arg0,...,NULL);
+        nSts = spawnlp(nMode,sPrograma,sPrograma,vVar01,vVar02,...,NULL);</b>
+
+        nSts......Em caso de falha o valor de retorno é -1. Em caso de sucesso
+                  o valor é o valor retornado pelo processo filho.
+
+        nMode.....Representa o modo de chamada do processo filho, podendo ter
+                  estes dois valores a seguir, P_WAIT que faz o programa principal
+                  aguardar na memória pela finalização do processo filho; o outro
+                  valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                  pelo processo filho.
+
+        sPrograma.É o nome do programa que representa o processo filho
+
+        sVar......São os argumentos que podem ser passados ao programa filho
+
+        NULL......Indica finalização de argumentos
+
+        Ex.:    spawnlp(P_WAIT,"debug.exe","debug.exe","arquivo.com",NULL);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **argv) {
+
+        int i,nSts;
+        char sVar[]="01.Data";
+        char sPrograma[]="filho.exe";
+        char sMsg[]="\x22Pressione uma tecla pra ciclar entre programas\x22";
+
+        clrscr();
+        gotoxy(20,2); printf("Programa Pai.C\n");
+
+        printf("%s \n",sMsg); getch();
+
+        nSts= spawnlp(P_WAIT,sPrograma,sPrograma,sVar,sMsg,NULL);
+        if (nSts == -1) printf("Erro na chamada do programa %s\n",sPrograma);
+
+        if (nSts != -1) {
+        printf("\nO processo filho foi executado com sucesso.\n");
+        printf("O controle está agora com o programa principal.\n");}
+        printf("Valor retornado pelo processo filho %d\n",nSts);
+
+        puts("\n (Father) End of Program");
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+        int i;
+
+        clrscr();
+        gotoxy(20,2); printf("Programa Filho.C\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        puts("\n (Child) End of Program");
+        printf("%s\n",sCmd[2]);
+        getch();
+        return 16;}</font>
+
+        Saída conjunta destes dois programas:
+
+                  Programa Pai.C
+        "Pressione uma tecla pra ciclar entre programas"
+
+
+                  Programa Filho.C
+        Número de argumentos passados: 3
+        1_C:\TC\FILHO.EXE
+        2_01.Data
+        3_Pressione uma tecla pra ciclar entre programas
+
+        (Child) End of Program
+         Pressione uma tecla pra ciclar entre programas
+
+        O processo filho foi executado com sucesso.
+        O controle está agora com o programa principal.
+        O Valor retornado pelo processo filho 16
+
+        (Father) End of Program
+
+        Detalhe: Note a string sMsg[] começa e termina com o carácter 0x22 ("). Isto
+        é necessário para que o MsDos a considere um só parâmetro.
+
+.......................................................................................
+<A NAME="6.15"><b>6.15 spawnlpe</b></A>
+        Esta função executa um processo filho, passando a este programa um número
+        conhecido de argumentos fixos, e passando uma array de ponteiros **sStrings.
+        Após a execução do processo filho o controle é devolvido ao programa principal.
+        Caso o programa filho não esteja no mesmo diretório que a aplicação principal,
+        ele é procurado nos caminhos apontados pela variável de sistema Path.
+        <b style="color:green">
+        int spawnlpe(int mode,char *path,char *arg0,...,NULL,**env);
+        nSts = spawnlpe(nMode, sPrograma,sPrograma,vVar01,vVar02,...,NULL,sStrings);</b>
+
+        nSts.............Em caso de falha o valor de retorno é -1. Em caso de sucesso,
+                           o valor de nSts é o valor retornado pelo processo filho.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        vVar.............Significa qualquer parâmetro de linha de comando
+
+        NULL.............NULL indica final de argumentos fixos.
+
+        sStrings.........É uma array de strings passada ao processo filho.
+
+
+        Dentro do programa principal a declaração da array de strings (sStrings)
+        pode ter este modelo: char *sStrings[]={"Nome01","Nome02",NULL};
+        O NULL final é obrigatório para usá-la em spawnlpe();
+
+        Em seguida você deve declarar assim a função main() do programa a
+        ser chamado:  main (int nCmd, char *sCmd[], char *sStrings[]);
+        Depois o uso é normal, Ex.: printf("%s\n",sStrings[0]);
+
+        Ex.:    char sPrograma[]="teste.exe";
+                char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+                char sNome[]="LeadBeater";
+                char sIdade[]="88";
+                int nSts=0;
+                nSts = spawnlpe(P_WAIT,sPrograma,sPrograma,sNome,sIdade,NULL,sStrings);
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Noname.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPrograma[]="teste.exe";
+        char sNome[]="LeadBeater";
+        char sIdade[]="88";
+        char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+        int nSts;
+
+        clrscr();
+
+        nSts = spawnlpe(P_WAIT,sPrograma,sPrograma,sNome,sIdade,NULL,sStrings);
+
+        if (nSts==-1) printf("Erro na chamada do programa.");
+
+        puts("\n (Father) End of Program");
+        getch();}
+
+        /* ***** Test.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int cx;
+
+        clrscr();
+
+        for ( cx=0; cx&lt;nCmd; cx++ ) {
+        printf("%d_%s\n",cx,sCmd[cx]);}
+
+        cx=0;
+        do {
+        printf("%d_%s\n",cx,sStrings[cx]);
+        cx++;} while (sStrings[cx] != NULL);
+
+        puts("\n (Child) End of Program");
+        getch();
+        return 16;}</font>
+
+        Saída:
+        0_C:\TC\TESTE.EXE
+        1_LeadBeater
+        2_88
+        0_Ordem
+        1_Rigor
+        2_Método
+        3_Organização
+        4_Sucesso
+
+         (Child) End of Program
+
+         (Father) End of Program
+
+.......................................................................................
+<A NAME="6.16"><b>6.16 spawnv</b></A>
+        Esta função executa um processo filho, passando ao mesmo a string de
+        linha de comando **sCmd (*argv[]). Após a finalização do processo
+        filho, o controle é retornado ao programa principal.
+        O programa filho deve estar no mesmo diretório que o programa principal.
+        <b style="color:green">
+        int spawnv(int mode, char *path, char *argv[]);
+        nSts = spawnv(nMode,sPrograma,sCmd);</b>
+
+        nSts.............Em caso de falha o valor de retorno é -1. Em caso de sucesso,
+                         o valor de nSts é o valor retornado pelo processo filho.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        sCmd.............É a string de argumentos de linha de comando
+
+        Ex.:    char *sCmd[]={"ReservadoNomePrograma","arquivo.txt","/w","/p",NULL};
+                spawnv(P_WAIT,"programa.exe",sCmd);
+
+
+.......................................................................................
+<A NAME="6.17"><b>6.17 spawnve</b></A>
+        Esta função executa um processo filho, passando ao mesmo a string de linha
+        de comando **sCmd (conhecida tb como *argv[]) e uma array de ponteiros
+        **sStrings. Depois de finalizado o processo filho, o controle é devolvido
+        ao programa principal.
+        O processo filho deve estar no mesmo diretório que a aplicação
+        principal.
+        <b style="color:green">
+        int spawnve(int mode, char *path, char *argv[], char **env);
+        nSts = spawnve(nMode,sPrograma,sCmd,sStrings);</b>
+
+        nSts.............Em caso de falha o valor de retorno é -1. Em caso de sucesso,
+                         o valor de nSts é o valor retornado pelo processo filho.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        sCmd.............É a string de argumentos de linha de comando
+
+        sStrings.........É uma array de strings passada ao processo filho.
+
+        Ex.:    char sPrograma[]="filho.exe";
+                char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+                char *sCmdLine[]={"ReservadoNomePrograma","arquivo.txt","/w",NULL};
+                int nSts;
+                nSts = spawnve(P_WAIT,sPrograma,sCmdLine,sStrings);
+
+        No programa programa subordinado para tratar *sCmdLine[] e *sStrings[]
+        você pode declarar assim o protótipo de main():
+        int main(int nCmd, char **sCmd, char **sStrings);
+        Neste programa, **sCmd recebe os dados de *sCmdLine[] do programa principal.
+
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPrograma[]="filho.exe";
+        char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+        char *sCmdLine[]={"ReservadoNomePrograma","arquivo.txt","/w",NULL};
+        int nSts;
+
+        clrscr();
+
+        nSts = spawnve(P_WAIT,sPrograma,sCmdLine,sStrings);
+
+        if (nSts==-1) printf("Erro na chamada do programa.");
+
+        puts("\n (Father) End of Program");
+
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int i;
+
+        clrscr();
+
+        gotoxy(20,2); printf("Programa Filho.C\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        i=0; printf("\n");
+        do {
+        printf("%d_%s\n",i,sStrings[i]);
+        i++;
+        } while (sStrings[i] != NULL);
+
+        puts("\n (Child) End of Program");
+        getch();
+        return 16;}</font>
+
+        Saída conjunta destes dois programas:
+
+                   Programa Filho.C
+        Nro de argumentos passados: 3
+        1_C:\TC\FILHO.EXE
+        2_arquivo.txt
+        3_/w
+
+        0_Ordem
+        1_Rigor
+        2_Método
+        3_Organização
+        4_Sucesso
+
+         (Child) End of Program
+
+         (Father) End Of Programa
+
+.......................................................................................
+<A NAME="6.18"><b>6.18 spawnvp</b></A>
+        Esta função executa um processo filho, passando ao mesmo a string de
+        linha de comando **sCmd (*argv[]). Após a finalização do processo
+        filho, o controle é retornado ao programa principal.
+        Caso o programa filho não esteja no mesmo diretório que o programa principal,
+        ele é procurado nos caminhos apontados pela variável de sistema Path.
+        <b style="color:green">
+        int spawnvp(int mode, char *path, char *argv[]);
+        nSts = spawnvp(nMode,sPrograma,sCmd);</b>
+
+        nSts.............Em caso de falha o valor de retorno é -1. Em caso de sucesso,
+                         o valor de nSts é o valor retornado pelo processo filho.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        sCmd.............É a string de argumentos de linha de comando
+
+        Ex.:    char *sCmd[]={"ReservadoNomePrograma","arquivo.txt","/w","/p",NULL};
+                spawnvp(P_WAIT,"programa.exe",sCmd);
+
+.......................................................................................
+<A NAME="6.19"><b>6.19 spawnvpe</b></A>
+        Esta função executa um processo filho, passando ao mesmo a string de linha
+        de comando **sCmd (conhecida tb como *argv[]) e uma array de ponteiros
+        **sStrings. Depois de finalizado o processo filho, o controle é devolvido
+        ao programa principal.
+        Caso o processo filho não esteja no mesmo diretório que a aplicação
+        principal, ele é procurado nos caminhos apontados pela variável
+        de sistema Path.
+        <b style="color:green">
+        int spawnvpe(int mode, char *path, char *argv[], char **env);
+        nSts = spawnvpe(nMode,sPrograma,sCmd,sStrings);</b>
+
+        nSts.............Em caso de falha o valor de retorno é -1. Em caso de sucesso,
+                         o valor de nSts é o valor retornado pelo processo filho.
+
+        nMode............Representa o modo de chamada do processo filho, podendo ter
+                         estes dois valores a seguir, P_WAIT que faz o programa principal
+                         aguardar na memória pela finalização do processo filho; o outro
+                         valor é P_OVERLAY que faz com quê o programa pai seja sobreescrito
+                         pelo processo filho.
+
+        sPrograma........É o nome do programa que será executado
+
+        sCmd.............É a string de argumentos de linha de comando
+
+        sStrings.........É uma array de strings passada ao processo filho.
+
+        Ex.:    char sPrograma[]="filho.exe";
+                char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+                char *sCmdLine[]={"ReservadoNomePrograma","arquivo.txt","/w",NULL};
+                int nSts;
+                nSts = spawnve(P_WAIT,sPrograma,sCmdLine,sStrings);
+
+        No programa programa subordinado para tratar *sCmdLine[] e *sStrings[]
+        você pode declarar assim o protótipo de main():
+        int main(int nCmd, char **sCmd, char **sStrings);
+        Neste programa, **sCmd recebe os dados de *sCmdLine[] do programa principal.
+
+        Veja estes dois programas exemplos:<font color="darkblue">
+        /* ***** Pai.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "stdlib.h"
+        #include "process.h"
+        #include "dos.h"
+
+        int main (int nCmd, char **sCmd) {
+
+        char sPrograma[]="filho.exe";
+        char *sStrings[]={"Ordem","Rigor","Método","Organização","Sucesso",NULL};
+        char *sCmdLine[]={"ReservadoNomePrograma","arquivo.txt","/w",NULL};
+        int nSts;
+
+        clrscr();
+
+        nSts = spawnvpe(P_WAIT,sPrograma,sCmdLine,sStrings);
+
+        if (nSts==-1) printf("Erro na chamada do programa.");
+
+        puts("\n (Father) End of Program");
+
+        getch();}
+
+        /* ***** Filho.C ***** */
+        #include "stdio.h"
+        #include "conio.h"
+        #include "process.h"
+
+        int main (int nCmd, char **sCmd, char **sStrings) {
+        int i;
+
+        clrscr();
+
+        gotoxy(20,2); printf("Programa Filho.C\n");
+
+        printf("Nro de argumentos passados: %d\n",nCmd);
+
+        for (i=0;i&lt;nCmd;i++) printf("%d_%s\n",i+1,sCmd[i]);
+
+        i=0; printf("\n");
+        do {
+        printf("%d_%s\n",i,sStrings[i]);
+        i++;
+        } while (sStrings[i] != NULL);
+
+        puts("\n (Child) End of Program");
+        getch();
+        return 16;}</font>
+
+        Saída conjunta destes dois programas:
+
+                   Programa Filho.C
+        Nro de argumentos passados: 3
+        1_C:\TC\FILHO.EXE
+        2_arquivo.txt
+        3_/w
+
+        0_Ordem
+        1_Rigor
+        2_Método
+        3_Organização
+        4_Sucesso
+
+         (Child) End of Program
+
+         (Father) End Of Programa
+
+.......................................................................................
+<A NAME="6.20"><b>6.20 system</b></A>
+        Esta função executa qualquer comando interno do MsDos e os programas
+        .bat, .exe e .com.
+        <b style="color:green">
+        int system(const char *command);
+        nSts = system(sCmdLine);</b>
+
+        Ex.:    char sCmdLine[]="dir/w";
+                system("dir/p");
+                system(sCmdLine);
+
+        Detalhes: Esta função retorna zero para sucesso, -1 em caso de falha.
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cbiblioteca.html style='color:blue'> index </a></td><td><a href='track05.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track07.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></body></html>
+

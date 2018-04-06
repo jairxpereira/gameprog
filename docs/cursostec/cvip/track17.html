@@ -1,0 +1,519 @@
+<html><head>
+<title>CVip_track17</title>
+<style type="text/css">
+.dica {	width:500pt; background:aliceblue;color:#700080}
+span {
+font-family: 'Courier New';
+font-size: 10pt;
+color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+color: darkgreen;
+font-weight: bold;
+}
+
+.sntx {
+color: darkgreen;
+}
+
+
+.sc2 {
+color: #008000;
+}
+.sc4 {
+color: #ff8000;
+}
+.sc5 {
+font-weight: bold;
+color: #0000FF;
+}
+.sc6 {
+color: #FF0000;
+}
+.sc9 {
+color: #804000;
+font-weight: bold;
+}
+.sc10 {
+font-weight: bold;
+color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+color: #400080;
+}
+
+.prg {
+color: #0000FF;
+}
+
+.prg-saida {
+
+margin-left:0px;
+width:500pt;
+background-color:lightblue;
+
+}
+
+.prg-code {
+margin-left:0px;
+width:500pt;
+background-color:lightyellow;
+padding:10px;
+font-weight:bold;
+}
+
+
+.niceview {
+margin-left:0px;
+width:500pt;
+background-color:white;
+border-color:lightgray;
+border-width:1px;
+border-style:solid;
+padding:10px;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:0px;
+width:53.5em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+.pagebody
+{
+margin-left:50px;
+border-width:1px;
+border-style:solid;
+border-color:white;
+background-color:white;
+width:90%;
+-webkit-border-radius: 40px 40px 40px 40px;
+-moz-border-radius: 40px 40px 40px 40px;
+border-radius: 15px 15px 15px 15px;
+}
+.mybody
+{
+margin-top:20pt;
+margin-bottom:20pt;
+margin-left:20pt;
+margin-right:20pt;
+/* border-width:1px; */
+/* border-style:solid; */
+border-color:lightgray;
+background-image:url('backdrop.jpg');
+}
+</style>
+</head>
+<body class=mybody><font color="black">
+<div class=pagebody>
+<hr>
+<center><b style="font-size:1.5em;" >Curso completo de linguagem C</b><br>
+Gameprog - Escola de programação de jogos digitais<br>
+Contato: gameprog.br@gmail.com<br>
+<b>track17.html</b></center>
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cvip.html style='color:blue'> index </a></td>
+<td><a href='track16.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track18.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><pre>
+<a name="track16"></a><h3 style="background-color:#80ff80">17. Ponteiros ou apontadores 4/5</h3>
+<b style="background-color:lightgreen">17.1 Ponteiros e funções</b>
+
+<u>PASSAGEM DE ARGUMENTOS POR VALOR E POR REFERêNCIA</u>
+
+Na linguagem C, a passagem de argumentos para uma função pode ocorrer
+de  duas  formas:  por  valor, na qual o compilador cria uma cópia do
+valor ou da variável que passamos.
+Esta forma  assegura  que  o  conteúdo  da variável que passamos como
+argumento para uma outra função não vai ter o seu conteúdo  alterado,
+pois as operações vão ser realizadas sobre uma cópia  desta variável.
+<font color="darkblue">
+int multiplica(int x, int y);
+int x, dx = 10, dy = 3;
+x = multiplica(dx,dy);</font>
+
+Nas linhas  acima,  dx  e  dy  foram  passadas como argumentos para a
+função multiplica() por valor e não terão  seus  valores  modificados
+pelos processos internos da função.
+
+A passagem por referência envolve a participação de  ponteiros  e  do
+operador  de  endereço  &.  Nesta  forma de passagem de argumentos as
+variáveis  passadas  para  a  função  tem  o  seu conteúdo modificado
+pelos  processos  internos  da  função  chamada.  Isto  ocorre porque
+a    variável    é    diretamente   acessada   pelo   seu   endereço.
+
+A  declaração  dos  argumentos  de  referência devem ser naturalmente
+ponteiros, ex:<font color="darkblue"> void multiplica (int *x, *y);</font>
+Dentro  desta  função,  os  processos  internos  devem tratar *x e *y
+como ponteiros normais, ex:<font color="darkblue"> *x = *x * (*y);</font>
+Durante a chamada desta função,  suas  variáveis devem ser precedidas
+pelo operador de memória ( & ), ex:<font color="darkblue"> multiplica (&dx,&dy);</font>
+Em nosso exemplo, dx trará o resultado  da  multiplicação  (dx * dy).
+
+Veja o exemplo:
+<div class=prg-saida>
+ <img src=images\ptr06.png>
+<br></div>
+<div class=prg-code>
+<span class="sc1">/* Programa: ptr06.c - track 17 */</span><span class="sc0">
+</span><span class="sc1">/* Passagem de argumentos por referência */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">multiplica</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">y</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função main()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">7</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title ptr06.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Valores originais dx:%i dy:%i \n\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Passagem de dados por referência---- */</span><span class="sc0">
+</span><span class="sc11">multiplica</span><span class="sc10">(&amp;</span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" multiplica(&amp;dx, &amp;dy); \n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" dx = dx * dy: %i \n\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" Valores depois da chamada por referencia: \n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" dx:%i dy:%i \n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dx</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dy</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função multiplica()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">multiplica</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">x</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">y</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc10">*</span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">x</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc11">y</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">*</span><span class="sc11">y</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0"></span></div>
+
+<u>ARRAYS SEMPRE SÃO PASSADAS POR REFERêNCIA</u>
+
+A passagem de uma array como argumento sempre se dá  por  referência.
+Seria uma perda de tempo muito grande  e um dispêndio caro de memória 
+se   fosse   feito   cópia   da  array  na  chamada  de  uma  função.
+
+Há   três   maneiras  de  se  declarar  uma  função  que  recebe  uma
+array como argumento:
+<b style="color:green">
+tipo Função(int vArray[nIndice]);
+tipo Função(int vArray[]);
+tipo Função(int *vArray);</b><font color="darkblue">
+
+void ZeraMatriz (int Tabela[50]);
+void ZeraMatriz (int Tabela[]);
+void ZeraMatriz  (int *Tabela);</font>
+
+Ao  chamar  esta  função,  como  argumento  basta simplesmente passar
+o nome da array:
+<font color="darkblue">
+ZeraMatriz(tabela);</font>
+
+Ou ainda você pode chamar destas formas:
+<font color="darkblue">
+ZeraMatriz(&tabela);
+ZeraMatrix(&tabela[0]);</font>
+
+<u>ELEMENTO DA ARRAY PODE SER PASSADO POR VALOR</u>
+Naturalmente  você  pode  passar  um elemento da array por valor. Por
+exemplo:<font color="darkblue"> multiplica(Numero[12],Tabela[13]);</font>
+ou     apenas     um    elemento    da    array    por    referência:
+<font color="darkblue">multiplica(&Numero[12],&Tabela[13]);</font>
+
+Veja o programa exemplo:
+<div class=prg-saida>
+ <img src=images\ptr07.png>
+<br></div>
+<div class=prg-code>
+<span class="sc1">/* Programa ptr07.c - track 17                  */</span><span class="sc0">
+</span><span class="sc1">/* As funções que recebem array como argumentos */</span><span class="sc0">
+</span><span class="sc1">/* podem ser declaradas de três formas          */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ShowArray</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vArray</span><span class="sc10">[</span><span class="sc4">10</span><span class="sc10">]);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ZeraArray</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">Tabela</span><span class="sc10">[]);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">EncheArray</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">vArray</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nValor</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nDados</span><span class="sc10">[</span><span class="sc4">10</span><span class="sc10">];</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title ptr07.c "</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">EncheArray</span><span class="sc10">(</span><span class="sc11">nDados</span><span class="sc10">,</span><span class="sc4">15</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ShowArray</span><span class="sc10">(</span><span class="sc11">nDados</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ZeraArray</span><span class="sc10">(&amp;</span><span class="sc11">nDados</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ShowArray</span><span class="sc10">(&amp;</span><span class="sc11">nDados</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]);</span><span class="sc0">
+
+</span><span class="sc11">getchar</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função ZeraArray()  ------------------ */</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ZeraArray</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">Tabela</span><span class="sc10">[])</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">++)</span><span class="sc0">
+            </span><span class="sc11">Tabela</span><span class="sc10">[</span><span class="sc11">ndx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função EncheArray()  ------------------ */</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">EncheArray</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">vArray</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">nValor</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">++)</span><span class="sc0">
+            </span><span class="sc11">vArray</span><span class="sc10">[</span><span class="sc11">ndx</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nValor</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função ShowArray()  ------------------ */</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ShowArray</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">vArray</span><span class="sc10">[</span><span class="sc4">10</span><span class="sc10">])</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" "</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">ndx</span><span class="sc10">++)</span><span class="sc0">
+            </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"%i "</span><span class="sc10">,</span><span class="sc11">vArray</span><span class="sc10">[</span><span class="sc11">ndx</span><span class="sc10">]);</span><span class="sc0">
+        </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+
+<u>FUNÇÕES QUE RETORNAM UM PONTEIRO</u>
+
+Você  pode  retornar  um ponteiro como tipo de retorno de uma função;
+geralmente  isso  é  necessário  quando  você,  dentro de uma função,
+quer   permitir   o  acesso  a  uma  estrutura,  a  uma  array  ou  a
+a uma variável.
+<font color="darkblue">
+int *dobro (int *x);
+
+int *teste( int *x) {
+*x = 2 * (*x);
+return x;
+}</font>
+
+<b style="background-color:lightgreen">17.2 Ponteiros para funções</b>
+
+Na  linguagem  C  você  pode  declarar  um  ponteiro para uma função,
+podendo  posteriormente  chamar  a função indiretamente através deste
+ponteiro  e  ainda  passar  uma  função como argumento para uma outra
+função via este ponteiro.
+
+<u>DECLARANDO UM PONTEIRO PARA UMA FUNÇÃO</u>
+A  declaração  do  ponteiro  para uma função é precedido pelo tipo de
+retorno   e   seguido   pelos   argumentos   de  entrada  da  função:
+<b style="color:green">
+tipo (*pPonteiro) ();
+tipo (*pPonteiro) (tipo vVar, tipo vVar...);</b><font color="darkblue">
+
+int  (*pFunction) (char *sInfo);
+float (* fp) ();
+void (*fpPrintColor) (char *s);</font>
+
+<u>INICIALIZANDO PONTEIRO PARA UMA FUNÇÃO</u>
+<b style="color:green">
+pPonteiro = NomeFunção;</b><font color="darkblue">
+pFunction = say;
+fp = teste;
+fpPrintColor = sayColor;</font>
+
+Simplesmente  o  ponteiro  recebe  o nome da função sem os parêntesis
+e  sem  o  operador  de  endereço (&). Os tipos de retorno e os tipos
+dos  argumentos  de  entrada  da  função  e  do  seu  ponteiro  devem
+coincidir exatamente:
+
+Declaração da função:<font color="darkblue"> int imprime (char *sInfo)</font>
+Declaração de seu ponteiro:<font color="darkblue">  int  (* pFunction) (char *sInfo);</font>
+Inicializando o ponteiro:<font color="darkblue">  pFunction = Imprime;</font>
+
+<u>CHAMANDO A FUNÇÃO VIA PONTEIRO</u>
+<b style="color:green">
+pFunction (tipo vVar, tipo vVar...);
+pFunction ();
+
+ou
+
+(*pFunction) ();
+(*pFunction) (tipo vVar, tipo vVar...);</b>
+
+Declaração da função.......:<font color="darkblue"> int imprime (char *sInfo)</font>
+Declaração de seu ponteiro.:<font color="darkblue"> int  (* pFunction) (char *sInfo);</font>
+Inicializando o ponteiro...:<font color="darkblue"> pFunction = Imprime;</font>
+Chamando, primeira sintaxe.:<font color="darkblue"> pFunction ("teste");</font>
+Chamando, segunda sintaxe..:<font color="darkblue"> (*pFunction) ("teste");</font>
+
+
+<u>PASSANDO UMA FUNÇÃO COMO ARGUMENTO</u>
+Para   passar  uma  função  como  argumento  para  uma  outra  função
+basicamente  você  precisa  declarar  <b>um ponteiro para uma função</b> nos
+argumentos de entrada dessa função:
+
+<font color="darkblue">
+<b>void (*fpPrintColor ) (char *sInfo);</b>
+
+/************************* sayColor() ***********************/
+void sayColor(char *sMsg) {
+textcolor(YELLOW);
+cprintf("%s \n\r",sMsg);
+}
+
+<b>fpPrintColor = sayColor;</b>
+
+<b>ChamaFunction ("Hello colorido",fpPrintColor);</b>
+
+/******************* ChamaFuncion() ************************/
+/* Função que tem uma função como argumento */
+<b>void ChamaFunction (char *sMsg, void (* pPrint) (char *sString))</b> {
+(*pPrint) ("Dentro de ChamaFunction()");
+(*pPrint) (sMsg);
+pPrint (sMsg);
+}</font>
+
+Veja nosso programa exemplo:
+<div class=prg-saida>
+ <img src=images\ptr08.png>
+</div>
+<div class=prg-code>
+<span class="sc1">/* Programa: ptr08.c - track 17 */</span><span class="sc0">
+</span><span class="sc1">/* Ponteiros para funções       */</span><span class="sc0">
+</span><span class="sc9">#include "stdio.h"
+#include "stdlib.h"
+</span><span class="sc0">
+</span><span class="sc1">/* Protótipos */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teste</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">msgEnfeitada</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* Protótipo da função com função como argumento */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ChamaFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc0"> </span><span class="sc11">pPrint</span><span class="sc0"> </span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sString</span><span class="sc10">));</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0">  </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Declarando variáveis e ponteiros */</span><span class="sc0">
+</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">Mensagem</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">" Conhecimento e' poder!"</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc1">/* Declaração de ponteiros para funções */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc11">pFunction</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sInfo</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc11">fp</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc11">fpPrintEnfeitado</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">s</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* Inicializando o ponteiro de funções */</span><span class="sc0">
+</span><span class="sc11">pFunction</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">fp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">teste</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">fpPrintEnfeitado</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">msgEnfeitada</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc6">"title ptr08.c"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">ChamaFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" ChamaFunction() - com fpPrintEfeitado() "</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">fpPrintEnfeitado</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" ------------------------------------------------------------- "</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ChamaFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" ChamaFunction() - com falar()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" ------------------------------------------------------------- "</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">ChamaFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" ChamaFunction() - com msgEnfeitada()"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">msgEnfeitada</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" ------------------------------------------------------------- "</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc11">Mensagem</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* Chamando a função através do ponteiro */</span><span class="sc0">
+</span><span class="sc11">pFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">             </span><span class="sc1">/* = falar (NULL);           */</span><span class="sc0">
+</span><span class="sc11">pFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" Teste Geral"</span><span class="sc10">);</span><span class="sc0">   </span><span class="sc1">/* = falar (" Teste Geral"); */</span><span class="sc0">
+</span><span class="sc11">fp</span><span class="sc10">();</span><span class="sc0">                         </span><span class="sc1">/* = teste();                */</span><span class="sc0">
+
+</span><span class="sc1">/* Maneira alternativa de chamar as funções via ponteiro */</span><span class="sc0">
+</span><span class="sc10">(*</span><span class="sc11">pFunction</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">"\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">(*</span><span class="sc11">fp</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">(*</span><span class="sc11">pFunction</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" Sintaxe Alternativa  (*pFunction) (sMsg);"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc11">getch</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc3">/******************** falar() *******************************/</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sMsg</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" falar() - Argumento sMsg == NULL \n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc5">else</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"%s \n"</span><span class="sc10">,</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc3">/******************* Teste() *****************************/</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">teste</span><span class="sc10">(</span><span class="sc16">void</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">falar</span><span class="sc10">(</span><span class="sc6">" Dentro da funcao teste()"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc3">/******************* ChamaFuncion() ************************/</span><span class="sc0">
+</span><span class="sc1">/* Função que tem uma função como argumento */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">ChamaFunction</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc10">(*</span><span class="sc0"> </span><span class="sc11">pPrint</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sString</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc10">(*</span><span class="sc11">pPrint</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc6">" Dentro de ChamaFunction()"</span><span class="sc10">);</span><span class="sc0">
+
+</span><span class="sc1">/* Sintaxes alternativas */</span><span class="sc0">
+</span><span class="sc10">(*</span><span class="sc11">pPrint</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+ </span><span class="sc11">pPrint</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc3">/************************* msgEnfeitada() ***********************/</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">msgEnfeitada</span><span class="sc10">(</span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">sMsg</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">" [--- %s ---] \n"</span><span class="sc10">,</span><span class="sc11">sMsg</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc1">/* ------------------ Função initSys()  -------------------- */</span><span class="sc0">
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">initSys</span><span class="sc10">(</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">title</span><span class="sc10">)</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc1">/* Configura a janela */</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc11">title</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">system</span><span class="sc10">(</span><span class="sc6">"color F1"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"\n\n"</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+</span></div>
+<hr>
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%><tr><td><a href=cvip.html style='color:blue'> index </a></td><td><a href='track16.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track18.html'style='color:blue'>&gt;&gt;</a></td></tr></table><hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Junho/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a></center><hr></div></div></body></html>
+

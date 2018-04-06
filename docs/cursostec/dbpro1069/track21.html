@@ -1,0 +1,201 @@
+<html><head>
+<title>darkbasicPro_track21</title>
+<style type="text/css">
+
+span {
+	font-family: 'Courier New';
+	font-size: 10pt;
+	color: #000000;
+}
+.sc0 {
+}
+
+
+.sc1 {
+	color: darkgreen;
+	font-weight: bold;
+}
+
+
+.sc2 {
+	color: #008000;
+}
+.sc4 {
+	color: #ff8000;
+}
+.sc5 {
+	font-weight: bold;
+	color: #0000FF;
+}
+.sc6 {
+	color: #FF0000;
+}
+.sc9 {
+	color: #804000;
+	font-weight: bold;
+}
+.sc10 {
+	font-weight: bold;
+	color: #000080;
+}
+.sc11 {
+}
+.sc16 {
+	color: #400080;
+}
+
+.prg {
+	color: #0000FF;
+}
+
+.prg-saida {
+
+	margin-left:50px;
+	width:500pt;
+	background-color:lightblue;
+}
+
+.prg-code {
+	margin-left:50px;
+	width:500pt;
+	background-color:lightyellow;
+}
+
+
+.niceview {
+	margin-left:50px;
+	width:500pt;
+	background-color:white;
+	border-color:lightgray;
+	border-width:1px;
+	border-style:solid;
+}
+
+td
+{
+padding:3px;
+}
+
+table.dados
+{
+
+margin-left:50px;
+width:45.0em;
+border-collapse:collapse;
+border:1px solid red;
+text-align:center;
+
+
+}
+
+th
+{
+background-color:darkgreen;
+color:yellow;
+font-weight:bold;
+text-transform:uppercase;
+}
+body
+{
+margin-left:60px;
+}
+
+
+</style></head>
+<body><font color="black"><pre>
+<hr>
+<center><b>GAMEPROG - Escola de programação de jogos digitais</b><br><b>Contato: Jair Pereira - gameprog.br@gmail.com</b><br><b>Curso completo de Darkbasic Pro Versão 1.069</b><br><b>track21.html</b><br></center><table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track20.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track22.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+
+<a name="track21"></a>                                                                                                  
+<h3 style="background-color:#80ff80">21. Colisão de objetos 3D</h3>                                                     
+ A detecção da colisão de objetos é um processo fundamental na programação de jogos,                                    
+ pois é através desse processo que você determina uma reação inteligente ao seu                                         
+ personagem conforme ele se depara com um outro objeto. O cálculo para se detectar                                      
+ uma colisão em um mundo 3D é complexo, porém é importante saber que ele é feito                                        
+ baseado na coordenada do objeto e no raio que o objeto ocupa ao redor dessa                                            
+ coordenada, logo se houver uma intersecção de coordenadas ou de raios com um outro                                     
+ objeto houve então uma colisão.                                                                                        
+                                                                                                                        
+ <u>1)Colisão de um objeto com outro objeto particular</u>                                                              
+ <img src="colisaox.jpg">                                                                                               
+                                                                                                                        
+ <b>SET OBJECT COLLISION ON</b> nObjeto                                                                                 
+ Este comando aciona a detecção de colisão do objeto especificado por nObjeto                                           
+ com qualquer outro objeto.                                                                                             
+                                                                                                                        
+ <b>nBool = OBJECT COLLISION(nObjeto,nObjetoAlvo)</b>                                                                   
+ Esta função retorna o valor <b>um</b> caso o objeto nObjeto colidiu com o objeto alvo.                                 
+ Caso você queira detectar a colisão do objeto com qualquer outro objeto, configure                                     
+ nObjetoAlvo para <b>zero.</b>                                                                                          
+                                                                                                                        
+ Exemplo: <font color="darkgreen">                                                                                      
+ set object collision on 1                                                                                              
+ if object collision(1,2) > 0                                                                                           
+ play sound 1                                                                                                           
+   for cx = 1 to 20                                                                                                     
+   inc zbox: position object 2,xbox,ybox,zbox                                                                           
+   next cx                                                                                                              
+ endif </font>                                                                                                          
+                                                                                                                        
+                                                                                                                        
+<font color="darkblue"><div style="background-color:lightyellow">                                                       
+cls: hide mouse                                                                                                         
+                                                                                                                        
+load sound "c:\dbCurso\arrastar.wav",1                                                                                  
+                                                                                                                        
+rem //preparando o terreno                                                                                              
+load image "c:\dbCurso\textura2x2.bmp",1                                                                                
+make matrix 1,1000,1000,5,5                                                                                             
+prepare matrix texture 1,1,2,2                                                                                          
+fill matrix 1,0,2                                                                                                       
+                                                                                                                        
+rem //coordenada dos objetos                                                                                            
+xpos = 400: ypos = 10: zpos = 300                                                                                       
+xbox = 400: ybox = 10: zbox = 350                                                                                       
+                                                                                                                        
+rem //preparando os objetos                                                                                             
+make object sphere 1,10                                                                                                 
+position object 1,xpos,ypos,zpos                                                                                        
+make object cube 2,30                                                                                                   
+position object 2,xbox,ybox,zbox                                                                                        
+texture object 2,1                                                                                                      
+                                                                                                                        
+<b>rem //ligando detecção de colisão                                                                                    
+set object collision on 1</b>                                                                                           
+                                                                                                                        
+position camera 400,50,250                                                                                              
+                                                                                                                        
+teclado:                                                                                                                
+tecla$ = inkey$()                                                                                                       
+                                                                                                                        
+rem // Processando teclado                                                                                              
+if tecla$ = "q" then end                                                                                                
+if leftkey()=1 then dec xpos,5                                                                                          
+if rightkey()=1 then inc xpos,5                                                                                         
+if upkey()=1 then inc zpos,5                                                                                            
+if downkey()=1 then dec zpos,5                                                                                          
+                                                                                                                        
+rem //movendo os objetos                                                                                                
+position object 1,xpos,ypos,zpos                                                                                        
+position object 2,xbox,ybox,zbox                                                                                        
+                                                                                                                        
+rem reagindo à colisão: empurrando a caixa                                                                              
+<b>if object collision(1,2) > 0</b>                                                                                     
+play sound 1                                                                                                            
+ for cx = 1 to 20                                                                                                       
+   inc zbox: position object 2,xbox,ybox,zbox                                                                           
+ next cx                                                                                                                
+endif                                                                                                                   
+goto teclado</div></font>                                                                                               
+                                                                                                                        
+<hr>                                                                                                                    
+
+<table align=bottom border=0 cellspacing=0 cellpadding=0 width=20%>
+<tr><td><a href=dbpro.html style='color:blue'> index </a></td><td><a href='track20.html'style='color:blue'>&lt;&lt;</a></td><td><a href='track22.html'style='color:blue'>&gt;&gt;</a></td></tr></table>
+<hr><div style='background-color:lightyellow;color:blue'>
+<center>Produzido por Gameprog: Jair Pereira - Fev/2006 - Setembro/2013 ©
+gameprog.br@gmail.com
+<a href='http://www.gameprog.com.br'>http://www.gameprog.com.br</a>
+<a href='http://www.nucleoararat.com.br'>http://www.nucleoararat.com.br</a></center><hr></div></body></html>
+
